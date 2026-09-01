@@ -2,65 +2,68 @@ name: Consolidate to a single main branch
 
 # One-shot housekeeping, run by hand.
 #
-# Renames dev to main and removes the working branch, leaving the repository
-# with exactly one. Rename rather than create-and-delete on purpose: GitHub's
-# rename moves the default branch, retargets open pull requests and preserves
-# the branch's history in one operation, whereas creating `main` separately
-# would leave `dev` as the default and undeletable.
+# Aims to leave the repository with exactly one branch, main.
+#
+# Renaming the default branch needs admin rights, and a workflow's GITHUB_TOKEN
+# cannot hold them (`administration` is not a grantable workflow permission).
+# So this tries the rename, and when GitHub refuses it does everything that
+# does not need admin — creates main at the current commit and deletes every
+# other non-default branch — then says plainly which single click is left.
 #
 # Delete this file once it has run.
 
 on:
   workflow_dispatch:
-    inputs:
-      working_branch:
-        description: "Working branch to delete once main exists"
-        type: string
-        default: "claude/telemachos-macos-standalone-nukn37"
 
 permissions:
   contents: write
-  administration: write
 
 jobs:
   consolidate:
     runs-on: ubuntu-latest
     steps:
-      - name: Rename dev to main and drop the working branch
+      - name: Consolidate
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
-          WORKING: ${{ inputs.working_branch }}
         run: |
           set -uo pipefail
 
           default="$(gh api "repos/$REPO" --jq .default_branch)"
-          echo "current default branch: $default"
+          sha="$(gh api "repos/$REPO/git/ref/heads/$default" --jq .object.sha)"
+          echo "default branch: $default ($sha)"
 
+          renamed=0
           if [ "$default" = "main" ]; then
+            renamed=1
             echo "already on main"
           else
-            echo "renaming $default -> main"
             if gh api -X POST "repos/$REPO/branches/$default/rename" \
-                 -f new_name=main > /tmp/rename.json 2>/tmp/rename.err; then
-              echo "renamed; default branch is now $(gh api "repos/$REPO" --jq .default_branch)"
+                 -f new_name=main >/dev/null 2>/tmp/err; then
+              renamed=1
+              echo "renamed $default -> main; default is now $(gh api "repos/$REPO" --jq .default_branch)"
             else
-              echo "::error::could not rename $default to main"
-              cat /tmp/rename.err
-              echo ""
-              echo "Renaming the default branch needs admin rights, which the"
-              echo "Actions token may not have. Rename it once by hand at:"
-              echo "  https://github.com/$REPO/branches"
-              exit 1
+              echo "rename refused (expected without admin rights):"
+              sed 's/^/  /' /tmp/err
+              # Fall back: put the same commit on main so the branch exists and
+              # is ready to become the default.
+              if gh api "repos/$REPO/git/ref/heads/main" >/dev/null 2>&1; then
+                gh api -X PATCH "repos/$REPO/git/refs/heads/main" -f sha="$sha" -F force=true >/dev/null \
+                  && echo "main updated to $sha"
+              else
+                gh api -X POST "repos/$REPO/git/refs" -f ref=refs/heads/main -f sha="$sha" >/dev/null \
+                  && echo "main created at $sha"
+              fi
             fi
           fi
 
-          # Everything that is not main goes.
+          # Delete every branch that is neither main nor the current default.
+          current_default="$(gh api "repos/$REPO" --jq .default_branch)"
           for branch in $(gh api "repos/$REPO/branches" --paginate --jq '.[].name'); do
             [ "$branch" = "main" ] && continue
-            sha="$(gh api "repos/$REPO/git/ref/heads/$branch" --jq .object.sha 2>/dev/null || true)"
+            [ "$branch" = "$current_default" ] && continue
             if gh api -X DELETE "repos/$REPO/git/refs/heads/$branch" >/dev/null 2>&1; then
-              echo "  deleted: $branch (was $sha)"
+              echo "  deleted: $branch"
             else
               echo "  could not delete: $branch"
             fi
@@ -69,3 +72,15 @@ jobs:
           echo ""
           echo "branches now:"
           gh api "repos/$REPO/branches" --jq '.[].name' | sed 's/^/  /'
+
+          if [ "$renamed" != "1" ]; then
+            echo ""
+            echo "=============================================================="
+            echo "One manual step is left, because changing a repository's"
+            echo "default branch needs admin rights that no workflow token has."
+            echo ""
+            echo "  1. Open https://github.com/$REPO/settings"
+            echo "  2. Under 'Default branch', switch it to: main"
+            echo "  3. Re-run this workflow — it will then delete the old branch"
+            echo "=============================================================="
+          fi
