@@ -19,6 +19,14 @@
   (function(){
     try {
       var t = JSON.parse(localStorage.getItem('telemachos-theme'));
+      // Nothing saved yet: follow the Mac's appearance from the very first
+      // paint. Without this the window renders dark and then switches once
+      // theme.js boots, which reads as a bug on a light Mac.
+      if ((!t || !t.colors) && window.matchMedia &&
+          window.matchMedia('(prefers-color-scheme: light)').matches) {
+        t = { name: 'light', colors: { bg:'#f0ebe3', fg:'#5a5248', panel:'#faf6f0',
+                                       border:'#d4cdc2', red:'#c47d5a' } };
+      }
       if (t && t.colors) {
         var s = document.documentElement.style;
         var c = t.colors;
@@ -765,6 +773,14 @@
         <svg class="sidebar-action-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="10" cy="10" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
         <span class="grow" style="position:relative;left:-1px;">Search</span>
       </div>
+      <!-- Plain anchor rather than a click-handled .list-item: /models is its
+           own document, so there is no SPA state to coordinate and nothing
+           here for the sidebar's JS to bind. -->
+      <a class="list-item" href="/models" title="Download a model to run on this Mac"
+         style="text-decoration:none;color:inherit;">
+        <svg class="sidebar-action-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 12l5 5 5-5"/><path d="M4 21h16"/></svg>
+        <span class="grow" style="position:relative;left:-1px;">Local Models</span>
+      </a>
       <!-- Assistant sidebar entry removed — its log + settings live inside
            the Tasks modal (Activity + Settings tabs). The backend
            assistant session is still maintained for log_to_assistant()

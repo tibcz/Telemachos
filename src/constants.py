@@ -4,7 +4,7 @@ import os
 
 from src.runtime_paths import get_app_root, get_default_data_dir
 
-APP_VERSION = "1.0.3"
+APP_VERSION = "1.0.4"
 
 # Base paths
 BASE_DIR = os.path.join(get_app_root(), "")
@@ -53,6 +53,10 @@ SKILLS_DIR = os.path.join(DATA_DIR, "skills")
 GALLERY_DIR = os.path.join(DATA_DIR, "gallery")
 GALLERY_UPLOADS_DIR = os.path.join(DATA_DIR, "gallery_uploads")
 MEMORY_VECTORS_DIR = os.path.join(DATA_DIR, "memory_vectors")
+# Downloaded local model weights (GGUF). Kept under DATA_DIR like everything
+# else, so the app bundle stays read-only and a reinstall never deletes a
+# multi-gigabyte download the user waited for.
+MODELS_DIR = os.path.join(DATA_DIR, "models")
 
 # Paths with an intentional dedicated env override, defaulting under DATA_DIR.
 MAIL_ATTACHMENTS_DIR = os.getenv("TELEMACHOS_MAIL_ATTACHMENTS_DIR", os.path.join(DATA_DIR, "mail-attachments"))

@@ -676,6 +676,9 @@ upload_cleanup_task = None
 from routes.emoji_routes import setup_emoji_routes
 app.include_router(setup_emoji_routes())
 
+from routes.model_catalog_routes import setup_model_catalog_routes
+app.include_router(setup_model_catalog_routes())
+
 # Sessions
 from routes.session_routes import setup_session_routes
 session_config = {"REQUEST_TIMEOUT": REQUEST_TIMEOUT, "OPENAI_API_KEY": OPENAI_API_KEY, "SESSIONS_FILE": SESSIONS_FILE}
@@ -897,6 +900,16 @@ async def serve_index(request: Request):
     # "not found". This keeps the app-shell route consistent with the other
     # bundled-template routes instead of mislabelling the fault as a 404.
     return serve_html_with_nonce(request, abs_join(BASE_DIR, "index.html"))
+
+@app.get("/models")
+async def serve_models(request: Request):
+    """Standalone page for the curated local-model picker.
+
+    Served as its own document rather than an SPA route: it is self-contained,
+    so it cannot disturb the main app shell, and it inherits the theme through
+    the same CSS variables.
+    """
+    return serve_html_with_nonce(request, abs_join(BASE_DIR, "static/models.html"))
 
 @app.get("/notes")
 async def serve_notes(request: Request):

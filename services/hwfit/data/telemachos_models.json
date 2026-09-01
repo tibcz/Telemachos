@@ -1,0 +1,70 @@
+{
+  "schema": 1,
+  "_comment": [
+    "Curated local models, one per hardware tier. Deliberately short: the point",
+    "is a confident choice for a given Mac, not a catalogue to browse.",
+    "",
+    "Every entry is GGUF. That is a security decision, not a convenience one:",
+    "PyTorch .bin/.pt checkpoints are Python pickles and execute arbitrary code",
+    "when loaded, which is the real 'model virus' vector. GGUF is a plain data",
+    "container with no code path, so a malicious file cannot run anything.",
+    "",
+    "Only repos listed here can be downloaded, filenames are resolved from the",
+    "HuggingFace API rather than guessed, and every file is checked against the",
+    "SHA-256 that HuggingFace reports for it. See src/model_catalog.py.",
+    "",
+    "CI validates every entry against the live HuggingFace API, so a repo that",
+    "was renamed or withdrawn fails the build instead of shipping as a dead",
+    "button."
+  ],
+  "tiers": [
+    {
+      "id": "low",
+      "label": "Light",
+      "hardware": "8 GB Mac",
+      "min_memory_gb": 8,
+      "repo": "ggml-org/gemma-3-4b-it-GGUF",
+      "quant": "Q4_K_M",
+      "params": "4B",
+      "approx_size_gb": 2.6,
+      "context": 8192,
+      "summary": "Quick and light. Good for everyday chat, summarising and drafting on a base Mac."
+    },
+    {
+      "id": "medium",
+      "label": "Balanced",
+      "hardware": "16 GB Mac",
+      "min_memory_gb": 16,
+      "repo": "ggml-org/gemma-3-12b-it-GGUF",
+      "quant": "Q4_K_M",
+      "params": "12B",
+      "approx_size_gb": 7.3,
+      "context": 8192,
+      "summary": "The sweet spot. Noticeably better reasoning and writing, still comfortable on 16 GB."
+    },
+    {
+      "id": "strong",
+      "label": "Strong",
+      "hardware": "32 GB Mac",
+      "min_memory_gb": 32,
+      "repo": "ggml-org/gemma-3-27b-it-GGUF",
+      "quant": "Q4_K_M",
+      "params": "27B",
+      "approx_size_gb": 16.0,
+      "context": 8192,
+      "summary": "Serious local capability for long documents and harder reasoning. Wants 32 GB."
+    },
+    {
+      "id": "high",
+      "label": "Maximum",
+      "hardware": "64 GB Mac or better",
+      "min_memory_gb": 64,
+      "repo": "ggml-org/gemma-3-27b-it-GGUF",
+      "quant": "Q8_0",
+      "params": "27B",
+      "approx_size_gb": 28.7,
+      "context": 8192,
+      "summary": "The strong model at near-full precision. Sharpest answers, for Macs with memory to spare."
+    }
+  ]
+}
