@@ -64,6 +64,10 @@ output.txt.txt
 *.jpg
 *.jpeg
 *.png
+# ...but the app's own icon is source, not media. Without this exception it is
+# silently left out of the repository and the build produces an app with no
+# icon at all — which is exactly what happened to 1.0.3.
+!packaging/macos/icon.png
 *.gif
 *.bmp
 *.webp
