@@ -1,5 +1,5 @@
-// Telemachos UI — startup shell sequencing
-// ES6 module — no application dependencies, DOM only.
+// Telemachos UI - startup shell sequencing
+// ES6 module - no application dependencies, DOM only.
 //
 // Revealing the application shell, retiring the boot loader, settling the
 // sidebar's own loading state, and firing a deferred URL route are separate
@@ -29,8 +29,8 @@ export function afterNextPaint(fn) {
   requestAnimationFrame(() => requestAnimationFrame(fn));
 }
 
-// The loader node stays in the DOM while sessions hydrate — sidebar-layout.js
-// and sessions.js both read its presence as a "still starting up" sentinel —
+// The loader node stays in the DOM while sessions hydrate - sidebar-layout.js
+// and sessions.js both read its presence as a "still starting up" sentinel -
 // but it must stop covering, announcing, and animating over a usable shell.
 function _makeLoaderInert(loader) {
   if (!loader || loader.dataset.shellRevealed === 'true') return;
@@ -115,7 +115,7 @@ export function runDeferredRouteOpener({ sessionsSettled = false } = {}) {
  * Drive session hydration and everything that hangs off it settling: the
  * sidebar's failure row, the loader node, and any session-dependent route.
  *
- * @param {(() => Promise<boolean>)|null} loadSessions — resolves true only
+ * @param {(() => Promise<boolean>)|null} loadSessions - resolves true only
  *   after the session list was authoritatively loaded and applied. Null means
  *   the session module failed to load.
  */
@@ -135,7 +135,7 @@ export function settleSessionHydration(loadSessions) {
   if (!loadSessions) {
     return Promise.resolve(settle(false));
   }
-  // Kick the request off synchronously — a microtask hop here would delay the
+  // Kick the request off synchronously - a microtask hop here would delay the
   // fetch this whole change exists to get off the critical path.
   let pending;
   try {

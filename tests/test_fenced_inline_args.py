@@ -1,4 +1,4 @@
-"""PR #3681 — fenced tool calls with inline args, and the fence-tag boundary.
+"""PR #3681 - fenced tool calls with inline args, and the fence-tag boundary.
 
 Local fenced-block models (Ollama etc.) emit calls like ```list_email_accounts {}
 with the args on the same line as the tag; the parser must execute those. The
@@ -46,7 +46,7 @@ def test_plain_bash_fence_still_parses():
 
 
 def test_python3_language_hint_is_not_a_python_tool_call():
-    # ```python3 must not prefix-match the "python" fence tag — without the
+    # ```python3 must not prefix-match the "python" fence tag - without the
     # (?![\w-]) boundary it parsed as tool "python" with content "3\nprint(...)"
     # and executed as code.
     blocks = parse_tool_blocks('```python3\nprint("hi")\n```')
@@ -60,7 +60,7 @@ def test_hyphenated_tag_is_not_a_tool_call():
 
 def test_markdown_info_string_is_not_executable_python():
     # ```python title="example.py" is Markdown fence metadata, not tool args.
-    # Same-line content other than JSON args ({...}/[...]) must not execute —
+    # Same-line content other than JSON args ({...}/[...]) must not execute -
     # otherwise a fence the model meant to display runs as code.
     blocks = parse_tool_blocks('```python title="example.py"\nprint("hi")\n```')
     assert blocks == [], blocks
@@ -73,7 +73,7 @@ def test_markdown_info_string_is_not_executable_bash():
 
 def test_empty_email_fence_is_an_executable_call():
     # ```list_email_accounts``` with no body is a real shape local models emit
-    # for no-arg tools — it must dispatch (with empty args), not vanish.
+    # for no-arg tools - it must dispatch (with empty args), not vanish.
     blocks = parse_tool_blocks('```list_email_accounts\n```')
     assert [(b.tool_type, b.content) for b in blocks] == [("list_email_accounts", "")]
 
@@ -100,7 +100,7 @@ def test_inline_json_array_args_still_parse():
 
 def test_brace_metadata_on_bash_is_not_executable():
     # ```bash {title="setup"} is a Markdown fence attribute on a real
-    # language. Code tags (bash/python) never take same-line args — even a
+    # language. Code tags (bash/python) never take same-line args - even a
     # brace-shaped info string must stay display text.
     blocks = parse_tool_blocks('```bash {title="setup"}\necho hi\n```')
     assert blocks == [], blocks
@@ -113,7 +113,7 @@ def test_valid_json_metadata_on_python_is_not_executable():
 
 
 def test_invalid_inline_json_on_email_tool_is_not_executable():
-    # JSON-args tools only execute same-line content that parses as JSON —
+    # JSON-args tools only execute same-line content that parses as JSON -
     # {title="x"} is metadata/garbage, not arguments.
     blocks = parse_tool_blocks('```list_emails {title="x"}\n```')
     assert blocks == [], blocks
@@ -161,7 +161,7 @@ def test_parse_strip_mirror_across_fence_shape_grid():
     # Invariant for ANY single fence: either it executes AND is stripped, or
     # it doesn't execute AND stays fully visible. The one allowed exception is
     # an empty NON-EMAIL tool fence (no header, no body): never executed, but
-    # stripped as noise — pre-PR behavior, kept deliberately. (Empty EMAIL
+    # stripped as noise - pre-PR behavior, kept deliberately. (Empty EMAIL
     # fences execute with empty args, so they fall under the first branch.)
     from src.agent_tools import TOOL_TAGS
 

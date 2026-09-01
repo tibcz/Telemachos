@@ -6,7 +6,7 @@ which returns only documents whose ``owner == owner`` (documents with no owner
 are excluded). The keyword fallback used
 ``if doc_owner and doc_owner != owner: continue``, so a document with a
 missing/empty owner fell through the guard and was returned to whichever user
-issued the query — a cross-user leak whenever the primary path errored and fell
+issued the query - a cross-user leak whenever the primary path errored and fell
 back to keyword search.
 """
 from src.rag_vector import VectorRAG

@@ -4,7 +4,7 @@
 // module wants at startup.
 //
 // Before this, /api/auth/settings was fetched independently by six modules and
-// /api/tools by three, none of them aware of the others — 4 and 3 requests on a
+// /api/tools by three, none of them aware of the others - 4 and 3 requests on a
 // single cold load. Worse than the requests: each caller could observe a
 // different snapshot of the same object, and chatRenderer.js is imported under
 // three different ?v= query strings, so it is three separate module instances
@@ -12,8 +12,8 @@
 // cache lives in one module every instance imports by the same specifier.
 //
 // URLs are bare paths on purpose. The callers that used `${API_BASE}/api/...`
-// resolved to the identical URL — API_BASE is `window.location.origin`
-// (app.js) — so nothing about the request changes for them.
+// resolved to the identical URL - API_BASE is `window.location.origin`
+// (app.js) - so nothing about the request changes for them.
 //
 // WRITERS MUST INVALIDATE. Anything that POSTs /api/auth/settings calls
 // invalidateSettings(); anything that POSTs /api/tools calls invalidateTools()
@@ -47,7 +47,7 @@ function _readPrefetchedSettings() {
 // A rejected promise must not stay in the slot. Plain `??=` memoisation would
 // keep it, so one transient blip during boot would leave keybinds, TTS and the
 // search provider on their defaults for the whole session with no retry. Clear
-// the slot on failure — unless a later invalidate/refetch already replaced it —
+// the slot on failure - unless a later invalidate/refetch already replaced it -
 // and rethrow, so every caller's existing .catch() still runs exactly as before.
 function _get(key) {
   if (_cache[key]) return _cache[key];

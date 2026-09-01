@@ -1,6 +1,6 @@
-"""document_helpers.py — Pydantic models, doc serializers, owner gating, file-locator helpers shared with document_routes.py."""
+"""document_helpers.py - Pydantic models, doc serializers, owner gating, file-locator helpers shared with document_routes.py."""
 
-"""Document routes — CRUD for living documents with version history."""
+"""Document routes - CRUD for living documents with version history."""
 
 import logging
 import os
@@ -52,7 +52,7 @@ def _doc_to_dict(doc: Document) -> Dict[str, Any]:
         "created_at": (doc.created_at.isoformat() + "Z") if doc.created_at else None,
         "updated_at": (doc.updated_at.isoformat() + "Z") if doc.updated_at else None,
         # Source-email provenance (set when doc was created from an email
-        # attachment) — drives the "Send signed reply" menu item.
+        # attachment) - drives the "Send signed reply" menu item.
         "source_email_uid":        getattr(doc, "source_email_uid", None),
         "source_email_folder":     getattr(doc, "source_email_folder", None),
         "source_email_account_id": getattr(doc, "source_email_account_id", None),

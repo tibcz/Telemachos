@@ -1,4 +1,4 @@
-"""Backup routes — export/import user data (memories, presets, settings, skills, preferences)."""
+"""Backup routes - export/import user data (memories, presets, settings, skills, preferences)."""
 
 import json
 import logging
@@ -25,7 +25,7 @@ def setup_backup_routes(memory_manager, preset_manager, skills_manager) -> APIRo
         # Memories (filtered by owner when auth is enabled)
         memories = memory_manager.load(owner=user)
 
-        # Presets (shared across users — export all)
+        # Presets (shared across users - export all)
         presets = preset_manager.get_all()
 
         # Skills (filtered by owner when auth is enabled)
@@ -84,7 +84,7 @@ def setup_backup_routes(memory_manager, preset_manager, skills_manager) -> APIRo
             except MemoryStoreUnreadable as e:
                 logger.error("Refusing to import memories: %s", e)
                 raise HTTPException(
-                    503, "Memory store is temporarily unreadable — nothing was imported."
+                    503, "Memory store is temporarily unreadable - nothing was imported."
                 )
             # Dedup against THIS user's own memories only. Using every tenant's
             # rows (load_all) meant a memory whose text matched any other
@@ -113,7 +113,7 @@ def setup_backup_routes(memory_manager, preset_manager, skills_manager) -> APIRo
             # Dedup against THIS user's own skills only. Using every tenant's
             # rows (load_all) meant a skill whose id/name/title matched any
             # other user's was silently skipped, so the importing user lost
-            # their own data — same cross-tenant bug fixed for memories above.
+            # their own data - same cross-tenant bug fixed for memories above.
             # The full store is still saved back below.
             own = [s for s in existing if s.get("owner") == user]
             existing_names = {s.get("name") for s in own if s.get("name")}
@@ -145,7 +145,7 @@ def setup_backup_routes(memory_manager, preset_manager, skills_manager) -> APIRo
                     owner = user
                 # Skills live on disk as SKILL.md files; the old JSON-era
                 # skills_manager.save() no longer exists. Write each new skill
-                # via add_skill (source="user" skips auto-dedup — this is an
+                # via add_skill (source="user" skips auto-dedup - this is an
                 # explicit backup restore).
                 result = skills_manager.add_skill(
                     title=title,

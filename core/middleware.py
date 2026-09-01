@@ -97,7 +97,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         is_tool_render = path.startswith("/api/tools/") and path.endswith("/render")
         # Document library PDF preview endpoint
         is_document_pdf_preview = path.startswith("/api/document/") and path.endswith("/render-pdf")
-        # Visual report pages are self-contained HTML — need inline scripts + external images
+        # Visual report pages are self-contained HTML - need inline scripts + external images
         is_report = path.startswith("/api/research/report/")
 
         response.headers["X-Content-Type-Options"] = "nosniff"

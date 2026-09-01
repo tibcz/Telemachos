@@ -1,4 +1,4 @@
-"""Backward-compat shim — canonical location is routes/webhook/webhook_routes.py.
+"""Backward-compat shim - canonical location is routes/webhook/webhook_routes.py.
 
 This module is replaced in ``sys.modules`` by the canonical module object so
 that ``import routes.webhook_routes``, ``from routes.webhook_routes import X``,

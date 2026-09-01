@@ -1,11 +1,11 @@
-"""Pin pure helpers in the compare/ frontend module — drives them
+"""Pin pure helpers in the compare/ frontend module - drives them
 through `node --input-type=module` so we get real JS execution without
 needing a full Vitest/Jest setup. If `node` isn't installed the suite
 skips itself rather than failing.
 
 Most of compare/ pulls in browser-only globals (document, localStorage,
 fetch, theme/ui modules). We only test the modules that are genuinely
-portable — state.js (plain object + reset function) and the SVG-icon
+portable - state.js (plain object + reset function) and the SVG-icon
 constants in icons.js. The bigger state-coupled pieces are best
 covered via Playwright/Bombadil specs against a running app.
 """
@@ -51,7 +51,7 @@ def _run_node(script: str) -> dict:
 def test_state_reset_preserves_config(node_available):
     """`state.reset()` clears transient flags but leaves config
     sticky (API_BASE, _parallel, _blindMode, etc.). A reset must abort
-    any pending fetches and zero the metrics array — anything that
+    any pending fetches and zero the metrics array - anything that
     survives reset would leak between compare sessions."""
     script = textwrap.dedent("""
         const mod = await import('./static/js/compare/state.js');
@@ -99,7 +99,7 @@ def test_state_reset_preserves_config(node_available):
 
 
 def test_state_reset_resets_probed_set(node_available):
-    """`_probed` tracks which model IDs have passed the probe — must
+    """`_probed` tracks which model IDs have passed the probe - must
     be cleared on reset so a stale endpoint can't silently use cached
     'ok' state from a previous session."""
     script = textwrap.dedent("""
@@ -147,7 +147,7 @@ def test_svg_icon_exports_are_valid_svg(node_available):
 
 def test_wave_frames_is_valid_animation_strip(node_available):
     """`WAVE_FRAMES` powers the streaming-pane "thinking" animation.
-    Pin: array of equal-length non-empty strings — frames of different
+    Pin: array of equal-length non-empty strings - frames of different
     lengths would visibly jitter the layout."""
     script = textwrap.dedent("""
         const { WAVE_FRAMES } = await import('./static/js/compare/icons.js');

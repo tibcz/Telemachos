@@ -40,7 +40,7 @@ SKILL_EXTRACT_PROMPT = (
     "Return ONLY valid JSON (or the bare word null), no markdown fences."
 )
 
-# Skills the model is unsure about (or that read as one-offs) add clutter —
+# Skills the model is unsure about (or that read as one-offs) add clutter -
 # drop anything below this confidence.
 MIN_CONFIDENCE = 0.6
 
@@ -208,7 +208,7 @@ async def maybe_extract_skill(
 
         if not response or response.strip().lower() == "null":
             logger.debug(
-                "[skill-extract] LLM declined (returned null/empty) — "
+                "[skill-extract] LLM declined (returned null/empty) - "
                 "session deemed not a reusable procedure"
             )
             return None
@@ -227,7 +227,7 @@ async def maybe_extract_skill(
 
         # Parse JSON. The object may be wrapped in code fences or surrounded by
         # commentary (and may contain a stray/invalid brace fragment before
-        # the real object — including one that makes the response itself look
+        # the real object - including one that makes the response itself look
         # like it starts with '{'), so use a tolerant extractor that tries the
         # whole string first and then each '{' candidate left-to-right.
         data = _extract_json_object(response)
@@ -240,7 +240,7 @@ async def maybe_extract_skill(
             logger.debug("[skill-extract] LLM returned object with no title, dropping")
             return None
 
-        # Honour the model's own reliability/reusability estimate — low-
+        # Honour the model's own reliability/reusability estimate - low-
         # confidence extractions are usually one-offs or shaky procedures.
         try:
             _conf = float(data.get("confidence", 0.7))
@@ -248,7 +248,7 @@ async def maybe_extract_skill(
             _conf = 0.7
         if _conf < MIN_CONFIDENCE:
             logger.debug(
-                "[skill-extract] '%s' below confidence floor (%.2f < %.2f) — dropped",
+                "[skill-extract] '%s' below confidence floor (%.2f < %.2f) - dropped",
                 title, _conf, MIN_CONFIDENCE,
             )
             return None
@@ -256,7 +256,7 @@ async def maybe_extract_skill(
         # Check for duplicate skills
         existing = skills_manager.load(owner=owner)
         if _has_duplicate_title(existing, title):
-            logger.debug("[skill-extract] '%s' already exists — dropped as duplicate", title)
+            logger.debug("[skill-extract] '%s' already exists - dropped as duplicate", title)
             return None
 
         # Auto-publish gate: if the user has `auto_approve_skills` on, the

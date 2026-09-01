@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""telemachos-calendar — Unix-style CLI for the calendar feature.
+"""telemachos-calendar - Unix-style CLI for the calendar feature.
 
 Reads the same SQLite the web UI uses (`data/app.db`). Output is JSON on
 stdout, errors on stderr, non-zero exit on failure. Composable:

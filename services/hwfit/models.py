@@ -44,7 +44,7 @@ QUANT_QUALITY_PENALTY = {
     "Q8_0": 0.0, "Q6_K": -1.0, "Q5_K_M": -2.0,
     "Q4_K_M": -5.0, "Q4_0": -5.0, "Q3_K_M": -8.0, "Q2_K": -12.0,
     # Bare "AWQ" and "AWQ-8bit" used to be 0.0 (tied with FP8). In practice
-    # AWQ-anything is a calibrated reconstruction, not raw 8-bit weights —
+    # AWQ-anything is a calibrated reconstruction, not raw 8-bit weights -
     # there's a small but real quality loss vs FP8. Give them a slight
     # penalty so FP8 wins when both fit. AWQ-4bit stays heavier.
     "AWQ": -1.0, "AWQ-4bit": -4.0, "AWQ-8bit": -1.0,
@@ -55,7 +55,7 @@ QUANT_QUALITY_PENALTY = {
     "QAT-INT4": -1.0, "QAT-INT8": 0.0,
     "mlx-3bit": -8.0, "mlx-4bit": -4.0, "mlx-5bit": -2.5, "mlx-6bit": -1.5, "mlx-8bit": -0.5,
     # DeepSeek-V4 mixed: only MoE experts at FP4 (the rest is FP8/BF16),
-    # so the realized quality is much closer to FP8 than to pure FP4 —
+    # so the realized quality is much closer to FP8 than to pure FP4 -
     # the activation-sensitive layers stay high-precision. ~0 penalty.
     "FP4-MoE-Mixed": -0.5,
     "FP8-Mixed": 0.0,
@@ -162,7 +162,7 @@ def params_b(model):
             try:
                 val = float(m.group(1))
             except ValueError:
-                # Malformed count like "1.5.3B" — [\d.]+ matches but float()
+                # Malformed count like "1.5.3B" - [\d.]+ matches but float()
                 # rejects it. One bad catalog row must not abort the whole
                 # ranking pass, so treat it as unknown size.
                 return 0.0
@@ -177,7 +177,7 @@ def params_b(model):
                 return val * 1000.0
             else:
                 # No unit. A bare number this size is conventionally a millions
-                # count (e.g. "355" = 355M), NOT billions — otherwise a 355M
+                # count (e.g. "355" = 355M), NOT billions - otherwise a 355M
                 # model would sort as 355B and leap above every 7B/70B model.
                 # A genuine billions figure carries a "B" suffix and is handled
                 # above; very large bare values are raw parameter counts.

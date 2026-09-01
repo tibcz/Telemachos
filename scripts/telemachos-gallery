@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""telemachos-gallery — shell wrapper for the photo / image gallery.
+"""telemachos-gallery - shell wrapper for the photo / image gallery.
 
 Read-only by default (upload + edit operations need multipart payloads
 that are awkward at the shell). Filters images by tag, prompt, favorite,

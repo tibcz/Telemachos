@@ -3,12 +3,12 @@ email_pollers.py
 
 Background loops that periodically scan IMAP and act on mail:
 
-    - `_auto_summarize_pass` / `_auto_summarize_pass_single` — daily/hourly
+    - `_auto_summarize_pass` / `_auto_summarize_pass_single` - daily/hourly
       summary + AI-reply + spam-classification pass over recently received mail.
-    - `_auto_summarize_poller` — driver that wakes the pass on a 30-min cadence.
-    - `_scheduled_email_poller` — polls the `scheduled_emails` SQLite for
+    - `_auto_summarize_poller` - driver that wakes the pass on a 30-min cadence.
+    - `_scheduled_email_poller` - polls the `scheduled_emails` SQLite for
       due rows and delivers them via SMTP.
-    - `_start_poller` — entry point called once at app startup; spawns both
+    - `_start_poller` - entry point called once at app startup; spawns both
       pollers + handles the deferred-start trick when the event loop is not
       yet running.
 
@@ -426,7 +426,7 @@ def _latest_inbox_fallback_uids(conn, reconnect):
     and fails with ``EXAMINE => unexpected response: b'325188 …'``. Reconnecting
     on failure guarantees the downstream command starts from a clean socket.
 
-    Returns ``(uids, conn)`` — ``conn`` is the live connection to keep using: the
+    Returns ``(uids, conn)`` - ``conn`` is the live connection to keep using: the
     same one on success, a fresh one (via ``reconnect()``) if we had to recover.
     """
     try:
@@ -473,7 +473,7 @@ async def _auto_summarize_pass(days_back: int = 1, account_id: str | None = None
             ids = []
             names = {}
         if len(ids) <= 1:
-            # Single-account (or zero rows — fallback to legacy settings.json lookup)
+            # Single-account (or zero rows - fallback to legacy settings.json lookup)
             return await _auto_summarize_pass_single(
                 days_back=days_back,
                 account_id=(ids[0] if ids else None),
@@ -578,7 +578,7 @@ async def _auto_summarize_pass_single(days_back: int = 1, account_id: str | None
             )
             uid_list.extend(_fb_uids)
         # Re-select INBOX as default for downstream code (on a clean socket even
-        # if the SEARCH ALL fallback above failed — see #1613).
+        # if the SEARCH ALL fallback above failed - see #1613).
         conn.select("INBOX", readonly=True)
         if not uid_list:
             return "No recent emails"
@@ -621,7 +621,7 @@ async def _auto_summarize_pass_single(days_back: int = 1, account_id: str | None
         ).fetchall()} if auto_urgent else set()
         _c.close()
 
-        # Hoist the self-address lookup OUT of the per-email loop — fetching
+        # Hoist the self-address lookup OUT of the per-email loop - fetching
         # this per-iteration was making big inbox scans crawl. Used by the
         # urgency self-loop check below.
         try:
@@ -631,7 +631,7 @@ async def _auto_summarize_pass_single(days_back: int = 1, account_id: str | None
 
         spam_folder = _detect_spam_folder(conn) if auto_spam else None
         if auto_spam and not spam_folder:
-            logger.warning("Auto-spam enabled but no Junk/Spam folder detected — will classify but not move")
+            logger.warning("Auto-spam enabled but no Junk/Spam folder detected - will classify but not move")
 
         needs_llm = bool(auto_sum or auto_reply_draft or auto_tag or auto_spam or auto_cal)
         if needs_llm:
@@ -699,7 +699,7 @@ async def _auto_summarize_pass_single(days_back: int = 1, account_id: str | None
                     no_msgid += 1
                 # Only check urgency on INBOX (received mail), not Sent
                 # Skip messages that are themselves urgency alerts, or that
-                # we sent to ourselves — otherwise the alert loop re-flags
+                # we sent to ourselves - otherwise the alert loop re-flags
                 # its own output and the subject stacks "[HIGH] [HIGH] …".
                 _subj_raw = _decode_header(msg.get("Subject", "") or "")
                 _from_raw = _decode_header(msg.get("From", "") or "")
@@ -743,7 +743,7 @@ async def _auto_summarize_pass_single(days_back: int = 1, account_id: str | None
                         if sent_away:
                             _away_replies_sent += 1
                             _uid_text = uid.decode() if isinstance(uid, bytes) else str(uid)
-                            _detail_lines.append(f"away reply · {_folder}#{_uid_text} · {subject or '(no subject)'} — {away_detail}")
+                            _detail_lines.append(f"away reply · {_folder}#{_uid_text} · {subject or '(no subject)'} - {away_detail}")
                         else:
                             _away_replies_skipped += 1
                             logger.info(f"Away reply skipped for uid={uid}: {away_detail}")
@@ -763,7 +763,7 @@ async def _auto_summarize_pass_single(days_back: int = 1, account_id: str | None
                         att_text = _extract_attachment_text(msg, max_chars=6000)
                     except Exception as _ae:
                         logger.debug(f"attachment text extraction failed for uid={uid}: {_ae}")
-                # No threshold for calendar or reply drafting — even "can you
+                # No threshold for calendar or reply drafting - even "can you
                 # confirm?" needs a reply. Summary/classify still need enough
                 # text to be worth the LLM cost.
                 # If body is short but attachments have content, treat it as enough.
@@ -810,15 +810,15 @@ async def _auto_summarize_pass_single(days_back: int = 1, account_id: str | None
                             _sum_existing.add(message_id)
                             _summaries_created += 1
                             _uid_text = uid.decode() if isinstance(uid, bytes) else str(uid)
-                            _detail_lines.append(f"summary · {_folder}#{_uid_text} · {subject or '(no subject)'} — {sender or '(unknown sender)'}")
+                            _detail_lines.append(f"summary · {_folder}#{_uid_text} · {subject or '(no subject)'} - {sender or '(unknown sender)'}")
                         else:
                             _summary_failed += 1
                             _uid_text = uid.decode() if isinstance(uid, bytes) else str(uid)
-                            _detail_lines.append(f"summary empty · {_folder}#{_uid_text} · {subject or '(no subject)'} — {sender or '(unknown sender)'}")
+                            _detail_lines.append(f"summary empty · {_folder}#{_uid_text} · {subject or '(no subject)'} - {sender or '(unknown sender)'}")
                     except Exception as e:
                         _summary_failed += 1
                         _uid_text = uid.decode() if isinstance(uid, bytes) else str(uid)
-                        _detail_lines.append(f"summary failed · {_folder}#{_uid_text} · {subject or '(no subject)'} — {sender or '(unknown sender)'}")
+                        _detail_lines.append(f"summary failed · {_folder}#{_uid_text} · {subject or '(no subject)'} - {sender or '(unknown sender)'}")
                         logger.warning(
                             "Auto-summary uid=%s failed %s",
                             _uid_text,
@@ -834,7 +834,7 @@ async def _auto_summarize_pass_single(days_back: int = 1, account_id: str | None
                     context_snippets, _terms = [], []
                     sys_prompt = _EMAIL_REPLY_SYS_PROMPT_BASE
                     if att_text:
-                        sys_prompt += "\n\nThe email has attachments (PDFs / docs) — their contents follow the body marked '--- ATTACHMENTS ---'. Reference them in your reply when relevant (e.g. acknowledge the invoice/contract, address specific clauses or amounts)."
+                        sys_prompt += "\n\nThe email has attachments (PDFs / docs) - their contents follow the body marked '--- ATTACHMENTS ---'. Reference them in your reply when relevant (e.g. acknowledge the invoice/contract, address specific clauses or amounts)."
                     if writing_style:
                         sys_prompt += f"\n\nWRITING STYLE TO MATCH:\n{writing_style}"
                     if context_snippets:
@@ -862,12 +862,12 @@ async def _auto_summarize_pass_single(days_back: int = 1, account_id: str | None
                             _reply_existing.add(message_id)
                             _replies_drafted += 1
                             _uid_text = uid.decode() if isinstance(uid, bytes) else str(uid)
-                            _detail_lines.append(f"reply · {_folder}#{_uid_text} · {subject or '(no subject)'} — {sender or '(unknown sender)'}")
+                            _detail_lines.append(f"reply · {_folder}#{_uid_text} · {subject or '(no subject)'} - {sender or '(unknown sender)'}")
                             await _emit_progress(progress_cb, f"Drafted {_replies_drafted} repl" + ("y" if _replies_drafted == 1 else "ies") + f" · checked {examined}/{len(uid_list)}")
                     except Exception as e:
                         _reply_failed += 1
                         _uid_text = uid.decode() if isinstance(uid, bytes) else str(uid)
-                        _detail_lines.append(f"reply failed · {_folder}#{_uid_text} · {subject or '(no subject)'} — {sender or '(unknown sender)'}")
+                        _detail_lines.append(f"reply failed · {_folder}#{_uid_text} · {subject or '(no subject)'} - {sender or '(unknown sender)'}")
                         await _emit_progress(progress_cb, f"Reply failed {_reply_failed} · checked {examined}/{len(uid_list)}")
                         logger.warning(f"Auto-reply {uid} failed: {e}")
 
@@ -896,11 +896,11 @@ async def _auto_summarize_pass_single(days_back: int = 1, account_id: str | None
                                     "THIS email is clearly about that same event.\n\n"
                                     "Return ONLY a JSON array. Each item has:\n"
                                     '  "action": "create" | "update" | "cancel" | "noop"\n'
-                                    '  "uid": (only for update/cancel — use a uid from EXISTING_EVENTS below)\n'
+                                    '  "uid": (only for update/cancel - use a uid from EXISTING_EVENTS below)\n'
                                     '  "title": short descriptive title with WHO or WHAT (e.g. "Call with Sam", "Flight to Berlin", "Hotel check-in", "Dinner reservation")\n'
                                     '  "date": ISO 8601 like "2026-04-25T14:00:00" (best guess if vague)\n'
                                     '  "end_date": ISO 8601 or null\n'
-                                    '  "location": the MOST useful location — see types below.\n'
+                                    '  "location": the MOST useful location - see types below.\n'
                                     '  "description": 2-5 lines with context. Always include identifiers that will help the user later.\n\n'
                                     "LOCATION by event type:\n"
                                     "- Virtual meeting (Teams/Zoom/Meet/Webex): the full join URL.\n"
@@ -911,7 +911,7 @@ async def _auto_summarize_pass_single(days_back: int = 1, account_id: str | None
                                     "- Medical/dental: the clinic name + address.\n"
                                     "- Delivery: leave blank or 'Home address'.\n"
                                     "- If no clear location, leave blank.\n\n"
-                                    "DESCRIPTION by event type — always preserve verbatim:\n"
+                                    "DESCRIPTION by event type - always preserve verbatim:\n"
                                     "- Virtual meeting: meeting ID, passcode, phone dial-in.\n"
                                     "- Flight: flight number, airline, confirmation/booking code, terminal, gate, seat.\n"
                                     "- Hotel: confirmation number, check-in/check-out times, phone, room type.\n"
@@ -924,7 +924,7 @@ async def _auto_summarize_pass_single(days_back: int = 1, account_id: str | None
                                     "- If the email confirms / changes time of an event already in EXISTING_EVENTS, return action=update with that event's uid.\n"
                                     "- If the email cancels a known event, return action=cancel with the uid.\n"
                                     "- Otherwise, action=create with full details.\n"
-                                    "- PRESERVE identifiers (flight numbers, confirmation codes, tracking numbers, meeting IDs, passcodes, phone numbers) verbatim — do NOT paraphrase or drop them.\n"
+                                    "- PRESERVE identifiers (flight numbers, confirmation codes, tracking numbers, meeting IDs, passcodes, phone numbers) verbatim - do NOT paraphrase or drop them.\n"
                                     "- If no event-related content at all, return [].\n"
                                     "- No markdown fences, no prose, just the JSON array."
                                 )},
@@ -1115,7 +1115,7 @@ async def _auto_summarize_pass_single(days_back: int = 1, account_id: str | None
                             "- none: not actionable (promotional, automated, already handled).\n\n"
                             "IGNORE marketing urgency ('Limited time offer!'), newsletter clickbait, "
                             "and phishing-style fake urgency. Real urgency comes from people the user "
-                            "actually does business with. Be strict — only mark critical/high when genuinely needed."
+                            "actually does business with. Be strict - only mark critical/high when genuinely needed."
                         )
                         tok_key = "max_completion_tokens" if _uses_max_completion_tokens(model) else "max_tokens"
                         payload = {
@@ -1200,7 +1200,7 @@ async def _auto_summarize_pass_single(days_back: int = 1, account_id: str | None
                                     ) if open_url else ""
                                     alert_html = (
                                         f'<div style="font-family:system-ui,sans-serif;max-width:640px">'
-                                        f'<p><strong>{urgency.upper()} urgency</strong> — your AI assistant flagged this email.</p>'
+                                        f'<p><strong>{urgency.upper()} urgency</strong> - your AI assistant flagged this email.</p>'
                                         f'<p><em>Reason:</em> {_h.escape(reason)}</p>'
                                         f'{open_html}'
                                         f'<hr style="border:none;border-top:1px solid #ccc;margin:12px 0">'
@@ -1368,7 +1368,7 @@ async def _auto_summarize_pass_single(days_back: int = 1, account_id: str | None
 
 
 async def _auto_summarize_poller():
-    """Background loop kept for backward compatibility — calls _auto_summarize_pass periodically.
+    """Background loop kept for backward compatibility - calls _auto_summarize_pass periodically.
     Newer setups should use scheduled tasks instead (summarize_emails, draft_email_replies)."""
     import asyncio as _asyncio
     while True:
@@ -1383,7 +1383,7 @@ async def _auto_summarize_poller():
 def _scheduled_poll_once() -> dict:
     """One pass of the scheduled-email queue: pick up any rows whose
     `send_at` is past, deliver via SMTP, append to Sent, update status.
-    Returns a small summary dict — useful for the CLI wrapper. Safe to
+    Returns a small summary dict - useful for the CLI wrapper. Safe to
     invoke from a cron job (single-shot) or the long-running poller.
     """
     import sqlite3
@@ -1514,7 +1514,7 @@ _poller_task = None
 _summarize_task = None
 
 def _inprocess_pollers_enabled() -> bool:
-    """Honour `TELEMACHOS_INPROCESS_POLLERS` — set to `0`/`false`/`no`/`off`
+    """Honour `TELEMACHOS_INPROCESS_POLLERS` - set to `0`/`false`/`no`/`off`
     to disable the asyncio tasks so a cron / systemd-timer setup driving
     `telemachos-mail poll-scheduled` is the sole external driver. The legacy
     auto-summary/reply poller no longer starts here; scheduled Tasks own that
@@ -1528,7 +1528,7 @@ def _start_poller():
     """Start background pollers. Called at module load; if no event loop is
     running yet (common at import time), defer via a first-request hook.
 
-    Skipped entirely when `TELEMACHOS_INPROCESS_POLLERS=0` — use that when
+    Skipped entirely when `TELEMACHOS_INPROCESS_POLLERS=0` - use that when
     you're driving polling from cron / systemd to avoid two copies of
     `_scheduled_poll_once` racing on the same SQLite."""
     if not _inprocess_pollers_enabled():

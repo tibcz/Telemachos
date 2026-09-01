@@ -3,7 +3,7 @@
 
 Model repositories get renamed, re-quantised and withdrawn. When that happens
 the picker would still show the entry and the download would fail at the moment
-the user pressed the button — the worst possible time to find out.
+the user pressed the button - the worst possible time to find out.
 
 CI runs this so a stale catalog fails the build instead. Exits non-zero, naming
 the entry and what was wrong, when anything does not resolve.

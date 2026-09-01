@@ -1,5 +1,5 @@
 # services/search/service.py
-"""Search service — clean interface for web search."""
+"""Search service - clean interface for web search."""
 
 from dataclasses import dataclass
 from typing import List, Optional, Dict, Any

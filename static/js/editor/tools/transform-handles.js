@@ -3,7 +3,7 @@
  *
  * Lives separately from `transform-drag.js` (which owns the drag
  * STATE MACHINE) because these three helpers are pure geometry that
- * happens to read shared state — they don't track in-progress drags,
+ * happens to read shared state - they don't track in-progress drags,
  * they just paint and hit-test.
  *
  *  - `syncOverlay(margin)`  positions the overlay canvas + sizes its
@@ -15,7 +15,7 @@
  *                           null. Geometry MUST mirror `drawHandles`
  *                           exactly or the user grabs phantom points.
  *
- * No event listeners attached here — the dispatcher in
+ * No event listeners attached here - the dispatcher in
  * editor/tools/transform-drag.js calls `getHandleAt` and routes
  * pointer events.
  */
@@ -25,7 +25,7 @@ import { state } from '../state.js';
  * Position the transform overlay canvas + size its backing bitmap.
  * Margin is the image-space slack each side so handles can render
  * outside the main canvas (matches _TRANSFORM_OVERLAY_MARGIN in
- * galleryEditor.js — kept as a parameter so this module has no
+ * galleryEditor.js - kept as a parameter so this module has no
  * dependency on a magic number defined elsewhere).
  */
 export function syncOverlay(margin) {
@@ -49,7 +49,7 @@ export function syncOverlay(margin) {
   state.transformOverlay.style.pointerEvents = 'none';
   state.transformOverlay.style.zIndex = '5';
   // Position the overlay at the main canvas's LAYOUT position
-  // (offsetLeft/Top — unaffected by CSS transforms), shifted up-left by
+  // (offsetLeft/Top - unaffected by CSS transforms), shifted up-left by
   // the overlay's `margin` image-px of handle slack. Then SHARE the
   // canvas's transform (the pan handler writes the same translate3d to
   // both canvas + overlay), so pan moves them together. Reading the
@@ -150,7 +150,7 @@ export function drawHandles(margin) {
   const br = rotPt( preW / 2,  preH / 2);
   const bl = rotPt(-preW / 2,  preH / 2);
 
-  // Outline of the rotated rectangle — solid white inner line with a
+  // Outline of the rotated rectangle - solid white inner line with a
   // thin black halo for contrast on light AND dark backgrounds.
   const drawRectOutline = () => {
     ctx.beginPath();
@@ -244,7 +244,7 @@ export function getHandleAt(x, y) {
   const baseInnerR = (state.transformPendingH || h) / 2;
   const knob = knobPosition(cxh, cyh, rotRad, baseInnerR, rotOffset);
 
-  // Rotate corners around centre — must match drawHandles.
+  // Rotate corners around centre - must match drawHandles.
   const preW = state.transformPendingW || w;
   const preH = state.transformPendingH || h;
   const cosA = Math.cos(rotRad);

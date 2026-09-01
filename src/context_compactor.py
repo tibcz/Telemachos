@@ -41,7 +41,7 @@ COMPACT_THRESHOLD = 0.85  # Trigger compaction at 85% of context window
 SUMMARY_MAX_TOKENS = 1024
 SMALL_CONTEXT_LIMIT = 8192  # Models with context <= this get aggressive trimming
 
-# Cursor-style self-summarization prompt — produces structured, dense summaries
+# Cursor-style self-summarization prompt - produces structured, dense summaries
 SELF_SUMMARY_SYSTEM_PROMPT = """You are summarizing a conversation to preserve context after compaction. Produce a structured summary that lets the conversation continue seamlessly.
 
 Use this format:
@@ -68,7 +68,7 @@ What is the system/code/task state right now? What was the last thing discussed?
 - Important constraints, preferences, or decisions that must not be forgotten
 - Specific values: model names, ports, paths, credentials references, versions
 
-Keep the summary under 1000 tokens. Be dense — every token should carry information. Do not include pleasantries or meta-commentary."""
+Keep the summary under 1000 tokens. Be dense - every token should carry information. Do not include pleasantries or meta-commentary."""
 
 
 def normalize_compaction_summary(summary: str) -> str:
@@ -100,7 +100,7 @@ def _sanitize_tool_messages(msgs: List[Dict]) -> List[Dict]:
         if role == "tool":
             if in_batch:
                 cleaned.append(m)
-            # else: orphan — drop
+            # else: orphan - drop
             continue
         if role == "assistant" and m.get("tool_calls"):
             in_batch = True
@@ -109,13 +109,13 @@ def _sanitize_tool_messages(msgs: List[Dict]) -> List[Dict]:
         cleaned.append(m)
 
     # Pass 2: drop assistant tool_calls messages that have NO following
-    # tool response (dangling) — walk backwards so we know what follows.
+    # tool response (dangling) - walk backwards so we know what follows.
     out: List[Dict] = []
     for i, m in enumerate(cleaned):
         if m.get("role") == "assistant" and m.get("tool_calls"):
             nxt = cleaned[i + 1] if i + 1 < len(cleaned) else None
             if not (nxt and nxt.get("role") == "tool"):
-                # Dangling tool_calls — keep the message but strip the
+                # Dangling tool_calls - keep the message but strip the
                 # tool_calls so it's a plain assistant turn (preserves any
                 # text content the model produced alongside the calls).
                 m = {k: v for k, v in m.items() if k != "tool_calls"}
@@ -161,7 +161,7 @@ def _truncate_tool_call_args(msg: Dict[str, Any], token_budget: int) -> Dict[str
 
     A tool-only turn persists ``content=None`` with its whole payload in
     ``tool_calls[].function.arguments`` (e.g. a large create_document body), which
-    the text-content truncation can't reach — so the message could stay over
+    the text-content truncation can't reach - so the message could stay over
     budget and the upstream call would 400. Replace each argument string that
     overflows its share of the budget with a small valid-JSON placeholder,
     preserving ``id``/``type``/``function.name`` so tool/result pairing and
@@ -217,7 +217,7 @@ def _truncate_message_to_token_budget(msg: Dict[str, Any], token_budget: int) ->
             remaining -= _message_text_token_estimate(truncated)
         out["content"] = new_content
     # A tool-only turn (content=None) carries its payload in tool_calls args,
-    # which the branches above can't shrink — handle it so the message can fit.
+    # which the branches above can't shrink - handle it so the message can fit.
     return _truncate_tool_call_args(out, token_budget)
 
 
@@ -255,7 +255,7 @@ def trim_for_context(messages: List[Dict], context_length: int, reserve_tokens: 
 
     # Priority: keep first system msg (preset prompt), drop others (memory, RAG, memo).
     # Exception: a research-spinoff primer (the seeded report that grounds a
-    # "Discuss" chat) must never be dropped — it is the conversation's whole
+    # "Discuss" chat) must never be dropped - it is the conversation's whole
     # knowledge base. Treat any system message carrying research_spinoff_from
     # metadata as essential alongside the leading system prompt.
     def _is_research_primer(m):
@@ -268,7 +268,7 @@ def trim_for_context(messages: List[Dict], context_length: int, reserve_tokens: 
     # Try dropping extra system messages one by one (from the end)
     trimmed = essential_system + convo_msgs
     if estimate_tokens(trimmed) <= budget:
-        # Dropping extras was enough — try adding back some
+        # Dropping extras was enough - try adding back some
         result = list(essential_system)
         for msg in extra_system:
             candidate = result + [msg] + convo_msgs
@@ -278,7 +278,7 @@ def trim_for_context(messages: List[Dict], context_length: int, reserve_tokens: 
                 break
         return _sanitize_tool_messages(result + protected_msgs + convo_msgs)
 
-    # Still too big — truncate the first system message (but keep more than 500 chars)
+    # Still too big - truncate the first system message (but keep more than 500 chars)
     if essential_system:
         sys_text = essential_system[0].get("content", "")
         if len(sys_text) > 2000:
@@ -289,7 +289,7 @@ def trim_for_context(messages: List[Dict], context_length: int, reserve_tokens: 
             if estimate_tokens(trimmed) <= budget:
                 return _sanitize_tool_messages(essential_system + protected_msgs + convo_msgs)
 
-    # Still too big — drop older conversation turns BUT always keep the current
+    # Still too big - drop older conversation turns BUT always keep the current
     # user turn. If a pasted message alone exceeds the model context, truncate
     # that message with a visible notice instead of dropping it; otherwise the
     # model appears to "ignore" large pastes because it never receives them.
@@ -343,7 +343,7 @@ async def maybe_compact(
         return messages, context_length, False
 
     logger.info(
-        f"Context at {pct:.1f}% ({used}/{context_length} tokens) — compacting"
+        f"Context at {pct:.1f}% ({used}/{context_length} tokens) - compacting"
     )
 
     # Split into system preface and conversation
@@ -411,14 +411,14 @@ async def maybe_compact(
 
     summary_msg = {
         "role": "system",
-        "content": f"[Conversation summary — earlier messages were compacted]\n{summary}",
+        "content": f"[Conversation summary - earlier messages were compacted]\n{summary}",
     }
 
     compacted = system_msgs + [summary_msg] + recent
 
     # Update session history to match. Pass len(system_msgs) so the
     # recent_history slice in _update_session_history uses the correct
-    # offset — session.history INCLUDES the system messages, but
+    # offset - session.history INCLUDES the system messages, but
     # split_point is indexed against convo_msgs which does NOT. Without
     # this, the slice drops the leading system message(s).
     if compaction_state is not None:

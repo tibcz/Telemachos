@@ -1,11 +1,11 @@
 /**
- * Shortcuts-cheatsheet popover — floating frosted-glass list of every
+ * Shortcuts-cheatsheet popover - floating frosted-glass list of every
  * editor keyboard shortcut, anchored above the topbar keyboard icon
  * (drops below if there's no room above). Drag the header to move;
  * Esc or click outside dismisses; position is persisted in
  * localStorage so re-opening restores where the user left it.
  *
- * Public API: `toggleShortcuts(show?)` — true/false to force a state,
+ * Public API: `toggleShortcuts(show?)` - true/false to force a state,
  * undefined to toggle.
  *
  * @returns {{ toggleShortcuts: (show?: boolean) => void }}

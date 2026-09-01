@@ -1,4 +1,4 @@
-"""Issue #1170 — the agent input-token budget adapts to the model context window.
+"""Issue #1170 - the agent input-token budget adapts to the model context window.
 
 Pins the pure budget computation and the explicit-override detection.
 """
@@ -52,7 +52,7 @@ def test_is_setting_overridden_reads_raw_saved_file(tmp_path, monkeypatch):
 
 
 # ---------------------------------------------------------------------------
-# Configurable hard_max — the ceiling on the auto-derived path is a setting
+# Configurable hard_max - the ceiling on the auto-derived path is a setting
 # (`agent_input_token_hard_max`), not a hidden constant. History: a reviewer
 # required it on #1190, the merged #1230 shipped without it, and #1273 added it.
 # This test pins the function-level override (the `hard_max` parameter); without
@@ -77,7 +77,7 @@ def test_custom_hard_max_lowers_default_for_cost_paranoid_setups():
 
 def test_hard_max_has_no_effect_on_explicit_branch():
     """When the user set an explicit budget, hard_max must not silently cap it."""
-    # User chose 900K explicitly; ctx is 1M; ceiling is 100K — user's choice wins.
+    # User chose 900K explicitly; ctx is 1M; ceiling is 100K - user's choice wins.
     assert compute_input_token_budget(900_000, 1_000_000, explicit=True, hard_max=100_000) == 900_000
 
 

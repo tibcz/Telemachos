@@ -21,7 +21,7 @@ CHAT_HELPERS = (
 def _untracked_create_task_calls(tree: ast.AST) -> list[tuple[int, str]]:
     """(lineno, snippet) for any bare asyncio.create_task(...).
 
-    A call is "bare" when its return value is dropped — i.e. it is the direct
+    A call is "bare" when its return value is dropped - i.e. it is the direct
     expression of an ast.Expr statement. Captured forms (`x = asyncio.create_task(...)`,
     `[asyncio.create_task(...), ...]`, `await asyncio.create_task(...)`) are fine
     because something else holds the reference.

@@ -57,8 +57,8 @@ def _is_secret_key(name: str) -> bool:
 def get_search_config() -> Dict[str, Any]:
     """Get current search configuration including active provider info.
 
-    Never returns stored API keys: callers — including the unauthenticated
-    ``GET /api/search/config`` route — only need key *presence* via
+    Never returns stored API keys: callers - including the unauthenticated
+    ``GET /api/search/config`` route - only need key *presence* via
     ``has_api_key``, not the secret itself (#1661).
     """
     config = SEARCH_CONFIG.copy()
@@ -305,11 +305,11 @@ def comprehensive_web_search(
         tally = ", ".join(f"{p}:{r}" for p, r in provider_attempts.items()) or "no providers configured"
         any_errors = any(r.startswith("error") for r in provider_attempts.values())
         if any_errors:
-            msg = f"Web search failed — all providers errored or returned empty. Tried: {tally}"
+            msg = f"Web search failed - all providers errored or returned empty. Tried: {tally}"
         else:
             msg = (
                 f"No search results found. Tried: {tally}. "
-                "All providers returned empty — possibly a niche query or upstream rate-limiting; "
+                "All providers returned empty - possibly a niche query or upstream rate-limiting; "
                 "rephrasing or using the browser tool for a specific URL may help."
             )
         logger.warning(msg)

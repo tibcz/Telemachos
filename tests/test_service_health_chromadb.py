@@ -1,4 +1,4 @@
-"""Tests for chromadb_health — ok/degraded/down/disabled classification."""
+"""Tests for chromadb_health - ok/degraded/down/disabled classification."""
 import pytest
 
 from src import service_health as sh

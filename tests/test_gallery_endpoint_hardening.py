@@ -17,7 +17,7 @@ import routes.gallery_routes as gallery_routes
 
 
 # ---------------------------------------------------------------------------
-# _is_openai_api_base — exact hostname, no substring tricks
+# _is_openai_api_base - exact hostname, no substring tricks
 # ---------------------------------------------------------------------------
 
 def test_is_openai_api_base_accepts_exact_host():
@@ -55,15 +55,15 @@ def test_is_openai_api_base_rejects_malformed():
 def test_gallery_does_not_use_openai_substring_check():
     src = SRC.read_text()
     assert '"api.openai.com" in base' not in src, (
-        "Substring OpenAI check still present — use _is_openai_api_base instead"
+        "Substring OpenAI check still present - use _is_openai_api_base instead"
     )
     assert "'api.openai.com' in base" not in src, (
-        "Substring OpenAI check still present — use _is_openai_api_base instead"
+        "Substring OpenAI check still present - use _is_openai_api_base instead"
     )
 
 
 # ---------------------------------------------------------------------------
-# _join_checked_gallery_endpoint — allowlist enforcement
+# _join_checked_gallery_endpoint - allowlist enforcement
 # ---------------------------------------------------------------------------
 
 def test_join_checked_accepts_known_paths():
@@ -101,7 +101,7 @@ def test_no_raw_exception_string_in_client_responses():
     for pattern in bad_patterns:
         matches = re.findall(pattern, src)
         assert not matches, (
-            f"Pattern {pattern!r} matched — raw exception string returned to client: {matches}"
+            f"Pattern {pattern!r} matched - raw exception string returned to client: {matches}"
         )
 
 
@@ -159,7 +159,7 @@ def test_gallery_endpoint_paths_allowlist_covers_all_harmonize_candidates():
 
 
 # ---------------------------------------------------------------------------
-# _is_openai_api_base — userinfo bypass
+# _is_openai_api_base - userinfo bypass
 # ---------------------------------------------------------------------------
 
 def test_is_openai_api_base_rejects_userinfo_bypass():
@@ -280,7 +280,7 @@ def test_inpaint_endpoint_resolved_via_db_not_raw_input():
 
 def test_inpaint_outbound_base_not_from_request_body():
     """Confirm _join_checked_gallery_endpoint is never called with the raw
-    request-body variable (requested_base) — only with the DB-derived base."""
+    request-body variable (requested_base) - only with the DB-derived base."""
     src = SRC.read_text()
     body = _function_source(src, "inpaint_proxy")
     assert "_join_checked_gallery_endpoint(requested_base," not in body, (
@@ -314,7 +314,7 @@ def test_harmonize_outbound_base_not_from_request_body():
 
 def test_inpaint_and_harmonize_no_base_equals_endpoint():
     """Neither function should assign `base = endpoint` or `base = requested_base`
-    — the outbound base must come exclusively from DB (ep.base_url)."""
+    - the outbound base must come exclusively from DB (ep.base_url)."""
     src = SRC.read_text()
     for func_name in ("inpaint_proxy", "harmonize_image"):
         body = _function_source(src, func_name)

@@ -2,7 +2,7 @@
 
 Deep research asks clarifying questions first. When the user answers with a
 bare affirmation ("yes", "ok", "go ahead"), that follow-up must not become the
-research topic — we fall back to the original substantive ask. A short but
+research topic - we fall back to the original substantive ask. A short but
 meaningful answer ("UK", "C++", "Rust") is a real topic and must be preserved.
 """
 import pytest
@@ -33,7 +33,7 @@ async def test_bare_yes_falls_back_to_original_ask(handler, monkeypatch):
     monkeypatch.setattr("src.llm_core.llm_call_async", _raise)
     sess = _session([
         ("user", "What is the best electric car for a cold climate?"),
-        ("assistant", "Happy to research that — should I go ahead?"),
+        ("assistant", "Happy to research that - should I go ahead?"),
     ])
     result = await handler.synthesize_query(sess, "yes", "http://local.test", "m")
     assert result == "What is the best electric car for a cold climate?"

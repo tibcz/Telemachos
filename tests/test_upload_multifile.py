@@ -1,4 +1,4 @@
-"""Regression tests for issue #1346 — attaching more than one file at once made
+"""Regression tests for issue #1346 - attaching more than one file at once made
 the model "not even see" the attachments.
 
 Root cause: the per-IP concurrency guard in routes/upload_routes.py summed its

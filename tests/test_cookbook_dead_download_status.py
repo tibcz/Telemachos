@@ -3,7 +3,7 @@
 A download whose tmux pane is gone must not be reported as stopped when its
 retained output carries DOWNLOAD_OK, or when the files landed in a custom
 download dir. The runner exports HF_HOME=<local_dir>, so the cache lives
-under <local_dir>/hub — the probe only finds it if the task's dir is passed
+under <local_dir>/hub - the probe only finds it if the task's dir is passed
 in explicitly rather than read from the probe process's environment.
 """
 import os
@@ -34,13 +34,13 @@ def test_download_failed_resolves_error():
 
 def test_download_ok_with_zero_files_resolves_error():
     # A DOWNLOAD_OK from a run that matched no files (bad include/quant
-    # pattern) is still a failure — same guard as the live-session branch.
+    # pattern) is still a failure - same guard as the live-session branch.
     snap = "Fetching 0 files: 0it [00:00, ?it/s]\n\nDOWNLOAD_OK"
     assert classify_dead_download(snap) == ("error", True)
 
 
 def test_no_marker_returns_none():
-    # Mid-download tail with no terminal marker — caller must fall back to
+    # Mid-download tail with no terminal marker - caller must fall back to
     # the cache probe.
     assert classify_dead_download("Downloading model.gguf:  42%") is None
     assert classify_dead_download("") is None
@@ -81,7 +81,7 @@ def _run_probe(probe, repo, cache_root, env=None):
 
 
 def test_complete_probe_finds_custom_dir_cache(tmp_path):
-    # Model materialized under <local_dir>/hub — found only via the explicit
+    # Model materialized under <local_dir>/hub - found only via the explicit
     # cache_root argument (issue #4017).
     root = str(tmp_path)
     _make_cache(root)
@@ -108,7 +108,7 @@ def test_complete_probe_rejects_empty_snapshot(tmp_path):
 
 
 def test_complete_probe_env_fallback_still_works(tmp_path):
-    # No custom dir on the task — the probe must keep honoring the standard
+    # No custom dir on the task - the probe must keep honoring the standard
     # HF env vars so default-cache downloads classify as before.
     root = str(tmp_path)
     _make_cache(root)

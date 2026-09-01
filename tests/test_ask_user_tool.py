@@ -1,4 +1,4 @@
-"""`ask_user` — the agent poses a multiple-choice question to the user.
+"""`ask_user` - the agent poses a multiple-choice question to the user.
 
 The tool is a pure UI-control marker: it does no I/O. `execute_tool_block`
 returns an `ask_user` payload that the agent loop turns into an `ask_user` SSE
@@ -111,5 +111,5 @@ def test_registered_everywhere():
     from src.tool_schemas import FUNCTION_TOOL_SCHEMAS
     names = {s["function"]["name"] for s in FUNCTION_TOOL_SCHEMAS}
     assert "ask_user" in names
-    # Not admin/public-gated — any user can be asked
+    # Not admin/public-gated - any user can be asked
     assert is_public_blocked_tool("ask_user") is False

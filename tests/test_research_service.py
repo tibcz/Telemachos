@@ -1,4 +1,4 @@
-"""Tests for ResearchService — correct handling of the handler's string report.
+"""Tests for ResearchService - correct handling of the handler's string report.
 
 ResearchHandler.call_research_service returns a *formatted markdown string*,
 not a dict. ResearchService.research() must consume that contract without

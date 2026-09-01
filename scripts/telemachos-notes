@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""telemachos-notes — shell wrapper around the notes feature.
+"""telemachos-notes - shell wrapper around the notes feature.
 
 Reads the same SQLite the web UI uses. Output JSON; pipe-friendly.
 

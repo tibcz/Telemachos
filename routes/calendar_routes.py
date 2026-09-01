@@ -1,4 +1,4 @@
-"""Calendar routes — local SQLite-backed calendar CRUD."""
+"""Calendar routes - local SQLite-backed calendar CRUD."""
 
 import logging
 import json
@@ -45,7 +45,7 @@ def _ensure_positive_duration(start_dt, end_dt, all_day):
     DTSTART (treating DTEND as inclusive rather than the RFC 5545 exclusive
     bound). Stored verbatim that produces a zero-duration row, which the
     list_events overlap filter (dtstart < end AND dtend > start) silently
-    drops — the event never appears on the calendar even though the web UI
+    drops - the event never appears on the calendar even though the web UI
     would otherwise show it. Normalize a non-positive end to the same default
     span used when DTEND is absent: one day for all-day events, one hour
     otherwise.
@@ -75,7 +75,7 @@ def _require_user(request: Request) -> str:
     user = require_user(request)
     if user:
         return user
-    # require_user returned "" — auth is off or unconfigured (single-user).
+    # require_user returned "" - auth is off or unconfigured (single-user).
     # Use FALLBACK_OWNER so calendar rows have a stable owner for filtering.
     return FALLBACK_OWNER
 
@@ -141,7 +141,7 @@ def _resolve_base_uid(uid: str) -> str:
         raise ValueError("empty uid")
     idx = uid.find("::")
     if idx == -1:
-        return uid       # plain UID — no suffix
+        return uid       # plain UID - no suffix
     base = uid[:idx]
     if not base:
         raise ValueError("malformed compound UID: missing base before ::")
@@ -378,7 +378,7 @@ def parse_due_for_user(s: str) -> str:
     if not s:
         return s
 
-    # Tz-aware ISO short-circuit — preserve as-is.
+    # Tz-aware ISO short-circuit - preserve as-is.
     try:
         _s2 = s.replace("Z", "+00:00") if s.endswith("Z") else s
         parsed = datetime.fromisoformat(_s2)
@@ -388,7 +388,7 @@ def parse_due_for_user(s: str) -> str:
         parsed = None
 
     if offset is None and not tz_name:
-        # No user tz known — preserve legacy behavior (naive server-local).
+        # No user tz known - preserve legacy behavior (naive server-local).
         return _parse_dt(s).isoformat()
 
     user_tz = user_timezone()
@@ -397,7 +397,7 @@ def parse_due_for_user(s: str) -> str:
     if parsed is not None and parsed.tzinfo is None:
         return parsed.replace(tzinfo=user_tz).isoformat()
 
-    # Natural language — evaluate against user's "now".
+    # Natural language - evaluate against user's "now".
     server_now_utc = datetime.now(_tz.utc)
     user_now = now_user_local(server_now_utc)
     # Patch datetime.now() inside _parse_dt by leveraging the user's clock:
@@ -469,7 +469,7 @@ def _parse_dt_pair(s: str):
 
     is_utc is True iff the input carried explicit timezone info (Z, +HH:MM,
     -HH:MM); the returned datetime is naive UTC. Otherwise the datetime is
-    naive-local (legacy behavior). DB column is naive — callers that care
+    naive-local (legacy behavior). DB column is naive - callers that care
     about tz semantics should set ``CalendarEvent.is_utc`` accordingly.
     """
     from datetime import timezone as _tz
@@ -513,7 +513,7 @@ def _parse_dt(s: str) -> datetime:
             return datetime.fromisoformat(s)
         _s2 = s.replace("Z", "+00:00") if s.endswith("Z") else s
         parsed = datetime.fromisoformat(_s2)
-        # Strip tz for the legacy callers — they expect naive. Real tz
+        # Strip tz for the legacy callers - they expect naive. Real tz
         # handling lives in _parse_dt_pair.
         if parsed.tzinfo is not None:
             from datetime import timezone as _tz
@@ -607,7 +607,7 @@ def _parse_dt(s: str) -> datetime:
     try:
         from dateutil import parser as _du
         parsed = _du.parse(s)
-        # Strip tz like every other return path above — this function's
+        # Strip tz like every other return path above - this function's
         # contract is naive datetimes (CalendarEvent.dtstart is naive). An
         # offset-bearing non-ISO input (e.g. RFC-2822 "Mon, 05 Jan 2026
         # 14:00:00 +0900") otherwise leaked tz-aware into the naive column and
@@ -694,12 +694,12 @@ def _expand_rrule(
     for edit/delete targeting.
 
     Non-recurring events (empty rrule) are returned as a single-item
-    list — the caller doesn't need to branch.
+    list - the caller doesn't need to branch.
     """
     duration = ev.dtend - ev.dtstart
 
     if not ev.rrule or not ev.rrule.strip():
-        # Non-recurring — return the base event as-is. list_events
+        # Non-recurring - return the base event as-is. list_events
         # already filters non-recurring rows with the overlap check
         # in SQL, so we don't re-check here.
         d = _event_to_dict(ev)
@@ -733,7 +733,7 @@ def _expand_rrule(
         d["series_uid"] = ev.uid
         d["truncated"] = False
         # Malformed RRULE rows are fetched by the recurring SQL branch
-        # with only dtstart < end_dt — the base event may not actually
+        # with only dtstart < end_dt - the base event may not actually
         # overlap the window. Only return if it does.
         if ev.dtstart < end and ev.dtend > start:
             return [d]
@@ -831,7 +831,7 @@ def setup_calendar_routes(upload_handler=None) -> APIRouter:
 
     @router.get("/config")
     async def get_config(request: Request):
-        """Legacy single-account endpoint — returns the first configured account."""
+        """Legacy single-account endpoint - returns the first configured account."""
         owner = _require_user(request)
         accounts = _get_caldav_accounts(owner)
         if not accounts:
@@ -855,7 +855,7 @@ def setup_calendar_routes(upload_handler=None) -> APIRouter:
 
     @router.post("/config")
     async def save_config(request: Request):
-        """Legacy single-account endpoint — upserts the first account."""
+        """Legacy single-account endpoint - upserts the first account."""
         owner = _require_user(request)
         try:
             body = await request.json()
@@ -1063,16 +1063,16 @@ def setup_calendar_routes(upload_handler=None) -> APIRouter:
                         headers={"Depth": "0", "Content-Type": "application/xml"},
                         content=propfind_body,
                     )
-            # 207 = Multi-Status — standard CalDAV success. 200 also
+            # 207 = Multi-Status - standard CalDAV success. 200 also
             # acceptable. Anything else (401/403/404/5xx) means trouble.
             if r.status_code in (200, 207):
                 return {"ok": True}
             if r.status_code == 401:
-                return {"ok": False, "error": "Auth failed — check username/password"}
+                return {"ok": False, "error": "Auth failed - check username/password"}
             if r.status_code == 403:
-                return {"ok": False, "error": "Forbidden — user can't access that URL"}
+                return {"ok": False, "error": "Forbidden - user can't access that URL"}
             if r.status_code == 404:
-                return {"ok": False, "error": "Not found — check the URL path"}
+                return {"ok": False, "error": "Not found - check the URL path"}
             if 300 <= r.status_code < 400:
                 return {"ok": False, "error": "Redirects are not followed for CalDAV safety; use the final URL"}
             return {"ok": False, "error": f"HTTP {r.status_code}"}
@@ -1144,7 +1144,7 @@ def setup_calendar_routes(upload_handler=None) -> APIRouter:
             end_dt = _parse_dt(end)
         except ValueError:
             # A malformed range (e.g. a stray "NaN-NaN-NaN" from the client)
-            # shouldn't spam the user with an error notification on every poll —
+            # shouldn't spam the user with an error notification on every poll -
             # just log it and return no events for this window.
             logger.warning("list_events: unparseable range start=%r end=%r", start, end)
             return {"events": []}
@@ -1166,7 +1166,7 @@ def setup_calendar_routes(upload_handler=None) -> APIRouter:
                         CalendarEvent.dtstart < end_dt,
                         CalendarEvent.dtend > start_dt,
                     ),
-                    # Recurring: dtstart before window end — RRULE expansion
+                    # Recurring: dtstart before window end - RRULE expansion
                     # generates the actual occurrences within the window
                     and_(
                         CalendarEvent.rrule.isnot(None),
@@ -1229,7 +1229,7 @@ def setup_calendar_routes(upload_handler=None) -> APIRouter:
             if data.dtend:
                 dtend, _end_utc = _parse_dt_pair(data.dtend)
                 # If start was tz-aware but end was naive (or vice-versa),
-                # trust whichever flag is True — they should match.
+                # trust whichever flag is True - they should match.
                 _is_utc = _is_utc or _end_utc
             elif data.all_day:
                 dtend = dtstart + timedelta(days=1)
@@ -1285,7 +1285,7 @@ def setup_calendar_routes(upload_handler=None) -> APIRouter:
                 ev.dtstart, _s_utc = _parse_dt_pair(data.dtstart)
                 # When the incoming payload carries tz info, mark the row as
                 # UTC-stored so the serializer adds Z. Don't flip the flag
-                # off if start arrives naive but end was UTC — only escalate.
+                # off if start arrives naive but end was UTC - only escalate.
                 if _s_utc:
                     ev.is_utc = True
             if data.dtend is not None:
@@ -1422,7 +1422,7 @@ def setup_calendar_routes(upload_handler=None) -> APIRouter:
             except Exception as e:
                 raise HTTPException(400, f"Invalid ICS file: {e}")
 
-            # Sanitize display name — length cap + strip control chars
+            # Sanitize display name - length cap + strip control chars
             raw_name = calendar_name.strip() or (file.filename or "").replace(".ics", "").replace("_", " ").strip() or "Imported"
             cal_display = "".join(c for c in raw_name if c.isprintable())[:120] or "Imported"
 
@@ -1457,7 +1457,7 @@ def setup_calendar_routes(upload_handler=None) -> APIRouter:
                     skipped += 1
                     continue
 
-                # Dedup INSIDE this user's target calendar only — same
+                # Dedup INSIDE this user's target calendar only - same
                 # source-uid + same dtstart in the same target = duplicate.
                 source_uid = str(comp.get("uid", "")) or None
                 if source_uid:
@@ -1498,7 +1498,7 @@ def setup_calendar_routes(upload_handler=None) -> APIRouter:
                 # For timed events, preserve the source timezone by converting
                 # to UTC before stripping tzinfo (DB stores naive). We mark
                 # the row with is_utc=True so the serializer adds the Z
-                # suffix on output — without this, the frontend would parse
+                # suffix on output - without this, the frontend would parse
                 # the naive ISO as the user's CURRENT local, which is exactly
                 # the bug where imported events fire reminders at wrong times.
                 from datetime import timezone as _tz
@@ -1714,7 +1714,7 @@ def setup_calendar_routes(upload_handler=None) -> APIRouter:
         # Light validation / defaults so the frontend can trust the shape.
         summary = (parsed.get("summary") or text)[:200]
         # Strip stale relative/absolute time tokens that the LLM (or the
-        # user's raw input) sometimes leaks into the summary — these
+        # user's raw input) sometimes leaks into the summary - these
         # would otherwise be displayed verbatim in reminder notifications
         # that fire much later, when "in 29 min" is no longer true. The
         # actual timing lives in dtstart/dtend.
@@ -1722,7 +1722,7 @@ def setup_calendar_routes(upload_handler=None) -> APIRouter:
         summary = _re.sub(r'\(\s*\d{1,2}:\d{2}\s*\)', '', summary)
         summary = _re.sub(r'\b\d{1,2}(:\d{2})?\s*(am|pm)\b', '', summary, flags=_re.IGNORECASE)
         summary = _re.sub(r'\s+@\s+(?=\d)', ' ', summary)  # drop "@" when right before a time
-        summary = _re.sub(r'\s+', ' ', summary).strip(' -—,@')
+        summary = _re.sub(r'\s+', ' ', summary).strip(' -\u2014,@')
         all_day = bool(parsed.get("all_day"))
         dtstart = (parsed.get("dtstart") or "").strip()
         dtend   = (parsed.get("dtend") or "").strip()

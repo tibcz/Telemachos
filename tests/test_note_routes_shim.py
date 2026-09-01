@@ -5,7 +5,7 @@ replacement so the legacy import path and the canonical ``routes.note.*``
 path resolve to the *same* module object. This is required because
 ``test_note_reminder_fire_scope.py`` and ``test_notes_fail_closed_auth.py``
 do ``import routes.note_routes as note_routes`` followed by
-``monkeypatch.setattr(note_routes, "SessionLocal", ...)`` — for those patches
+``monkeypatch.setattr(note_routes, "SessionLocal", ...)`` - for those patches
 to take effect at runtime, the legacy module object and the canonical one
 must be identical. This test pins that contract.
 """

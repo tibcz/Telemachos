@@ -199,7 +199,7 @@ def _inject_images(report_html: str, images: List[str]) -> Tuple[str, int]:
     """Insert OG images between h2 sections as figures.
 
     Returns (html, consumed) where ``consumed`` is how many of ``images``
-    were actually placed — the rest become the spare pool for reroll.
+    were actually placed - the rest become the spare pool for reroll.
     """
     if not images:
         return report_html, 0
@@ -335,7 +335,7 @@ body::after {{
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  /* Subtle film-grain — SVG turbulence baked to a data-URL. */
+  /* Subtle film-grain - SVG turbulence baked to a data-URL. */
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.32 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
   opacity: 0.045;
   mix-blend-mode: overlay;
@@ -555,7 +555,7 @@ body::after {{
 .img-reroll-btn:disabled {{ display: none; }}
 @keyframes img-reroll-spin {{ to {{ transform: rotate(360deg); }} }}
 @media (hover: none) {{
-  /* Touch devices have no hover — show the buttons at low opacity always. */
+  /* Touch devices have no hover - show the buttons at low opacity always. */
   .img-hide-btn, .img-reroll-btn {{ opacity: 0.7; }}
 }}
 .section-image.fading,
@@ -652,7 +652,7 @@ body::after {{
 /* ── Content ───────────────────────────────────────── */
 .content {{ max-width: var(--max-w); padding: 3rem 2.5rem 4rem; }}
 
-/* Display headings — Fraunces optical-size driven so they get more
+/* Display headings - Fraunces optical-size driven so they get more
    contrast and personality at the larger end. */
 .content h2 {{
   font-family: var(--font-display);
@@ -688,7 +688,7 @@ body::after {{
 }}
 .content p {{ margin-bottom: 1.1rem; hanging-punctuation: first last; }}
 
-/* Drop cap on the very first paragraph of the body — old-school editorial
+/* Drop cap on the very first paragraph of the body - old-school editorial
    touch that anchors the reader. */
 .content > p:first-of-type::first-letter,
 .content > h2:first-child + p::first-letter {{
@@ -851,7 +851,7 @@ body::after {{
 </div>
 
 <div class="hero">
-  <div class="hero-label">Telemachos &mdash; Deep Research Report</div>
+  <div class="hero-label">Telemachos - Deep Research Report</div>
   <h1>{question_html}</h1>
 </div>
 
@@ -884,7 +884,7 @@ body::after {{
 (function() {{
   // ESC closes the report tab. window.close() works when the tab was
   // opened via window.open() (which is how the panel launches it). If the
-  // browser blocks self-close (rare — e.g. report opened by direct URL),
+  // browser blocks self-close (rare - e.g. report opened by direct URL),
   // fall back to history.back() so ESC still feels responsive.
   document.addEventListener('keydown', function(e) {{
     if (e.key !== 'Escape' || e.defaultPrevented) return;
@@ -924,12 +924,12 @@ body::after {{
     a.click();
   }});
 
-  // Per-image hide — fades the image out, then POSTs to the backend so
+  // Per-image hide - fades the image out, then POSTs to the backend so
   // future renders of this report skip the URL. Falls back to a silent
   // no-op if there's no session_id (e.g. the report was opened from a
   // saved-HTML download where the backend isn't reachable).
   var __sessionId = {session_id_js};
-  // Unused scraped images — the reroll pool. Each is used at most once.
+  // Unused scraped images - the reroll pool. Each is used at most once.
   var __spareImages = {spare_images_js};
 
   // Persist a rejected URL so future renders skip it.
@@ -943,7 +943,7 @@ body::after {{
     }}).catch(function(err) {{ console.warn('hide-image POST failed', err); }});
   }}
 
-  // Once the pool is empty, there's nothing to swap to — hide all reroll btns.
+  // Once the pool is empty, there's nothing to swap to - hide all reroll btns.
   function __syncRerollAvailability() {{
     if (__spareImages.length === 0) {{
       document.querySelectorAll('.img-reroll-btn').forEach(function(b) {{ b.disabled = true; }});
@@ -962,12 +962,12 @@ body::after {{
     }});
   }});
 
-  // Reroll — swap the current image for the next unused scraped one, and
+  // Reroll - swap the current image for the next unused scraped one, and
   // persist-hide the rejected URL so it won't resurface on reload.
   document.querySelectorAll('.img-reroll-btn').forEach(function(btn) {{
     btn.addEventListener('click', function(e) {{
       e.preventDefault(); e.stopPropagation();
-      // Per-button busy flag — a rapid double-click would otherwise both
+      // Per-button busy flag - a rapid double-click would otherwise both
       // shift the spare pool, but only the second probe's image would land,
       // silently consuming the first one. Bail until finish() clears it.
       if (btn.dataset._busy === '1') return;
@@ -992,7 +992,7 @@ body::after {{
           wrap.dataset.imgUrl = newUrl;
           __persistHide(oldUrl);
         }} else {{
-          // Bad candidate — persist-hide it so it can't resurface on reload,
+          // Bad candidate - persist-hide it so it can't resurface on reload,
           // then try the next spare if any remain. Busy flag already cleared
           // so the synthetic click below proceeds.
           __persistHide(newUrl);
@@ -1007,7 +1007,7 @@ body::after {{
   }});
   __syncRerollAvailability();
 
-  // "Show hidden (N)" button — clears the hidden_images list on the
+  // "Show hidden (N)" button - clears the hidden_images list on the
   // server, then reloads the page so all images come back.
   var restoreBtn = document.getElementById('btn-restore-images');
   if (restoreBtn && __sessionId) {{
@@ -1019,7 +1019,7 @@ body::after {{
       }}).then(function() {{ window.location.reload(); }})
         .catch(function(err) {{
           restoreBtn.disabled = false;
-          restoreBtn.textContent = 'Failed — retry?';
+          restoreBtn.textContent = 'Failed - retry?';
           console.warn('unhide-images POST failed', err);
         }});
     }});
@@ -1063,7 +1063,7 @@ body::after {{
         else visible.delete(en.target.id);
       }});
       // Pick the visible heading that's furthest down in document order
-      // before the current scroll — i.e. the section we're reading.
+      // before the current scroll - i.e. the section we're reading.
       var current = null;
       for (var i = 0; i < headings.length; i++) {{
         if (visible.has(headings[i].id)) {{ current = headings[i].id; break; }}
@@ -1073,7 +1073,7 @@ body::after {{
     headings.forEach(function(h) {{ io.observe(h); }});
   }}
 
-  // Chat about this research — POST to spinoff and redirect to the new chat
+  // Chat about this research - POST to spinoff and redirect to the new chat
   var chatBtn = document.getElementById('btn-chat-about');
   if (chatBtn) {{
     chatBtn.addEventListener('click', function() {{
@@ -1097,7 +1097,7 @@ body::after {{
         }}
         var url = '/#' + data.session_id;
         var opened = false;
-        // The report typically opens in a new tab — if we have access to the
+        // The report typically opens in a new tab - if we have access to the
         // original Telemachos tab, navigate it and close this report tab so the
         // user lands directly in the new chat.
         try {{
@@ -1108,16 +1108,16 @@ body::after {{
             opened = true;
             window.close();
           }}
-        }} catch (e) {{ /* cross-origin or detached opener — fall through */ }}
+        }} catch (e) {{ /* cross-origin or detached opener - fall through */ }}
         if (!opened) {{
-          // No opener (report was opened directly via URL) — open the chat in a
+          // No opener (report was opened directly via URL) - open the chat in a
           // new tab so the report stays available.
           var w = window.open(url, '_blank');
           if (w) {{
             chatBtn.disabled = false;
             chatBtn.innerHTML = '<span>Chat opened in new tab</span>';
           }} else {{
-            // Popup blocked — navigate this tab as a last resort.
+            // Popup blocked - navigate this tab as a last resort.
             window.location.href = url;
             window.location.reload();
           }}
@@ -1157,7 +1157,7 @@ if (document.body.classList.contains('category-comparison')) {{
 def _category_css(category: Optional[str]) -> str:
     if not category:
         return ""
-    # Per-category palette overrides — applied BEFORE the structural rules so
+    # Per-category palette overrides - applied BEFORE the structural rules so
     # everything that reads --accent / --aurora-* automatically retints. The
     # default (no category) keeps the warm terracotta defined in :root.
     palettes = """
@@ -1250,19 +1250,19 @@ body.category-howto {
   --font-body: 'Inter', system-ui, sans-serif;
 }
 
-/* Product: techy/engineery — IBM Plex Sans display + Inter body */
+/* Product: techy/engineery - IBM Plex Sans display + Inter body */
 body.category-product {
   --font-display: 'IBM Plex Sans', system-ui, sans-serif;
   --font-body: 'Inter', system-ui, sans-serif;
 }
 
-/* Source Serif sits visually larger than Inter at the same px — pull it
+/* Source Serif sits visually larger than Inter at the same px - pull it
    back one notch for the categories that use it as body so line length
    and rhythm stay comparable across categories. */
 body:not([class*="category-"]) body, /* no-op selector, kept for clarity */
 body.category-landscape { font-size: 16.5px; }
 
-/* Drop cap looks bad on geometric sans — kill it for those categories */
+/* Drop cap looks bad on geometric sans - kill it for those categories */
 body.category-product   .content > p:first-of-type::first-letter,
 body.category-howto     .content > p:first-of-type::first-letter,
 body.category-comparison .content > p:first-of-type::first-letter,
@@ -1307,7 +1307,7 @@ body.category-comparison::before {
 }
 
 /* How-to → flat surface with a very subtle vignette. Drop the flow-lines
-   pattern — it competes visually with the step number rails on the
+   pattern - it competes visually with the step number rails on the
    right-hand side of each H2. The reading should feel like an O'Reilly
    procedure: clean, scannable, no decoration in the way. */
 body.category-howto::before {
@@ -1352,7 +1352,7 @@ body.category-landscape::before {
 /* ─────────────────────────────────────────────────────
    PER-CATEGORY STRUCTURAL TREATMENTS
    Each category gets distinctive structural CSS so the page
-   reads as a different publication — not just retinted.
+   reads as a different publication - not just retinted.
    ───────────────────────────────────────────────────── */
 
 /* ── HOWTO: O'Reilly-style numbered procedure ─────── */
@@ -1389,7 +1389,7 @@ body.category-howto .content h2 ~ blockquote {
   margin-left: 4px;
 }
 body.category-howto .content h2:has(+ *) ~ h2 ~ * { border-left: none; padding-left: 0; margin-left: 0; }
-/* Terminal-style code blocks — green $ prompt, monospaced, dark surface */
+/* Terminal-style code blocks - green $ prompt, monospaced, dark surface */
 body.category-howto .content pre {
   background: #1a1a1e;
   color: #d4e4d4;
@@ -1412,7 +1412,7 @@ body.category-howto .content pre code { color: inherit; }
 
 /* ── LANDSCAPE: editorial briefing with H3 player cards ─ */
 body.category-landscape .content h3 {
-  /* Each H3 in landscape = a "player" in the field — give it a card frame */
+  /* Each H3 in landscape = a "player" in the field - give it a card frame */
   margin-top: 2.5rem;
   padding: 14px 18px 4px;
   border-left: 3px solid var(--accent);
@@ -1487,7 +1487,7 @@ body.category-comparison .content h3:first-of-type::after {
 
 /* ── PRODUCT: spec-sheet cards for each H3 ─────────── */
 body.category-product .content h3 {
-  /* Each product gets a spec-card frame — bordered, slight bg lift */
+  /* Each product gets a spec-card frame - bordered, slight bg lift */
   margin-top: 2.4rem;
   padding: 16px 18px;
   border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--border));
@@ -1665,7 +1665,7 @@ body.category-product .content h3 + table {
 }
 """,
     }
-    # Always emit the per-category palette block when ANY category is set —
+    # Always emit the per-category palette block when ANY category is set -
     # it contains body.category-X scoped rules so it only re-skins the page
     # for the matching category. The legacy `styles[category]` block adds
     # structural CSS specific to that one type.
@@ -1826,7 +1826,7 @@ def generate_visual_report(
             )
     stats_html = "\n  ".join(stat_items)
 
-    # Build sources panel — compact collapsible list
+    # Build sources panel - compact collapsible list
     sources_html = ""
     if sources:
         items = []
@@ -1881,7 +1881,7 @@ def generate_visual_report(
             '</div>'
         )
 
-    # "Restore hidden images" toolbar button — only render if there are any
+    # "Restore hidden images" toolbar button - only render if there are any
     # hidden images on this research AND we have a session_id (needed for
     # the POST endpoint).
     restore_btn_html = ""

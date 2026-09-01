@@ -89,7 +89,7 @@ def test_llm_call_content_wins_over_reasoning_content(monkeypatch):
 
 # ---------------------------------------------------------------------------
 # Streaming agent path tests (4 and 5)
-# These import and test _empty_response_fallback — the real production helper
+# These import and test _empty_response_fallback - the real production helper
 # extracted from stream_agent_loop.  If the fallback branch is reverted or
 # changed, these tests will fail.
 # ---------------------------------------------------------------------------
@@ -137,7 +137,7 @@ def test_stream_agent_reasoning_not_duplicated_as_normal_delta():
         round_reasoning=reasoning_text,
         tool_events=[],
     )
-    # chunk must be None — the reasoning was already sent as {thinking:true}
+    # chunk must be None - the reasoning was already sent as {thinking:true}
     assert chunk is None, (
         f"reasoning text was re-emitted as a normal delta chunk: {chunk!r}"
     )

@@ -5,7 +5,7 @@ Copilot exposes an OpenAI-compatible API at ``https://api.githubcopilot.com``
 (``/chat/completions`` + ``/models``). Authentication is a GitHub OAuth
 **device flow**: the user authorises a device code in their browser and we
 receive a long-lived ``access_token`` that is sent directly as
-``Authorization: Bearer <token>`` — there is no separate Copilot-token
+``Authorization: Bearer <token>`` - there is no separate Copilot-token
 exchange and no refresh (mirrors how editors / opencode talk to Copilot).
 
 The only provider-specific wrinkle beyond the bearer token is a handful of
@@ -223,10 +223,10 @@ def request_flags(messages) -> tuple:
     """Derive ``(agent, vision)`` from an OpenAI-style message list.
 
     Mirrors opencode's logic:
-      * ``agent`` — the last message is *not* a plain user message (i.e. it's a
+      * ``agent`` - the last message is *not* a plain user message (i.e. it's a
         tool result / assistant follow-up), so Copilot should treat the request
         as agent-initiated for request accounting.
-      * ``vision`` — any message carries an image content part.
+      * ``vision`` - any message carries an image content part.
     """
     msgs = messages or []
     last = msgs[-1] if msgs else None

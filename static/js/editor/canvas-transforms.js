@@ -4,7 +4,7 @@
  * document's overall width/height so the result feels like the whole
  * image rotated as one piece.
  *
- * Pure-ish — reads/writes shared state directly; the factory takes a
+ * Pure-ish - reads/writes shared state directly; the factory takes a
  * small dep bag for the orchestration plumbing (undo snapshot, canvas
  * loading overlay, fit-zoom-to-viewport, composite redraw).
  *
@@ -27,7 +27,7 @@ export function createCanvasTransforms({ saveState, composite, fitZoom, showCanv
      * and translated into the new image's frame.
      *
      * Wrapped in requestAnimationFrame because the rotation pass can
-     * block the UI for 0.5–2 s on big images — the spinner overlay
+     * block the UI for 0.5–2 s on big images - the spinner overlay
      * paints before we block.
      */
     rotateAll(deg) {
@@ -67,7 +67,7 @@ export function createCanvasTransforms({ saveState, composite, fitZoom, showCanv
             layer.canvas.height = newLh;
             layer.ctx.drawImage(tmp, 0, 0);
             // The adjustment-render caches are keyed only by the adjustment
-            // signature, which rotation doesn't change — so composite would draw
+            // signature, which rotation doesn't change - so composite would draw
             // the STALE pre-rotation cache (the "had to click twice" bug). Drop
             // them so the next composite re-renders from the rotated canvas.
             layer._adjCacheKey = null;

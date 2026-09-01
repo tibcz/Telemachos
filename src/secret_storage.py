@@ -8,7 +8,7 @@ gitignored so the key never ships with the repo.
 
 Threat model: protects against SQLite-file exfiltration (stolen
 backup, leaked container layer, sibling-tenant read). Does **not**
-protect against a process compromise — anyone who can read this
+protect against a process compromise - anyone who can read this
 module's memory or the key file has plaintext.
 
 Encrypted values carry an `enc:` prefix so the migration is
@@ -76,7 +76,7 @@ def decrypt(value: str) -> str:
     try:
         return _get_fernet().decrypt(value[len(_PREFIX):].encode("ascii")).decode("utf-8")
     except InvalidToken:
-        logger.error("Failed to decrypt stored secret — wrong key or corrupt token")
+        logger.error("Failed to decrypt stored secret - wrong key or corrupt token")
         return ""
     except Exception as e:
         logger.error(f"Decrypt failure: {e}")

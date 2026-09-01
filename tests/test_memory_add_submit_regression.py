@@ -2,7 +2,7 @@
 
 The form previously had no submit button and relied on a deprecated
 ``keypress`` listener for Enter, which is not guaranteed to fire on all
-platforms — leaving the form with no working submit path. Pins:
+platforms - leaving the form with no working submit path. Pins:
 
 - a visible, keyboard-accessible submit button next to the category select;
 - the button wired to ``memoryModule.addNewMemory()``;

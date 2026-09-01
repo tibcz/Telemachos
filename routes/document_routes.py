@@ -1,4 +1,4 @@
-"""Backward-compat shim — canonical location is routes/document/document_routes.py.
+"""Backward-compat shim - canonical location is routes/document/document_routes.py.
 
 This module is replaced in ``sys.modules`` by the canonical module object so
 that ``import routes.document_routes``, ``from routes.document_routes import

@@ -1,5 +1,5 @@
 /**
- * Stroke pipeline — paints one segment (last-position → current
+ * Stroke pipeline - paints one segment (last-position → current
  * position) onto the active layer (or its active mask sub-layer).
  *
  * `strokeTo` dispatches by tool:
@@ -110,7 +110,7 @@ export function createStrokePipeline({ activeLayer, getActiveMaskLayer, composit
         ctx.filter = `blur(${blurPx.toFixed(2)}px)`;
       }
     } else if (state.tool === 'brush') {
-      // Brush — state.color onto the layer (or white onto an active
+      // Brush - state.color onto the layer (or white onto an active
       // mask sub-layer). Mask painting forces full alpha so masks
       // stay a clean binary by default (a sub-100% brush would
       // silently paint partial-strength mask pixels).
@@ -141,7 +141,7 @@ export function createStrokePipeline({ activeLayer, getActiveMaskLayer, composit
     }
 
     // Mask canvases are always full-image (no per-layer offset), so
-    // painting onto a mask uses canvas-coord origin too — same as
+    // painting onto a mask uses canvas-coord origin too - same as
     // inpaint.
     const onMaskOrInpaint = paintingMask || state.tool === 'inpaint';
     const drawX = onMaskOrInpaint ? 0 : off.x;

@@ -3,7 +3,7 @@
 `imaplib`'s plain `store()` / `copy()` operate on message SEQUENCE NUMBERS, not
 UIDs. `_store_email_flag` / `_move_email_message` (used by the archive / delete /
 move / mark endpoints) had an `else` fallback that, when `_uid_exists` returned
-False, ran `conn.store(uid, …)` / `conn.copy(uid, …)` + `conn.expunge()` — i.e.
+False, ran `conn.store(uid, …)` / `conn.copy(uid, …)` + `conn.expunge()` - i.e.
 it flagged/copied whichever message occupied sequence position == the UID value
 and then permanently expunged it. A stale cached UID (or a server whose UID
 probe misbehaves) therefore deleted an unrelated email.
@@ -24,7 +24,7 @@ from routes.email_routes import _store_email_flag, _move_email_message
 class _FakeConn:
     """Records IMAP calls. `uid_present` controls the FETCH-UID probe result.
 
-    The sequence-number commands (store/copy/expunge) raise if ever called —
+    The sequence-number commands (store/copy/expunge) raise if ever called -
     the whole point of the fix is that they must not be reached.
     """
     def __init__(self, uid_present, uid_move_ok=True):
@@ -44,7 +44,7 @@ class _FakeConn:
             return ("OK", [b""])
         return ("OK", [b""])
 
-    # Sequence-number APIs — must never be used with a UID.
+    # Sequence-number APIs - must never be used with a UID.
     def store(self, *a):
         self.seqno_calls.append(("store", a)); return ("OK", [b""])
 

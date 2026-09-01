@@ -1,4 +1,4 @@
-// compare/panes.js — pane lifecycle, actions, layout
+// compare/panes.js - pane lifecycle, actions, layout
 import state from './state.js';
 import { _persistSelections } from './models.js';
 import { buildVoteBar } from './vote.js';
@@ -72,7 +72,7 @@ function stopPane(paneIdx) {
 }
 
 async function rerollPane(paneIdx, overrideTimeout) {
-  // Allow reroll even while other panes stream — just stop this pane first
+  // Allow reroll even while other panes stream - just stop this pane first
   if (state._abortControllers[paneIdx]) stopPane(paneIdx);
   const hist = document.getElementById('cmp-history-' + paneIdx);
   // Reset preview state
@@ -229,7 +229,7 @@ function togglePanePreview(paneIdx) {
     btn.title = 'Run preview';
     btn.classList.remove('active');
   } else {
-    // Switch to preview — load on first click
+    // Switch to preview - load on first click
     if (iframe._htmlCode) iframe.srcdoc = iframe._htmlCode;
     iframe.style.display = '';
     hist.style.display = 'none';
@@ -311,7 +311,7 @@ async function _addPane(anchorBtn) {
     });
     dropdown.appendChild(searchInput);
     // Desktop: auto-focus the search box so the user can start typing.
-    // Mobile: skip — auto-focus pops the on-screen keyboard and covers
+    // Mobile: skip - auto-focus pops the on-screen keyboard and covers
     // the model list. The user can tap the search box if they want to
     // filter, otherwise they just tap a model directly.
     if (window.innerWidth > 768) setTimeout(() => searchInput.focus(), 0);
@@ -382,7 +382,7 @@ async function _createAndAppendPane(m) {
 
   // Create session
   const fd = new FormData();
-  // Blind mode: neutral slot name only — never leak the model (issue #1285).
+  // Blind mode: neutral slot name only - never leak the model (issue #1285).
   fd.append('name', '[CMP] ' + (state._blindMode ? 'Model ' + _slotChar(i) : m.name));
   fd.append('endpoint_url', m.url || '');
   fd.append('model', m.id || '');
@@ -448,7 +448,7 @@ async function _createAndAppendPane(m) {
   // Rebuild vote bar
   buildVoteBar(n);
 
-  // Prompt to shuffle in blind mode — tooltip bubble next to Shuffle button
+  // Prompt to shuffle in blind mode - tooltip bubble next to Shuffle button
   if (state._blindMode && n > 2) {
     const shuffleBtn = document.getElementById('compare-shuffle-btn');
     if (shuffleBtn) {
@@ -490,7 +490,7 @@ function _removePane(paneIdx) {
     return;
   }
 
-  // Rebuild pane DOM — re-index all panes so IDs stay consistent
+  // Rebuild pane DOM - re-index all panes so IDs stay consistent
   const grid = document.querySelector('.compare-grid');
   grid.querySelectorAll('.compare-pane').forEach(p => p.remove());
 
@@ -585,7 +585,7 @@ function _showModelSwapDropdown(paneIdx, titleBtn) {
         fetch(`${state.API_BASE}/api/session/${oldSid}`, { method: 'DELETE' }).catch(() => {});
       }
       const fd = new FormData();
-      // Blind mode: neutral slot name only — never leak the model (issue #1285).
+      // Blind mode: neutral slot name only - never leak the model (issue #1285).
       fd.append('name', '[CMP] ' + (state._blindMode ? 'Model ' + _slotChar(paneIdx) : m.name));
       fd.append('endpoint_url', m.url || '');
       fd.append('model', m.id || '');

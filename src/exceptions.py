@@ -1,5 +1,5 @@
 # src/exceptions.py
-"""Backward-compatible shim — the single source of truth is core/exceptions.py.
+"""Backward-compatible shim - the single source of truth is core/exceptions.py.
 
 Historically this module was a byte-for-byte duplicate of core/exceptions.py,
 which is the canonical definition (imported by app.py, core/__init__.py, and

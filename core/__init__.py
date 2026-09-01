@@ -1,6 +1,6 @@
 # core/__init__.py
 """
-Chat Core — the essential chat experience.
+Chat Core - the essential chat experience.
 
 This package contains only what's needed for:
 - Streaming LLM responses

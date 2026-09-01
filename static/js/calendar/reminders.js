@@ -68,7 +68,7 @@ async function _pollReminders() {
       if (due > now) continue; // not yet due
       const ageMs = now - due;
       if (ageMs > stalenessMs) {
-        // Too old to fire — mark as seen so we don't recheck every minute.
+        // Too old to fire - mark as seen so we don't recheck every minute.
         _notifFired.add(note.id);
         continue;
       }
@@ -91,7 +91,7 @@ async function _pollReminders() {
           tag: `cal-remind-${note.id}`,
         });
       }
-      if (uiModule.showToast) uiModule.showToast((note.title || 'Calendar Reminder') + (body ? ' — ' + body : ''));
+      if (uiModule.showToast) uiModule.showToast((note.title || 'Calendar Reminder') + (body ? ' - ' + body : ''));
     }
     // Persist fired set (keep last 200)
     const arr = [..._notifFired].slice(-200);

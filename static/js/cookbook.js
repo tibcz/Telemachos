@@ -1,5 +1,5 @@
 // ============================================
-// COOKBOOK MODULE (v2 — simplified)
+// COOKBOOK MODULE (v2 - simplified)
 // What Fits? + Saved presets, inline action panels
 // ============================================
 
@@ -88,7 +88,7 @@ export function _lastCacheHost() { return _lastCacheHostVal; }
 export function _setLastCacheHost(v) { _lastCacheHostVal = v; }
 
 function _setCookbookOpening(on) {
-  // Sidebar (tool-cookbook-btn) deliberately excluded — the inline
+  // Sidebar (tool-cookbook-btn) deliberately excluded - the inline
   // whirlpool on the sidebar row read as "the click didn't register"
   // rather than "loading", which made users (rightly) think clicks
   // were being eaten. Keep only the icon-rail spinner since the
@@ -264,7 +264,7 @@ export function _syncServerSelectColors(root = document) {
 function _buildServerOpts(excludeLocal = false) {
   // The local server is ALWAYS represented by the synthetic value="local" option
   // (showing its custom name from the "server name" feature). We must therefore
-  // skip that same entry in the loop below — otherwise it appeared twice.
+  // skip that same entry in the loop below - otherwise it appeared twice.
   const _localIdx = _envState.servers.findIndex(_isLocalEntry);
   const _localSrv = _localIdx >= 0 ? _envState.servers[_localIdx] : null;
   const _localLabel = (_localSrv && _localSrv.name) ? _localSrv.name : 'Local';
@@ -351,7 +351,7 @@ function _detectModelOptimizations(modelName) {
     opts.tips.push('StepFun Step-3 MoE: expert parallel');
     opts.tips.push('StepFun parser: step3p5 for native tool calls and reasoning tags');
   }
-  // Qwen3.5 MoE models — MoE-specific env vars + expert-parallel.
+  // Qwen3.5 MoE models - MoE-specific env vars + expert-parallel.
   // The --reasoning-parser flag is added uniformly below via
   // _detectReasoningParser, no longer hardcoded here.
   else if (n.includes('qwen3.5') || n.includes('qwen3-') && (n.includes('a10b') || n.includes('a22b') || n.includes('a3b'))) {
@@ -365,18 +365,18 @@ function _detectModelOptimizations(modelName) {
     opts.flags.push('--enable-expert-parallel');
     opts.tips.push('MoE optimizations: expert parallel');
   }
-  // DeepSeek MoE — V3 / V3.1 / V4 (and future Vx), R1 / R2 reasoning.
+  // DeepSeek MoE - V3 / V3.1 / V4 (and future Vx), R1 / R2 reasoning.
   // Anything v-{integer} or r-{integer} family from DeepSeek is MoE in
   // current architectures. These models also require fp8 KV cache to
-  // fit at meaningful context with current tensor-parallel layouts —
+  // fit at meaningful context with current tensor-parallel layouts -
   // the launch crashes otherwise (--kv-cache-dtype auto → bf16 OOMs).
   else if (n.includes('deepseek') && /\b(v[3-9]|v\d{2,}|r[1-9])\b/.test(n)) {
     opts.flags.push('--enable-expert-parallel');
     opts.tips.push('MoE expert parallel for DeepSeek');
     opts.kvCacheDtype = 'fp8';
-    opts.tips.push('fp8 KV cache required — bf16 OOMs at usable context');
+    opts.tips.push('fp8 KV cache required - bf16 OOMs at usable context');
   }
-  // MiniMax MoE — Abab/M1/M2/M2.5/M2.7 are all MoE (Lightning Attention +
+  // MiniMax MoE - Abab/M1/M2/M2.5/M2.7 are all MoE (Lightning Attention +
   // MoE in M1, full sparse MoE from M2 onward). They benefit from the
   // same --enable-expert-parallel flag as the Qwen/DeepSeek families,
   // and the toggle has to be detectable here for the Expert Parallel
@@ -389,7 +389,7 @@ function _detectModelOptimizations(modelName) {
       opts.tips.push('MiniMax M3 defaults: fp8 KV cache, block-size 128, TRITON attention');
     }
   }
-  // Reasoning parser — applies independently of MoE detection. Without this
+  // Reasoning parser - applies independently of MoE detection. Without this
   // flag, models like MiniMax-M2.x, DeepSeek-R1, Qwen3 reasoning, GLM-4.x,
   // gpt-oss leak <think> blocks as plain text instead of separating them
   // into the reasoning_content channel.
@@ -398,7 +398,7 @@ function _detectModelOptimizations(modelName) {
     opts.flags.push(`--reasoning-parser ${_reasoningParser}`);
     opts.tips.push(`Reasoning parser (${_reasoningParser}): splits <think> tokens into a separate channel`);
   }
-  // Speculative decoding — pick the right MTP method per model family.
+  // Speculative decoding - pick the right MTP method per model family.
   // opts.spec.{method,tokens} seed the UI dropdown/input; the actual flag is
   // assembled by the command builder so the user can edit before launching.
   let specDefault = null;
@@ -432,16 +432,16 @@ export function _detectReasoningParser(modelName) {
   // StepFun Step-3.x uses Step's native <think> / tool-call tokens. vLLM
   // registers this parser as step3p5.
   if (_isStepFunStepModel(modelName)) return 'step3p5';
-  // MiniMax M3 — newer vLLM nightly/parser builds use minimax_m3. This must
+  // MiniMax M3 - newer vLLM nightly/parser builds use minimax_m3. This must
   // be checked before the M2.x rule and before the generic MiniMax tool parser.
   if (n.includes('minimax') && /\bm3\b/.test(n)) return 'minimax_m3';
-  // MiniMax M2 / M2.5 / M2.7 — released with a dedicated parser. Catch M2
+  // MiniMax M2 / M2.5 / M2.7 - released with a dedicated parser. Catch M2
   // before plain "minimax" so M2.x doesn't fall through to a wrong parser.
   if (n.includes('minimax') && n.match(/\bm2(?:\.\d)?\b/)) return 'minimax_m2';
   // DeepSeek-V4 has a dedicated parser in SGLang. Keep it before R1/V3.
   if (n.includes('deepseek') && /\bv[-_]?4\b/.test(n)) return 'deepseek-v4';
   // DeepSeek-R1 / V3-Thinking / V3.1-Thinking variants. Bare V3/V3.1 (non-
-  // thinking) skip this — they're not reasoning models.
+  // thinking) skip this - they're not reasoning models.
   if (n.includes('deepseek') && (n.includes('r1') || n.includes('thinking'))) return 'deepseek_r1';
   // Qwen3 / Qwen3.5 reasoning models. Qwen3-Coder + Qwen3-Instruct don't
   // emit <think> blocks, so skip the parser there.
@@ -591,14 +591,14 @@ function _gpuEnvVarName() {
   // NVIDIA box (cuda) to a local/Vulkan target preserved the stale
   // `cuda` backend in the cache, leaking `CUDA_VISIBLE_DEVICES=` into
   // launches that don't have an NVIDIA GPU at all. Default to "" when
-  // unsure — the user sees a clean command and is prompted to scan.
+  // unsure - the user sees a clean command and is prompted to scan.
   const cachedHost = String(_hwfitCache?._scannedHost || '');
   const currentHost = String(_envState.remoteHost || '');
   if (cachedHost !== currentHost) return '';
   const sb = String(_hwfitCache?.system?.backend || '').toLowerCase();
   if (sb === 'cuda') return 'CUDA_VISIBLE_DEVICES';
   if (sb === 'rocm') return 'HIP_VISIBLE_DEVICES';
-  return ''; // vulkan / metal / mps / apple / cpu / generic / unknown — no env-var pinning
+  return ''; // vulkan / metal / mps / apple / cpu / generic / unknown - no env-var pinning
 }
 function _gpuEnvPrefix(gpuId, isWindows = false) {
   const id = String(gpuId || '').trim();
@@ -683,7 +683,7 @@ export function _buildServeCmd(f, modelName, backend) {
   const _py3Bin = _venvBin ? `${_venvBin}python3` : 'python3';
   let cmd = '';
   if (backend === 'vllm') {
-    // GPU list comes from the Row-1 button strip (data-field="gpus") —
+    // GPU list comes from the Row-1 button strip (data-field="gpus") -
     // the bare "auto" input that used to back gpu_id is gone, and the
     // button strip is the only source for which devices to pin.
     const gpuId = (f.gpus || f.gpu_id || '').toString().trim();
@@ -694,13 +694,13 @@ export function _buildServeCmd(f, modelName, backend) {
         cmd += _opts.envVars.join(' ') + ' ';
       } else {
         // Fallback when the user toggles MoE Env on for a model the
-        // family detector didn't classify as MoE — emit the generic
+        // family detector didn't classify as MoE - emit the generic
         // vLLM MoE optimization env vars so the toggle is never a
         // silent no-op (was the case before the "always show" change).
         cmd += 'VLLM_USE_DEEP_GEMM=0 VLLM_USE_FLASHINFER_MOE_FP16=1 OMP_NUM_THREADS=4 ';
       }
     }
-    // Free-text "Env" field — verbatim KEY=VAL pairs (space-separated).
+    // Free-text "Env" field - verbatim KEY=VAL pairs (space-separated).
     // Collapse any pasted newlines/tabs so the backend allowlist (which
     // rejects \n / \r) doesn't trip on a multi-line paste from a model card.
     const _extraEnv = (f.extra_env ?? '').toString().replace(/\s+/g, ' ').trim();
@@ -747,7 +747,7 @@ export function _buildServeCmd(f, modelName, backend) {
       cmd += ` --speculative-config '{"method":"${_specMethod}","num_speculative_tokens":${_specToks}}'`;
     }
   } else if (backend === 'sglang') {
-    // GPU list comes from the Row-1 button strip (data-field="gpus") —
+    // GPU list comes from the Row-1 button strip (data-field="gpus") -
     // the bare "auto" input that used to back gpu_id is gone, and the
     // button strip is the only source for which devices to pin.
     const gpuId = (f.gpus || f.gpu_id || '').toString().trim();
@@ -787,7 +787,7 @@ export function _buildServeCmd(f, modelName, backend) {
     }
   } else if (backend === 'llamacpp') {
     const ggufPath = f._gguf_path || 'model.gguf';
-    // GPU list — read from gpus (button strip); fall back to gpu_id for
+    // GPU list - read from gpus (button strip); fall back to gpu_id for
     // backward-compat with older saved presets that pre-date the removal.
     const gpuId = (f.gpus || f.gpu_id || '').toString().trim();
     const _targetHost = Object.prototype.hasOwnProperty.call(f, 'host')
@@ -799,7 +799,7 @@ export function _buildServeCmd(f, modelName, backend) {
     // CPU-only serve (-ngl 0): drop the GPU-only flags, otherwise the command
     // mixes "zero GPU layers" with CUDA unified-memory + flash-attn and fails to
     // start (issue #1291). Only affects the ngl=0 path; GPU serving is unchanged.
-    // The Inference mode pill (GPU/CPU) above gates this — when the user picks
+    // The Inference mode pill (GPU/CPU) above gates this - when the user picks
     // CPU, force ngl=0 here so all downstream flag-suppression fires
     // consistently regardless of what the (now-hidden) ngl input shows.
     const _llamaMode = String(f.llama_mode || '').toLowerCase();
@@ -835,7 +835,7 @@ export function _buildServeCmd(f, modelName, backend) {
     // Prefer native llama-server. The backend bootstrap resolves/builds the
     // right binary (Vulkan/HIP/CUDA/Metal/CPU), so keep the generated command
     // as a validator-safe binary + args with no shell chaining.
-    // Don't suppress stderr — surface real errors (missing file, lib, OOM).
+    // Don't suppress stderr - surface real errors (missing file, lib, OOM).
     // Optional perf/fit flags from a hardware profile (see services/hwfit/
     // profiles.py). n_cpu_moe offloads MoE expert layers to CPU when the model
     // is bigger than VRAM; flash-attn + a quantized KV cache cut KV memory and
@@ -859,7 +859,7 @@ export function _buildServeCmd(f, modelName, backend) {
     // Flash-attn default = auto: native llama-server picks whether to
     // enable based on the build/model; explicit ON (the Flash-attn
     // toggle in the form) forces it. "auto" is a meaningful arg, not
-    // omission — older builds without flash-attn ignore it cleanly,
+    // omission - older builds without flash-attn ignore it cleanly,
     // newer ones get the speedup without the user having to know.
     if (f.flash_attn && !_cpuOnly) {
       _lcExtra += ' --flash-attn on';
@@ -920,7 +920,7 @@ export function _buildServeCmd(f, modelName, backend) {
     // GGUF + Ollama: delegate to the iGPU-bound ollama-test container via
     // its /usr/local/bin/ollama-import helper. Plain `ollama serve` errors
     // 127 on hosts where ollama isn't on PATH (and even when it is, it
-    // doesn't import the GGUF — it just starts the daemon). Args are all
+    // doesn't import the GGUF - it just starts the daemon). Args are all
     // literal so the cookbook validator (which bans &&/||/;/$() ) is
     // happy: `docker exec ollama-test ollama-import <repo> <name> <ctx>
     // <file>`. The helper handles the find/Modelfile/preload dance.
@@ -1066,7 +1066,7 @@ export function _persistEnvState() {
 
 // ── Dependencies ──
 
-// Category colors removed — using theme CSS classes instead
+// Category colors removed - using theme CSS classes instead
 
 async function _fetchDependencies() {
   const list = document.getElementById('cookbook-deps-list');
@@ -1136,7 +1136,7 @@ async function _fetchDependencies() {
         const tip = esc(pkg.update_note || pkg.status_note || 'Found externally; update outside Telemachos.');
         return `<span class="cookbook-dep-tag cookbook-dep-installed" title="${tip}">Installed</span>`;
       }
-      if (pkg.installed) return `<button class="cookbook-dep-tag cookbook-dep-installed cookbook-dep-installed-btn" title="Installed — click for actions"><span class="cookbook-dep-installed-label">Installed</span><span class="cookbook-dep-caret">&#9662;</span></button>`;
+      if (pkg.installed) return `<button class="cookbook-dep-tag cookbook-dep-installed cookbook-dep-installed-btn" title="Installed - click for actions"><span class="cookbook-dep-installed-label">Installed</span><span class="cookbook-dep-caret">&#9662;</span></button>`;
       if (isSystemDep) {
         const depTip = esc(pkg.install_hint || 'Install this OS package on the selected server.');
         if (pkg.applicable !== false && _systemInstallable.has(pkg.name)) {
@@ -1149,7 +1149,7 @@ async function _fetchDependencies() {
       return `<button class="cookbook-dep-tag cookbook-dep-install" data-dep-pip="${esc(pkg.pip)}" data-dep-target="${isLocal ? 'local' : 'remote'}">Install</button>`;
     };
 
-    // Per-package inline glyphs — same accent-coloured marks used in the
+    // Per-package inline glyphs - same accent-coloured marks used in the
     // Backend picker on the Run page, so the Dependencies row visually
     // matches the engine you're configuring. Unknown packages get no
     // icon (the name alone is fine for librosa, hf_transfer, etc.).
@@ -1191,7 +1191,7 @@ async function _fetchDependencies() {
       // For backends with a recipe catalog (vllm / sglang / llama_cpp),
       // append a caret button that toggles a per-row recipe panel below.
       const hasRecipe = RECIPE_BACKENDS.has(pkg.name);
-      // Standalone recipe-caret button removed — the "Pick install
+      // Standalone recipe-caret button removed - the "Pick install
       // command" action lives inside the Installed ▾ dropdown menu
       // (see _showDepMenu) so each row only has ONE caret to click.
       // Kept the variable so downstream concat code stays the same.
@@ -1214,7 +1214,7 @@ async function _fetchDependencies() {
       const _gpuWheelCmd = 'CMAKE_ARGS="-DGGML_CUDA=on" python3 -m pip install --user --break-system-packages --force-reinstall --no-cache-dir "llama-cpp-python[server]" --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu124';
       const _gpuUpgradeBox = (pkg.partial && pkg.partial_action === 'reinstall_llama_cpp_cuda')
         ? `<div class="cookbook-dep-gpu-upgrade" style="margin-top:6px;font-size:11px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;background:color-mix(in srgb, var(--yellow, #f1fa8c) 14%, transparent);border:1px solid color-mix(in srgb, var(--yellow, #f1fa8c) 40%, var(--border));padding:6px 8px;border-radius:6px;">`
-          + `<span style="flex:1;min-width:160px;">Installed CPU-only — GPU detected on this target. Upgrade for ~10× faster inference.</span>`
+          + `<span style="flex:1;min-width:160px;">Installed CPU-only - GPU detected on this target. Upgrade for ~10× faster inference.</span>`
           + `<button type="button" class="cookbook-dep-tag cookbook-dep-install cookbook-dep-install-gpu-wheel" data-dep-target="${isLocal ? 'local' : 'remote'}" data-dep-gpu-cmd="${esc(_gpuWheelCmd)}" style="font-weight:600;">Install GPU wheel</button>`
           + `<button type="button" class="cookbook-dep-tag cookbook-dep-cmd-copy" data-dep-cmd-copy="${esc(_gpuWheelCmd)}" title="Copy command to clipboard">Copy command</button>`
           + `</div>`
@@ -1238,7 +1238,7 @@ async function _fetchDependencies() {
     // Prepend the configured venv's activate line (pip variant only) so
     // the user sees a paste-ready sequence; Run keeps using env_prefix to
     // activate the same venv before the pip command. Docker variant skips
-    // the activate line — `docker pull` doesn't need a venv.
+    // the activate line - `docker pull` doesn't need a venv.
     function _recipeRuntimeCommands(commands, variant) {
       if (variant === 'docker') return commands;
       const envPath = (_envState.envPath || '').replace(/\/+$/, '');
@@ -1393,7 +1393,7 @@ async function _fetchDependencies() {
       _serverDepsHtml(_serverDeps),
     ].join('');
 
-    // Shared install/update routine — used by the Install button and the
+    // Shared install/update routine - used by the Install button and the
     // "Update" item in an installed package's ⋮ menu. `upgrade` adds pip -U;
     // `statusEl`, when given, shows "Installing…/Updating…" and is disabled.
     async function _installDep(pipName, pkgName, isLocalOnly, upgrade, statusEl) {
@@ -1418,9 +1418,9 @@ async function _fetchDependencies() {
       const targetPlatform = isLocalOnly ? (_envState.hostPlatform || _envState.platform || '') : (targetServer?.platform || _envState.platform || '');
       const targetRemoteHost = isLocalOnly ? '' : (targetServer?.host || _envState.remoteHost || '');
       // Always go through `python -m pip` so the leading token is `python`
-      // — matches the /api/model/serve allow-list (bare `pip` is blocked).
+      // - matches the /api/model/serve allow-list (bare `pip` is blocked).
       // Inside a venv/conda env, `--user` is invalid (pip refuses), so we
-      // only add `--user --break-system-packages` when there's no env —
+      // only add `--user --break-system-packages` when there's no env -
       // for PEP-668-locked system pythons (Arch, newer Debian).
       const _inEnv = targetEnv === 'venv' || targetEnv === 'conda';
       const _platform = String(targetPlatform || '').toLowerCase();
@@ -1479,7 +1479,7 @@ async function _fetchDependencies() {
         if (!res.ok || !data.ok) {
           // FastAPI HTTPException returns {detail: …}; the route's own
           // path returns {ok:false, error:…}. Surface whichever we get.
-          // Long duration + an OK button — the default 1.2s toast was
+          // Long duration + an OK button - the default 1.2s toast was
           // disappearing before the user could read multi-clause errors
           // like "tmux missing on remote".
           const reason = data.detail || data.error || `HTTP ${res.status}`;
@@ -1515,14 +1515,14 @@ async function _fetchDependencies() {
       });
     });
 
-    // Wire "Install build deps" buttons — surfaced on rows whose
+    // Wire "Install build deps" buttons - surfaced on rows whose
     // system_prereqs are missing (e.g. llama_cpp with no cmake on the
     // target). One-tap call to /api/cookbook/install-system-deps; the
     // route enforces a per-package allowlist and uses passwordless
     // sudo only, so it can never silently hang or stretch beyond the
     // build-toolchain set the catalog declares.
     // "Partial ▾" upgrade tag: clicking it fires the action-specific
-    // install routine (currently only `reinstall_llama_cpp_cuda` —
+    // install routine (currently only `reinstall_llama_cpp_cuda` -
     // forces pip install with the abetlen CUDA wheel index to add GPU
     // offload). Same install flow used at launch-time auto-fix, but
     // user-initiated here so they don't have to launch + wait + retry.
@@ -1674,7 +1674,7 @@ async function _fetchDependencies() {
       sel.addEventListener('change', () => _refreshRecipePre(sel.dataset.depRecipePick));
     });
     // Variant toggle (Pip vs Docker): mirrors the agent/chat mode-toggle
-    // pattern — buttons get .active, container gets .mode-right when the
+    // pattern - buttons get .active, container gets .mode-right when the
     // right slot is selected so the sliding pill animates over.
     list.querySelectorAll('[data-dep-recipe-variant]').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -1722,7 +1722,7 @@ async function _fetchDependencies() {
         const backend = btn.dataset.depRecipeRun;
         const pre = list.querySelector(`[data-dep-recipe-cmds="${CSS.escape(backend)}"]`);
         if (!pre) return;
-        // Use the install-only command list (no activate line) — the
+        // Use the install-only command list (no activate line) - the
         // displayed source line is for the user's reading; env_prefix
         // handles it for the actual run.
         const installRaw = pre.dataset.depRecipeInstall || pre.textContent;
@@ -2000,7 +2000,7 @@ function _wireTabEvents(body) {
     body._swipeWired = true;
     let _sx = null, _sy = null;
     body.addEventListener('touchstart', (e) => {
-      // Ignore swipes that start in a horizontally-scrollable tag row — those
+      // Ignore swipes that start in a horizontally-scrollable tag row - those
       // should scroll the chips, not flip the tab.
       if (window.innerWidth > 768 || e.touches.length !== 1
           || e.target.closest('input, textarea, select, .doclib-lang-chips')) { _sx = null; return; }
@@ -2035,7 +2035,7 @@ function _wireTabEvents(body) {
       const platform = entry.dataset.platform || '';
       const dirs = [];
       entry.querySelectorAll('.cookbook-modeldir-tag').forEach(tag => {
-        // Read from data attribute (authoritative) — never parse displayed text
+        // Read from data attribute (authoritative) - never parse displayed text
         const d = _normalizeCookbookModelDir(tag.dataset.dir || '');
         if (d) dirs.push(d);
       });
@@ -2084,7 +2084,7 @@ function _wireTabEvents(body) {
     el.addEventListener('change', _syncServers);
   });
 
-  // Server selector — the server is global, so switching it here re-scans the
+  // Server selector - the server is global, so switching it here re-scans the
   // main Scan/Download list (#hwfit-list) for the new server's hardware too.
   // (The trending sublist reloads via its own handler in the HF-latest wiring.)
   const dlServer = document.getElementById('hwfit-dl-server');
@@ -2097,7 +2097,7 @@ function _wireTabEvents(body) {
     });
   }
 
-  // Add server link — switch to Settings tab
+  // Add server link - switch to Settings tab
   const addServerLink = document.querySelector('.cookbook-dl-add-server');
   if (addServerLink) {
     addServerLink.addEventListener('click', () => {
@@ -2187,7 +2187,7 @@ function _wireTabEvents(body) {
   if (depsServer) {
     depsServer.addEventListener('change', () => {
       _applyServerSelection(depsServer.value);
-      // Re-fetch the package list for the newly selected server — the installed
+      // Re-fetch the package list for the newly selected server - the installed
       // status is per-server, so the list must refresh on a server switch.
       _fetchDependencies();
     });
@@ -2216,7 +2216,7 @@ function _wireTabEvents(body) {
   // "Reinstall" buttons for pip-based serving stacks (vllm, sglang). The
   // deps list renders ASYNCHRONOUSLY after _fetchDependencies resolves, so
   // attaching listeners directly here would miss buttons that don't exist
-  // yet. Use document-level delegation instead — the click always finds the
+  // yet. Use document-level delegation instead - the click always finds the
   // right .cookbook-dep-reinstall button no matter when it was painted.
   if (!document._cookbookReinstallWired) {
     document._cookbookReinstallWired = true;
@@ -2257,7 +2257,7 @@ function _wireTabEvents(body) {
     });
   }
 
-  // Select mode — bulk actions
+  // Select mode - bulk actions
   const selectBtn = document.getElementById('hwfit-cache-select');
   const bulkBar = document.getElementById('serve-bulk-bar');
   if (selectBtn && bulkBar) {
@@ -2340,7 +2340,7 @@ function _wireTabEvents(body) {
       // download` wrapper so a paste from CLI docs Just Works. Drop the
       // command prefix; the rest is parsed by the existing strippers.
       repo = repo.replace(/^(?:huggingface-cli|hf-cli|hf)\s+(?:download|d)\s+/i, '');
-      // Strip the `hf://` (and `huggingface://`) scheme — the HF CLI
+      // Strip the `hf://` (and `huggingface://`) scheme - the HF CLI
       // accepts it as an alias and users naturally copy it. Same effect
       // as the bare `org/repo[/file.gguf]` form after the strip.
       repo = repo.replace(/^(?:hf|huggingface):\/\//i, '');
@@ -2488,7 +2488,7 @@ function _wireTabEvents(body) {
         : '';
       // HuggingFace repo IDs must be `org/model`. A bare model name would 404
       // at snapshot_download time with a raw traceback, so reject it up front.
-      // Ollama names (single-segment with a tag) skip this check — they go
+      // Ollama names (single-segment with a tag) skip this check - they go
       // through `ollama pull` server-side, not snapshot_download.
       if (!ollamaName && !/^[^\s/]+\/[^\s/]+$/.test(repo)) {
         uiModule.showToast('Enter a full HuggingFace repo ID like "org/model-name", or an Ollama name like "qwen2.5:14b".');
@@ -2516,7 +2516,7 @@ function _wireTabEvents(body) {
       }
       // Resolve the host straight from THIS window's server dropdown, by index
       // into the (consistent) servers list. We deliberately don't use
-      // _envState.remoteHost — there can be multiple copies of the cookbook
+      // _envState.remoteHost - there can be multiple copies of the cookbook
       // state in memory and they disagree on the active host, which is what sent
       // downloads to the wrong server. The dropdown the user sees is the truth.
       const dlSrv = document.getElementById('hwfit-dl-server');
@@ -2572,8 +2572,8 @@ function _wireTabEvents(body) {
     });
   }
 
-  // Latest HF models that fit — collapsible card list
-  // Foldable Download admin-card — h2 "Download" doubles as the chevron
+  // Latest HF models that fit - collapsible card list
+  // Foldable Download admin-card - h2 "Download" doubles as the chevron
   // toggle; collapses the entire card body (description + input + HF list).
   // State persisted to localStorage so the fold sticks across reloads.
   const dlFold = document.getElementById('cookbook-dl-tab-fold');
@@ -2582,7 +2582,7 @@ function _wireTabEvents(body) {
   if (dlFold && dlFoldBody && dlFoldChevron) {
     const _setFolded = (folded, persist = true) => {
       // Toggle via class so CSS transition animates the height/opacity
-      // — display:none was an instant on/off and felt jarring.
+      // - display:none was an instant on/off and felt jarring.
       dlFoldBody.classList.toggle('is-folded', folded);
       dlFoldChevron.textContent = folded ? '▸' : '▾';
       dlFold.classList.toggle('is-folded', folded);
@@ -2595,7 +2595,7 @@ function _wireTabEvents(body) {
       _setFolded(!folded);
     });
     // Auto-fold on any downward scroll inside the cookbook modal. Do not
-    // auto-expand on upward/top scroll — once the user collapses Download,
+    // auto-expand on upward/top scroll - once the user collapses Download,
     // it should stay collapsed until the header is clicked again.
     const _maybeFold = () => {
       if (dlFoldBody.classList.contains('is-folded')) return;
@@ -2609,7 +2609,7 @@ function _wireTabEvents(body) {
       const tgt = e.target;
       if (!tgt || typeof tgt.scrollTop !== 'number') return;
       // Ignore scrolls that originate INSIDE the Direct Download body
-      // (e.g. the Trending models list) — those are local to the
+      // (e.g. the Trending models list) - those are local to the
       // section and shouldn't auto-fold the section that owns them.
       if (dlFoldBody.contains && (tgt === dlFoldBody || dlFoldBody.contains(tgt))) return;
       const y = tgt.scrollTop;
@@ -2757,7 +2757,7 @@ function _wireTabEvents(body) {
         if (hfArrow) hfArrow.style.transform = 'rotate(90deg)';
       }
     });
-    // Re-fetch when a server dropdown changes — different server = different
+    // Re-fetch when a server dropdown changes - different server = different
     // hardware/VRAM. Mark the list stale so it reloads for the new server even
     // if it's currently collapsed (otherwise reopening showed the old server's
     // models); reload immediately when it's open.
@@ -2769,7 +2769,7 @@ function _wireTabEvents(body) {
     document.getElementById('hwfit-server-select')?.addEventListener('change', _onServerChange);
   }
 
-  // Browse Ollama library popup removed — Engine = Ollama in the
+  // Browse Ollama library popup removed - Engine = Ollama in the
   // Scan / Download filter covers this use case. The handler below is a
   // no-op now because the elements no longer exist.
   const olToggle = document.getElementById('cookbook-ollama-toggle');
@@ -2850,10 +2850,10 @@ function _wireTabEvents(body) {
   // Server add button, row removal, model-dir add/remove, and per-row wiring
   // are ALL owned by cookbook-hwfit.js's _hwfitInit / _wireServerEntry.
   // A duplicate add handler used to live here and fired alongside the hwfit
-  // one, appending two rows per click — removed.
+  // one, appending two rows per click - removed.
 
 
-  // HF token — save on change
+  // HF token - save on change
   const hfInput = document.getElementById('hwfit-hftoken');
   if (hfInput) {
     hfInput.addEventListener('change', async () => {
@@ -2888,7 +2888,7 @@ function _wireTabEvents(body) {
 
 // ── Main render ──
 
-// Build one server entry's HTML — shared by the Settings render loop AND the
+// Build one server entry's HTML - shared by the Settings render loop AND the
 // "+ Add server" handler, so a freshly-added server has the IDENTICAL layout
 // (Model Directory header, default-server checkmark, trash delete, platform icon).
 // forceRemote renders an editable remote entry even before a host is typed
@@ -2932,7 +2932,7 @@ export function _serverEntryHtml(s, i, defaultServer, forceRemote, isNew) {
     // sense once the server is saved.
     html += `<span style="margin-left:auto;display:inline-flex;gap:4px;align-items:center;">${_checkBtn}${_keyBtn}<button class="cookbook-server-cancel-btn" title="Discard this new server" style="height:22px;box-sizing:border-box;display:inline-flex;align-items:center;position:relative;top:-2px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;flex-shrink:0;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Cancel</button></span>`;
   } else {
-    html += `<span style="margin-left:auto;display:inline-flex;gap:4px;align-items:center;">${!isLocal ? _checkBtn + _keyBtn : ''}<span class="cookbook-srv-default${_isDefaultSrv ? ' active' : ''}" title="${_isDefaultSrv ? 'Default server — Cookbook opens here' : 'Make this the default server'}" data-srv-key="${esc(_srvKey)}">${_serverDefaultHtml(_isDefaultSrv)}</span></span>`;
+    html += `<span style="margin-left:auto;display:inline-flex;gap:4px;align-items:center;">${!isLocal ? _checkBtn + _keyBtn : ''}<span class="cookbook-srv-default${_isDefaultSrv ? ' active' : ''}" title="${_isDefaultSrv ? 'Default server - Cookbook opens here' : 'Make this the default server'}" data-srv-key="${esc(_srvKey)}">${_serverDefaultHtml(_isDefaultSrv)}</span></span>`;
   }
   html += `</span>`;
   html += `<div class="cookbook-server-row">`;
@@ -2948,7 +2948,7 @@ export function _serverEntryHtml(s, i, defaultServer, forceRemote, isNew) {
   const modelDirs = Array.isArray(s.modelDirs) && s.modelDirs.length ? s.modelDirs : ['~/.cache/huggingface/hub'];
   const activeDlDir = s.downloadDir || '';
   html += `<div class="cookbook-modeldirs" style="margin:2px 0 0 0;display:flex;flex-wrap:wrap;gap:4px;align-items:center;">`;
-  html += `<span style="width:100%;font-size:13px;font-weight:600;margin-bottom:3px;">Model Directory <span style="font-weight:400;opacity:0.5;font-size:11px;">— check the one downloads should go to</span></span>`;
+  html += `<span style="width:100%;font-size:13px;font-weight:600;margin-bottom:3px;">Model Directory <span style="font-weight:400;opacity:0.5;font-size:11px;">- check the one downloads should go to</span></span>`;
   for (let j = 0; j < modelDirs.length; j++) {
     const isDefault = modelDirs[j] === '~/.cache/huggingface/hub';
     const dirVal = isDefault ? '' : modelDirs[j];
@@ -3041,7 +3041,7 @@ function _renderRecipes() {
   // silently sending downloads to the wrong server. An empty selection means Local; the user
   // chooses a remote server explicitly via the dropdown.
 
-  // Manual download input — server picker on the same row as the repo input,
+  // Manual download input - server picker on the same row as the repo input,
   // on the left. The standalone "add server" button is gone (use Settings).
   html += `<div class="cookbook-dl-input" style="margin-top:7px;display:flex;gap:4px;align-items:center;">`;
   if (_es.servers.length > 1) {
@@ -3061,9 +3061,9 @@ function _renderRecipes() {
   html += `</div>`;
   // Ollama-library browse used to live here as its own collapsible dropdown,
   // but that duplicated the Engine filter (which already has Ollama). The
-  // standalone UI is gone — to find Ollama models, set Engine = Ollama in
+  // standalone UI is gone - to find Ollama models, set Engine = Ollama in
   // the Scan / Download section below.
-  // Latest HF models that fit — collapsible card list
+  // Latest HF models that fit - collapsible card list
   html += `<div style="margin-top:5px;position:relative;top:-11px;">`;
   html += `<div style="display:flex;gap:4px;align-items:center;">`;
   html += `<button type="button" class="memory-toolbar-btn" id="cookbook-hf-latest-toggle" style="flex:1;text-align:left;height:28px;font-size:11px;display:flex;align-items:center;gap:6px;border-radius:5px;">`;
@@ -3112,7 +3112,7 @@ function _renderRecipes() {
   html += '<button type="button" class="hwfit-gpu-btn hwfit-hw-manual-btn" id="hwfit-hw-manual-btn" title="Set hardware manually" style="flex-shrink:0;position:relative;top:-3px;left:-1px;display:inline-flex;align-items:center;gap:3px;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>EDIT</button>';
   html += '<button type="button" class="hwfit-gpu-btn hwfit-advanced-btn" id="hwfit-advanced-btn" title="Scan settings" aria-label="Scan settings" aria-expanded="false" style="flex-shrink:0;position:relative;top:-3px;left:-3px;width:26px;height:26px;padding:0;display:inline-flex;align-items:center;justify-content:center;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06A2 2 0 1 1 7.04 4.3l.06.06A1.65 1.65 0 0 0 8.92 4a1.65 1.65 0 0 0 1-1.51V2a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82 1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg></button>';
   html += '<button type="button" class="hwfit-gpu-btn hwfit-hw-refresh-btn" id="hwfit-hw-refresh-btn" title="Refresh selected server hardware and cached models" aria-label="Refresh selected server hardware and cached models" style="flex-shrink:0;position:relative;top:-3px;left:-5px;width:26px;height:26px;padding:0;display:inline-flex;align-items:center;justify-content:center;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10"/><path d="M3.51 15a9 9 0 0 0 14.85 3.36L23 14"/></svg></button>';
-  // Sort state — the clickable column headers read/write this (pewds' original
+  // Sort state - the clickable column headers read/write this (pewds' original
   // sort paradigm). Newest is reachable by clicking the Model column header.
   html += '<select class="cookbook-field-input hwfit-sort" id="hwfit-sort" style="display:none">';
   html += '<option value="newest" selected>Latest</option>';
@@ -3148,9 +3148,9 @@ function _renderRecipes() {
   html += '<option value="Q6_K">Q6</option><option value="Q5_K_M">Q5</option>';
   html += '<option value="Q3_K_M">Q3</option><option value="Q2_K">Q2</option>';
   html += '<option value="AWQ-4bit">AWQ</option><option value="FP8">FP8</option><option value="FP4">FP4</option><option value="NVFP4">NVFP4</option></select>';
-  html += '<span class="hwfit-help-chip hwfit-help-chip-inline hwfit-quant-help" title="Lower quant tiers (Q2/Q3/Q4 / AWQ-4bit) are smaller, faster, and cheaper to run, at some quality loss. Higher tiers (Q8 / FP8 / FP16 / BF16) preserve more quality but need more VRAM. “All” shows the best-scoring quant per model — pick a specific one to filter.">?</span>';
+  html += '<span class="hwfit-help-chip hwfit-help-chip-inline hwfit-quant-help" title="Lower quant tiers (Q2/Q3/Q4 / AWQ-4bit) are smaller, faster, and cheaper to run, at some quality loss. Higher tiers (Q8 / FP8 / FP16 / BF16) preserve more quality but need more VRAM. “All” shows the best-scoring quant per model - pick a specific one to filter.">?</span>';
   html += '</span>';
-  // Ctx slider — lets you target a context length for fit estimates; the
+  // Ctx slider - lets you target a context length for fit estimates; the
   // hwfit ranking uses _ctxValue() to factor that into VRAM math, so
   // dragging this re-sorts the list toward models that fit your chosen ctx.
   html += '<label class="hwfit-ctx-control" title="Context length for fit estimates. Lower it to find more models that could fit your hardware.">';
@@ -3158,7 +3158,7 @@ function _renderRecipes() {
   html += '<output id="hwfit-context-label">50k</output></label>';
   html += '</div>';
   html += '<div class="hwfit-manual-panel hidden" id="hwfit-manual-panel">';
-  html += '<span class="hwfit-manual-note" style="font-size:10px;opacity:0.6;width:100%;margin-bottom:2px;">Simulator — these values REPLACE detected hardware.</span>';
+  html += '<span class="hwfit-manual-note" style="font-size:10px;opacity:0.6;width:100%;margin-bottom:2px;">Simulator - these values REPLACE detected hardware.</span>';
   html += '<select class="hwfit-manual-mode"><option value="gpu">GPU</option><option value="ram">RAM</option></select>';
   html += '<label>GPUs<input class="hwfit-manual-gpus" type="text" inputmode="numeric" placeholder="1"></label>';
   html += '<label>VRAM per GPU<input class="hwfit-manual-vram" type="text" inputmode="decimal" placeholder="8 GB"></label>';
@@ -3236,7 +3236,7 @@ function _renderRecipes() {
   html += '</div></div>';
 
   // Settings tab
-  // Settings tab — split into two separate `.admin-card` blocks so the
+  // Settings tab - split into two separate `.admin-card` blocks so the
   // HF Token and Server config look like distinct panels (matches the
   // Download tab's block-per-section layout).
   html += '<div class="cookbook-group hidden cookbook-settings-stack" data-backend-group="Settings">';
@@ -3306,7 +3306,7 @@ if (typeof window !== 'undefined' && !window._cookbookServeEscBound) {
     if (e.key !== 'Escape') return;
     const modal = document.getElementById('cookbook-modal');
     if (!modal || modal.classList.contains('hidden')) return;
-    // Layer 1: a model row in the scan/download list is highlighted —
+    // Layer 1: a model row in the scan/download list is highlighted -
     // deselect it before doing anything else.
     const activeRow = modal.querySelector('.hwfit-row-active');
     if (activeRow) {
@@ -3316,7 +3316,7 @@ if (typeof window !== 'undefined' && !window._cookbookServeEscBound) {
       return;
     }
     const expanded = modal.querySelector('.memory-item.doclib-card-expanded');
-    if (!expanded) return;  // nothing expanded — let the modal close normally
+    if (!expanded) return;  // nothing expanded - let the modal close normally
     e.stopImmediatePropagation();
     e.preventDefault();
     // Collapse the card (mirror the toggle-close path in cookbookServe.js).
@@ -3349,7 +3349,7 @@ export async function open(opts) {
       if (s) { s.value = opts.serveSearch; s.dispatchEvent(new Event('input', { bubbles: true })); }
     }
   };
-  // If minimized, restore in place — preserve all state
+  // If minimized, restore in place - preserve all state
   if (Modals.isMinimized('cookbook-modal')) {
     Modals.restore('cookbook-modal');
     _renderRunningTab();
@@ -3385,7 +3385,7 @@ export async function open(opts) {
   await _syncFromServer();
   // `_syncFromServer` lives in cookbookRunning.js and populates *its* _envState
   // (a different object reference than this module's), then mirrors the merged
-  // state to localStorage. So ALWAYS hydrate our _envState from that mirror —
+  // state to localStorage. So ALWAYS hydrate our _envState from that mirror -
   // on a successful sync it holds the freshly-fetched servers; on failure it
   // holds the last-known state. Gating this on `!synced` left the render's
   // _envState empty whenever sync succeeded → "servers don't show".
@@ -3404,7 +3404,7 @@ export async function open(opts) {
   // Re-render on every open AFTER sync so the freshly-fetched state (servers,
   // HF token, presets) is always reflected. Gating this to once-per-page used
   // to freeze a stale/empty servers list whenever the first sync raced or
-  // returned before hydration — and since close/reopen doesn't reset the page,
+  // returned before hydration - and since close/reopen doesn't reset the page,
   // only a full reload recovered it. Re-rendering is cheap and the in-progress
   // Running tab is rendered separately just below.
   // Guard the render passes: a single broken task card must not throw out of
@@ -3416,7 +3416,7 @@ export async function open(opts) {
   try { _renderRunningTab(); } catch (e) { console.error('[cookbook] renderRunningTab failed', e); }
   // Self-heal: revive any download tasks whose tmux session is still alive
   // but were persisted as done/error (covers the "restarted server while a
-  // big multi-shard download was in flight" case — the task survived in
+  // big multi-shard download was in flight" case - the task survived in
   // tmux, the cookbook just lost track of it).
   try { _selfHealStaleTasks({ oneShot: true }); } catch {}
   if (_content) {
@@ -3439,7 +3439,7 @@ export async function open(opts) {
 }
 
 // Make the Cookbook modal draggable (it had no drag wiring at all). We do
-// NOT supply a fsClass fullscreen here — that would cover the whole viewport
+// NOT supply a fsClass fullscreen here - that would cover the whole viewport
 // incl. the sidebar. Instead tileManager.js handles maximize/tiling (its
 // safe-rect sits the window NEXT TO the sidebar), same as tasks/gallery/etc.
 let _cookbookDragWired = false;
@@ -3481,7 +3481,7 @@ function _doClose() {
 }
 
 export function close() {
-  // Full close — fires registered closeFn, removes badge, unregisters
+  // Full close - fires registered closeFn, removes badge, unregisters
   if (Modals.isRegistered('cookbook-modal')) {
     Modals.close('cookbook-modal');
   } else {
@@ -3603,7 +3603,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ── Initialize sub-modules ──
 
-// Shared SSH-port resolver — sub-modules use this via the shared bundle
+// Shared SSH-port resolver - sub-modules use this via the shared bundle
 // instead of redefining it. Kept here as the single source of truth.
 function _sshPrefix(port) {
   return port && port !== '22' ? `-p ${port} ` : '';

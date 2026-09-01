@@ -1,9 +1,9 @@
-"""Regression for issue #1961 — read_email (and reply_to_email,
+"""Regression for issue #1961 - read_email (and reply_to_email,
 download_attachment) failed on iCloud IMAP accounts.
 
 iCloud's IMAP server silently ignores the legacy bare `RFC822` fetch item: a
 `UID FETCH <uid> (RFC822)` returns status OK but only `(UID <uid>)` with no body
-tuple, so the parse treats the message as "not found" — even though list_emails
+tuple, so the parse treats the message as "not found" - even though list_emails
 works (it uses `RFC822.HEADER`, which iCloud honours). The modern
 `BODY.PEEK[]` item is honoured by iCloud and Gmail alike and doesn't set \\Seen.
 
@@ -26,16 +26,16 @@ def _full_fetches():
 
 def test_full_message_fetches_use_body_peek_not_bare_rfc822():
     items = _full_fetches()
-    assert items, "no conn.uid FETCH calls found — test anchor stale"
+    assert items, "no conn.uid FETCH calls found - test anchor stale"
     # No bare (RFC822) full-message fetch may remain (it breaks iCloud).
     assert "(RFC822)" not in items, f"a bare (RFC822) full fetch remains: {items}"
-    # The full-message reads now use BODY.PEEK[] — at least the 3 known sites.
+    # The full-message reads now use BODY.PEEK[] - at least the 3 known sites.
     assert items.count("(BODY.PEEK[])") >= 3, f"expected >=3 BODY.PEEK[] fetches: {items}"
 
 
 def test_header_and_uid_fetches_preserved():
     items = _full_fetches()
-    # Listing relies on RFC822.HEADER (iCloud honours it) — must stay.
+    # Listing relies on RFC822.HEADER (iCloud honours it) - must stay.
     assert "(RFC822.HEADER)" in items, "RFC822.HEADER fetch (used by listing) must be preserved"
     # UID-only probes must stay as-is.
     assert "(UID)" in items, "(UID) probe fetch must be preserved"

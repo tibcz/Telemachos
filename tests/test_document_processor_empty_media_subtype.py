@@ -3,7 +3,7 @@
 The data-URL subtype was derived only from the stored file's extension
 (`image_format = ext[1:]`). A pasted screenshot or any file whose stored id
 carries no extension yields `ext == ""`, so the emitted URL was
-`data:image/;base64,...` — an empty MIME subtype (invalid per RFC 2046) that
+`data:image/;base64,...` - an empty MIME subtype (invalid per RFC 2046) that
 vision/audio endpoints reject, silently dropping the attachment. When the
 extension is missing, fall back to the resolved MIME subtype. Extensions that
 are present are unchanged.

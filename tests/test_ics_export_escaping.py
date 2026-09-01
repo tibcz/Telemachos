@@ -1,4 +1,4 @@
-"""Tests for ICS export correctness — calendar name escaping and UTC flag."""
+"""Tests for ICS export correctness - calendar name escaping and UTC flag."""
 import types
 from datetime import datetime
 from unittest.mock import MagicMock, patch

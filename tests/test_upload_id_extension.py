@@ -1,7 +1,7 @@
 """Upload ids must satisfy UPLOAD_ID_RE for every accepted filename.
 
 secure_filename keeps '_' and '-', so a filename whose final extension
-contains them (e.g. "photo.jpg-1" — the suffix browsers add to duplicate
+contains them (e.g. "photo.jpg-1" - the suffix browsers add to duplicate
 downloads, or "doc.v1_final") produced an id like "<hex>.jpg-1" that fails
 is_valid_upload_id. Since every read path (download, resolve, vision)
 validates the id first, the saved bytes became permanently unreachable.

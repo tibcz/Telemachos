@@ -17,8 +17,8 @@ const render = (t) => md.mdToHtml(t);
 
 // The two render pipelines chat.js actually feeds streamed text through. BOTH wrap
 // the source in squashOutsideCode; the main path additionally runs
-// processWithThinking (which floats <think> blocks to the top — a non-local
-// transform). Fuzzing the corpus through these — not just bare mdToHtml — closes
+// processWithThinking (which floats <think> blocks to the top - a non-local
+// transform). Fuzzing the corpus through these - not just bare mdToHtml - closes
 // the gap where a squashOutsideCode whitespace/fence edge could break the split.
 const renderLiveReply = (t) => md.mdToHtml(md.squashOutsideCode(t)); // chat.js live-reply path
 const renderMain = (t) => md.processWithThinking(md.squashOutsideCode(t)); // chat.js main path
@@ -64,10 +64,10 @@ const RENDERERS = [
 
 for (const [rname, renderFn] of RENDERERS) {
   for (const [name, text] of CORPUS) {
-    test(`invariant — ${rname} — char-by-char — ${name}`, () => {
+    test(`invariant - ${rname} - char-by-char - ${name}`, () => {
       simulate(text, everyPrefix(text), renderFn);
     });
-    test(`invariant — ${rname} — whitespace-chunked — ${name}`, () => {
+    test(`invariant - ${rname} - whitespace-chunked - ${name}`, () => {
       simulate(text, chunkAtWhitespace(text), renderFn);
     });
   }
@@ -78,12 +78,12 @@ for (const [rname, renderFn] of RENDERERS) {
 // or across a think block that processWithThinking floats to the top.
 const THINKING_CORPUS = [
   ['leading think then answer', '<think>Let me reason about it.</think>\n\nThe answer is 42.'],
-  ['think with internal blank lines', '<think>Step one.\n\nStep two.\n\nStep three.</think>\n\nDone — the result follows.'],
+  ['think with internal blank lines', '<think>Step one.\n\nStep two.\n\nStep three.</think>\n\nDone - the result follows.'],
   ['think then several paragraphs', '<thinking>analyzing the request</thinking>\n\nFirst point made here.\n\nSecond point made here.\n\nThird and final point.'],
   ['think then code block', '<think>I should show code.</think>\n\nHere:\n\n```python\nprint("hi")\n```\n\nThat is the snippet.'],
 ];
 for (const [name, text] of THINKING_CORPUS) {
-  test(`invariant (processWithThinking) — char-by-char — ${name}`, () => {
+  test(`invariant (processWithThinking) - char-by-char - ${name}`, () => {
     simulate(text, everyPrefix(text), renderMain);
   });
 }

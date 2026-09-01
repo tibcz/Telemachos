@@ -3,7 +3,7 @@
 `_resolve_ddg_redirect` only extracts the embedded `uddg` destination when the
 redirect link is actually on DuckDuckGo. The host check used
 `"duckduckgo.com" in parsed.hostname`, which also matches look-alike hosts such
-as `duckduckgo.com.evil.com` or `notduckduckgo.com` — so a result link on one of
+as `duckduckgo.com.evil.com` or `notduckduckgo.com` - so a result link on one of
 those would be silently rewritten to its embedded `uddg` target. Same
 substring-vs-hostname pitfall fixed for provider detection in 54ecfa3.
 """
@@ -24,7 +24,7 @@ def test_resolves_genuine_ddg_redirects():
 def test_ignores_lookalike_hosts():
     for host in ("duckduckgo.com.evil.com", "notduckduckgo.com"):
         url = f"https://{host}/l/?uddg=https%3A%2F%2Fexample.com"
-        # Must be returned unchanged — it is NOT a DuckDuckGo redirect.
+        # Must be returned unchanged - it is NOT a DuckDuckGo redirect.
         assert _resolve_ddg_redirect(url) == url
 
 

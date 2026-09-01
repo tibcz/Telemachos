@@ -1,5 +1,5 @@
 # services/tts/__init__.py
-"""TTS service — text-to-speech."""
+"""TTS service - text-to-speech."""
 
 from .tts_service import (
     TTSService,

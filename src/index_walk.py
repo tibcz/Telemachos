@@ -3,7 +3,7 @@
 Single source of the hidden-dir / junk-dir / hidden-file skip so the vector
 index (``rag_vector.index_personal_documents``) and the keyword index
 (``personal_docs.load_personal_index``) apply the exact same policy and cannot
-drift — the drift is what left the keyword path sweeping in `.obsidian/`,
+drift - the drift is what left the keyword path sweeping in `.obsidian/`,
 `.git/`, and `node_modules/` after the vector path was fixed.
 """
 from typing import List, Set
@@ -21,7 +21,7 @@ def prune_index_dirs(dirs: List[str]) -> None:
     junk directories so the walk never descends into them.
 
     The explicitly-targeted walk root is never a member of ``dirs`` (it is the
-    ``dirpath`` argument), so it stays exempt — a user who deliberately points
+    ``dirpath`` argument), so it stays exempt - a user who deliberately points
     indexing at a hidden directory gets its contents, minus nested junk.
     """
     dirs[:] = [

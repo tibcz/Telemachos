@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""telemachos-signature — shell wrapper for stored email signature images.
+"""telemachos-signature - shell wrapper for stored email signature images.
 
 The web UI lets you draw a signature; the result lives as a PNG (and
 optional SVG) in the `signatures` table, keyed by id + owner.
@@ -44,7 +44,7 @@ def _decode_png_data(data_png: str) -> bytes:
 
 def cmd_list(args):
     """No `Signature` SQLAlchemy model is registered for the
-    `signatures` table — query via raw SQL so we don't depend on it."""
+    `signatures` table - query via raw SQL so we don't depend on it."""
     with engine.connect() as conn:
         rows = conn.execute(text(
             "SELECT id, owner, name, width, height, "

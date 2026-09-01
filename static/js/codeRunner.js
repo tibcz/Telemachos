@@ -42,7 +42,7 @@ function showOutput(panel, text, isError) {
   el.textContent = text;
   panel.innerHTML = '';
   panel.appendChild(el);
-  // Copy button — visible labeled pill at the top-right of the panel
+  // Copy button - visible labeled pill at the top-right of the panel
   // itself (no separate footer / divider, no tiny icon corner).
   if (text) {
     const cbtn = document.createElement('button');
@@ -77,7 +77,7 @@ function showOutput(panel, text, isError) {
       cbtn.textContent = ok ? 'Copied!' : 'Copy failed';
       setTimeout(() => { cbtn.innerHTML = orig; }, 1500);
     });
-    // Button lives directly in the panel — no wrapping bar. The panel is
+    // Button lives directly in the panel - no wrapping bar. The panel is
     // position:relative so the button can sit absolute-top-right of it.
     panel.appendChild(cbtn);
   }
@@ -87,20 +87,20 @@ function showOutput(panel, text, isError) {
 }
 
 /**
- * Legacy absolute-positioned copy button — replaced by the inline bar in
+ * Legacy absolute-positioned copy button - replaced by the inline bar in
  * showOutput. Kept here as no-op so any earlier callers don't crash.
  */
 function addCopyBtn_unused(panel, text) {
   if (!text) return;
   const btn = document.createElement('button');
-  btn.type = 'button';  // Default <button> type is 'submit' — explicit "button" avoids any accidental form submission.
+  btn.type = 'button';  // Default <button> type is 'submit' - explicit "button" avoids any accidental form submission.
   btn.className = 'code-runner-copy';
   btn.title = 'Copy output';
   btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
   btn.addEventListener('click', async (e) => {
     e.stopPropagation();
     e.preventDefault();
-    // Synchronous copy via a hidden textarea + execCommand — this is the
+    // Synchronous copy via a hidden textarea + execCommand - this is the
     // single most reliable path across browsers / non-secure contexts /
     // mobile Firefox. Run BEFORE any async navigator.clipboard attempt so
     // the user-gesture context is preserved.
@@ -340,7 +340,7 @@ export async function runServer(code, panel, lang) {
     } else if (data.stdout && data.stdout.trim()) {
       showOutput(panel, data.stdout, false);
     } else {
-      showOutput(panel, '(no output)' + (data.exit_code ? ' — exit code ' + data.exit_code : ''), !data.exit_code ? false : true);
+      showOutput(panel, '(no output)' + (data.exit_code ? ' - exit code ' + data.exit_code : ''), !data.exit_code ? false : true);
     }
     if (data.exit_code && data.exit_code !== 0) {
       var exitEl = document.createElement('div');
@@ -362,7 +362,7 @@ export function runHTML(code, panel) {
 
   const win = window.open('', '_blank', 'width=800,height=600,menubar=no,toolbar=no,location=no,status=no');
   if (!win) {
-    showOutput(panel, 'Popup blocked — please allow popups for this site.', true);
+    showOutput(panel, 'Popup blocked - please allow popups for this site.', true);
     addCloseBtn(panel);
     return;
   }
@@ -376,7 +376,7 @@ export function runHTML(code, panel) {
 }
 
 /**
- * Main entry point — called when a Run button is clicked
+ * Main entry point - called when a Run button is clicked
  */
 export function run(btn) {
   const code = btn.getAttribute('data-code');

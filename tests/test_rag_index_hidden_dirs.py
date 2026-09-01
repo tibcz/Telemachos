@@ -1,4 +1,4 @@
-"""Regression guard for #5559 — directory indexing must skip hidden directories,
+"""Regression guard for #5559 - directory indexing must skip hidden directories,
 hidden files, and well-known junk directories.
 
 VectorRAG.index_personal_documents walked the whole tree with no pruning, so
@@ -6,7 +6,7 @@ pointing RAG at a real-world folder (an Obsidian vault, a git repo) swept in
 `.obsidian/` plugin JavaScript, `.git/` internals, `node_modules/`, etc. The
 junk multiplied indexing time and polluted retrieval.
 
-These tests are hermetic — no chromadb; VectorRAG is created via __new__ (skip
+These tests are hermetic - no chromadb; VectorRAG is created via __new__ (skip
 Chroma connect) with add_document stubbed to record which files get indexed.
 """
 import os
@@ -64,7 +64,7 @@ def test_index_skips_hidden_files(tmp_path):
 
 
 def test_explicitly_passed_hidden_root_is_still_indexed(tmp_path):
-    """Pruning applies to children only — a user who deliberately points RAG at
+    """Pruning applies to children only - a user who deliberately points RAG at
     a hidden directory gets its contents, minus nested hidden/junk dirs."""
     root = tmp_path / ".notes"
     _write(root / "idea.md")

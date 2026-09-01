@@ -10,7 +10,7 @@ create_session, list_sessions, send_to_session and manage_session moved to
 src/agent_tools/session_tools.py. Those modules reuse get_session_manager /
 _resolve_model / AI_CHAT_TIMEOUT from here.
 
-These are agent tools — the LLM writes fenced code blocks and they execute
+These are agent tools - the LLM writes fenced code blocks and they execute
 through the standard agent_tools.py pipeline.
 """
 
@@ -79,8 +79,8 @@ def _resolve_model(spec: str, owner: Optional[str] = None, model_type: Optional[
     """Resolve a model specifier to (endpoint_url, model_id, headers).
 
     Accepts:
-      "model_name"              — searches all configured endpoints
-      "model_name@endpoint_name" — looks up specific endpoint by display name
+      "model_name"              - searches all configured endpoints
+      "model_name@endpoint_name" - looks up specific endpoint by display name
 
     Raises ValueError if model not found.
     """
@@ -346,11 +346,11 @@ async def do_manage_memory(content: str, session_id: Optional[str] = None, owner
       Line 2+: action-specific params
 
     Actions:
-      list                    — list all memories (optional line 2: category filter)
-      add                     — line 2: text, optional line 3: category (fact|event|contact|preference)
-      edit                    — line 2: memory_id, line 3: new text
-      delete                  — line 2: memory_id
-      search                  — line 2: query
+      list                    - list all memories (optional line 2: category filter)
+      add                     - line 2: text, optional line 3: category (fact|event|contact|preference)
+      edit                    - line 2: memory_id, line 3: new text
+      delete                  - line 2: memory_id
+      search                  - line 2: query
     """
     if not _memory_manager:
         return {"error": "Memory manager not available"}
@@ -376,7 +376,7 @@ async def do_manage_memory(content: str, session_id: Optional[str] = None, owner
             text = m.get("text", "")
             if len(text) > 150:
                 text = text[:150] + "..."
-            result_lines.append(f"- [{cat}] `{mid}` — {text}")
+            result_lines.append(f"- [{cat}] `{mid}` - {text}")
         return {"results": "\n".join(result_lines)}
 
     elif action == "add":
@@ -396,7 +396,7 @@ async def do_manage_memory(content: str, session_id: Optional[str] = None, owner
             memories = _memory_manager.load_all_for_update()
         except MemoryStoreUnreadable as e:
             logger.error("Refusing to add memory, store unreadable: %s", e)
-            return {"error": "Memory store is temporarily unreadable — nothing was saved."}
+            return {"error": "Memory store is temporarily unreadable - nothing was saved."}
         memories.append(entry)
         _memory_manager.save(memories)
 
@@ -511,7 +511,7 @@ async def do_manage_memory(content: str, session_id: Optional[str] = None, owner
             cat = m.get("category", "fact")
             mid = m.get("id", "?")[:8]
             text = m.get("text", "")
-            result_lines.append(f"- [{cat}] `{mid}` — {text}")
+            result_lines.append(f"- [{cat}] `{mid}` - {text}")
         return {"results": "\n".join(result_lines)}
 
     else:
@@ -621,14 +621,14 @@ async def do_ui_control(content: str, session_id: Optional[str] = None, owner: O
       Line 2+: action-specific params
 
     Actions:
-      toggle <name> <on|off>  — Toggle a setting (web, bash, rag, research, incognito, document_editor)
-      set_mode <agent|chat>   — Switch between agent and chat mode
-      switch_model <model>    — Change the model for the current session
-      set_theme <preset>      — Apply a built-in theme preset (dark, light, midnight, paper, cyberpunk, retrowave, forest, ocean, ume, copper, terminal, organs, lavender, gpt, claude, cute)
-      create_theme <name> <bg> <fg> <panel> <border> <accent> [key=val ...] — Create custom theme. Optional key=val: advanced color overrides AND background effects: bgPattern=<none|dots|synapse|rain|constellations|perlin-flow|petals|sparkles|embers>, bgEffectColor=#RRGGBB, bgEffectIntensity=<num>, bgEffectSize=<num>, frosted=true|false
-      open_panel <name>       — Open a panel (documents, gallery, email, sessions, notes, memories, skills, settings, cookbook)
-      open_email_reply <uid> [folder] [reply|reply-all|ai-reply] [body text] — Open a reply draft document for an email; does not send. ALWAYS append the body text when the user told you what to say (one-shot draft); only omit body when the user just asked to "open a reply" without content.
-      get_toggles             — Return current toggle states (server-side knowledge)
+      toggle <name> <on|off>  - Toggle a setting (web, bash, rag, research, incognito, document_editor)
+      set_mode <agent|chat>   - Switch between agent and chat mode
+      switch_model <model>    - Change the model for the current session
+      set_theme <preset>      - Apply a built-in theme preset (dark, light, midnight, paper, cyberpunk, retrowave, forest, ocean, ume, copper, terminal, organs, lavender, gpt, claude, cute)
+      create_theme <name> <bg> <fg> <panel> <border> <accent> [key=val ...] - Create custom theme. Optional key=val: advanced color overrides AND background effects: bgPattern=<none|dots|synapse|rain|constellations|perlin-flow|petals|sparkles|embers>, bgEffectColor=#RRGGBB, bgEffectIntensity=<num>, bgEffectSize=<num>, frosted=true|false
+      open_panel <name>       - Open a panel (documents, gallery, email, sessions, notes, memories, skills, settings, cookbook)
+      open_email_reply <uid> [folder] [reply|reply-all|ai-reply] [body text] - Open a reply draft document for an email; does not send. ALWAYS append the body text when the user told you what to say (one-shot draft); only omit body when the user just asked to "open a reply" without content.
+      get_toggles             - Return current toggle states (server-side knowledge)
     """
     lines = content.strip().split("\n")
     if not lines:
@@ -642,7 +642,7 @@ async def do_ui_control(content: str, session_id: Optional[str] = None, owner: O
             return {"error": "toggle needs: toggle <name> <on|off>"}
         toggle_name = parts[1].lower()
         state = parts[2].lower() in ("on", "true", "1", "yes", "enable", "enabled")
-        # Friendly aliases — users say "shell" / "search" naturally.
+        # Friendly aliases - users say "shell" / "search" naturally.
         _toggle_aliases = {
             "shell": "bash",
             "terminal": "bash",
@@ -893,7 +893,7 @@ async def do_ui_control(content: str, session_id: Optional[str] = None, owner: O
         if mode not in ("reply", "reply-all", "ai-reply"):
             mode = "reply"
         # Body is REQUIRED for the agent path. Opening an empty draft is what
-        # users do by clicking the Reply button — they don't ask the agent
+        # users do by clicking the Reply button - they don't ask the agent
         # for that. Every agent invocation of open_email_reply MUST include
         # the body. Reject empty so the agent retries with the content the
         # user asked for. Exception: ai-reply mode triggers the existing
@@ -901,7 +901,7 @@ async def do_ui_control(content: str, session_id: Optional[str] = None, owner: O
         if not body and mode != "ai-reply":
             return {
                 "error": (
-                    "open_email_reply called without body. The agent path REQUIRES a body — "
+                    "open_email_reply called without body. The agent path REQUIRES a body - "
                     "opening an empty draft is the wrong response when the user asked you to write. "
                     "Re-call with the reply text included: "
                     f"`open_email_reply {uid} {folder or 'INBOX'} {mode} <your reply text here>`. "
@@ -944,7 +944,7 @@ async def do_generate_image(content: str, session_id: Optional[str] = None, owne
       Line 1: prompt describing the image
       Line 2: model name (optional, default auto-detects: prefers gpt-image-1.5 > gpt-image-1)
       Line 3: size (optional, defaults to 1024x1024)
-      Line 4: quality (optional, defaults to medium — options: low, medium, high, auto)
+      Line 4: quality (optional, defaults to medium - options: low, medium, high, auto)
     """
     import base64
     import httpx
@@ -1177,7 +1177,7 @@ async def do_generate_image(content: str, session_id: Optional[str] = None, owne
             }
 
     except httpx.TimeoutException:
-        return {"error": "Image generation timed out (300s). The model may be overloaded — try again or use quality=low."}
+        return {"error": "Image generation timed out (300s). The model may be overloaded - try again or use quality=low."}
     except Exception as e:
         return {
             "error": f"Image generation error: {str(e)}",

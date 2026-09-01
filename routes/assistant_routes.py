@@ -1,4 +1,4 @@
-"""Personal assistant routes — resolve the per-user singleton, read/write
+"""Personal assistant routes - resolve the per-user singleton, read/write
 its settings, and list its scheduled check-in tasks.
 
 The personal assistant is just a specially-flagged CrewMember that owns one
@@ -108,7 +108,7 @@ def setup_assistant_routes(task_scheduler) -> APIRouter:
         finally:
             db.close()
         # Seed lazily. This is the same code the startup hook runs for each
-        # user — safe to call again, it's idempotent.
+        # user - safe to call again, it's idempotent.
         await task_scheduler.ensure_assistant_defaults(owner)
         db = SessionLocal()
         try:
@@ -296,7 +296,7 @@ def setup_assistant_routes(task_scheduler) -> APIRouter:
         user = _owner(request)
         db = SessionLocal()
         try:
-            # SECURITY: 404 if the task doesn't belong to this user — without
+            # SECURITY: 404 if the task doesn't belong to this user - without
             # this any authenticated user could poll the status of any task_id.
             task = db.query(ScheduledTask).filter(ScheduledTask.id == task_id).first()
             if not task:

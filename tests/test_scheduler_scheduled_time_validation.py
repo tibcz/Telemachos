@@ -5,7 +5,7 @@ compute_next_run parsed scheduled_time as "HH:MM" with a bare
 "25:00", "9:" or ":30" raised IndexError/ValueError. The POST /tasks create
 route calls it with the user/LLM-supplied scheduled_time *before* its try block
 (and only validates cron), so a bad value surfaced as an unhandled 500 instead
-of a clean 400 — and the same crash could fire inside the scheduler loop when
+of a clean 400 - and the same crash could fire inside the scheduler loop when
 recomputing next_run for an already-stored bad row.
 
 Now it fails closed (returns None) like an invalid cron expression does.

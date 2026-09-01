@@ -3,11 +3,11 @@ assistant tool-call message.
 
 Commit cb13d09 changed _append_tool_results so that when the model emits ONLY
 tool calls (no prose), the follow-up assistant message carries content=None
-(JSON null) instead of "" — Google Gemini's OpenAI-compatible endpoint and
+(JSON null) instead of "" - Google Gemini's OpenAI-compatible endpoint and
 Ollama reject tool_calls alongside an empty-string content with HTTP 400.
 
 But _sanitize_llm_messages drops None values (`v is not None`) and then required
-"content" to be present, so it dropped that assistant message entirely — leaving
+"content" to be present, so it dropped that assistant message entirely - leaving
 a dangling role:"tool" result with no parent tool_calls. That re-breaks native
 tool-calling on the follow-up round (and regresses providers that accepted ""
 before, since the message is now removed instead of sent). cb13d09's tests only

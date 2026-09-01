@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""telemachos-cookbook — shell wrapper for the cookbook feature.
+"""telemachos-cookbook - shell wrapper for the cookbook feature.
 
 The web UI orchestrates HuggingFace model downloads + local serving
 through tmux sessions and writes its bookkeeping to
@@ -42,7 +42,7 @@ from pathlib import Path
 _DATA_DIR = Path(os.environ.get("DATA_DIR", str(_REPO_ROOT / "data")))
 _STATE_PATH = _DATA_DIR / "cookbook_state.json"
 
-# Mirror routes/shell_routes.TMUX_LOG_DIR — don't import it because that pulls
+# Mirror routes/shell_routes.TMUX_LOG_DIR - don't import it because that pulls
 # the whole web app into the process. Match its definition instead.
 import tempfile
 _TMUX_LOG_DIR = Path(tempfile.gettempdir()) / "telemachos-tmux"
@@ -99,7 +99,7 @@ def cmd_list(args) -> None:
 # ─── gpus ────────────────────────────────────────────────────────────
 
 def _macos_metal_gpu() -> list | None:
-    """Apple Silicon has no discrete VRAM — report total unified memory as the
+    """Apple Silicon has no discrete VRAM - report total unified memory as the
     GPU budget so the web UI's picker shows the Mac's Metal GPU instead of
     'no GPU'. `free` is approximated from vm_stat (page-granular); macOS doesn't
     expose Metal utilization to the shell, so util is 0. Returns None off macOS."""
@@ -155,7 +155,7 @@ def _macos_metal_gpu() -> list | None:
 
 
 def cmd_gpus(args) -> None:
-    """Same shape the web UI gets — index/name/free_mb/total_mb/used_mb/
+    """Same shape the web UI gets - index/name/free_mb/total_mb/used_mb/
     util_pct/uuid. On Apple Silicon (no nvidia-smi) reports the Metal GPU's
     unified memory instead. Returns `[]` with an `error` field only on a
     CPU-only non-Mac box. Pass `--host user@box` to run over SSH."""
@@ -194,7 +194,7 @@ def cmd_gpus(args) -> None:
         emit({"ok": False, "error": msg, "gpus": []}, args)
         return
     if out.returncode != 0:
-        # nvidia-smi present but errored (or no NVIDIA GPU) — fall back to Metal.
+        # nvidia-smi present but errored (or no NVIDIA GPU) - fall back to Metal.
         if not prefix:
             mac = _macos_metal_gpu()
             if mac is not None:
@@ -230,7 +230,7 @@ def cmd_gpus(args) -> None:
 def cmd_cached(args) -> None:
     """List cached HuggingFace models. Walks ~/.cache/huggingface/hub
     (or $HF_HOME) and returns directory names with size summaries.
-    Cheap version of the route's full-scan helper — good enough for a
+    Cheap version of the route's full-scan helper - good enough for a
     `which models do I already have` glance."""
     hf_home = Path(os.environ.get("HF_HOME") or os.path.expanduser("~/.cache/huggingface"))
     hub = hf_home / "hub"
@@ -314,7 +314,7 @@ def cmd_download(args) -> None:
     over SSH. The remote needs `tmux` and `hf` installed; the local
     side just gets a session-id back."""
     if not re.fullmatch(r"[\w.-]+/[\w.-]+", args.repo):
-        fail(f"invalid repo id {args.repo!r} — expected `org/name`")
+        fail(f"invalid repo id {args.repo!r} - expected `org/name`")
 
     session_id = f"cookbook-dl-{uuid.uuid4().hex[:8]}"
     cmd_parts = ["hf", "download", args.repo]
@@ -324,7 +324,7 @@ def cmd_download(args) -> None:
         cmd_parts += ["--revision", args.revision]
 
     if args.host:
-        # Remote — let the remote shell decide log location.
+        # Remote - let the remote shell decide log location.
         remote_log = f"/tmp/telemachos-tmux/{session_id}.log"
         hf_cmd = " ".join(map(_shell_quote, cmd_parts))
         remote_shell_cmd = (
@@ -359,7 +359,7 @@ def cmd_download(args) -> None:
             check=True, capture_output=True, text=True, timeout=10,
         )
     except FileNotFoundError:
-        fail("tmux not installed — can't run background sessions from CLI")
+        fail("tmux not installed - can't run background sessions from CLI")
     except subprocess.CalledProcessError as e:
         fail(f"tmux failed: {e.stderr or e.stdout}")
 
@@ -374,7 +374,7 @@ def cmd_download(args) -> None:
 
 
 def _shell_quote(s: str) -> str:
-    """Minimal POSIX-shell quoting — wraps `s` in single quotes and
+    """Minimal POSIX-shell quoting - wraps `s` in single quotes and
     escapes any embedded single quotes."""
     return "'" + s.replace("'", "'\\''") + "'"
 
@@ -384,7 +384,7 @@ def _shell_quote(s: str) -> str:
 def cmd_serve(args) -> None:
     """Run an arbitrary serve command in a detached tmux session.
 
-    Deliberately not opinionated about flags — the web UI handles
+    Deliberately not opinionated about flags - the web UI handles
     platform-specific template generation. For the CLI you pass the full
     serve command via `--cmd`. Common patterns:
 
@@ -423,7 +423,7 @@ def cmd_state_set(args) -> None:
     """Write JSON from stdin to data/cookbook_state.json. Atomic via
     a temp-file + rename so a partial write can't corrupt the file.
 
-    Before overwriting we copy the previous state to .bak — if you ever
+    Before overwriting we copy the previous state to .bak - if you ever
     nuke your live state by piping the wrong thing into stdin, restore
     with `cp data/cookbook_state.json.bak data/cookbook_state.json`."""
     data = sys.stdin.read()
@@ -436,7 +436,7 @@ def cmd_state_set(args) -> None:
     if not isinstance(obj, dict):
         fail("invalid cookbook state: expected a JSON object")
     _STATE_PATH.parent.mkdir(parents=True, exist_ok=True)
-    # Backup the existing state — undo button if a bad pipe clobbers it.
+    # Backup the existing state - undo button if a bad pipe clobbers it.
     if _STATE_PATH.exists():
         bak = _STATE_PATH.with_suffix(_STATE_PATH.suffix + ".bak")
         try:
@@ -465,7 +465,7 @@ def _ssh_prefix(host: str | None, port: str | None) -> list[str]:
 # ─── kill ────────────────────────────────────────────────────────────
 
 def cmd_kill(args) -> None:
-    """Terminate a tmux session by name. Idempotent — exits 0 even if
+    """Terminate a tmux session by name. Idempotent - exits 0 even if
     the session is already gone. Pass `--host user@box` to kill a
     remote session created via `download --host`."""
     base = ["tmux", "kill-session", "-t", args.session]

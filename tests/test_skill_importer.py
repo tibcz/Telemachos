@@ -1,4 +1,4 @@
-"""Skill URL importer — GitHub path parsing."""
+"""Skill URL importer - GitHub path parsing."""
 import ipaddress
 
 import pytest

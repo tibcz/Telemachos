@@ -5,7 +5,7 @@ replacement so the legacy import path and the canonical ``routes.compare.*``
 path resolve to the *same* module object. This is required because
 ``test_endpoint_owner_scope_followup.py`` uses ``import routes.compare_routes
 as cr`` followed by ``monkeypatch.setattr(cr, "SessionLocal", ...)`` /
-``"_owned_endpoint_by_url"`` / ``"_owned_endpoint_by_id"`` — for those patches
+``"_owned_endpoint_by_url"`` / ``"_owned_endpoint_by_id"`` - for those patches
 to take effect at runtime, the legacy module object and the canonical one
 must be identical.
 """

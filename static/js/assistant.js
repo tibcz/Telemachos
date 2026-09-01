@@ -1,4 +1,4 @@
-// Personal Assistant — sidebar entry, settings modal, and chat-header extras.
+// Personal Assistant - sidebar entry, settings modal, and chat-header extras.
 //
 // The Assistant is just a specially-flagged CrewMember whose pinned Session
 // lives alongside normal chats. The sidebar button resolves the per-user
@@ -271,7 +271,7 @@ function _renderSettingsBody(body, data, tzList) {
     body.querySelectorAll('.assistant-tool-cb').forEach(cb => { cb.checked = false; });
   });
 
-  // ── Character picker — populate from presets + templates ──
+  // ── Character picker - populate from presets + templates ──
   const charPick = body.querySelector('#assistant-character-pick');
   const personalityEl = body.querySelector('#assistant-personality');
   if (charPick && personalityEl) {
@@ -413,7 +413,7 @@ export async function openAssistantSettings() {
   }
 }
 
-// Sidebar wiring removed — Assistant chat + settings now live as
+// Sidebar wiring removed - Assistant chat + settings now live as
 // Activity / Settings tabs inside the Tasks modal (see tasks.js). The
 // exports below are still used by tasks.js to surface those views.
 

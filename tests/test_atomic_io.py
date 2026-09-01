@@ -37,7 +37,7 @@ def _tmp_siblings(directory: Path, name: str) -> list:
 
 
 # ---------------------------------------------------------------------------
-# atomic_write_json — happy path.
+# atomic_write_json - happy path.
 # ---------------------------------------------------------------------------
 def test_atomic_write_json_round_trips_object(tmp_path):
     target = tmp_path / "data.json"
@@ -123,7 +123,7 @@ def test_atomic_write_json_concurrent_writers_do_not_collide(tmp_path):
 
 
 # ---------------------------------------------------------------------------
-# atomic_write_json — failure paths
+# atomic_write_json - failure paths
 # ---------------------------------------------------------------------------
 def test_atomic_write_json_preserves_target_when_serialization_fails(tmp_path):
     target = tmp_path / "data.json"
@@ -159,7 +159,7 @@ def test_atomic_write_json_preserves_target_when_replace_fails(tmp_path, monkeyp
 
 
 # ---------------------------------------------------------------------------
-# atomic_write_text — happy path.
+# atomic_write_text - happy path.
 # ---------------------------------------------------------------------------
 def test_atomic_write_text_round_trips(tmp_path):
     target = tmp_path / "note.txt"
@@ -207,7 +207,7 @@ def test_atomic_write_text_rejects_non_string_before_tmp_file(tmp_path):
 
 
 # ---------------------------------------------------------------------------
-# atomic_write_text — failure paths
+# atomic_write_text - failure paths
 # ---------------------------------------------------------------------------
 def test_atomic_write_text_preserves_target_when_replace_fails(tmp_path, monkeypatch):
     target = tmp_path / "note.txt"

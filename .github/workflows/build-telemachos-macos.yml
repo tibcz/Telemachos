@@ -74,12 +74,12 @@ jobs:
             build/venv
             build/fastembed_seed
           # The venv records absolute paths to a specific interpreter, so a
-          # patch-level Python bump on the runner must invalidate it — a stale
+          # patch-level Python bump on the runner must invalidate it - a stale
           # venv fails later and much less legibly than a cache miss.
           key: telemachos-buildenv-${{ runner.os }}-py${{ steps.python.outputs.python-version }}-${{ hashFiles('packaging/macos/requirements-standalone.txt') }}
 
       # Runs before the build so a stale model entry fails in seconds rather
-      # than after a full compile — and, more importantly, so a broken download
+      # than after a full compile - and, more importantly, so a broken download
       # link can never reach a release.
       - name: Validate the model catalog against HuggingFace
         run: python3 packaging/macos/validate_model_catalog.py
@@ -217,7 +217,7 @@ jobs:
           # printf rather than an indented heredoc: a heredoc inside a nested
           # YAML block carries its indentation straight into the release notes.
           printf '%s\n' \
-            '**Telemachos for Apple Silicon** — a self-contained AI workspace. Download the disk image, drag Telemachos to Applications, open it. No Python, no Docker, no server to run.' \
+            '**Telemachos for Apple Silicon** - a self-contained AI workspace. Download the disk image, drag Telemachos to Applications, open it. No Python, no Docker, no server to run.' \
             '' \
             '### Install' \
             '' \
@@ -225,7 +225,7 @@ jobs:
             '2. Open it and drag **Telemachos** to Applications.' \
             '3. **Right-click** Telemachos in Applications, choose **Open**, then **Open** again.' \
             '' \
-            'Step 3 happens once. This build is signed ad-hoc — a real signature, but without an Apple Developer certificate behind it, so macOS asks you to confirm the first launch. Equivalent from Terminal:' \
+            'Step 3 happens once. This build is signed ad-hoc - a real signature, but without an Apple Developer certificate behind it, so macOS asks you to confirm the first launch. Equivalent from Terminal:' \
             '' \
             '```' \
             'xattr -dr com.apple.quarantine /Applications/Telemachos.app' \

@@ -1,7 +1,7 @@
 """Regression: _parse_dt's dateutil fallback must return naive datetimes.
 
 _parse_dt documents that it returns local-naive datetimes to match the DB
-schema (CalendarEvent.dtstart is naive), and every return path strips tz —
+schema (CalendarEvent.dtstart is naive), and every return path strips tz -
 except the last-resort dateutil branch, which returned dateutil's value
 verbatim. An offset-bearing non-ISO input (e.g. RFC-2822
 "Mon, 05 Jan 2026 14:00:00 +0900", which datetime.fromisoformat rejects but

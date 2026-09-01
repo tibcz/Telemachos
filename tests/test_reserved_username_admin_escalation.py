@@ -5,7 +5,7 @@
 and the cookie auth path in app.py sets `current_user` to the raw username.
 Before this fix nothing reserved that name, so a self-service signup (or an
 admin typo) creating the account "internal-tool" was silently treated as an
-admin by every `require_admin`-gated route — a privilege escalation. "api"
+admin by every `require_admin`-gated route - a privilege escalation. "api"
 is reserved for the same reason (bearer-token owner attribution collision).
 
 See the privilege-escalation finding from the 2026-06 code review.

@@ -31,7 +31,7 @@ def current_date_context() -> str:
     return (
         f"Today's date is {now.strftime('%B %d, %Y')} ({now.strftime('%Y-%m-%d')}). "
         f"When a search query needs a year or refers to 'latest'/'current'/"
-        f"'this year', use {now.strftime('%Y')} or relative wording — never a "
+        f"'this year', use {now.strftime('%Y')} or relative wording - never a "
         f"year inferred from training data.\n\n"
     )
 
@@ -97,7 +97,7 @@ report that answers the original question as completely as possible given all ev
 Remove redundancy, resolve contradictions, and maintain logical flow. \
 Keep source URLs as inline citations where relevant.
 
-Write only the updated report — no preamble or meta-commentary.
+Write only the updated report - no preamble or meta-commentary.
 """
 
 STOP_PROMPT = """\
@@ -120,8 +120,8 @@ If rounds completed is well below the target, prefer continuing unless the \
 report is already exhaustive.
 
 Reply with ONLY "YES" or "NO" followed by a brief one-sentence reason.
-Example: "YES — The report covers all major aspects with evidence from multiple sources."
-Example: "NO — We still lack information about the economic impact."
+Example: "YES - The report covers all major aspects with evidence from multiple sources."
+Example: "NO - We still lack information about the economic impact."
 """
 
 FINAL_REPORT_PROMPT = """\
@@ -133,35 +133,35 @@ Write a **long, detailed, comprehensive** research report answering this questio
 {report}
 
 Requirements:
-- Write at MINIMUM 1500 words — this should be a thorough, magazine-quality article
+- Write at MINIMUM 1500 words - this should be a thorough, magazine-quality article
 - Use clear ## headings and ### subheadings to organize into logical sections
 - Each section should have multiple detailed paragraphs, not just bullet points
-- Synthesize and analyze the information — explain WHY things matter, draw comparisons, provide context
+- Synthesize and analyze the information - explain WHY things matter, draw comparisons, provide context
 - Include specific data points, numbers, and statistics from the evidence
 - Include source URLs as inline citations [like this](url)
 - Note where sources agree and where they disagree
 - Add a brief executive summary at the top
 - End with a clear conclusion that directly answers the question
-- Write in an engaging, informative style — not dry or robotic
+- Write in an engaging, informative style - not dry or robotic
 """
 
 CATEGORY_PROMPTS = {
-    "product": """IMPORTANT FORMAT OVERRIDE — this is a PRODUCT research report:
+    "product": """IMPORTANT FORMAT OVERRIDE - this is a PRODUCT research report:
 - Structure as a RANKED LIST of products/options (best first)
 - For EACH product include: name as ### heading, approximate price, 2-3 sentence summary, **Pros:** bullet list, **Cons:** bullet list, **Where to buy:** URLs as links
 - Start with a quick-compare markdown table of top picks (columns: Name, Price, Best For, Rating)
 - End with a ## Verdict section picking Best Overall and Best Value
 - Still include source citations inline""",
 
-    "comparison": """IMPORTANT FORMAT OVERRIDE — this is a COMPARISON report:
+    "comparison": """IMPORTANT FORMAT OVERRIDE - this is a COMPARISON report:
 - Create a ## Comparison Table as a markdown table comparing ALL options across key criteria (rows = criteria, columns = options)
 - Use checkmarks, ratings, or short values in cells
 - Write a ## section per option with its strengths, weaknesses, and ideal use case
 - End with ## Best For verdicts (e.g., "**Best for small teams:** Option A because...")
 - Include a ## Shared Considerations section for things that apply to all options""",
 
-    "howto": """IMPORTANT FORMAT OVERRIDE — this is a HOW-TO guide:
-- Start with ## Quick Guide — a super concise numbered list (one line per step, no details, just the action). Example: 1. Install X  2. Run Y  3. Configure Z
+    "howto": """IMPORTANT FORMAT OVERRIDE - this is a HOW-TO guide:
+- Start with ## Quick Guide - a super concise numbered list (one line per step, no details, just the action). Example: 1. Install X  2. Run Y  3. Configure Z
 - Then ## Prerequisites listing what's needed before starting
 - Then the detailed steps: ## Step 1: ..., ## Step 2: ...
 - Each step should have a clear heading and detailed instructions
@@ -169,7 +169,7 @@ CATEGORY_PROMPTS = {
 - End with ## Common Mistakes section
 - Add estimated time and difficulty level near the top""",
 
-    "factcheck": """IMPORTANT FORMAT OVERRIDE — this is a FACT-CHECK report:
+    "factcheck": """IMPORTANT FORMAT OVERRIDE - this is a FACT-CHECK report:
 - Start with ## The Claim restating what's being checked
 - Create ## Evidence For and ## Evidence Against sections
 - Each piece of evidence should be a ### with source name, what it found, and how strong the evidence is
@@ -235,7 +235,7 @@ class DeepResearcher:
         self.analyzed_urls: List[Dict[str, str]] = []
         self.round_count: int = 0
         # Track which search providers actually returned results during the
-        # run, in arrival order — surfaced in the visual report so users can
+        # run, in arrival order - surfaced in the visual report so users can
         # see whether searxng / brave / tavily etc. carried the work.
         self.providers_used: List[str] = []
         self.findings: List[Dict] = []
@@ -274,7 +274,7 @@ class DeepResearcher:
             self.research_plan = await self._create_plan(question)
             logger.info(f"Research plan: {self.research_plan[:200]}")
         else:
-            # Continuation — plan around the follow-up
+            # Continuation - plan around the follow-up
             self._emit(phase="planning")
             self.research_plan = await self._create_plan(question)
             logger.info(f"Continuation plan: {self.research_plan[:200]}")
@@ -324,12 +324,12 @@ class DeepResearcher:
                 consecutive_empty_rounds += 1
                 logger.info(f"Round {round_num}: no new findings ({consecutive_empty_rounds} consecutive empty)")
                 if consecutive_empty_rounds >= self.max_empty_rounds:
-                    logger.warning(f"Search appears to be down — {self.max_empty_rounds} consecutive rounds with no results")
+                    logger.warning(f"Search appears to be down - {self.max_empty_rounds} consecutive rounds with no results")
                     err_detail = getattr(self, '_last_search_error', 'unknown error')
                     self._emit(phase="error", message=f"Search engine unavailable: {err_detail}")
                     if not findings:
                         return (
-                            f"**Search unavailable** — Web search failed after "
+                            f"**Search unavailable** - Web search failed after "
                             f"{round_num} rounds. Error: {err_detail}\n\n"
                             "Please check your search provider settings and ensure the service is running."
                         )
@@ -354,7 +354,7 @@ class DeepResearcher:
                    total_findings=len(findings))
         if not report:
             # Synthesis can fail (e.g. the LLM timed out) even though the search
-            # rounds did gather findings. Don't throw that work away — return the
+            # rounds did gather findings. Don't throw that work away - return the
             # gathered findings as a basic compiled report instead of claiming
             # nothing was found (#1551).
             if findings:
@@ -445,7 +445,7 @@ class DeepResearcher:
             if first in CATEGORY_PROMPTS:
                 return first
             # Weak local models often wrap the label in preamble ("the category
-            # is product") — scan the whole reply for any known category word
+            # is product") - scan the whole reply for any known category word
             # before giving up (which would default to the generic format).
             for c in CATEGORY_PROMPTS:
                 if c in cat:
@@ -463,7 +463,7 @@ class DeepResearcher:
         if round_num == 1:
             num_queries = 4
             round_instruction = (
-                "This is the first round — generate broad, diverse queries "
+                "This is the first round - generate broad, diverse queries "
                 "that explore the key facets of the question."
             )
         else:
@@ -476,7 +476,7 @@ class DeepResearcher:
 
         prompt = current_date_context() + QUERY_GEN_PROMPT.format(
             question=question,
-            research_plan=self.research_plan or "(No plan — search broadly.)",
+            research_plan=self.research_plan or "(No plan - search broadly.)",
             report=report or "(No findings yet.)",
             round_num=round_num,
             num_queries=num_queries,
@@ -590,7 +590,7 @@ class DeepResearcher:
                     logger.warning(f"Research search: {prov} failed: {e}")
                     self._last_search_error = f"{prov}: {e}"
             # Every provider ran but none returned results. If none of them
-            # raised, record an actionable reason here — otherwise this empty
+            # raised, record an actionable reason here - otherwise this empty
             # path leaves `_last_search_error` unset and the caller surfaces a
             # bare "unknown error" (issue #344). This is exactly the SearXNG
             # case where the service is reachable but all its engines fail, so
@@ -679,7 +679,7 @@ class DeepResearcher:
 
         prompt = SYNTHESIZE_PROMPT.format(
             question=question,
-            report=current_report or "(First round — no report yet.)",
+            report=current_report or "(First round - no report yet.)",
             new_findings=findings_text,
         )
 
@@ -718,7 +718,7 @@ class DeepResearcher:
                 temperature=0.1,
                 max_tokens=128,
             )
-            # Reasoning models prepend a <think>...</think> block — strip it
+            # Reasoning models prepend a <think>...</think> block - strip it
             # before checking for YES/NO, otherwise the answer always looks
             # like it starts with "<THINK>" and the engine never stops.
             clean = strip_thinking(response).strip()
@@ -764,7 +764,7 @@ class DeepResearcher:
                             "This report is too brief. Please expand it significantly:\n"
                             "- Add detailed paragraphs for each section (not just bullet points)\n"
                             "- Include specific data, numbers, and comparisons from the evidence\n"
-                            "- Explain context and significance — don't just list facts\n"
+                            "- Explain context and significance - don't just list facts\n"
                             "- Use ## headings and ### subheadings\n"
                             "- Target at least 1000 words\n"
                             "Write the full expanded report now."
@@ -796,7 +796,7 @@ class DeepResearcher:
     def _time_exceeded(self) -> bool:
         return (time.time() - self._start_time) > self.max_time
 
-    # _strip_think_tags removed — use research_utils.strip_thinking()
+    # _strip_think_tags removed - use research_utils.strip_thinking()
 
     @staticmethod
     def _strip_code_block(text: str) -> str:
@@ -817,7 +817,7 @@ class DeepResearcher:
         except json.JSONDecodeError:
             pass
 
-        # Handle truncated arrays — e.g. '["query one", "query two", "query thr'
+        # Handle truncated arrays - e.g. '["query one", "query two", "query thr'
         # Repair from the LAST array start so an echoed example array earlier
         # in the reply is not harvested into the real query set.
         last_start = text.rfind('[')
@@ -894,14 +894,14 @@ class DeepResearcher:
             evidence = f.get("evidence", "")
             # Use summary if available, fall back to truncated evidence
             content = summary if summary else (evidence[:1000] if evidence else "(no content)")
-            parts.append(f"**Finding {i}** — [{title}]({url})\n{content}")
+            parts.append(f"**Finding {i}** - [{title}]({url})\n{content}")
         return "\n\n".join(parts)
 
     def _fallback_report(self, question: str, findings: List[Dict]) -> str:
         """Compile gathered findings into a basic report.
 
         Used when the LLM synthesis step produced no report (e.g. it timed out)
-        but the search rounds did collect findings — so the user still gets the
+        but the search rounds did collect findings - so the user still gets the
         material that was gathered instead of "No information could be gathered"
         (#1551).
         """

@@ -3,7 +3,7 @@ r"""Behaviour of the panel-loader registry in `static/js/panels.js`.
 The registry is what keeps a lazily-loaded panel honest: it must import a
 panel's module exactly once no matter how many times the user clicks, it must
 fail loudly on a name nobody registered (rather than handing back `undefined`
-and blowing up somewhere unrelated), and it must not memoise a *failed* load —
+and blowing up somewhere unrelated), and it must not memoise a *failed* load -
 otherwise a panel that failed to load once while offline would stay broken for
 the rest of the session.
 
@@ -142,7 +142,7 @@ def test_the_image_editor_is_registered():
 # ── Offline coverage ──────────────────────────────────────────────────────
 # A lazily-loaded panel is never fetched during a normal page load, so it only
 # lands in the service-worker cache if sw.js precaches it explicitly. Miss one
-# module and the panel opens fine online and dies offline — the failure mode is
+# module and the panel opens fine online and dies offline - the failure mode is
 # invisible until someone is on a plane. This walks the editor's import graph
 # and pins that every file in it is listed in PANEL_PRECACHE, query string
 # included (the SW matches on the full URL).

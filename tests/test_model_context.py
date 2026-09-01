@@ -1,4 +1,4 @@
-"""Tests for model_context.py — local endpoint detection, token estimation, known model lookup."""
+"""Tests for model_context.py - local endpoint detection, token estimation, known model lookup."""
 
 import sys
 import types
@@ -255,7 +255,7 @@ class TestGetContextLength:
 
     def test_configured_proxy_known_model_skips_model_listing(self, monkeypatch):
         # A model covered by the known-context table must still resolve without
-        # touching /models — the cheap path the proxy short-circuit exists for.
+        # touching /models - the cheap path the proxy short-circuit exists for.
         self._proxy_db(monkeypatch)
 
         def fake_get(*args, **kwargs):
@@ -302,7 +302,7 @@ class TestGetContextLength:
         assert model_context.get_context_length(endpoint, "absent-model") == model_context.DEFAULT_CONTEXT
 
     def test_configured_proxy_catalog_fetch_failure_uses_default(self, monkeypatch):
-        # A failed/unreachable catalog must not raise — fall back to the default.
+        # A failed/unreachable catalog must not raise - fall back to the default.
         self._proxy_db(monkeypatch)
 
         def fake_get(url, *args, **kwargs):

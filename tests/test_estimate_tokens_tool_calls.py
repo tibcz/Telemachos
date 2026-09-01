@@ -1,4 +1,4 @@
-"""Issue #2748 — estimate_tokens must count assistant tool_calls (name + arguments).
+"""Issue #2748 - estimate_tokens must count assistant tool_calls (name + arguments).
 
 A tool-only assistant turn is stored with content=None and the real payload (e.g.
 a large create_document body) in tool_calls[].function.arguments. Before this fix

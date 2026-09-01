@@ -72,11 +72,11 @@ async def do_manage_calendar(content: str, owner: Optional[str] = None) -> Dict:
         exit_code = 0 if not failed else 1
         return {"response": response, "exit_code": exit_code, "created_count": len(created), "failed_count": len(failed)}
 
-    # Normalize action — some models emit hyphens ("list-calendars") instead
+    # Normalize action - some models emit hyphens ("list-calendars") instead
     # of underscores. Treat them as equivalent so we don't bounce a
     # cosmetic typo back to the model and waste a round-trip. Also accept
     # short forms (`create`, `update`, `delete`) as aliases for the
-    # full `<verb>_event` names — models keep emitting the short forms.
+    # full `<verb>_event` names - models keep emitting the short forms.
     action = (args.get("action") or "list_events").replace("-", "_").strip().lower()
     _ACTION_ALIASES = {
         "create": "create_event",
@@ -166,7 +166,7 @@ async def do_manage_calendar(content: str, owner: Optional[str] = None) -> Dict:
             remind_at = now
         start_fmt = dtstart.strftime("%a %b %d") if all_day else dtstart.strftime("%a %b %d %H:%M")
         loc = f" @ {location}" if location else ""
-        text = f"{summary}{loc} — {start_fmt}"
+        text = f"{summary}{loc} - {start_fmt}"
         due_date = remind_at.isoformat() + ("Z" if is_utc else "")
         expected_title = f"Reminder: {summary}"
         existing_q = db.query(Note).filter(
@@ -277,7 +277,7 @@ async def do_manage_calendar(content: str, owner: Optional[str] = None) -> Dict:
                 for ev in events:
                     when = ev["dtstart"]
                     when_str = f"{when} (all day)" if ev.get("all_day") else f"{when} -> {ev.get('dtend', '')}"
-                    # Clickable anchor — opens the calendar on the event's day.
+                    # Clickable anchor - opens the calendar on the event's day.
                     line = f"- {when_str}: [{ev['summary']}](#event-{ev['uid']})"
                     if ev.get("event_type"):
                         line += f" #{ev['event_type']}"
@@ -308,7 +308,7 @@ async def do_manage_calendar(content: str, owner: Optional[str] = None) -> Dict:
                 return {"error": "summary and dtstart are required", "exit_code": 1}
 
             # Accept either an href OR a calendar name/short-id like "Main"
-            # or "62e545d8" — saves the model from having to memorize hrefs
+            # or "62e545d8" - saves the model from having to memorize hrefs
             # after a `list_calendars` call returned short prefixes.
             cal_href = args.get("calendar_href") or args.get("calendar")
             cal = None
@@ -407,7 +407,7 @@ async def do_manage_calendar(content: str, owner: Optional[str] = None) -> Dict:
                     "exit_code": 0,
                 }
 
-            # Optional tag/category and importance — friendly aliases.
+            # Optional tag/category and importance - friendly aliases.
             event_type = (args.get("event_type") or args.get("tag")
                           or args.get("category") or args.get("type") or "") or None
             importance = args.get("importance") or "normal"

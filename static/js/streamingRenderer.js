@@ -10,7 +10,7 @@
 //
 //     [ finalized block, frozen ][ finalized block, frozen ] <!--tail--> [ live tail ]
 //
-//   - Finalized blocks are rendered once and never touched again — so code-block
+//   - Finalized blocks are rendered once and never touched again - so code-block
 //     hover buttons can't flicker and code is highlighted exactly once.
 //   - The live tail (the still-growing trailing block) is re-rendered each token,
 //     except an open code fence, which streams in append-mode (text appended to a
@@ -18,7 +18,7 @@
 //
 // All the "is this safe to freeze?" logic lives in the pure segmenter; this file
 // is deliberately mechanical. If anything throws, it latches into a full-re-render
-// fallback so a bug can never produce broken output — only today's behavior.
+// fallback so a bug can never produce broken output - only today's behavior.
 
 import { splitFinalized, describeOpenFence } from './streamingSegmenter.js';
 
@@ -80,7 +80,7 @@ export function createStreamRenderer(contentEl, { render, hljs } = {}) {
   }
 
   // Stream the body of an unterminated code fence by appending only the new
-  // characters to a stable <pre><code> text node — no re-parse, no re-highlight.
+  // characters to a stable <pre><code> text node - no re-parse, no re-highlight.
   function appendOpenFence(tailText, fence) {
     if (!appendMode) {
       clearTail();
@@ -139,7 +139,7 @@ export function createStreamRenderer(contentEl, { render, hljs } = {}) {
 
   // Render the latest full source text.
   //
-  // PRECONDITION: callers must pass append-only text — each call's `fullText` must
+  // PRECONDITION: callers must pass append-only text - each call's `fullText` must
   // extend the previous one with the already-seen prefix UNCHANGED. Finalized
   // blocks are frozen and never re-rendered, so a feed that rewrites earlier text
   // would leave stale frozen blocks (corrected only by the next full re-render).
@@ -152,9 +152,9 @@ export function createStreamRenderer(contentEl, { render, hljs } = {}) {
       return;
     }
     try {
-      // Self-heal: if our DOM was replaced out from under us — chat.js writes
+      // Self-heal: if our DOM was replaced out from under us - chat.js writes
       // contentEl.innerHTML directly for thinking indicators and tool blocks, and
-      // finalize() removes the marker — our tail marker is no longer a child of the
+      // finalize() removes the marker - our tail marker is no longer a child of the
       // container. Rebuild from scratch so we never append onto foreign content or
       // touch a detached marker.
       if (started && (!tailMarker || tailMarker.parentNode !== contentEl)) {

@@ -1,7 +1,7 @@
 """Sender-signature learning must skip role addresses like support@/info@.
 
 The skip-list compares against the email local-part (before "@"), but the
-entries were written "support@", "info@", "admin@" — which can never equal or
+entries were written "support@", "info@", "admin@" - which can never equal or
 prefix a local-part of "support"/"info"/"admin", so those role senders were
 NOT skipped and the LLM wasted work learning signatures from them. The entries
 must omit the "@".

@@ -1,7 +1,7 @@
 """The /setup guide must offer a llama.cpp (llama-server) local example.
 
 Without it, the port-8080 "llama.cpp" provider label (src/llm_core.py
-_provider_label) is never reachable from first-run setup — a user pasting a
+_provider_label) is never reachable from first-run setup - a user pasting a
 local endpoint only saw the Ollama and generic examples. Both the static-HTML
 and the streamed-blocks renderings of the setup guide must carry the example.
 """

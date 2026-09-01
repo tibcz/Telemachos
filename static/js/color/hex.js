@@ -1,6 +1,6 @@
 // static/js/color/hex.js
 //
-// Parse a CSS hex color into {r, g, b}. Pure — no DOM — so it can be reused
+// Parse a CSS hex color into {r, g, b}. Pure - no DOM - so it can be reused
 // across modules and unit-tested under node.
 
 // Accepts "#rgb", "#rrggbb" (with or without the leading '#'). Returns null

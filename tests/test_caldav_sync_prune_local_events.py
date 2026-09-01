@@ -4,7 +4,7 @@ The prune step in `_sync_blocking` deletes events in the synced calendar+window
 whose UID the server didn't just return, to propagate upstream deletions. But
 `CalendarEvent` had no way to distinguish a server-pulled row from a locally
 created one (agent / email triage / a UI event whose write-back failed), so it
-also deleted events that were never on the server — silent data loss.
+also deleted events that were never on the server - silent data loss.
 
 The fix adds an `origin` column and gates the prune on `origin == "caldav"`.
 This test replicates the exact prune query against an in-memory DB (the prune is
@@ -63,7 +63,7 @@ def _seed():
             dtstart=_NOW + timedelta(days=1), dtend=_NOW + timedelta(days=1, hours=1),
             origin="caldav",
         ))
-        # A locally-created event (agent / triage / failed write-back) — origin NULL.
+        # A locally-created event (agent / triage / failed write-back) - origin NULL.
         db.add(CalendarEvent(
             uid="local-uuid", calendar_id="cal1", summary="Dentist",
             dtstart=_NOW + timedelta(days=2), dtend=_NOW + timedelta(days=2, hours=1),

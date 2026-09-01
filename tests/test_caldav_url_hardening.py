@@ -101,7 +101,7 @@ def test_validate_caldav_url_fails_closed_when_host_resolves_to_no_usable_record
 )
 def test_validate_caldav_url_blocks_mixed_dns_in_any_order(monkeypatch, addrs):
     # A host that resolves to BOTH a public and an internal address must be
-    # rejected regardless of record order — every resolved address is checked,
+    # rejected regardless of record order - every resolved address is checked,
     # so one internal answer is enough to block. Defends DNS round-robin and a
     # rebind that slips an internal A-record alongside a public one.
     monkeypatch.delenv("TELEMACHOS_ALLOW_PRIVATE_CALDAV", raising=False)

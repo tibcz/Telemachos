@@ -5,11 +5,11 @@ FastAPI route handlers for the email feature. All non-route logic
 (IMAP connection helpers, message parsing, account config, the
 auto-summarize + scheduled-email pollers, Pydantic models) lives in:
 
-    routes/email_helpers.py   — synchronous helpers + models + constants
-    routes/email_pollers.py   — background loops, started by `_start_poller`
+    routes/email_helpers.py   - synchronous helpers + models + constants
+    routes/email_pollers.py   - background loops, started by `_start_poller`
 
 Importing from the helpers module brings in everything those route
-handlers need. The split is mechanical — no behavior change.
+handlers need. The split is mechanical - no behavior change.
 """
 
 import asyncio
@@ -701,7 +701,7 @@ def _group_uid_fetch_records(msg_data) -> list:
     and every message renders as unread/unflagged.
 
     A tuple whose meta starts with a sequence number opens a new record;
-    every other part — continuation tuple or bare bytes — is folded into the
+    every other part - continuation tuple or bare bytes - is folded into the
     current record's meta so attribute regexes see the full meta text.
     Plain ``b')'`` terminators get folded in too, which is harmless.
     """
@@ -1448,7 +1448,7 @@ _EMAIL_ALLOWED_TAGS = {
 class _EmailHtmlSanitizer(_HTMLParser):
     """Allowlist sanitizer for WYSIWYG-composed email HTML. Emits only known
     formatting tags (all attributes dropped except a safe href on <a>), escapes
-    all text, and discards <script>/<style> content entirely — so client-sent
+    all text, and discards <script>/<style> content entirely - so client-sent
     HTML can never carry live script/handlers into the recipient's client."""
 
     def __init__(self):
@@ -1518,10 +1518,10 @@ def setup_email_routes():
     # Three layers stacked because every cold click was hitting Dovecot
     # over a fresh TCP+TLS+LOGIN handshake plus a full RFC822 fetch.
     #   1. _LIST_CACHE: list-emails responses keyed by (account, folder, filter,
-    #      limit, offset). 8s TTL — short enough that flag changes show up
+    #      limit, offset). 8s TTL - short enough that flag changes show up
     #      quickly but long enough to absorb burst polls and tab switches.
     #   2. _READ_CACHE: per-(account, folder, uid) parsed email bodies.
-    #      60s TTL — bodies don't change.
+    #      60s TTL - bodies don't change.
     #   3. _IMAP_POOL: per-account live IMAP connection reused across
     #      requests. Recycled if NOOP fails or it's been idle >60s.
     #   4. Prefetch task: after a list load, kick off background reads of
@@ -1547,7 +1547,7 @@ def setup_email_routes():
     def _pooled_connect(account_id, owner=""):
         """Reuse a live IMAP connection if one is in the pool and still
         responsive. Otherwise open fresh and store it. Caller must release
-        via _pooled_release after use (not strictly required — the pool
+        via _pooled_release after use (not strictly required - the pool
         holds the same conn handle, and we lock to serialize access).
 
         SECURITY: `owner` is forwarded to `_imap_connect` so the fallback
@@ -1841,7 +1841,7 @@ def setup_email_routes():
         return {"error": f"Email UID {uid} not found"}
 
     def _list_emails_sync(folder, limit, offset, filter_, account_id, from_addr=None, has_attachments_only=False, owner=""):
-        """Sync IMAP work — call from async handler via asyncio.to_thread so
+        """Sync IMAP work - call from async handler via asyncio.to_thread so
         it doesn't block the event loop.
 
         When `has_attachments_only` is True, IMAP doesn't have a portable
@@ -1887,19 +1887,19 @@ def setup_email_routes():
                     f'(OR HEADER X-Telemachos-Kind "reminder" SUBJECT "Reminder (Telemachos):"{from_clause})',
                 )
             elif filter_ == "pending_30d":
-                # "What's pending in the last month" — UNANSWERED + delivered
+                # "What's pending in the last month" - UNANSWERED + delivered
                 # within the last 30 days. SINCE takes a DD-Mon-YYYY date.
                 from datetime import datetime as _dt, timedelta as _td
                 _since = (_dt.utcnow() - _td(days=30)).strftime("%d-%b-%Y")
                 status, data = _imap_uid_search(conn, f'(UNANSWERED SINCE "{_since}"{from_clause})')
             elif filter_ == "stale_30d":
-                # "What's been sitting too long" — UNANSWERED + delivered
+                # "What's been sitting too long" - UNANSWERED + delivered
                 # MORE than 30 days ago. BEFORE excludes the cutoff date itself.
                 from datetime import datetime as _dt, timedelta as _td
                 _before = (_dt.utcnow() - _td(days=30)).strftime("%d-%b-%Y")
                 status, data = _imap_uid_search(conn, f'(UNANSWERED BEFORE "{_before}"{from_clause})')
             elif filter_ and filter_.startswith("tag:"):
-                # Tag-based filter — resolve UIDs from email_tags first, then
+                # Tag-based filter - resolve UIDs from email_tags first, then
                 # ask IMAP for those messages by Message-ID. `tag:spam` reads
                 # spam_verdict=1; any other tag matches JSON-array membership
                 # in `tags`.
@@ -2011,7 +2011,7 @@ def setup_email_routes():
             # Reverse for newest first, apply pagination
             uid_list = list(reversed(uid_list))
             if has_attachments_only:
-                # Can't filter via IMAP — widen the window so post-filter
+                # Can't filter via IMAP - widen the window so post-filter
                 # still yields enough rows to fill `limit` after dropping
                 # rows without attachments.
                 scan_window = max(400, offset + limit * 8)
@@ -2019,7 +2019,7 @@ def setup_email_routes():
             else:
                 uid_list = uid_list[offset:offset + limit]
 
-            # Preload tag rows once — keyed by uid (as str) for the emails we'll render
+            # Preload tag rows once - keyed by uid (as str) for the emails we'll render
             _tag_by_uid = {}
             try:
                 import sqlite3 as _sql3
@@ -2047,7 +2047,7 @@ def setup_email_routes():
                 logger.warning(f"Tag preload failed: {e}")
 
             # Batch fetch ALL requested UIDs in a single IMAP round-trip.
-            # Per-UID fetch was the dominant cost — N round-trips × (~5-20ms
+            # Per-UID fetch was the dominant cost - N round-trips × (~5-20ms
             # each on localhost) made 50-message lists take 250ms-1s+. The
             # batched form trades a slightly bigger response for one round-trip.
             emails = []
@@ -2212,7 +2212,7 @@ def setup_email_routes():
             if has_attachments_only:
                 emails = [e for e in emails if e.get("has_attachments")]
                 # Total now reflects matches inside the scanned window, not
-                # the whole folder — see scan_window above.
+                # the whole folder - see scan_window above.
                 total = len(emails)
                 emails = emails[offset:offset + limit]
 
@@ -2482,7 +2482,7 @@ def setup_email_routes():
 
     @router.post("/{uid}/unflag-spam")
     async def unflag_spam(uid: str, owner: str = Depends(require_owner)):
-        """User override — mark email as not spam."""
+        """User override - mark email as not spam."""
         try:
             owner_clause, owner_params = _email_tag_owner_clause(None, owner)
             _c = _sql3.connect(SCHEDULED_DB)
@@ -2728,7 +2728,7 @@ def setup_email_routes():
         owner: str = Depends(require_owner),
     ):
         """Distinct name/address pairs aggregated from the email_tags table
-        — used by the from-sender sidebar's autocomplete to convert typed
+        - used by the from-sender sidebar's autocomplete to convert typed
         names into chips. Backed by the AI-classification cache so it's a
         cheap SQL read; people you've never received a tagged email from
         won't appear yet."""
@@ -2787,7 +2787,7 @@ def setup_email_routes():
         accounts fall back to whatever folder the caller specified."""
         if not q or len(q) < 2:
             return {"emails": [], "total": 0, "query": q}
-        # CRLF in q would terminate the IMAP command early — reject defensively.
+        # CRLF in q would terminate the IMAP command early - reject defensively.
         if "\r" in q or "\n" in q:
             raise HTTPException(400, "Invalid query")
         global_search = (scope or "all").lower() != "folder"
@@ -2809,7 +2809,7 @@ def setup_email_routes():
                 return indexed_response
 
             with _imap(account_id, owner=owner) as conn:
-                # If the user asked for INBOX, try to upgrade to All Mail —
+                # If the user asked for INBOX, try to upgrade to All Mail -
                 # one folder == every email on Gmail-class servers.
                 effective_folder = folder
                 if global_search and (folder or "").upper() == "INBOX":
@@ -2921,7 +2921,7 @@ def setup_email_routes():
             return {"emails": [], "total": 0, "error": "Mail operation failed"}
 
     def _read_email_sync(uid, folder, account_id, owner, mark_seen=False, full=False):
-        """Sync IMAP read — wrapped in to_thread by the async handler.
+        """Sync IMAP read - wrapped in to_thread by the async handler.
 
         The normal reader path fetches the headers plus a bounded body prefix.
         That avoids downloading multi-megabyte attachments just to open a
@@ -3216,7 +3216,7 @@ def setup_email_routes():
         result = await _asyncio.to_thread(_read_email_sync, uid, folder, account_id, owner, mark_seen, full)
         if result and not result.get("error"):
             # `mark_seen_failed` describes this request, not the message, so it
-            # must not enter either cache — a later reader would otherwise be
+            # must not enter either cache - a later reader would otherwise be
             # told a STORE failed that it never issued.
             cacheable = {k: v for k, v in result.items() if k != "mark_seen_failed"}
             _read_cache_put(ck, cacheable)
@@ -3438,7 +3438,7 @@ def setup_email_routes():
           - .txt / .md → loaded directly as a markdown Document
 
         Returns {doc_id} so the frontend can open it as a tab in the doc panel.
-        Other types are rejected — caller should fall back to download.
+        Other types are rejected - caller should fall back to download.
         """
         try:
             with _imap(account_id, owner=owner) as conn:
@@ -3491,7 +3491,7 @@ def setup_email_routes():
                 except Exception as _e:
                     logger.warning(f"tag doc source-email failed: {_e}")
 
-            # Extracted docs MUST belong to a session the caller owns — a
+            # Extracted docs MUST belong to a session the caller owns - a
             # session-less ("orphan") doc is rejected by get_document's owner
             # check (404), so the frontend's loadDocument() throws and nothing
             # opens (the "open in document didn't open" bug). Attach it to the
@@ -3663,7 +3663,7 @@ def setup_email_routes():
                     d = _Docx(str(filepath))
                 except Exception as e:
                     return {"error": f"Failed to read docx: {e}", "filename": base}
-                # Convert paragraphs to markdown — preserve heading styles as #/##/###,
+                # Convert paragraphs to markdown - preserve heading styles as #/##/###,
                 # bullet lists as `- `, numbered lists as `1.`, and keep tables as
                 # simple pipe-delimited rows.
                 lines: list[str] = []
@@ -3777,7 +3777,7 @@ def setup_email_routes():
             return {"success": False, "error": "Mail operation failed"}
 
     @router.post("/archive/{uid}")
-    # Sync def: blocking IMAP I/O with no awaits — see search_emails above. Runs in a
+    # Sync def: blocking IMAP I/O with no awaits - see search_emails above. Runs in a
     # threadpool instead of blocking the event loop.
     def archive_email(uid: str, folder: str = Query("INBOX"), account_id: str | None = Query(None), owner: str = Depends(require_owner)):
         """Move email to Archive folder."""
@@ -4249,7 +4249,7 @@ def setup_email_routes():
         """Shared send logic used by both /send and scheduled delivery.
 
         SECURITY: callers MUST pass `owner` (the authed user) so the config
-        lookup is scoped — otherwise the fallback picks whichever account
+        lookup is scoped - otherwise the fallback picks whichever account
         happens to be is_default globally and the message ships through
         someone else's SMTP creds + From-address.
         """
@@ -4299,12 +4299,12 @@ def setup_email_routes():
             send_at = req.get("send_at")
             if not send_at:
                 return {"success": False, "error": "send_at required (ISO8601 UTC)"}
-            # Body-based account_id — dep can't see it, check here.
+            # Body-based account_id - dep can't see it, check here.
             _acct = req.get("account_id")
             if _acct:
                 _assert_owns_account(_acct, owner)
             # Validate parseable + reject past times (the poller fires
-            # anything in the past immediately on the next tick — a
+            # anything in the past immediately on the next tick - a
             # 1970-dated schedule would deliver right now).
             from datetime import datetime as _dt, timezone as _tz
             try:
@@ -4520,7 +4520,7 @@ def setup_email_routes():
         """Queue an email for SMTP delivery. Returns immediately; send runs in background.
 
         Uses req.account_id to pick the sending account (falls back to default)."""
-        # Body-based account_id — dep can't see it, check here.
+        # Body-based account_id - dep can't see it, check here.
         if req.account_id:
             _assert_owns_account(req.account_id, owner)
 
@@ -4842,7 +4842,7 @@ def setup_email_routes():
             if not url or not model:
                 url, model, headers = resolve_endpoint("default", owner=owner)
             if not url or not model:
-                return {"success": False, "error": "No LLM endpoint configured — set a Utility or Default Chat model in Settings → AI Defaults."}
+                return {"success": False, "error": "No LLM endpoint configured - set a Utility or Default Chat model in Settings → AI Defaults."}
 
             sample_text = "\n\n---EMAIL---\n\n".join(samples[:15])
             messages = [
@@ -4903,7 +4903,7 @@ def setup_email_routes():
 
             # If we know which UID this is, fetch the raw message and pull
             # attachment text so the summary can reference invoice totals,
-            # contract clauses, etc. — not just the body.
+            # contract clauses, etc. - not just the body.
             att_text = ""
             if uid:
                 try:
@@ -5167,7 +5167,7 @@ def setup_email_routes():
             if not original_body:
                 return {"success": False, "error": "No email body provided"}
 
-            # Skip cache lookup when the caller supplied a user_hint — the
+            # Skip cache lookup when the caller supplied a user_hint - the
             # cached generic reply doesn't reflect the instructions and
             # would silently override them.
             if message_id and not user_hint and not account_id:
@@ -5201,11 +5201,11 @@ def setup_email_routes():
             if session_id:
                 try:
                     # The chat-session ORM model is `Session`, not `ChatSession`
-                    # — the old import threw ImportError, was swallowed by the
+                    # - the old import threw ImportError, was swallowed by the
                     # except, and left url=None so EVERY reply silently fell back
                     # to the "default" endpoint (wrong model). Its auth lives in
                     # `headers` (JSON), and `endpoint_url` is already the full
-                    # chat-completions URL the chat path uses verbatim — so use
+                    # chat-completions URL the chat path uses verbatim - so use
                     # those directly rather than rebuilding via a nonexistent
                     # `api_key` field.
                     from core.database import SessionLocal as _SL, Session as _CS
@@ -5215,7 +5215,7 @@ def setup_email_routes():
                         url = sess.endpoint_url
                         # Some sessions stored headers double-encoded (a JSON
                         # string inside the JSON column), so the ORM hands back
-                        # a str, not a dict — and llm_call_async's h.update()
+                        # a str, not a dict - and llm_call_async's h.update()
                         # then throws "dictionary update sequence element…".
                         # Unwrap until we have a dict (or give up → no headers).
                         _h = sess.headers
@@ -5276,7 +5276,7 @@ def setup_email_routes():
 
             # NEW: also pull the last few emails from the original sender +
             # their attachments. The "to" field on this endpoint is the
-            # recipient of the *outgoing* reply — that is, the original
+            # recipient of the *outgoing* reply - that is, the original
             # sender we're answering. So `to` doubles as the address we want
             # the thread context for.
             referenced = ""
@@ -5300,7 +5300,7 @@ def setup_email_routes():
                 system_prompt += "\n\nRELEVANT CONTEXT FROM PAST EMAILS AND CONTACTS:\n" + "\n\n---\n\n".join(context_snippets[:5])
             if referenced:
                 system_prompt += (
-                    "\n\nREFERENCED MATERIAL — the last few emails from this sender, "
+                    "\n\nREFERENCED MATERIAL - the last few emails from this sender, "
                     "plus any text extracted from their attachments. Use this to "
                     "answer numbered questions or refer to documents they previously "
                     "sent. Do NOT cite this material verbatim unless the sender "
@@ -5323,7 +5323,7 @@ def setup_email_routes():
 
             # Build a candidate chain so a stale session-stored API key
             # (the most common cause of "authentication failed" here)
-            # doesn't kill AI Reply outright — fall through to the
+            # doesn't kill AI Reply outright - fall through to the
             # user's Utility / Default endpoints and active Utility fallback
             # chain. Dedupe by url+model so we don't retry the same endpoint.
             from src.llm_core import llm_call_async_with_fallback
@@ -5340,14 +5340,14 @@ def setup_email_routes():
                 _candidates.append((_url, _model, _headers))
             # Session endpoint first (may be the broken one).
             _add(url, model, headers)
-            # Primary utility endpoint — this is what the user has actually
+            # Primary utility endpoint - this is what the user has actually
             # configured as their background-task model, with fresh creds.
             try:
                 _u_url, _u_model, _u_headers = resolve_endpoint("utility", owner=owner)
                 _add(_u_url, _u_model, _u_headers)
             except Exception:
                 pass
-            # Primary default chat endpoint — last working chat config.
+            # Primary default chat endpoint - last working chat config.
             try:
                 _d_url, _d_model, _d_headers = resolve_endpoint("default", owner=owner)
                 _add(_d_url, _d_model, _d_headers)
@@ -5591,7 +5591,7 @@ def setup_email_routes():
             data = _json.loads(path.read_text(encoding="utf-8"))
         except Exception:
             return {"total_unread": 0, "total_urgent": 0, "max_score": 0, "per_uid": {}}
-        # Drop `notified_uids` from the payload — it's an internal scheduler
+        # Drop `notified_uids` from the payload - it's an internal scheduler
         # debounce, not UI-relevant.
         data.pop("notified_uids", None)
         return data
@@ -5686,7 +5686,7 @@ def setup_email_routes():
                 owner=owner,
             )
             # If there are no accounts yet OR caller asked for default, enforce
-            # the one-default invariant — but scope it to THIS user's accounts,
+            # the one-default invariant - but scope it to THIS user's accounts,
             # otherwise creating a default would clear every other user's
             # default flag too.
             scope_q = _email_account_owner_scope(db.query(EmailAccount), owner)
@@ -5703,7 +5703,7 @@ def setup_email_routes():
     @router.put("/accounts/{account_id}")
     async def update_email_account(account_id: str, data: dict, owner: str = Depends(require_user)):
         """Update an email account. Passwords only overwrite if non-empty."""
-        # Path param account_id — dep validated via Query, re-check the path-param value.
+        # Path param account_id - dep validated via Query, re-check the path-param value.
         _assert_owns_account(account_id, owner)
         from core.database import SessionLocal, EmailAccount
         db = SessionLocal()
@@ -5726,7 +5726,7 @@ def setup_email_routes():
             for key in ("imap_starttls", "enabled"):
                 if key in data:
                     setattr(row, key, bool(data[key]))
-            # Passwords — only overwrite when a non-empty value is
+            # Passwords - only overwrite when a non-empty value is
             # provided. Stored encrypted; see src/secret_storage.py.
             from src.secret_storage import encrypt as _enc
             if data.get("imap_password"):
@@ -5785,7 +5785,7 @@ def setup_email_routes():
         which half failed.
 
         If `account_id` is provided (instead of inline credentials), load
-        the saved row's stored creds and test those — used by the
+        the saved row's stored creds and test those - used by the
         clickable test-dot in the integrations list, where the form has
         no live values."""
         try:
@@ -5793,7 +5793,7 @@ def setup_email_routes():
         except Exception:
             return {"ok": False, "imap": {"ok": False, "error": "invalid request body"}}
 
-        # Saved-account shortcut — hydrate missing credentials from the DB row,
+        # Saved-account shortcut - hydrate missing credentials from the DB row,
         # while keeping any edited form fields from the request. This lets the UI
         # test unsaved host/port changes without forcing the user to retype the
         # stored password.
@@ -5864,7 +5864,7 @@ def setup_email_routes():
                 google_token = _get_valid_google_token(body.get("account_id"), body)
                 google_token_loaded = True
             if not google_token:
-                raise RuntimeError("Google OAuth token unavailable — reconnect the account")
+                raise RuntimeError("Google OAuth token unavailable - reconnect the account")
             return google_token
 
         if imap_port_err:
@@ -6012,7 +6012,7 @@ def setup_email_routes():
         _assert_owns_account(account_id, owner)
         client_id = os.environ.get("GOOGLE_OAUTH_CLIENT_ID", "")
         if not client_id:
-            raise HTTPException(400, "GOOGLE_OAUTH_CLIENT_ID not set — add it to .env")
+            raise HTTPException(400, "GOOGLE_OAUTH_CLIENT_ID not set - add it to .env")
         redirect_uri = (
             os.environ.get("GOOGLE_OAUTH_REDIRECT_URI")
             or f"{request.url.scheme}://{request.headers.get('host', 'localhost:7000')}/api/email/oauth/google/callback"
@@ -6095,7 +6095,7 @@ def setup_email_routes():
                 return _RR("/?section=integrations&email_oauth_error=account_not_found")
             # SECURITY: verify the account belongs to the initiating user.
             if owner and row.owner and row.owner != owner:
-                logger.warning("OAuth callback owner mismatch — rejecting token write")
+                logger.warning("OAuth callback owner mismatch - rejecting token write")
                 return _RR("/?section=integrations&email_oauth_error=ownership_error")
 
             # A reconnect must prove that the token belongs to the mailbox

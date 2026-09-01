@@ -11,11 +11,11 @@
 //
 // The renderer prepends a `source <venv>/bin/activate` for the pip variant
 // (env_prefix handles activation for Run). The docker variant skips the
-// activate line — `docker pull` doesn't need a venv.
+// activate line - `docker pull` doesn't need a venv.
 
 const _RECIPES = [
   // ── vllm ──────────────────────────────────────────────────────────────
-  // MiniMax M2/M2.7 — same as the generic vllm install/image for now;
+  // MiniMax M2/M2.7 - same as the generic vllm install/image for now;
   // kept as its own entry so future model-specific patches land in one
   // obvious place without touching the catch-all.
   {

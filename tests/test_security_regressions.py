@@ -8,7 +8,7 @@
 - Compose-upload tokens flow through `pathlib.Path(token).name` so a
   caller supplying `../../etc/passwd` can't escape `COMPOSE_UPLOADS_DIR`.
 
-These are pure-function tests — no FastAPI app boot, no DB.
+These are pure-function tests - no FastAPI app boot, no DB.
 """
 
 import sys
@@ -77,7 +77,7 @@ def test_secret_storage_idempotent_encrypt(tmp_path, monkeypatch):
 
 def test_secret_storage_legacy_plaintext_passes_through(tmp_path, monkeypatch):
     """Decrypting a value that lacks the `enc:` prefix must return it
-    unchanged. That's the migration trampoline — legacy rows can still
+    unchanged. That's the migration trampoline - legacy rows can still
     be read while the migration backfills the encryption."""
     ss = _import_secret_storage(tmp_path, monkeypatch)
     assert ss.decrypt("legacy-plaintext-password") == "legacy-plaintext-password"
@@ -93,7 +93,7 @@ def test_secret_storage_is_encrypted(tmp_path, monkeypatch):
 
 def test_secret_storage_corrupt_token_returns_empty(tmp_path, monkeypatch):
     """A row encrypted under a different key (or hand-corrupted) must
-    degrade to '' rather than raise — so a single bad row can't 500 the
+    degrade to '' rather than raise - so a single bad row can't 500 the
     whole email config lookup."""
     ss = _import_secret_storage(tmp_path, monkeypatch)
     assert ss.decrypt("enc:not-a-valid-fernet-token") == ""
@@ -105,7 +105,7 @@ def test_secret_storage_corrupt_token_returns_empty(tmp_path, monkeypatch):
     "protected by the user-profile NTFS ACL instead, and safe_chmod no-ops there.",
 )
 def test_secret_storage_key_created_with_safe_mode(tmp_path, monkeypatch):
-    """The auto-generated key file must be mode 0o600 — anyone who can
+    """The auto-generated key file must be mode 0o600 - anyone who can
     read it can decrypt every stored secret."""
     ss = _import_secret_storage(tmp_path, monkeypatch)
     ss.encrypt("x")  # triggers key generation
@@ -548,7 +548,7 @@ def test_inprocess_pollers_gate(monkeypatch):
 
 def test_require_user_accepts_loopback_when_unconfigured(monkeypatch):
     """First-run mode (no users set up yet) must still let loopback
-    callers through — otherwise the install can't bootstrap. Public
+    callers through - otherwise the install can't bootstrap. Public
     callers in the same mode are rejected."""
     sys.modules.pop("src.auth_helpers", None)
     from src import auth_helpers  # noqa: WPS433
@@ -577,7 +577,7 @@ def test_require_user_accepts_loopback_when_unconfigured(monkeypatch):
 
 def test_require_user_accepts_anyone_when_auth_disabled(monkeypatch):
     """AUTH_ENABLED=false must let unauthenticated callers through from
-    any host — including the docker bridge / reverse proxy / LAN — so
+    any host - including the docker bridge / reverse proxy / LAN - so
     the frontend's global 401 redirect doesn't bounce the user to /login
     despite the operator turning auth off (issue #622)."""
     monkeypatch.setenv("AUTH_ENABLED", "false")
@@ -641,7 +641,7 @@ def test_require_user_localhost_bypass_admits_loopback(monkeypatch):
 
 
 def test_require_user_localhost_bypass_still_rejects_lan(monkeypatch):
-    """LOCALHOST_BYPASS=true must not extend to non-loopback callers —
+    """LOCALHOST_BYPASS=true must not extend to non-loopback callers -
     a LAN visitor still needs to authenticate."""
     from fastapi import HTTPException
     monkeypatch.setenv("AUTH_ENABLED", "true")
@@ -957,7 +957,7 @@ def _import_attachment_extract_dir():
     ("/abs/path", "2"),
 ])
 def test_attachment_extract_dir_stays_contained(folder, uid):
-    """User-controlled folder/uid must never escape ATTACHMENTS_DIR — pins the
+    """User-controlled folder/uid must never escape ATTACHMENTS_DIR - pins the
     fix for the attachment-extraction path traversal."""
     aed, base = _import_attachment_extract_dir()
     target = aed(folder, uid)
@@ -1104,7 +1104,7 @@ def test_gmail_mcp_preset_uses_contained_oauth_paths():
 def _drop_route_module_cache(dotted_name):
     """Evict a cached route module from both sys.modules and the parent package
     attribute. The next import then re-binds against the live core.database
-    instead of reusing a stale (possibly stub-polluted) module object — Python
+    instead of reusing a stale (possibly stub-polluted) module object - Python
     can reach a module via either path, so both must be cleared."""
     sys.modules.pop(dotted_name, None)
     pkg_name, _, attr = dotted_name.rpartition(".")
@@ -1388,7 +1388,7 @@ def test_dns_rebinding_pinned_transport_dials_pinned_ip(monkeypatch):
 
 def test_dns_rebinding_pinned_transport_preserves_url_netloc(monkeypatch):
     """The URL the transport hands to the underlying httpcore layer
-    must still be the original ``https://example.com/...`` — never
+    must still be the original ``https://example.com/...`` - never
     rewritten to the pinned IP. SNI / vhost depend on this.
     """
     from src.search import content

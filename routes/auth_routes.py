@@ -1,4 +1,4 @@
-"""Authentication routes — login, logout, signup, status, user management."""
+"""Authentication routes - login, logout, signup, status, user management."""
 
 from fastapi import APIRouter, Request, Response, HTTPException
 from pydantic import BaseModel
@@ -92,9 +92,9 @@ def _secure_cookie(request: Request) -> bool:
     ``SECURE_COOKIES`` stays authoritative when it holds an explicit value:
     ``true`` always marks the cookie Secure (the documented knob for a TLS
     proxy), ``false`` never does, which is the escape hatch for an install
-    that still answers on plain HTTP alongside HTTPS. Anything else —
+    that still answers on plain HTTP alongside HTTPS. Anything else -
     unset, or the present-but-empty value docker-compose injects for a
-    variable the host has not defined — derives it from the request, so an
+    variable the host has not defined - derives it from the request, so an
     HTTPS login gets a Secure cookie without any configuration.
 
     Either the connection scheme or ``X-Forwarded-Proto`` saying https is
@@ -108,7 +108,7 @@ def _secure_cookie(request: Request) -> bool:
     configured = os.getenv("SECURE_COOKIES", "").strip().lower()
     if configured in ("true", "false"):
         return configured == "true"
-    # A chained proxy sends a list — the client-facing hop comes first.
+    # A chained proxy sends a list - the client-facing hop comes first.
     forwarded_proto = request.headers.get("x-forwarded-proto", "").split(",")[0]
     return request.url.scheme == "https" or forwarded_proto.strip().lower() == "https"
 
@@ -128,7 +128,7 @@ def setup_auth_routes(auth_manager: AuthManager) -> APIRouter:
     async def first_run_setup(body: SetupRequest, request: Request):
         """Create initial admin account. Only works if no accounts exist."""
         if not _setup_limiter.check(request.client.host):
-            raise HTTPException(429, "Too many requests — try again later")
+            raise HTTPException(429, "Too many requests - try again later")
         if auth_manager.is_configured:
             raise HTTPException(400, "Already configured")
         if len(body.password) < PASSWORD_MIN_LENGTH:
@@ -146,7 +146,7 @@ def setup_auth_routes(auth_manager: AuthManager) -> APIRouter:
     async def signup(body: SignupRequest, request: Request):
         """Create a new user account. Only works if signup is enabled by admin."""
         if not _signup_limiter.check(request.client.host):
-            raise HTTPException(429, "Too many requests — try again later")
+            raise HTTPException(429, "Too many requests - try again later")
         if not auth_manager.is_configured:
             raise HTTPException(400, "Run setup first")
         if not auth_manager.signup_enabled:
@@ -165,7 +165,7 @@ def setup_auth_routes(auth_manager: AuthManager) -> APIRouter:
     @router.post("/login")
     async def login(body: LoginRequest, request: Request, response: Response):
         if not _login_limiter.check(request.client.host):
-            raise HTTPException(429, "Too many requests — try again later")
+            raise HTTPException(429, "Too many requests - try again later")
         # Verify password first
         username = body.username.strip().lower()
         if not await asyncio.to_thread(auth_manager.verify_password, username, body.password):
@@ -173,11 +173,11 @@ def setup_auth_routes(auth_manager: AuthManager) -> APIRouter:
         # Check 2FA if enabled
         if auth_manager.totp_enabled(username):
             if not body.totp_code:
-                # Password OK but need TOTP — tell client to show code input
+                # Password OK but need TOTP - tell client to show code input
                 return {"ok": False, "requires_totp": True, "username": username}
             if not auth_manager.totp_verify(username, body.totp_code):
                 raise HTTPException(401, "Invalid 2FA code")
-        # All checks passed — create session (password already verified above)
+        # All checks passed - create session (password already verified above)
         token = await asyncio.to_thread(auth_manager.create_session_trusted, username)
         if not token:
             raise HTTPException(401, "Invalid credentials")
@@ -272,7 +272,7 @@ def setup_auth_routes(auth_manager: AuthManager) -> APIRouter:
         if not user:
             raise HTTPException(401, "Not authenticated")
         if not auth_manager.totp_confirm_enable(user, body.code):
-            raise HTTPException(400, "Invalid code — try again")
+            raise HTTPException(400, "Invalid code - try again")
         backup = auth_manager.users.get(user, {}).get("totp_backup_codes", [])
         return {"ok": True, "backup_codes": backup}
 
@@ -349,7 +349,7 @@ def setup_auth_routes(auth_manager: AuthManager) -> APIRouter:
             raise HTTPException(409, "Username already taken")
 
         # Gate on auth first. Every mutation below is contingent on this
-        # succeeding — doing it last meant a rejected rename (e.g. reserved
+        # succeeding - doing it last meant a rejected rename (e.g. reserved
         # username) left file-backed owner fields already rewritten with no
         # way to roll them back.
         ok = auth_manager.rename_user(old_username, new_username, user)
@@ -822,7 +822,7 @@ def setup_auth_routes(auth_manager: AuthManager) -> APIRouter:
         # ntfy is special: a GET / proves the server is reachable but
         # publishes nothing, so the user has no way to know whether
         # subscribers will actually receive notifications. Instead, do
-        # the real thing — POST a one-line "connectivity test" message
+        # the real thing - POST a one-line "connectivity test" message
         # to the topic the Reminders panel is configured to use. If the
         # subscriber app is wired up correctly, this is what the green
         # checkmark + a phone ping confirms together.
@@ -830,7 +830,7 @@ def setup_auth_routes(auth_manager: AuthManager) -> APIRouter:
             import httpx
             from urllib.parse import urlparse
             # Strip any path/query the user accidentally pasted in the
-            # base URL (e.g. `http://host:8091/telemachos`) — otherwise
+            # base URL (e.g. `http://host:8091/telemachos`) - otherwise
             # the topic gets appended after the path and we publish to
             # `/telemachos/telemachos` (which ntfy 404s on). ntfy itself
             # only ever serves from the root.
@@ -868,7 +868,7 @@ def setup_auth_routes(auth_manager: AuthManager) -> APIRouter:
                     return {
                         "ok": True,
                         "message": (
-                            f"Sent to {full_url} — on your ntfy app, "
+                            f"Sent to {full_url} - on your ntfy app, "
                             f"subscribe to topic \"{topic}\" with server "
                             f"\"{base}\" (or paste the full URL: {full_url})."
                         ),
@@ -884,7 +884,7 @@ def setup_auth_routes(auth_manager: AuthManager) -> APIRouter:
             import httpx
             webhook_url = (integ.get("base_url") or "").strip()
             if not webhook_url:
-                return {"ok": False, "message": "No webhook URL set — paste the full Discord webhook URL into the Base URL field."}
+                return {"ok": False, "message": "No webhook URL set - paste the full Discord webhook URL into the Base URL field."}
             payload = {
                 "embeds": [{
                     "title": "Telemachos connectivity test",
@@ -896,7 +896,7 @@ def setup_auth_routes(auth_manager: AuthManager) -> APIRouter:
                 async with httpx.AsyncClient(timeout=8.0) as client:
                     r = await client.post(webhook_url, json=payload)
                 if r.is_success:
-                    return {"ok": True, "message": "Test embed sent — check your Discord channel to confirm it arrived."}
+                    return {"ok": True, "message": "Test embed sent - check your Discord channel to confirm it arrived."}
                 return {"ok": False, "message": f"Discord returned HTTP {r.status_code}: {r.text[:200]}"}
             except Exception as e:
                 return {"ok": False, "message": f"Request failed: {e}"[:400]}

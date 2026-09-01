@@ -29,7 +29,7 @@ def _client_with_admin_gate(monkeypatch, gate):
     async def _fake_collect(_rag, _mem):
         return {"overall": "ok", "services": [], "timestamp": "t"}
 
-    # monkeypatch.setattr restores these after the test — a plain assignment
+    # monkeypatch.setattr restores these after the test - a plain assignment
     # would leak the fakes into every later test in the session.
     monkeypatch.setattr(diag, "require_admin", gate)
     monkeypatch.setattr(sh, "collect_service_health", _fake_collect)

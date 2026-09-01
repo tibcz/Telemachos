@@ -1,4 +1,4 @@
-"""Issue #3222 — native function-calling models (GPT/Claude/Grok/Qwen3/DeepSeek-V,
+"""Issue #3222 - native function-calling models (GPT/Claude/Grok/Qwen3/DeepSeek-V,
 etc.) must not have ordinary illustrative Markdown fences in their prose
 (```bash, ```python, ```json examples written for the user to read) executed
 as real tool calls just because the textual fallback parser matches them.
@@ -6,13 +6,13 @@ as real tool calls just because the textual fallback parser matches them.
 `_resolve_tool_blocks` in src/agent_loop.py picks native `tool_calls` when the
 model emits them, and otherwise used to fall back unconditionally to
 `parse_tool_blocks(round_response)` (the fenced-block textual parser). For a
-native model that produced no real tool_calls — e.g. a "guide-only" turn where
-the model writes an example command for the user to copy — that fallback used
+native model that produced no real tool_calls - e.g. a "guide-only" turn where
+the model writes an example command for the user to copy - that fallback used
 to treat the example fence as an executable action, causing accidental command
 execution and multi-round loops.
 
 The fix: for native function-calling models (`_is_api_model=True`) that emitted
-no native tool_calls, skip the textual fenced-block fallback entirely — these
+no native tool_calls, skip the textual fenced-block fallback entirely - these
 models have a reliable structured channel and a bare fence in their prose is
 display text, not an attempted call. Non-native / textual-only models keep the
 fallback unchanged, since fenced blocks are their *only* tool channel.
@@ -102,7 +102,7 @@ def test_native_model_illustrative_bash_fence_not_executed(monkeypatch):
     guide_only = (
         "Here is the command you would run locally:\n\n"
         "```bash\nnpm run plan:articles\n```\n\n"
-        "Just paste that into your terminal — I'm not running it for you."
+        "Just paste that into your terminal - I'm not running it for you."
     )
     events = _run_loop(monkeypatch, "gpt-4o", [guide_only])
     assert exec_calls == [], f"illustrative fence should not be executed, but got: {exec_calls}"
@@ -205,7 +205,7 @@ def test_resolve_tool_blocks_native_path_untouched_when_native_calls_present():
 # Booyaka101's review on #3356: short-circuiting the *whole* parser for native
 # models (`tool_blocks = [] if is_api_model else parse_tool_blocks(...)`) also
 # silently dropped explicit [TOOL_CALL]/<invoke>/<tool_code>/DSML markup that
-# leaked into content as text — a real regression for e.g. DeepSeek-V falling
+# leaked into content as text - a real regression for e.g. DeepSeek-V falling
 # back to DSML when it can't emit structured tool_calls. The fix gates ONLY
 # the fenced-code pattern (via `skip_fenced=`) so Patterns 2-5 stay active.
 # ---------------------------------------------------------------------------
@@ -301,7 +301,7 @@ def test_skip_fenced_ignores_only_the_fenced_pattern():
 def test_resolve_tool_blocks_recovers_invoke_markup_for_native_model_with_no_native_calls():
     """End-to-end: a native model (is_api_model=True) that emitted no
     structured tool_calls but leaked an <invoke> call into its text content
-    must still have that real call recovered — not dropped alongside the
+    must still have that real call recovered - not dropped alongside the
     fenced-example gating."""
     leaked = (
         "I'll search for that now.\n"
@@ -317,7 +317,7 @@ def test_resolve_tool_blocks_recovers_invoke_markup_for_native_model_with_no_nat
 # ---------------------------------------------------------------------------
 # strip_tool_blocks must mirror the same fenced-pattern gate so persisted text
 # matches what was (not) executed: an illustrative fence that wasn't run for a
-# native model shouldn't vanish from saved/reloaded history either — otherwise
+# native model shouldn't vanish from saved/reloaded history either - otherwise
 # it streams once and then disappears on reload (Booyaka101's point #2).
 # ---------------------------------------------------------------------------
 def test_strip_tool_blocks_preserves_fence_when_skip_fenced():

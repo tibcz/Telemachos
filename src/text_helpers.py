@@ -150,7 +150,7 @@ def strip_think(text: str, *, prose: bool = False, prompt_echo: bool = True) -> 
       prose: also strip untagged "reasoning prose" paragraphs. Risky on user
         content (false-positives on phrases like "Looking at the attached
         file…"); only enable for short LLM-only outputs and only when a
-        `<think>` tag was actually present in the input — callers can use
+        `<think>` tag was actually present in the input - callers can use
         the `had_think` semantics by passing `prose=True` only when they
         know the input is LLM-only.
       prompt_echo: also strip Qwen "Thinking Process:" blocks and

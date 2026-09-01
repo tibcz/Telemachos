@@ -1,7 +1,7 @@
 /**
  * Apply a Brightness/Contrast, Hue/Saturation, Levels, or Color Balance
  * adjustment to a source canvas and return a fresh canvas with the
- * result. Pure pixel math — no DOM, no module state.
+ * result. Pure pixel math - no DOM, no module state.
  *
  * Used by the editor's per-layer FX stack: each `adjLayer` calls
  * `applyAdjustment(prevCanvas, adjLayer)` and the result feeds the
@@ -130,7 +130,7 @@ export function renderLayerPixelAdjustments(layer, cacheKey) {
   const d = img.data;
 
   // Single 256-entry LUT for the Levels portion (applied per R/G/B
-  // channel identically — luma-style isn't right when colour balance
+  // channel identically - luma-style isn't right when colour balance
   // follows, per-channel is fine here).
   const l = adj.levels || { inBlack: 0, inWhite: 255, gamma: 1, outBlack: 0, outWhite: 255 };
   const inLow  = Math.max(0, Math.min(254, l.inBlack));

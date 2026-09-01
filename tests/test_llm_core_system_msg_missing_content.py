@@ -1,4 +1,4 @@
-"""Regression guard for #2350 — KeyError on missing 'content' key in system messages.
+"""Regression guard for #2350 - KeyError on missing 'content' key in system messages.
 
 A system message dict that lacks a 'content' key (possible via malformed tool
 results) previously raised KeyError in the hot path for llm_call,
@@ -13,7 +13,7 @@ from src.llm_core import _build_anthropic_payload
 
 
 def _sys_msg_no_content():
-    """A system message dict with no 'content' key — the crash trigger."""
+    """A system message dict with no 'content' key - the crash trigger."""
     return {"role": "system"}
 
 

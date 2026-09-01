@@ -1,4 +1,4 @@
-"""Cookbook routes — model download, serve, cache scanning, and cookbook state sync."""
+"""Cookbook routes - model download, serve, cache scanning, and cookbook state sync."""
 
 import asyncio
 import json
@@ -67,7 +67,7 @@ _HF_TOKEN_STATUS_SNIPPET = (
     'if [ -n "$HF_TOKEN" ]; then '
     'echo "[telemachos] HF token: applied"; '
     'else '
-    'echo "[telemachos] HF token: NOT SET — gated/private models will be denied. '
+    'echo "[telemachos] HF token: NOT SET - gated/private models will be denied. '
     'Add one in Telemachos Cookbook -> Settings -> HuggingFace Token."; '
     'fi'
 )
@@ -1064,7 +1064,7 @@ def setup_cookbook_routes() -> APIRouter:
     @router.post("/api/model/download")
     async def model_download(request: Request, req: ModelDownloadRequest):
         """Download a HuggingFace model in a tmux session.
-        Uses `hf download` CLI directly — runs in tmux via `script -qc`
+        Uses `hf download` CLI directly - runs in tmux via `script -qc`
         for real TTY progress, streams ANSI-stripped output via log file."""
         require_admin(request)
         # Defence-in-depth: even though this endpoint is admin-gated, refuse
@@ -1093,11 +1093,11 @@ def setup_cookbook_routes() -> APIRouter:
         # (HF_HOME + HUGGINGFACE_HUB_CACHE) instead of --local-dir. local_dir
         # produces a flat layout (<dir>/<name>/<file>) and the local-dir
         # bookkeeping files (.cache/huggingface/.gitignore.lock), and it
-        # also breaks robust resume on flaky transfers — the blob-based hub
+        # also breaks robust resume on flaky transfers - the blob-based hub
         # cache survives SSL ReadError mid-stream by reusing <sha>.incomplete,
         # local_dir does not. See issue #2722.
         _dl_hf_home_shell = _shell_path(req.local_dir.rstrip("/")) if req.local_dir else None
-        _dl_pyarg = ""  # snapshot_download honors the env vars too — no kwarg needed
+        _dl_pyarg = ""  # snapshot_download honors the env vars too - no kwarg needed
 
         # Build the hf download command. Redirection to suppress the interactive
         # "update available? [Y/n]" prompt is added per-platform further down
@@ -1108,8 +1108,8 @@ def setup_cookbook_routes() -> APIRouter:
         hf_cmd = f"hf {hf_download_args}"
         ollama_cmd = f"ollama pull {shlex.quote(req.repo_id)}"
 
-        # Build the shell wrapper — runs hf download directly in tmux (which is a TTY)
-        # No script/tee needed — we'll use tmux capture-pane to read output
+        # Build the shell wrapper - runs hf download directly in tmux (which is a TTY)
+        # No script/tee needed - we'll use tmux capture-pane to read output
         lines = ["#!/bin/bash"]
         lines.extend(_user_shell_path_bootstrap())
         if req.hf_token:
@@ -1125,14 +1125,14 @@ def setup_cookbook_routes() -> APIRouter:
         lines.append('export PATH="$HOME/.local/bin:$HOME/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"')
         # When Telemachos runs from a venv (e.g. native macOS install), put its bin
         # on PATH so the tmux shell finds the bundled `hf`/`python3` without an
-        # activated venv. Local bash runs only — meaningless over SSH.
+        # activated venv. Local bash runs only - meaningless over SSH.
         if not req.remote_host:
             lines.append(_local_tooling_path_export(sys.executable))
         # Best-effort install hf CLI (always). hf_transfer (Rust parallel downloader)
-        # is fast but flaky on large files — it tends to crash near the end at high
+        # is fast but flaky on large files - it tends to crash near the end at high
         # throughput. Retries set disable_hf_transfer to fall back to the plain,
         # slower-but-reliable downloader (resumes cleanly from the .incomplete files).
-        # Use `python3 -m pip` not `pip` — macOS has no bare `pip` command.
+        # Use `python3 -m pip` not `pip` - macOS has no bare `pip` command.
         if is_ollama_download:
             _append_local_ollama_download_command_lines(
                 lines,
@@ -1173,7 +1173,7 @@ def setup_cookbook_routes() -> APIRouter:
             if req.hf_token:
                 ps_lines.append(f"$env:HF_TOKEN = '{_ps_squote(req.hf_token)}'")
             if req.local_dir and not is_ollama_download:
-                # Mirror the bash branch — point the HF cache at the user's dir
+                # Mirror the bash branch - point the HF cache at the user's dir
                 # via env vars instead of --local-dir, so resume works on flaky
                 # transfers (issue #2722).
                 _dl_ps = _ps_squote(req.local_dir.rstrip("/"))
@@ -1296,7 +1296,7 @@ def setup_cookbook_routes() -> APIRouter:
                     runner_lines.append("export HF_HUB_DOWNLOAD_MAX_WORKERS=8")
                 # Surface whether the HF token actually reached THIS server, so a gated
                 # download's "not authorized" failure can be told apart from a missing
-                # token (the token is masked — we only print applied / not-set).
+                # token (the token is masked - we only print applied / not-set).
                 runner_lines.append(_HF_TOKEN_STATUS_SNIPPET)
             # Wrap the download in a retry loop. Large HF/Ollama transfers can
             # hit transient network failures; both backends resume cached partials.
@@ -1311,7 +1311,7 @@ def setup_cookbook_routes() -> APIRouter:
             runner_lines.append('  _ec=$?')
             runner_lines.append('  if [ $_ec -eq 0 ]; then break; fi')
             runner_lines.append('  if [ $_attempt -lt $_max_retries ]; then')
-            runner_lines.append('    echo ""; echo "Download attempt $_attempt failed (exit $_ec) — retrying in 30s..."')
+            runner_lines.append('    echo ""; echo "Download attempt $_attempt failed (exit $_ec) - retrying in 30s..."')
             runner_lines.append('    sleep 30')
             runner_lines.append('  fi')
             runner_lines.append('done')
@@ -1339,11 +1339,11 @@ def setup_cookbook_routes() -> APIRouter:
                 lines.append(_safe_env_prefix(_local_windows_bash_env_prefix(req.env_prefix) if local_windows else req.env_prefix))
             else:
                 lines.append("deactivate 2>/dev/null; hash -r")
-            # Show whether the HF token reached this run (masked) — tells a gated
+            # Show whether the HF token reached this run (masked) - tells a gated
             # "not authorized" failure apart from a missing token.
             if not is_ollama_download:
                 lines.append(_HF_TOKEN_STATUS_SNIPPET)
-            # Retry loop — same rationale as the remote-bash path. Issue #2722.
+            # Retry loop - same rationale as the remote-bash path. Issue #2722.
             _hf_invoke = 'eval "$TELEMACHOS_OLLAMA_PULL_CMD" < /dev/null' if is_ollama_download else (hf_cmd if IS_WINDOWS else f"{hf_cmd} < /dev/null")
             lines.append('_max_retries=10; _attempt=0; _ec=0')
             lines.append('while [ $_attempt -lt $_max_retries ]; do')
@@ -1352,7 +1352,7 @@ def setup_cookbook_routes() -> APIRouter:
             lines.append('  _ec=$?')
             lines.append('  if [ $_ec -eq 0 ]; then break; fi')
             lines.append('  if [ $_attempt -lt $_max_retries ]; then')
-            lines.append('    echo ""; echo "Download attempt $_attempt failed (exit $_ec) — retrying in 30s..."')
+            lines.append('    echo ""; echo "Download attempt $_attempt failed (exit $_ec) - retrying in 30s..."')
             lines.append('    sleep 30')
             lines.append('  fi')
             lines.append('done')
@@ -1406,7 +1406,7 @@ def setup_cookbook_routes() -> APIRouter:
     async def model_cached(request: Request, host: str | None = None, model_dir: str | None = None, ssh_port: str | None = None, platform: str | None = None):
         """List cached models. Scans HF cache + optional model directory."""
         require_admin(request)
-        # Validate shell-bound inputs, matching the sibling list_gpus endpoint —
+        # Validate shell-bound inputs, matching the sibling list_gpus endpoint -
         # `host`/`ssh_port` are interpolated into an ssh command below, so an
         # unvalidated value (e.g. "x'; rm -rf ~ #") would be command injection.
         host = validate_remote_host(host)
@@ -1443,7 +1443,7 @@ def setup_cookbook_routes() -> APIRouter:
                 )
             else:
                 # LOCAL scan: use sys.executable (the venv Python Telemachos is already
-                # running under) — it's guaranteed real Python on all platforms.
+                # running under) - it's guaranteed real Python on all platforms.
                 # Falling back to which_tool on Windows risks hitting the Microsoft
                 # Store stub alias for "python3"/"python", which prints
                 # "Python was not found; run without arguments to install from the
@@ -1530,7 +1530,7 @@ def setup_cookbook_routes() -> APIRouter:
 
         # Determine host
         if remote:
-            # SSH alias — use as hostname (Tailscale resolves it later)
+            # SSH alias - use as hostname (Tailscale resolves it later)
             host = remote.split("@")[-1] if "@" in remote else remote
         else:
             host = "localhost"
@@ -1544,7 +1544,7 @@ def setup_cookbook_routes() -> APIRouter:
 
         db = SessionLocal()
         try:
-            # Check for existing endpoint with same base_url — update it
+            # Check for existing endpoint with same base_url - update it
             existing = db.query(ModelEndpoint).filter(ModelEndpoint.base_url == base_url).first()
             if existing:
                 existing.is_enabled = True
@@ -1661,13 +1661,13 @@ def setup_cookbook_routes() -> APIRouter:
         window, the endpoint row is deleted so the picker doesn't keep a
         dead model around. A zero exit (rare for a long-running serve, but
         possible for fast-failing builds that the runner reports as code 0)
-        and "missing exit marker" both leave the endpoint alone — that's
+        and "missing exit marker" both leave the endpoint alone - that's
         the loading-but-not-yet-bound state, which the probe-marks-offline
         logic already handles.
 
         Times are picked to outlast realistic vLLM load times (Qwen3.5-122B
         takes ~3 min to load) without burning resources on a stuck-forever
-        wait. After the last check, the watchdog gives up — the picker's
+        wait. After the last check, the watchdog gives up - the picker's
         per-endpoint probe takes over from there.
         """
         # Cumulative wait points: 25 s, 60 s, 2 min, 5 min.
@@ -1702,7 +1702,7 @@ def setup_cookbook_routes() -> APIRouter:
             except Exception as e:
                 logger.debug(f"crash-watchdog: capture-pane failed (will retry): {e!r}")
                 continue
-            # Last occurrence wins — a serve that exits/restarts under the
+            # Last occurrence wins - a serve that exits/restarts under the
             # runner's "exec bash -i" trail will emit multiple markers; the
             # most-recent code is the one that matters.
             matches = list(_exit_re.finditer(output))
@@ -1720,7 +1720,7 @@ def setup_cookbook_routes() -> APIRouter:
                 # let the probe layer mark it offline if nothing's listening.
                 logger.info(f"crash-watchdog: serve {session_id} exited cleanly (0); leaving endpoint {endpoint_id}")
                 return
-            # Non-zero exit — drop the endpoint.
+            # Non-zero exit - drop the endpoint.
             try:
                 from core.database import SessionLocal as _SL, ModelEndpoint as _ME
                 db = _SL()
@@ -1745,7 +1745,7 @@ def setup_cookbook_routes() -> APIRouter:
                             pass
                         logger.info(
                             f"crash-watchdog: dropping endpoint {endpoint_id} "
-                            f"({ep.name} @ {ep.base_url}) — serve exited {exit_code}"
+                            f"({ep.name} @ {ep.base_url}) - serve exited {exit_code}"
                         )
                         db.delete(ep)
                         db.commit()
@@ -1758,7 +1758,7 @@ def setup_cookbook_routes() -> APIRouter:
 
     def _auto_register_llm_endpoint(req: ServeRequest, remote: str | None) -> str | None:
         """Register a freshly-served LLM as a model endpoint so it appears in the
-        model picker without a manual /setup step — the text-model sibling of
+        model picker without a manual /setup step - the text-model sibling of
         _auto_register_image_endpoint.
 
         Cookbook serve commands launch an OpenAI-compatible server (llama.cpp's
@@ -1780,7 +1780,7 @@ def setup_cookbook_routes() -> APIRouter:
         #   2. `OLLAMA_HOST=host:port`  (the way Ollama specifies its bind)
         #   3. fallback by backend (11434 ollama / 8080 llama.cpp)
         # Previously the OLLAMA_HOST form was silently ignored and we
-        # registered every Ollama endpoint at 11434 — even if the user
+        # registered every Ollama endpoint at 11434 - even if the user
         # set OLLAMA_HOST=0.0.0.0:11435 to avoid colliding with an
         # existing systemd Ollama, the registered endpoint pointed at
         # the OLD port and showed as offline.
@@ -1793,15 +1793,15 @@ def setup_cookbook_routes() -> APIRouter:
         elif "ollama" in req.cmd:
             port = 11434
         else:
-            port = 8080  # llama.cpp's llama-server default — the Apple Silicon path
+            port = 8080  # llama.cpp's llama-server default - the Apple Silicon path
 
         # Determine host. The cookbook tmux for `local=true` serves runs INSIDE
-        # the telemachos container — so the right URL for the in-container
+        # the telemachos container - so the right URL for the in-container
         # backend to reach it is `localhost`, NOT `host.docker.internal`
         # (the latter points at the docker HOST, which doesn't have a server
         # on that port). The previous host.docker.internal fallback only made
         # sense for /setup-added external services like systemd Ollama on the
-        # host — and those go through manual setup, not this auto-register
+        # host - and those go through manual setup, not this auto-register
         # code path. For remote serves we still use the SSH host alias.
         if remote:
             host = remote.split("@")[-1] if "@" in remote else remote
@@ -1932,7 +1932,7 @@ def setup_cookbook_routes() -> APIRouter:
             # picker actually shows the model on the next /api/models
             # call. Without this immediate probe, the endpoint has empty
             # cached_models until the next background refresh fires (up
-            # to a minute later) and the picker shows nothing — even
+            # to a minute later) and the picker shows nothing - even
             # though the endpoint is in the DB and the server is up.
             try:
                 if mlx_shim_model_id:
@@ -2016,7 +2016,7 @@ def setup_cookbook_routes() -> APIRouter:
             req.cmd = re.sub(r"(?<![A-Za-z0-9_.\-/])llama-cpp-python(?![\[/])", "llama-cpp-python[server]", req.cmd)
             if "llama-cpp-python" in req.cmd and "--extra-index-url" not in req.cmd:
                 req.cmd += " --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu"
-            # PEP-508-style package spec — letters, digits, `.-_` for the
+            # PEP-508-style package spec - letters, digits, `.-_` for the
             # name; `[` `]` for extras; `<>=!~,` for version specifiers.
             # v2 review HIGH-14: tightened from the previous regex which
             # also allowed spaces and `+`, both of which can be abused to
@@ -2036,10 +2036,10 @@ def setup_cookbook_routes() -> APIRouter:
         # Ollama: if the user didn't pin a port, resolve the actual port we'll
         # bind to here (before runner construction) by probing the target host.
         # Otherwise the runner script picks one at runtime and `_auto_register`
-        # below still registers the stale 11434 default — which on a host with
+        # below still registers the stale 11434 default - which on a host with
         # a systemd ollama lands on the wrong (unreachable-from-docker) service.
         # Match "ollama serve" as a phrase (with optional flags after), not
-        # any substring containing "ollama" — otherwise commands like
+        # any substring containing "ollama" - otherwise commands like
         # `docker exec ollama-test ollama-import …` get wrapped as if they
         # were native `ollama serve`, prepending OLLAMA_HOST=… and then
         # running the ollama-not-found preflight which exits 127.
@@ -2138,12 +2138,12 @@ def setup_cookbook_routes() -> APIRouter:
             # Mirror every line of stdout+stderr into a persistent log file
             # on the host running the serve. This is the file tail_serve_output
             # reads when the tmux pane has been overwritten by the post-crash
-            # bash prompt — without it, the agent's diagnostic tool sees the
+            # bash prompt - without it, the agent's diagnostic tool sees the
             # neofetch banner instead of the actual Python traceback.
             # We save the original fds to 3/4 so we can RESTORE them before
             # `exec ${SHELL}` at the end of the script. Without that restore,
             # the post-crash interactive shell's neofetch banner ALSO gets
-            # teed into the log file and `tail -N` returns ONLY the banner —
+            # teed into the log file and `tail -N` returns ONLY the banner -
             # the actual traceback ends up earlier than the tail window.
             runner_lines.append("mkdir -p /tmp/telemachos-tmux 2>/dev/null || true")
             runner_lines.append("exec 3>&1 4>&2")
@@ -2172,14 +2172,14 @@ def setup_cookbook_routes() -> APIRouter:
             _append_venv_nvidia_library_path_lines(runner_lines, cmd=req.cmd)
             if "sglang.launch_server" in req.cmd or "mlx_lm.server" in req.cmd or re.search(r"\bvllm\s+serve\b", req.cmd or ""):
                 _append_openai_port_preflight_lines(runner_lines, cmd=req.cmd, expected_model=req.repo_id)
-            # Show whether the HF token reached this server (masked) — a gated
+            # Show whether the HF token reached this server (masked) - a gated
             # model vLLM has to download will be denied without it.
             runner_lines.append(_HF_TOKEN_STATUS_SNIPPET)
             handled_ollama_serve = False
             # Auto-install inference engine if missing
             local_windows_llama_cmd = local_windows and ("llama_cpp" in req.cmd or "llama-server" in req.cmd)
             if ("llama_cpp" in req.cmd or "llama-server" in req.cmd) and not local_windows_llama_cmd:
-                # Prefer the NATIVE llama-server binary — its minja templating
+                # Prefer the NATIVE llama-server binary - its minja templating
                 # renders modern GGUF chat templates that the Python bindings'
                 # Jinja2 rejects (do_tojson ensure_ascii). Build it once from
                 # source if missing; keep llama-cpp-python only as a fallback.
@@ -2189,24 +2189,24 @@ def setup_cookbook_routes() -> APIRouter:
                 # /opt/homebrew = Apple Silicon, /usr/local = Intel; harmless on Linux.
                 runner_lines.append('export PATH="$HOME/.local/bin:$HOME/bin:$HOME/llama.cpp/build/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"')
                 runner_lines.append('if [ -d /data/data/com.termux ]; then')
-                runner_lines.append('  # Termux: no native build — use the Python bindings (CPU).')
+                runner_lines.append('  # Termux: no native build - use the Python bindings (CPU).')
                 runner_lines.append('  if ! python3 -c "import llama_cpp" 2>/dev/null; then')
                 runner_lines.append('    pkg install -y cmake 2>/dev/null')
                 runner_lines.append('    pip install numpy diskcache jinja2 2>/dev/null')
                 runner_lines.append('    CMAKE_ARGS="-DGGML_BLAS=OFF -DGGML_LLAMAFILE=OFF" pip install \'llama-cpp-python[server]\' --no-build-isolation --no-cache-dir 2>&1 || true')
                 runner_lines.append('  fi')
                 runner_lines.append('elif ! command -v llama-server &>/dev/null; then')
-                runner_lines.append('  echo "Native llama-server not found — building from source (one-time, may take a few minutes)..."')
+                runner_lines.append('  echo "Native llama-server not found - building from source (one-time, may take a few minutes)..."')
                 runner_lines.append('  mkdir -p ~/bin')
                 runner_lines.append('  cd ~ && [ -d llama.cpp ] || git clone --depth 1 https://github.com/ggml-org/llama.cpp')
                 # Build with the right accelerator: Metal on macOS (llama.cpp
                 # enables it automatically, no flag), CUDA on Linux when present,
-                # else a plain CPU build. nproc is Linux-only — fall back to
+                # else a plain CPU build. nproc is Linux-only - fall back to
                 # `sysctl hw.ncpu` on macOS. (Tip: `brew install llama.cpp` ships
                 # a prebuilt llama-server and skips this whole source build.)
                 runner_lines.append('  NPROC="$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)"')
                 runner_lines.append('  if [ "$(uname -s)" = "Darwin" ]; then')
-                runner_lines.append('    command -v cmake >/dev/null 2>&1 || echo "WARNING: cmake not found — install it with: brew install cmake (or: brew install llama.cpp for a prebuilt llama-server)."')
+                runner_lines.append('    command -v cmake >/dev/null 2>&1 || echo "WARNING: cmake not found - install it with: brew install cmake (or: brew install llama.cpp for a prebuilt llama-server)."')
                 # Start from a clean cache: a prior failed configure (e.g. a CUDA
                 # attempt) poisons build/CMakeCache.txt, so a plain `cmake -B build`
                 # would reuse the bad settings and fail again. CMAKE_BUILD_TYPE is
@@ -2230,8 +2230,8 @@ def setup_cookbook_routes() -> APIRouter:
                 # 12.4+ including the cu13.x line.
                 runner_lines.append('  if command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi -L 2>/dev/null | grep -q "GPU " && python3 -c "import llama_cpp" 2>/dev/null; then')
                 runner_lines.append('    if ! python3 -c "import llama_cpp; import sys; sys.exit(0 if llama_cpp.llama_supports_gpu_offload() else 1)" 2>/dev/null; then')
-                runner_lines.append('      echo "[telemachos] NVIDIA detected but installed llama-cpp-python is CPU-only — reinstalling with CUDA wheel index for GPU offload..."')
-                runner_lines.append('      python3 -m pip install --user --break-system-packages --force-reinstall --no-cache-dir "llama-cpp-python[server]" --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu124 2>&1 | tail -8 || echo "[telemachos] WARNING: CUDA wheel reinstall failed — Python server will stay CPU-only (slow). Manual fix: pip install --user --force-reinstall \'llama-cpp-python[server]\' --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu124"')
+                runner_lines.append('      echo "[telemachos] NVIDIA detected but installed llama-cpp-python is CPU-only - reinstalling with CUDA wheel index for GPU offload..."')
+                runner_lines.append('      python3 -m pip install --user --break-system-packages --force-reinstall --no-cache-dir "llama-cpp-python[server]" --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu124 2>&1 | tail -8 || echo "[telemachos] WARNING: CUDA wheel reinstall failed - Python server will stay CPU-only (slow). Manual fix: pip install --user --force-reinstall \'llama-cpp-python[server]\' --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu124"')
                 runner_lines.append('      if python3 -c "import llama_cpp; import sys; sys.exit(0 if llama_cpp.llama_supports_gpu_offload() else 1)" 2>/dev/null; then')
                 runner_lines.append('        echo "[telemachos] llama-cpp-python now supports GPU offload."')
                 runner_lines.append('      fi')
@@ -2242,7 +2242,7 @@ def setup_cookbook_routes() -> APIRouter:
                 # installed, drop a wrapper at ~/bin/llama-server that
                 # translates llama-server CLI args to llama_cpp.server's
                 # underscore-style flags. The user's serve command stays
-                # `llama-server ...` and "just works" — no build, no cmake,
+                # `llama-server ...` and "just works" - no build, no cmake,
                 # no second install. This is the path that unblocks every
                 # remote where pip-installed llama-cpp-python is already
                 # working but Cookbook used to insist on a native binary.
@@ -2282,7 +2282,7 @@ def setup_cookbook_routes() -> APIRouter:
                 runner_lines.append('  fi')
                 runner_lines.append('  # If the native build failed, fall back to the Python bindings.')
                 runner_lines.append('  if ! command -v llama-server &>/dev/null && ! python3 -c "import llama_cpp" 2>/dev/null; then')
-                runner_lines.append('    echo "llama-server build failed — installing Python bindings as fallback..."')
+                runner_lines.append('    echo "llama-server build failed - installing Python bindings as fallback..."')
                 runner_lines.append(f"    {_pip_install_fallback_chain('llama-cpp-python[server]', python_cmd='pip')} || true")
                 runner_lines.append('  fi')
                 runner_lines.append('  if ! command -v llama-server &>/dev/null && ! python3 -c "import llama_cpp" 2>/dev/null; then')
@@ -2338,7 +2338,7 @@ def setup_cookbook_routes() -> APIRouter:
                 runner_lines.append('  echo "ERROR: vLLM does not run on macOS. Use Ollama or llama.cpp (Metal) instead."')
                 runner_lines.append('  TELEMACHOS_PREFLIGHT_EXIT=1')
                 runner_lines.append('fi')
-                # Put ~/.local/bin on PATH first — without a venv, vllm installs
+                # Put ~/.local/bin on PATH first - without a venv, vllm installs
                 # there via --user and the non-login serve shell otherwise can't
                 # find the `vllm` CLI ("command not found"). Mirrors llama.cpp above.
                 runner_lines.append('export PATH="$HOME/.local/bin:$PATH"')
@@ -2711,7 +2711,7 @@ def setup_cookbook_routes() -> APIRouter:
                 else:
                     runner_lines.append(req.cmd)
                 if local_windows:
-                    # Detached background process — no interactive shell to keep open.
+                    # Detached background process - no interactive shell to keep open.
                     # Print the exit marker the status poller looks for, then stop.
                     _append_serve_exit_code_lines(
                         runner_lines,
@@ -2796,7 +2796,7 @@ def setup_cookbook_routes() -> APIRouter:
         # picker shows the model as it warms up. When the serve process
         # crashes right at startup (missing module, bad cmd, port collision,
         # ModuleNotFoundError on llama_cpp, etc.), the endpoint is left
-        # dangling — every subsequent chat returns 503 or an empty response.
+        # dangling - every subsequent chat returns 503 or an empty response.
         # Schedule a background task to read the tmux output for the
         # "=== Process exited with code N ===" marker the runner emits;
         # if N != 0 within the watch window, delete the endpoint we just
@@ -2873,7 +2873,7 @@ def setup_cookbook_routes() -> APIRouter:
             setup_script = (
                 'powershell -Command "'
                 "New-Item -ItemType Directory -Force -Path $env:TEMP\\telemachos-sessions | Out-Null; "
-                "try { python --version } catch { Write-Host 'ERROR: Python not found — install from python.org'; exit 1 }; "
+                "try { python --version } catch { Write-Host 'ERROR: Python not found - install from python.org'; exit 1 }; "
                 "python -m pip install -q huggingface-hub 2>$null; "
                 "python -c \\\"from huggingface_hub import snapshot_download; print('OK')\\\""
                 '"'
@@ -2892,7 +2892,7 @@ def setup_cookbook_routes() -> APIRouter:
             # and huggingface_hub + hf_transfer (falling back to --user/--break-system-packages
             # on PEP-668 locked distros like Arch / newer Debian).
             setup_script = (
-                # Install tmux if missing — try common package managers; skip if no sudo
+                # Install tmux if missing - try common package managers; skip if no sudo
                 "if ! command -v tmux >/dev/null 2>&1; then "
                 "  if command -v apt-get >/dev/null 2>&1; then sudo -n apt-get install -y tmux 2>/dev/null; "
                 "  elif command -v pacman >/dev/null 2>&1; then sudo -n pacman -S --noconfirm tmux 2>/dev/null; "
@@ -3017,7 +3017,7 @@ def setup_cookbook_routes() -> APIRouter:
         # right `backend`. AMD silicon can be driven by ROCm/HIP (native)
         # OR Vulkan (mesa RADV). Reporting "rocm" on a host where no
         # ROCm toolchain is installed misleads the frontend env-var
-        # prefix logic — it would emit `HIP_VISIBLE_DEVICES=` for a
+        # prefix logic - it would emit `HIP_VISIBLE_DEVICES=` for a
         # Vulkan-only stack, which is a silent no-op at best.
         rt_out, _ = await _run_gpu_shell(
             'command -v rocminfo >/dev/null 2>&1 && echo rocm '
@@ -3066,7 +3066,7 @@ def setup_cookbook_routes() -> APIRouter:
             free_mb = max(0, total_mb - used_mb)
             # GTT = the system-RAM pool the GPU pages into when VRAM is full.
             # On a discrete card a large gtt_used means the model spilled past
-            # VRAM into RAM over PCIe — much slower. Surface it so the UI can
+            # VRAM into RAM over PCIe - much slower. Surface it so the UI can
             # warn "spilling to RAM" instead of the user wondering why it's slow.
             gtt_used_raw = await _gpu_read_file(f"{base}/mem_info_gtt_used", host, ssh_port)
             gtt_used_mb = max(0, int(int(gtt_used_raw) / (1024 * 1024))) if (gtt_used_raw and gtt_used_raw.isdigit()) else 0
@@ -3199,7 +3199,7 @@ def setup_cookbook_routes() -> APIRouter:
                 "busy": busy, "processes": [],
             })
 
-        # Best-effort process listing — skip silently if it fails
+        # Best-effort process listing - skip silently if it fails
         proc_query = "nvidia-smi --query-compute-apps=pid,gpu_uuid,process_name,used_memory --format=csv,noheader,nounits"
         try:
             proc_out, proc_err = await _run_nvidia_smi(proc_query, host, ssh_port, timeout=5)
@@ -3341,7 +3341,7 @@ def setup_cookbook_routes() -> APIRouter:
                 # No `kill` binary / POSIX signals on Windows. taskkill /F /T tears
                 # down the PID and its children. There's no graceful-vs-force
                 # distinction, so TERM/KILL/INT all map to the same forced kill.
-                # NB: never use os.kill(pid, 0) to probe here — on Windows that
+                # NB: never use os.kill(pid, 0) to probe here - on Windows that
                 # routes to TerminateProcess and would kill the process.
                 if not pid_alive(req.pid):
                     return {"ok": False, "error": f"PID {req.pid} is not running"}
@@ -3404,7 +3404,7 @@ def setup_cookbook_routes() -> APIRouter:
         writes server-side tasks (e.g. `download_model` registering a
         task). Without a merge, every UI sync wipes the agent's recent
         additions. We preserve any on-disk task that the incoming body
-        omits but was added in the last RACE_WINDOW seconds — that's a
+        omits but was added in the last RACE_WINDOW seconds - that's a
         race, not an intentional delete.
         """
         require_admin(request)
@@ -3426,7 +3426,7 @@ def setup_cookbook_routes() -> APIRouter:
             # hydrated from GET /state (a load-time race) or during a render
             # glitch, `env.servers` would be empty and silently overwrite the
             # saved servers on disk. Never let an empty/absent incoming
-            # env.servers clobber a populated on-disk one — preserve the disk
+            # env.servers clobber a populated on-disk one - preserve the disk
             # values while still accepting the rest of the incoming env.
             disk_env = on_disk.get("env") if isinstance(on_disk, dict) and isinstance(on_disk.get("env"), dict) else None
             if disk_env:
@@ -3646,7 +3646,7 @@ def setup_cookbook_routes() -> APIRouter:
         Heavy SSH work runs in a background thread via asyncio.to_thread so
         it never blocks the request that triggered it. Was previously
         disabled because the sync implementation pegged uvicorn CPU during
-        active cookbook polling — re-enabled now with the work pushed off
+        active cookbook polling - re-enabled now with the work pushed off
         the event loop and a slower (60s) cadence.
         """
         import time as _time
@@ -3665,7 +3665,7 @@ def setup_cookbook_routes() -> APIRouter:
         state_snap = state if isinstance(state, dict) else {}
 
         # Caller is _cookbook_tasks_status_sync (sync context, no event
-        # loop). Use a plain background thread — no asyncio needed.
+        # loop). Use a plain background thread - no asyncio needed.
         import threading
         def _run_sweep() -> None:
             try:
@@ -3682,7 +3682,7 @@ def setup_cookbook_routes() -> APIRouter:
         return
 
     def _sync_sweep_orphans(tasks: list, state: dict) -> None:
-        """The actual sync sweep — never call this on the event loop."""
+        """The actual sync sweep - never call this on the event loop."""
         import subprocess
         env = state.get("env") if isinstance(state, dict) else {}
         servers = env.get("servers") if isinstance(env, dict) else []
@@ -3793,10 +3793,10 @@ def setup_cookbook_routes() -> APIRouter:
                 # known model-server process (checked below). The earlier
                 # prefix gate (serve-/cookbook-) dropped legitimate
                 # serves whenever tmux fell back to numeric IDs, leaving
-                # them invisible in the Cookbook UI — so the user could
+                # them invisible in the Cookbook UI - so the user could
                 # neither see nor stop them.
                 # Skip zombie / idle-shell sessions. A tmux session left
-                # over from a crashed vllm just shows a bash prompt —
+                # over from a crashed vllm just shows a bash prompt -
                 # adopting it would pollute the UI with "running" tasks
                 # that aren't actually serving anything. pane_current_command
                 # is the foreground process in the pane right now; only
@@ -3816,7 +3816,7 @@ def setup_cookbook_routes() -> APIRouter:
                 if not any(c in LIVE_PROCS for c in cur):
                     continue
                 # Try to recover a plausible repo_id + port from the
-                # pane buffer. Cheap heuristic — if we can't, register
+                # pane buffer. Cheap heuristic - if we can't, register
                 # with placeholder fields; the UI still shows it.
                 import re as _re_orphan
                 # vLLM banner: "model   /path/...". Falls back to the
@@ -3842,7 +3842,7 @@ def setup_cookbook_routes() -> APIRouter:
                     "payload": {
                         "repo_id": model,
                         "remote_host": host,
-                        "_cmd": "(orphan tmux session — original launch cmd unknown)",
+                        "_cmd": "(orphan tmux session - original launch cmd unknown)",
                         "port": port,
                     },
                     "remoteHost": host,
@@ -3892,39 +3892,39 @@ def setup_cookbook_routes() -> APIRouter:
         return {"ok": True, "repo_id": repo_id, "files": files}
 
     # In-memory cache for the Ollama library scrape. ollama.com is a public
-    # site, but it doesn't expose a stable JSON listing — we fetch the HTML
+    # site, but it doesn't expose a stable JSON listing - we fetch the HTML
     # search page and regex out the model cards. Cached for 1 h so a busy
     # cookbook view doesn't hammer the site on every render.
     _ollama_library_cache: dict = {"models": [], "fetched_at": 0.0, "error": None}
 
     _OLLAMA_FALLBACK_LIBRARY = [
-        {"name": "qwen2.5", "description": "Qwen2.5 series — strong general/coding model from Alibaba.", "sizes": ["0.5b", "1.5b", "3b", "7b", "14b", "32b", "72b"]},
+        {"name": "qwen2.5", "description": "Qwen2.5 series - strong general/coding model from Alibaba.", "sizes": ["0.5b", "1.5b", "3b", "7b", "14b", "32b", "72b"]},
         {"name": "qwen2.5-coder", "description": "Code-specialized Qwen2.5 family.", "sizes": ["0.5b", "1.5b", "3b", "7b", "14b", "32b"]},
-        {"name": "qwen3", "description": "Qwen3 — newer Alibaba family with hybrid reasoning.", "sizes": ["0.6b", "1.7b", "4b", "8b", "14b", "32b"]},
+        {"name": "qwen3", "description": "Qwen3 - newer Alibaba family with hybrid reasoning.", "sizes": ["0.6b", "1.7b", "4b", "8b", "14b", "32b"]},
         {"name": "llama3.2", "description": "Meta Llama 3.2 instruct (and tiny / vision variants).", "sizes": ["1b", "3b", "11b", "90b"]},
         {"name": "llama3.1", "description": "Meta Llama 3.1 instruct.", "sizes": ["8b", "70b", "405b"]},
         {"name": "llama3.3", "description": "Meta Llama 3.3 70B instruct.", "sizes": ["70b"]},
-        {"name": "gemma3", "description": "Google Gemma 3 — multimodal capable open-weights.", "sizes": ["1b", "4b", "12b", "27b"]},
+        {"name": "gemma3", "description": "Google Gemma 3 - multimodal capable open-weights.", "sizes": ["1b", "4b", "12b", "27b"]},
         {"name": "gemma2", "description": "Google Gemma 2 instruct.", "sizes": ["2b", "9b", "27b"]},
-        {"name": "mistral", "description": "Mistral 7B instruct — small, fast generalist.", "sizes": ["7b"]},
+        {"name": "mistral", "description": "Mistral 7B instruct - small, fast generalist.", "sizes": ["7b"]},
         {"name": "mistral-nemo", "description": "Mistral NeMo 12B instruct.", "sizes": ["12b"]},
         {"name": "mistral-small", "description": "Mistral Small 22B / 24B instruct.", "sizes": ["22b", "24b"]},
         {"name": "mixtral", "description": "Mistral MoE 8x7B / 8x22B.", "sizes": ["8x7b", "8x22b"]},
         {"name": "phi3", "description": "Microsoft Phi-3 small / medium.", "sizes": ["mini", "medium"]},
         {"name": "phi4", "description": "Microsoft Phi-4 14B.", "sizes": ["14b"]},
         {"name": "deepseek-r1", "description": "DeepSeek R1 reasoning model (distilled variants).", "sizes": ["1.5b", "7b", "8b", "14b", "32b", "70b"]},
-        {"name": "deepseek-v3", "description": "DeepSeek V3 MoE 671B (huge — needs serious VRAM).", "sizes": ["671b"]},
+        {"name": "deepseek-v3", "description": "DeepSeek V3 MoE 671B (huge - needs serious VRAM).", "sizes": ["671b"]},
         {"name": "codellama", "description": "Meta Code Llama instruct family.", "sizes": ["7b", "13b", "34b", "70b"]},
-        {"name": "starcoder2", "description": "BigCode StarCoder2 — code completion.", "sizes": ["3b", "7b", "15b"]},
-        {"name": "deepseek-coder-v2", "description": "DeepSeek Coder V2 — code MoE.", "sizes": ["16b", "236b"]},
-        {"name": "nomic-embed-text", "description": "Embedding model — text vector encoder.", "sizes": ["latest"]},
-        {"name": "mxbai-embed-large", "description": "Embedding model — Mixedbread large.", "sizes": ["latest"]},
+        {"name": "starcoder2", "description": "BigCode StarCoder2 - code completion.", "sizes": ["3b", "7b", "15b"]},
+        {"name": "deepseek-coder-v2", "description": "DeepSeek Coder V2 - code MoE.", "sizes": ["16b", "236b"]},
+        {"name": "nomic-embed-text", "description": "Embedding model - text vector encoder.", "sizes": ["latest"]},
+        {"name": "mxbai-embed-large", "description": "Embedding model - Mixedbread large.", "sizes": ["latest"]},
         {"name": "llava", "description": "LLaVA multimodal vision-language model.", "sizes": ["7b", "13b", "34b"]},
         {"name": "minicpm-v", "description": "MiniCPM-V multimodal.", "sizes": ["8b"]},
-        {"name": "command-r", "description": "Cohere Command R — RAG-oriented.", "sizes": ["35b"]},
-        {"name": "command-r-plus", "description": "Cohere Command R+ — larger RAG model.", "sizes": ["104b"]},
+        {"name": "command-r", "description": "Cohere Command R - RAG-oriented.", "sizes": ["35b"]},
+        {"name": "command-r-plus", "description": "Cohere Command R+ - larger RAG model.", "sizes": ["104b"]},
         {"name": "qwq", "description": "Qwen QwQ reasoning preview.", "sizes": ["32b"]},
-        {"name": "smollm2", "description": "HuggingFaceTB SmolLM2 — tiny capable models.", "sizes": ["135m", "360m", "1.7b"]},
+        {"name": "smollm2", "description": "HuggingFaceTB SmolLM2 - tiny capable models.", "sizes": ["135m", "360m", "1.7b"]},
         {"name": "granite3.1-dense", "description": "IBM Granite 3.1 dense instruct.", "sizes": ["2b", "8b"]},
         {"name": "nemotron", "description": "NVIDIA Nemotron 70B.", "sizes": ["70b"]},
         {"name": "olmo2", "description": "AI2 OLMo 2 open-weights.", "sizes": ["7b", "13b"]},
@@ -3996,7 +3996,7 @@ def setup_cookbook_routes() -> APIRouter:
             if not models:
                 models = list(_OLLAMA_FALLBACK_LIBRARY)
                 if err is None:
-                    err = "parsed 0 results — using fallback list"
+                    err = "parsed 0 results - using fallback list"
             _ollama_library_cache["models"] = models
             _ollama_library_cache["fetched_at"] = now
             _ollama_library_cache["error"] = err
@@ -4198,7 +4198,7 @@ def setup_cookbook_routes() -> APIRouter:
         """Check status of all active cookbook tmux sessions.
 
         Critical: every subprocess.run inside this handler is a sync blocking
-        call that — when this was a plain async def — froze the entire server
+        call that - when this was a plain async def - froze the entire server
         event loop. Now the whole body runs in a worker thread via
         asyncio.to_thread so other requests stay responsive."""
         require_admin(request)
@@ -4255,7 +4255,7 @@ def setup_cookbook_routes() -> APIRouter:
             disappears before Cookbook captures the final DOWNLOAD_OK marker.
             In that case, trust the cache shape: a snapshot directory with files
             and no *.incomplete blobs means HuggingFace finished materializing the
-            model. cache_root is the task's custom download dir — the runner
+            model. cache_root is the task's custom download dir - the runner
             pointed HF_HOME there, so the cache lives under <cache_root>/hub,
             not wherever this probe's environment says.
             """
@@ -4313,9 +4313,9 @@ def setup_cookbook_routes() -> APIRouter:
                 pass
 
         # Orphan-tmux auto-adoption sweep. When the agent (or anyone)
-        # SSH-launches a `serve-*` tmux session — usually because
+        # SSH-launches a `serve-*` tmux session - usually because
         # serve_model rejected `source ... && vllm ...` or because of a
-        # manual relaunch via tmux send-keys — that session is invisible
+        # manual relaunch via tmux send-keys - that session is invisible
         # to the cookbook UI even though it's a live model server. The
         # sweep finds those orphans on each configured remote host and
         # writes them into state.tasks with _adoptedExternally=True, so
@@ -4434,7 +4434,7 @@ def setup_cookbook_routes() -> APIRouter:
                     pass
             else:
                 # Skip the live SSH check entirely for tasks already in a
-                # terminal state — they won't change, and 10s timeouts
+                # terminal state - they won't change, and 10s timeouts
                 # stacked per task were the dominant cost of this whole
                 # status endpoint (3+ minute stalls with ~8 accumulated
                 # stopped tasks). The agent's `list_served_models` call
@@ -4449,7 +4449,7 @@ def setup_cookbook_routes() -> APIRouter:
                                     "crashed", "error", "failed",
                                     "ended", "killed"} and not _persisted_serve_ready:
                     is_alive = False
-                    # Keep the persisted output_tail for the UI — it's
+                    # Keep the persisted output_tail for the UI - it's
                     # what the agent uses to diagnose past failures.
                     full_snapshot = (task.get("output") or "")[-12000:]
                 else:
@@ -4474,7 +4474,7 @@ def setup_cookbook_routes() -> APIRouter:
 
             # Determine status. For the local-Windows detached model the log file
             # persists after the process exits, so a finished download still has a
-            # snapshot to classify (DOWNLOAD_OK / exit marker) — evaluate it even
+            # snapshot to classify (DOWNLOAD_OK / exit marker) - evaluate it even
             # when the PID is gone instead of blindly reporting "stopped".
             download_zero_files = False
             exit_code = None
@@ -4496,7 +4496,7 @@ def setup_cookbook_routes() -> APIRouter:
                 exit_code = int(exit_match.group(1)) if exit_match else None
                 has_error = "error" in lower or "failed" in lower or "traceback" in lower
                 if has_exit and task_type == "serve":
-                    # Serve tasks that exit are always errors — they should run indefinitely
+                    # Serve tasks that exit are always errors - they should run indefinitely
                     status = "error"
                 elif has_exit and task_type == "download":
                     # Dependency installs are tracked as download tasks but only
@@ -4527,7 +4527,7 @@ def setup_cookbook_routes() -> APIRouter:
                 else:
                     status = "running"
             else:
-                # Session is dead — check if it completed or crashed. The
+                # Session is dead - check if it completed or crashed. The
                 # runner markers in the retained output are conclusive
                 # (DOWNLOAD_OK only prints after exit 0), so check them before
                 # the cache probe, which can't see ollama pulls at all.
@@ -4549,7 +4549,7 @@ def setup_cookbook_routes() -> APIRouter:
                 else:
                     status = "stopped"
 
-            # Parse structured phase info — single source of truth for the UI
+            # Parse structured phase info - single source of truth for the UI
             phase_info = _parse_serve_phase(full_snapshot, task_type) if (task_type == "serve" and full_snapshot) else {}
             if phase_info.get("status") == "ready" and is_alive:
                 status = "ready"

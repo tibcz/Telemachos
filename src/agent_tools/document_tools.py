@@ -45,8 +45,8 @@ def clear_active_document(doc_id: Optional[str] = None) -> bool:
 
     Called when a document is detached from its session or deleted (its tab is
     closed): without this, the stale pointer makes the last-resort doc-injection
-    path re-surface a closed document in a later, unrelated chat — even one whose
-    session no longer matches — because an unlinked doc has session_id NULL (#1160).
+    path re-surface a closed document in a later, unrelated chat - even one whose
+    session no longer matches - because an unlinked doc has session_id NULL (#1160).
     """
     global _active_document_id
     if doc_id is None or _active_document_id == doc_id:
@@ -57,7 +57,7 @@ def clear_active_document(doc_id: Optional[str] = None) -> bool:
 
 def _owned_document_query(query, Document, owner: Optional[str]):
     if owner is None:
-        # A bare Python `False` is not a valid SQL expression — SQLAlchemy 1.4
+        # A bare Python `False` is not a valid SQL expression - SQLAlchemy 1.4
         # deprecates it and 2.0 raises ArgumentError. Use the SQL `false()`
         # literal to return zero rows for an unscoped (owner-less) query.
         from sqlalchemy import false
@@ -116,7 +116,7 @@ def _approved_document_version_error(doc: Any, ctx: dict) -> Optional[Dict]:
 
 
 # ---------------------------------------------------------------------------
-# Document tools — create/update/edit/suggest living documents
+# Document tools - create/update/edit/suggest living documents
 # ---------------------------------------------------------------------------
 
 def _sniff_doc_language(text: str) -> str:
@@ -354,7 +354,7 @@ class CreateDocumentTool:
         """Create a new document. Supports two formats:
         1) Line-based: line 1 = title, line 2 (optional) = language, rest = content
         2) XML-like tags: <title>...</title><language>...</language><content>...</content>
-        Some models mix them — strip any XML-style tags and fall back to line parsing."""
+        Some models mix them - strip any XML-style tags and fall back to line parsing."""
         import uuid, re as _re
         from src.database import SessionLocal, Document, DocumentVersion, Session as DbSession
 
@@ -401,7 +401,7 @@ class CreateDocumentTool:
         if language and language not in _KNOWN_LANGS:
             language = None
         if not language:
-            # No explicit language — sniff it from the content so an SVG / HTML / JSON
+            # No explicit language - sniff it from the content so an SVG / HTML / JSON
             # / code document isn't silently saved as markdown. Prose → markdown.
             language = _sniff_doc_language(content)
         if _looks_like_email_document(content, title):
@@ -602,7 +602,7 @@ class EditDocumentTool:
                 if is_email_doc:
                     replacement_body = (blank_find_edits[0].get("replace") or "").strip()
                     if not replacement_body:
-                        return {"error": "No edits applied — blank FIND block had no replacement text"}
+                        return {"error": "No edits applied - blank FIND block had no replacement text"}
                     updated_content = _coerce_email_document_content(doc.current_content or "", replacement_body)
                     applied = 1
                     skipped = max(0, len(edits) - 1)
@@ -636,7 +636,7 @@ class EditDocumentTool:
                         "applied": applied,
                         "skipped": skipped,
                     }
-                return {"error": "No edits applied — FIND text cannot be blank"}
+                return {"error": "No edits applied - FIND text cannot be blank"}
 
             updated_content = doc.current_content
             applied = 0
@@ -650,7 +650,7 @@ class EditDocumentTool:
                     # Defensive: the active-doc context shows a "N\t" line-number
                     # gutter for reference. Weaker models sometimes copy that prefix
                     # into FIND. If the exact match failed, retry with a leading
-                    # "<digits><tab>" stripped from each FIND line — but only use it
+                    # "<digits><tab>" stripped from each FIND line - but only use it
                     # when that stripped form actually matches, so we never corrupt a
                     # legitimately tab-prefixed document.
                     _stripped = "\n".join(re.sub(r"^\d+\t", "", _l) for _l in _find.split("\n"))
@@ -663,7 +663,7 @@ class EditDocumentTool:
                         skipped += 1
 
             if applied == 0:
-                return {"error": f"No edits applied — none of the FIND blocks matched the document content (skipped {skipped})"}
+                return {"error": f"No edits applied - none of the FIND blocks matched the document content (skipped {skipped})"}
 
             missing_id = _missing_document_upload(owner, updated_content)
             if missing_id:
@@ -815,7 +815,7 @@ class ManageDocumentTool:
                     ts = getattr(d, 'updated_at', None) or getattr(d, 'created_at', None)
                     marker = " ← most recent" if i == 0 else ""
                     lines.append(
-                        f"- [{d.title}](#document-{d.id}) — {lang}, {size} chars, updated {_rel(ts)}{marker}"
+                        f"- [{d.title}](#document-{d.id}) - {lang}, {size} chars, updated {_rel(ts)}{marker}"
                     )
                     items.append({"id": d.id, "title": d.title, "language": lang, "size": size})
                 header = f"Found {len(docs)} document(s), sorted most-recent first. Click a title to open:"
@@ -849,7 +849,7 @@ class ManageDocumentTool:
                     preview += f"\n... (truncated, {len(body)} chars total; next_offset={end})"
                 anchor = f"[{doc.title}](#document-{doc.id})"
                 return {
-                    "response": f"{anchor} — click to open in editor.\n\n```{doc.language or ''}\n{preview}\n```",
+                    "response": f"{anchor} - click to open in editor.\n\n```{doc.language or ''}\n{preview}\n```",
                     "document": {
                         "id": doc.id,
                         "title": doc.title,

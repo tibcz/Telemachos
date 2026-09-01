@@ -435,7 +435,7 @@ function buildFolderSubmenu(sessionId, currentFolder, dropdown) {
     if (!name || !name.trim()) return;
     await moveToFolder(sessionId, name.trim());
     // Auto-flip to By Folder view so the user immediately sees the
-    // folder they just created — otherwise the new folder disappears
+    // folder they just created - otherwise the new folder disappears
     // into the flat list and looks like the action did nothing.
     setSortMode('group');
     dropdown.style.display = 'none';
@@ -496,7 +496,7 @@ function createSessionItem(s) {
   div.setAttribute('role', 'option');
   div.setAttribute('tabindex', '-1');
   div.setAttribute('data-session-id', s.id);
-  // Special-session sentinel — true for the legacy OpenClaw row, which
+  // Special-session sentinel - true for the legacy OpenClaw row, which
   // skips the normal provider dot / name / action chrome. Was
   // previously detected here but the declaration got removed while
   // leaving the references in place, causing ReferenceError on every
@@ -759,7 +759,7 @@ function createSessionItem(s) {
 
   // Rename is already appended above (line 393)
 
-  // "Select" — enter bulk select mode with this session pre-selected
+  // "Select" - enter bulk select mode with this session pre-selected
   if (!isOpenClaw) {
     const selectMoreItem = document.createElement('div');
     selectMoreItem.className = 'dropdown-item-compact';
@@ -771,7 +771,7 @@ function createSessionItem(s) {
       const dot = div.querySelector('.session-select-cb');
       if (dot) { dot._checked = true; dot.innerHTML = '●'; dot.style.opacity = '1'; dot.style.color = 'var(--accent, var(--red))'; _selectedIds.add(s.id); _updateBulkCount(); }
     });
-    // On mobile, "Select" is the primary multi-pick action — put it at the top
+    // On mobile, "Select" is the primary multi-pick action - put it at the top
     // of the menu. On desktop keep its original position.
     if (window.innerWidth <= 768) {
       dropdown.insertBefore(selectMoreItem, dropdown.firstChild);
@@ -793,7 +793,7 @@ function createSessionItem(s) {
   dropdown.appendChild(archiveItem);
   dropdown.appendChild(deleteItem);
 
-  // Mobile-only Cancel — explicit close for touch users. CSS hides it on
+  // Mobile-only Cancel - explicit close for touch users. CSS hides it on
   // desktop (outside-click already dismisses cleanly there).
   const _cancelIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
   const cancelItem = document.createElement('div');
@@ -905,7 +905,7 @@ function createSessionItem(s) {
     // Await API deletion, then reload the authoritative list from the server
     try {
       await fetch(`${API_BASE}/api/session/${s.id}`, { method: 'DELETE' });
-    } catch (e) { /* network error — session may still exist server-side */ }
+    } catch (e) { /* network error - session may still exist server-side */ }
     await loadSessions();
   });
 
@@ -1113,7 +1113,7 @@ function _renderSessionListImpl() {
   if (_sortMode && _sortMode !== 'group') {
     orderedSessions.sort((a, b) => {
       if (_sortMode === 'newest') return (b.created_at || '').localeCompare(a.created_at || '');
-      // "Last active" sorts by the last actual MESSAGE, not updated_at —
+      // "Last active" sorts by the last actual MESSAGE, not updated_at -
       // updated_at is bumped by renames / model swaps / folder moves, which
       // made the order feel random. Fall back to updated_at/created_at for
       // older rows that predate the last_message_at backfill.
@@ -1444,7 +1444,7 @@ function _initKeyboardNav(list) {
 }
 
 function _initSwipeToDelete(list) {
-  // handled by existing swipe code — placeholder for consistency
+  // handled by existing swipe code - placeholder for consistency
 }
 
 function _showSwipeHint(list) {
@@ -1483,7 +1483,7 @@ function _forceSidebarOpen() {
 
 // While an inline rename is in progress on mobile, several paths can hide the
 // sidebar (backdrop tap, soft-keyboard viewport resize, dropdown dismiss). Watch
-// the sidebar directly and re-open it if anything hides it — bulletproof against
+// the sidebar directly and re-open it if anything hides it - bulletproof against
 // whichever path fires. Returns a stopper to call once the rename is committed.
 function _guardSidebarDuringRename() {
   if (window.innerWidth > 768 || !window.MutationObserver) return () => {};
@@ -1748,16 +1748,16 @@ export async function loadSessions() {
     } else if (currentSessionId && activeSessions.some(s => s.id === currentSessionId)) {
       targetId = currentSessionId;
     } else if (currentSessionId) {
-      // Session was just created but may not be in the list yet — keep it
+      // Session was just created but may not be in the list yet - keep it
       targetId = currentSessionId;
     } else if (!_freshRootLoad && savedId && activeSessions.some(s => s.id === savedId)) {
       targetId = savedId;
     } else if (!_freshRootLoad && !_skipAutoSelect && _realSessions.length > 0) {
-      // Most-recent NON-transient session — skip Assistant / Tasks so the
+      // Most-recent NON-transient session - skip Assistant / Tasks so the
       // auto-firing assistant doesn't become the apparent default chat.
       targetId = _realSessions[0].id;
     } else if (!_freshRootLoad && !_skipAutoSelect && activeSessions.length > 0) {
-      // Only transient sessions exist (brand-new account) — fall through to
+      // Only transient sessions exist (brand-new account) - fall through to
       // the original behaviour so we don't leave the user with nothing.
       targetId = activeSessions[0].id;
     }
@@ -1766,7 +1766,7 @@ export async function loadSessions() {
     // Fresh login: prefer a default-model session so a brand-new user lands
     // ready to chat. CRITICAL: only do this when there's NO session to return
     // to (no hash / lastSessionId / existing chat resolved into targetId).
-    // Otherwise a fresh page load — which a server restart triggers — would
+    // Otherwise a fresh page load - which a server restart triggers - would
     // spin up a new empty default-model chat and shadow the user's last
     // conversation, making it look like the chat "lost its context" (and the
     // picker would still show the old model's name from cached state). See
@@ -1791,13 +1791,13 @@ export async function loadSessions() {
       const showLoading = !suppressSessionLoading && !(_isFirstLoad && !hashId);
       await selectSession(targetId, { keepSidebar: true, showLoading });
     } else if (targetId && targetId === currentSessionId) {
-      // Same session — just refresh the header name in case it was auto-generated
+      // Same session - just refresh the header name in case it was auto-generated
       const s = sessions.find(x => x.id === targetId);
       const metaEl = document.getElementById('current-meta');
       if (metaEl && s) metaEl.textContent = s.name;
     }
 
-    // No session selected — still enable input so slash commands (e.g. /setup) work
+    // No session selected - still enable input so slash commands (e.g. /setup) work
     if (!targetId && !hasPendingChat) {
       const msgInput = document.getElementById('message');
       if (msgInput) {
@@ -1816,7 +1816,7 @@ export async function loadSessions() {
           if (dc && dc.endpoint_url && dc.model) {
               await createDirectChat(dc.endpoint_url, dc.model, dc.endpoint_id, { source: 'default' });
           }
-        } catch (_) { /* no default model — that's fine, user can /setup */ }
+        } catch (_) { /* no default model - that's fine, user can /setup */ }
         _autoCreateInProgress = false;
       }
     }
@@ -1859,7 +1859,7 @@ export async function selectSession(id, { keepSidebar = false, showLoading = tru
     try { window.__telemachosLastSelectedSessionId = id; } catch (_) {}
     // Identify Assistant / task-output sessions so we don't "trap" the user
     // there on return. Skipped from both `lastSessionId` persistence and the
-    // URL hash — the user complained that coming back to Telemachos kept
+    // URL hash - the user complained that coming back to Telemachos kept
     // landing them on the auto-firing task-log chat instead of their last
     // real conversation.
     const _meta = sessions.find(s => s.id === id);
@@ -1948,7 +1948,7 @@ export async function selectSession(id, { keepSidebar = false, showLoading = tru
 
     const chatHistory = uiModule.el('chat-history');
     // Prefetch history before fading so we can swap instantly. `isOC`
-    // is the OpenClaw special-session sentinel — used by the wouldWipe
+    // is the OpenClaw special-session sentinel - used by the wouldWipe
     // guard below and the welcome-screen branch further down. (Its
     // declaration had been removed while leaving the references in
     // place, producing a ReferenceError every selectSession.)
@@ -2051,7 +2051,7 @@ export async function selectSession(id, { keepSidebar = false, showLoading = tru
       }
     } else {
       if (window.chatModule && window.chatModule.showWelcomeScreen) window.chatModule.showWelcomeScreen();
-      // Don't highlight ordinary empty sessions — feels like nothing is
+      // Don't highlight ordinary empty sessions - feels like nothing is
       // selected. Keep document/email-scoped sessions highlighted though: a
       // new email/reply chat starts empty but immediately owns an email doc.
       const isDocScopedEmptySession = !!(meta && (meta.has_documents || /^Email:|^New Email$/i.test(meta.name || '')));
@@ -2075,7 +2075,7 @@ export async function selectSession(id, { keepSidebar = false, showLoading = tru
         window.hljs.highlightElement(block);
       });
     }
-    // Hide research button on session switch — it's only for the session that started it
+    // Hide research button on session switch - it's only for the session that started it
     var _rBtn = document.getElementById('research-toggle-btn');
     var _rChk = document.getElementById('research-toggle');
     if (_rBtn) _rBtn.style.display = 'none';
@@ -2092,12 +2092,12 @@ export async function selectSession(id, { keepSidebar = false, showLoading = tru
       const _mpw = document.getElementById('model-picker-wrap');
       if (_mpw) _mpw.style.display = 'none';
     } else if (window.groupModule && window.groupModule.isActive()) {
-      // Switching away from group session — deactivate
+      // Switching away from group session - deactivate
       window.groupModule.stopGroup();
       if (window._syncGroupIndicator) window._syncGroupIndicator(false);
     }
 
-    // Stop pulsing notification — user is now viewing this session
+    // Stop pulsing notification - user is now viewing this session
     clearStreamComplete(id);
 
     // Re-attach any background stream
@@ -2156,7 +2156,7 @@ export async function selectSession(id, { keepSidebar = false, showLoading = tru
       }, 2500);
     }
     // Auto-focus message input (unless session list has keyboard focus).
-    // Skip on mobile — focusing the textarea pops up the on-screen keyboard,
+    // Skip on mobile - focusing the textarea pops up the on-screen keyboard,
     // which is intrusive when the user is just navigating between chats
     // (e.g. picking a chat from the Library). They can tap the input to
     // bring up the keyboard when they actually want to type.
@@ -2167,7 +2167,7 @@ export async function selectSession(id, { keepSidebar = false, showLoading = tru
   }
 }
 
-// Pending session — stored locally until the first message is sent
+// Pending session - stored locally until the first message is sent
 let _pendingChat = null; // { url, modelId, endpointId }
 let _pendingMaterializePromise = null;
 
@@ -2212,14 +2212,14 @@ export function createDirectChat(url, modelId, endpointId, opts = {}) {
   if (window.chatModule && window.chatModule.detachCurrentStream) {
     window.chatModule.detachCurrentStream(currentSessionId);
   }
-  // Stop an active GROUP chat too — otherwise its in-flight parallel/round-robin
+  // Stop an active GROUP chat too - otherwise its in-flight parallel/round-robin
   // streams keep rendering into the brand-new chat (abort the group's fetches).
   if (window.groupModule && window.groupModule.isActive && window.groupModule.isActive()) {
     try { window.groupModule.stopGroup(); } catch {}
     if (window._syncGroupIndicator) window._syncGroupIndicator(false);
   }
 
-  // Don't hit the API — just store the model info and prepare the UI
+  // Don't hit the API - just store the model info and prepare the UI
   _pendingChat = { url, modelId, endpointId, source: incomingSource };
   _pendingMaterializePromise = null;
   _skipAutoSelect = true;
@@ -2232,7 +2232,7 @@ export function createDirectChat(url, modelId, endpointId, opts = {}) {
     el.classList.remove('active-session', 'active');
   });
 
-  // Close document panel — new chat has no docs
+  // Close document panel - new chat has no docs
   if (window.documentModule && window.documentModule.isPanelOpen()) {
     window.documentModule.closePanel();
   }
@@ -2500,7 +2500,7 @@ async function _onSessionListKeydown(e) {
   }
 }
 
-// Initialize drag sorting for sessions — uses the same dragSortModule as models
+// Initialize drag sorting for sessions - uses the same dragSortModule as models
 export function initDragSort() {
   if (!window.dragSortModule) return;
   const list = uiModule.el('session-list');
@@ -2535,7 +2535,7 @@ export function initDragSort() {
 }
 
 // Hash-based routing: navigate between sessions with browser back/forward.
-// Skip entity-prefixed hashes (document-, note-, etc.) — those are handled
+// Skip entity-prefixed hashes (document-, note-, etc.) - those are handled
 // by their own click handlers in chatRenderer.js and must not trigger
 // session navigation (which would reset the active chat).
 window.addEventListener('hashchange', () => {
@@ -2633,7 +2633,7 @@ function _clearRunningState(sessionId) {
 export function markStreamComplete(sessionId) {
   _researchingSessions.delete(sessionId);
   _streamingSessions.delete(sessionId);
-  // Don't pulse if user is already viewing this session — they can see the response
+  // Don't pulse if user is already viewing this session - they can see the response
   if (currentSessionId === sessionId) {
     _updateResearchDots();
     _updateRailNotifs();
@@ -2659,7 +2659,7 @@ export function markStreamComplete(sessionId) {
 // ── Rail notification dots ──
 // Keep rail buttons lit when background work is happening / finished
 function _updateRailNotifs() {
-  // Research rail — pulsing while any session is researching
+  // Research rail - pulsing while any session is researching
   const railResearch = document.getElementById('rail-research');
   if (railResearch) {
     // OR in the Deep Research panel's job state (set by panel.js)
@@ -2667,7 +2667,7 @@ function _updateRailNotifs() {
     const researching = _researchingSessions.size > 0 || !!window._researchJobsActive;
     railResearch.classList.toggle('rail-notify', researching);
   }
-  // Chats rail — show when a background stream completed
+  // Chats rail - show when a background stream completed
   const railChats = document.getElementById('rail-chats');
   if (railChats) {
     const sidebar = document.getElementById('sidebar');
@@ -2693,10 +2693,10 @@ function _updateRailNotifs() {
  */
 async function _checkServerStream(sessionId) {
   try {
-    // Skip if research is running — it has its own progress UI
+    // Skip if research is running - it has its own progress UI
     if (_researchingSessions.has(sessionId)) return;
 
-    // Skip if the SSE reader is still actively connected — it handles rendering
+    // Skip if the SSE reader is still actively connected - it handles rendering
     if (window.chatModule && window.chatModule.hasActiveStream && window.chatModule.hasActiveStream(sessionId)) return;
 
     const res = await fetch(`${API_BASE}/api/chat/stream_status/${sessionId}`);
@@ -2710,7 +2710,7 @@ async function _checkServerStream(sessionId) {
       return;
     }
 
-    // Skip if this is a research stream — research has its own progress UI
+    // Skip if this is a research stream - research has its own progress UI
     if (info.mode === 'research' || info.is_research) return;
 
     // Live-resume the detached run: replay its buffer then stream live tokens
@@ -2774,7 +2774,7 @@ async function _checkServerStream(sessionId) {
       }
     }, 1500);
   } catch (_) {
-    // No stream active — nothing to do
+    // No stream active - nothing to do
   }
 }
 
@@ -2813,7 +2813,7 @@ function _initDropdownDismiss() {
     if (e.target.closest('.session-dropdown-menu, .session-folder-submenu')) return;
     document.querySelectorAll('.session-dropdown-menu, .session-folder-submenu').forEach(d => d.style.display = 'none');
   });
-  // Watch the sidebar — when it's hidden (any path: hamburger, swipe, mobile
+  // Watch the sidebar - when it's hidden (any path: hamburger, swipe, mobile
   // collapse), close any open session dropdowns so they don't orphan over
   // the page.
   const _sb = document.getElementById('sidebar');
@@ -2827,7 +2827,7 @@ function _initDropdownDismiss() {
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
     // Esc must dismiss both the parent dropdown AND the Move-to-folder
-    // submenu in one keypress — previously only the dropdown closed and
+    // submenu in one keypress - previously only the dropdown closed and
     // the submenu was left orphaned on screen.
     document.querySelectorAll('.session-dropdown-menu, .session-folder-submenu').forEach(d => d.style.display = 'none');
   });
@@ -2901,7 +2901,7 @@ function _arcRelativeTime(iso) {
 
 // ── Actions (pure side-effects, no DOM creation) ──
 
-// Peek at an archived session — load its history without unarchiving
+// Peek at an archived session - load its history without unarchiving
 let _peekingSessionId = null;
 
 async function _arcPeekOpen(sid) {
@@ -3061,7 +3061,7 @@ async function _arcFetch(append) {
   }
 }
 
-// ── Rendering (dumb — reads _arc, writes DOM) ──
+// ── Rendering (dumb - reads _arc, writes DOM) ──
 
 function _arcRefreshUI() {
   _arcRenderStats();
@@ -3238,7 +3238,7 @@ export function openLibrary(defaultTab) {
   // Tab switching
   modal.querySelectorAll('.lib-tab').forEach(tab => {
     tab.addEventListener('click', () => {
-      // Documents tab — open the document module's library (has expand/preview)
+      // Documents tab - open the document module's library (has expand/preview)
       if (tab.dataset.libTab === 'documents' && window.documentModule && window.documentModule.openLibrary) {
         closeLibrary();
         window.documentModule.openLibrary();

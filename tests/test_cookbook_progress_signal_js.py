@@ -1,11 +1,11 @@
-"""Regression for issue #1568 — installing a heavy dependency (vllm) in the
-Cookbook crashes in a "stale — restarting" loop.
+"""Regression for issue #1568 - installing a heavy dependency (vllm) in the
+Cookbook crashes in a "stale - restarting" loop.
 
 The download/install watchdog (static/js/cookbookRunning.js) decides a task is
 stalled when its progress signal stays unchanged for STALE_PROGRESS_MS. That
 signal used to be the downloaded-byte counter only, which freezes during the long
-no-byte-counter phases of a dependency install — pip dependency resolution and
-the native CUDA build — so the watchdog falsely declared the install stale and
+no-byte-counter phases of a dependency install - pip dependency resolution and
+the native CUDA build - so the watchdog falsely declared the install stale and
 restarted it mid-build, looping forever.
 
 computeProgressSignal (cookbookProgressSignal.js) keeps the byte signal for the
@@ -67,7 +67,7 @@ def test_download_phase_uses_byte_counter_and_ignores_animated_tail(node_availab
 
 def test_build_phase_progresses_on_new_output(node_available):
     """The #1568 case: no byte counter (pip resolve / CUDA build). New build
-    output must change the signal so it isn't falsely declared stale — whereas a
+    output must change the signal so it isn't falsely declared stale - whereas a
     byte-only signal would read '0' for both and trip the stall timer."""
     script = textwrap.dedent("""
         const { computeProgressSignal } = await import('./static/js/cookbookProgressSignal.js');

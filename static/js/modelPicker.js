@@ -1,4 +1,4 @@
-// Model Picker — chatbox model selector dropdown
+// Model Picker - chatbox model selector dropdown
 // Extracted from sessions.js
 
 import { providerLogo } from './providers.js';
@@ -17,7 +17,7 @@ const RECENT_KEY = 'telemachos-model-recent';
 const FAVORITES_KEY = 'telemachos-model-favorites';
 const RECENT_MAX = 5;
 // Catalogs at or below this size are small enough that hiding everything
-// behind search would be a regression — keep listing them in browse mode.
+// behind search would be a regression - keep listing them in browse mode.
 const BROWSE_ALL_LIMIT = 12;
 
 function _loadList(key) {
@@ -249,7 +249,7 @@ function _initModelPickerDropdown() {
     } catch (_) {}
   }
 
-  // Local endpoint health — only probed for LOCAL endpoints, since
+  // Local endpoint health - only probed for LOCAL endpoints, since
   // cloud APIs are essentially always up. Cached briefly on the
   // server side too (8s TTL). Picker opens do not probe; the refresh button
   // is the explicit network/probe action.
@@ -278,7 +278,7 @@ function _initModelPickerDropdown() {
     const seen = new Set();
     items.forEach(item => {
       // Previously: offline endpoints were skipped entirely, so a server
-      // that briefly went down disappeared from the picker — confusing
+      // that briefly went down disappeared from the picker - confusing
       // when the user can still see it (offline-tagged) in Settings.
       // Now: include offline-endpoint models too but flag them
       // `stale: true` so the row renderer dims them + shows the offline
@@ -442,7 +442,7 @@ function _initModelPickerDropdown() {
       searchRow.classList.toggle('searching', !!q);
     }
 
-    if (!hasAnyModel) return; // collapsed empty list — nothing to render
+    if (!hasAnyModel) return; // collapsed empty list - nothing to render
 
     // Unique lookup so Recent/Favorites (stored as bare model IDs) can be
     // resolved back to full model objects; drops anything no longer offered.
@@ -487,11 +487,11 @@ function _initModelPickerDropdown() {
       const nameSpan = document.createElement('span');
       nameSpan.className = 'mp-model-name';
       nameSpan.textContent = m.display;
-      // Long model names are clipped with ellipsis — expose the full name on
+      // Long model names are clipped with ellipsis - expose the full name on
       // hover so the suffix/variant tag is still discoverable (#1982).
       nameSpan.title = m.display;
       row.appendChild(nameSpan);
-      // Offline state is already conveyed by the row's reduced opacity —
+      // Offline state is already conveyed by the row's reduced opacity -
       // a redundant "offline" pill on top of that just added clutter.
       // (Class kept on `row` so the opacity rule still applies; the text
       // badge is gone.)
@@ -502,7 +502,7 @@ function _initModelPickerDropdown() {
       epSpan.textContent = _epDisplay;
       row.appendChild(epSpan);
 
-      // Inline favorite dot — toggles favorite, never picks the model.
+      // Inline favorite dot - toggles favorite, never picks the model.
       const favDot = document.createElement('button');
       favDot.type = 'button';
       favDot.className = 'mp-fav-dot' + (favs.includes(m.mid) ? ' active' : '');
@@ -526,7 +526,7 @@ function _initModelPickerDropdown() {
         if (nowFav && idx < 0) favs.push(m.mid);
         else if (!nowFav && idx >= 0) favs.splice(idx, 1);
         if (uiModule && uiModule.showToast) uiModule.showToast(nowFav ? 'Favorited' : 'Unfavorited');
-        // In browse mode the Favorites section membership changed — rebuild
+        // In browse mode the Favorites section membership changed - rebuild
         // (cheap: Recent + Favorites). In search mode the row stays put, so
         // the in-place favorite update above is enough.
         if (!q) {
@@ -557,9 +557,9 @@ function _initModelPickerDropdown() {
     // Rules:
     //   1. Never list the same model twice in the dropdown. Favorites
     //      win over Recent (if you favorited it, that's where it
-    //      belongs — Recent shouldn't show it again as duplicate).
+    //      belongs - Recent shouldn't show it again as duplicate).
     //   2. Small catalogs (≤ BROWSE_ALL_LIMIT total) skip the Recent
-    //      section entirely — when there's only ~10 models, the whole
+    //      section entirely - when there's only ~10 models, the whole
     //      list fits below as "All models" and a separate Recent
     //      section just duplicates rows.
     const shown = new Set();
@@ -665,7 +665,7 @@ async function _pick(m) {
     const _pendingChat = _deps.getPendingChat();
 
     // Remember this pick so it surfaces under "Recent" next time the picker
-    // opens — the whole point of quick-switch.
+    // opens - the whole point of quick-switch.
     if (m && m.mid) _pushRecent(_pickerModelKey(m) || m.mid);
 
     // Broadcast immediately so listeners (e.g. the tour) can advance without
@@ -675,21 +675,21 @@ async function _pick(m) {
     // Blur search input before closing to dismiss keyboard on mobile
     if (document.activeElement) document.activeElement.blur();
     _close();
-    // Refocus main textarea — skip on mobile to avoid keyboard bounce
+    // Refocus main textarea - skip on mobile to avoid keyboard bounce
     if (window.innerWidth >= 768) {
       const _ta = document.getElementById('message');
       if (_ta) setTimeout(() => _ta.focus(), 50);
     }
     if (!currentSessionId && _pendingChat) {
-      // Already have a deferred session — just update the model
+      // Already have a deferred session - just update the model
       _deps.setPendingChat({ url: m.url, modelId: m.mid, endpointId: m.endpointId, source: 'manual' });
-      // Header stays as session name — model switch only updates picker
+      // Header stays as session name - model switch only updates picker
       updateModelPicker();
       uiModule.showToast(`Using ${m.display}`);
       finishSwitch();
       return;
     } else if (!currentSessionId) {
-      // No session yet — create one with this model
+      // No session yet - create one with this model
       try {
         await _deps.createDirectChat(m.url, m.mid, m.endpointId);
       } catch (e) {
@@ -698,7 +698,7 @@ async function _pick(m) {
         return;
       }
     } else {
-      // Existing session with no model — PATCH it
+      // Existing session with no model - PATCH it
       const sessions = _deps.getSessions();
       const s = sessions.find(x => x.id === currentSessionId);
       if (s) { s.model = m.mid; s.endpoint_url = m.url; s.endpoint_id = m.endpointId || s.endpoint_id || ''; }
@@ -714,14 +714,14 @@ async function _pick(m) {
           finishSwitch();
           return;
         }
-        // Header stays as session name — model info shown in picker only
+        // Header stays as session name - model info shown in picker only
       } catch (e) {
         uiModule.showError('Failed to set model: ' + e);
         finishSwitch();
         return;
       }
     }
-    // Update picker visibility — model is now set
+    // Update picker visibility - model is now set
     updateModelPicker();
     if (window.refreshChatContextHeader) window.refreshChatContextHeader('model-pick');
     uiModule.showToast(`Using ${m.display}`);
@@ -849,7 +849,7 @@ async function _pick(m) {
 
 /**
  * Update the model picker label to show the current model.
- * Always visible — shows current model name or "Select model" if none.
+ * Always visible - shows current model name or "Select model" if none.
  * Called after selectSession, createDirectChat, and model switch.
  */
 export function updateModelPicker() {
@@ -909,8 +909,8 @@ export function updateModelPicker() {
   // we have no session model and no pending-chat pick, fall through to
   // the "Select model" placeholder below.
   //
-  // Check if selected model is still available — fall back ONLY for pending chats with no user selection
-  // Never override an existing session's model — the user explicitly chose it
+  // Check if selected model is still available - fall back ONLY for pending chats with no user selection
+  // Never override an existing session's model - the user explicitly chose it
   if (
     modelId &&
     !currentSessionId &&
@@ -926,7 +926,7 @@ export function updateModelPicker() {
       (item.models || []).concat(item.models_extra || []).forEach(m => allAvailable.push(m));
     });
     if (allAvailable.length > 0 && !allAvailable.includes(modelId)) {
-      // Model no longer available — switch to first available
+      // Model no longer available - switch to first available
       const fallback = items.find(item => !item.offline && (item.models || []).length > 0);
       if (fallback) {
         modelId = fallback.models[0];

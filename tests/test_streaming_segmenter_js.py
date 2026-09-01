@@ -3,7 +3,7 @@
 Covers the pure incremental-render segmenter (static/js/streamingSegmenter.js):
 unit boundaries plus a streaming-invariant fuzz that feeds a markdown corpus in
 token-by-token and asserts the freeze/tail split always matches a single full
-render. Pure JS — no DOM, no extra dependencies. Skipped when node is
+render. Pure JS - no DOM, no extra dependencies. Skipped when node is
 unavailable, mirroring tests/test_markdown_rendering_js.py.
 
 The renderer's DOM behavior (streamingRenderer.js) is exercised against a running

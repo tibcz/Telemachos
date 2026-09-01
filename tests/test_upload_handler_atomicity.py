@@ -155,13 +155,13 @@ def test_save_upload_concurrent_retains_all_entries(tmp_path):
 # ---------------------------------------------------------------------------
 async def test_duplicate_vs_insert_race_preserves_both(tmp_path):
     """The ``save_upload`` duplicate branch must reload ``uploads.json``
-    inside ``_index_lock`` before writing — it must not rely on a
+    inside ``_index_lock`` before writing - it must not rely on a
     snapshot read before the lock.
 
     Pre-fix shape (the bug): the duplicate branch did
     ``existing_files = json.load(...)`` outside the lock, then under
     the lock did ``_atomic_write_json(uploads_db_path, existing_files)``
-    — a stale snapshot that could clobber a concurrent insert.
+    - a stale snapshot that could clobber a concurrent insert.
 
     Post-fix: both branches call ``_load_upload_index()`` inside the
     lock, so the duplicate's write is always based on the freshest
@@ -343,16 +343,16 @@ def test_atomic_write_primitives_present_in_production_code():
     text = src_path.read_text(encoding="utf-8")
 
     assert "os.replace" in text, (
-        f"{src_path} does not use os.replace — atomic-rename write is missing."
+        f"{src_path} does not use os.replace - atomic-rename write is missing."
     )
     assert "tempfile.mkstemp" in text or "NamedTemporaryFile" in text, (
-        f"{src_path} does not write to a temp file — atomic-rename write is missing."
+        f"{src_path} does not write to a temp file - atomic-rename write is missing."
     )
     assert "_atomic_write_json" in text, (
         f"{src_path} is missing the _atomic_write_json helper."
     )
     assert "self._index_lock" in text, (
-        f"{src_path} is missing self._index_lock — concurrent writers are not serialised."
+        f"{src_path} is missing self._index_lock - concurrent writers are not serialised."
     )
     # The dedupe path must do its read inside the lock too.
     assert text.count("with self._index_lock:") >= 2, (

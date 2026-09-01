@@ -1,11 +1,11 @@
 /**
- * Move tool — drag a layer around the canvas, with optional snap-on-Ctrl
+ * Move tool - drag a layer around the canvas, with optional snap-on-Ctrl
  * to other layers' edges/centers and to canvas edges/center.
  *
  * Owns its own input handlers (begin/drag/end) and reads/writes the
  * shared `state` store directly. The factory takes a small dependency
- * bag for things that still live in galleryEditor.js — `activeLayer`,
- * `saveState`, `composite` — so this module doesn't have to know about
+ * bag for things that still live in galleryEditor.js - `activeLayer`,
+ * `saveState`, `composite` - so this module doesn't have to know about
  * the orchestrator.
  *
  * @param {{

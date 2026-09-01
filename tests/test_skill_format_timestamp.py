@@ -1,4 +1,4 @@
-"""Regression for issue #5697 — skill timestamps must not use ``datetime.utcnow()``.
+"""Regression for issue #5697 - skill timestamps must not use ``datetime.utcnow()``.
 
 ``_now_iso()`` builds the ``created`` value in skill frontmatter. ``utcnow()``
 returns a *naive* datetime and has been deprecated since Python 3.12, scheduled
@@ -49,7 +49,7 @@ def test_now_iso_is_utc_not_local_time():
             tzinfo=timezone.utc
         )
         drift = abs((emitted - datetime.now(timezone.utc)).total_seconds())
-        assert drift < 60, f"timestamp is {drift}s off UTC — local time leaked in"
+        assert drift < 60, f"timestamp is {drift}s off UTC - local time leaked in"
     finally:
         if original_tz is None:
             os.environ.pop("TZ", None)

@@ -1,5 +1,5 @@
 # src/rate_limiter.py
-"""Generic in-memory rate limiter — sliding window, keyed by IP."""
+"""Generic in-memory rate limiter - sliding window, keyed by IP."""
 
 import threading
 import time

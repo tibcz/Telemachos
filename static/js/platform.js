@@ -7,12 +7,12 @@
 
 // AltGr (right Alt on AZERTY/QWERTZ and most non-US layouts, used to type
 // @ # { } [ ] | \ and €) is reported by browsers as Ctrl+Alt. macOS is the
-// exception: there the Option key — a normal part of Mac shortcuts — also sets
+// exception: there the Option key - a normal part of Mac shortcuts - also sets
 // the AltGraph modifier state, so it must NOT be treated as AltGr.
 //
 // IS_MAC covers all Apple platforms, iPad/iPhone included: a Magic Keyboard's
 // Option key sets AltGraph exactly like a Mac's, so they need the same carve-out
-// — narrowing to macOS-only would re-break them. The name and the
+// - narrowing to macOS-only would re-break them. The name and the
 // /Mac|iPhone|iPad/ test deliberately mirror the existing isMac checks in
 // calendar.js and sessions.js; this is their single shared source of truth.
 export const IS_MAC =
@@ -30,7 +30,7 @@ export const IS_MAC =
 // state) is left alone instead of being swallowed.
 //
 // Trade-off: on Windows AltGr *is* Ctrl+right-Alt, so a deliberate
-// Ctrl+Alt+<char> shortcut typed via AltGr is unreachable too — accepted; use
+// Ctrl+Alt+<char> shortcut typed via AltGr is unreachable too - accepted; use
 // the left Ctrl+Alt.
 //
 // NOTE: the AltGr -> AltGraph mapping is taken from the UI Events spec / MDN,

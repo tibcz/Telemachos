@@ -55,7 +55,7 @@ def compose_task_relevant_tools(rag_tools, assistant_always, disabled_tools):
 # ── Shared TTL cache (singleflight) ────────────────────────────────────────
 # Multiple scheduled tasks firing in the same minute often need the same
 # external data (Miniflux unreads, MCP tool snapshots, etc.). This cache
-# deduplicates those fetches — in-flight requests for the same key await the
+# deduplicates those fetches - in-flight requests for the same key await the
 # same underlying coroutine, and completed results are reused until TTL expiry.
 _shared_cache: Dict[Tuple, Tuple[float, Any]] = {}
 _shared_cache_pending: Dict[Tuple, asyncio.Future] = {}
@@ -161,7 +161,7 @@ def compute_next_run(schedule: str, scheduled_time: str,
     if not scheduled_time:
         return None
 
-    # Parse HH:MM — fail closed on malformed input (no colon, non-numeric,
+    # Parse HH:MM - fail closed on malformed input (no colon, non-numeric,
     # out-of-range) the same way an invalid cron expression does above, so a
     # bad value like "9" or "9am" returns None instead of raising IndexError/
     # ValueError out of the create route (a 500) or the scheduler loop.
@@ -234,7 +234,7 @@ def _resolve_task_timezone(db, task) -> str | None:
 
 
 # Built-in "housekeeping" tasks seeded for every owner, keyed by action.
-# These are the canonical defaults — used both to seed and to revert a
+# These are the canonical defaults - used both to seed and to revert a
 # built-in task the user has altered. schedule "daily" uses scheduled_time;
 # "cron" uses cron_expression.
 HOUSEKEEPING_DEFAULTS = {
@@ -261,7 +261,7 @@ RETIRED_HOUSEKEEPING_ACTIONS = frozenset({
 def _digest_windows(now):
     """(label, start, end) buckets for the calendar check-in digest.
 
-    The windows are contiguous so no event is dropped between buckets — an
+    The windows are contiguous so no event is dropped between buckets - an
     earlier version started the 30-day window at now+8d while the week window
     ended at now+7d, so events ~7-8 days out fell into no bucket.
     """
@@ -298,8 +298,8 @@ def _checkin_calendar_events(db, owner, start, end):
 def _normalize_chat_endpoint(url: str) -> str:
     """Repair a resolved task endpoint to a full chat-completions URL.
 
-    Unlike the chat path — which stores ``build_chat_url(normalize_base(base))``
-    on the session — the task executor passes ``task.endpoint_url`` verbatim to
+    Unlike the chat path - which stores ``build_chat_url(normalize_base(base))``
+    on the session - the task executor passes ``task.endpoint_url`` verbatim to
     the model HTTP call. A bare OpenAI-compatible base such as
     ``http://host:11434/v1`` therefore POSTs to a 404 ("page not found") and the
     model silently appears to "return an empty response".
@@ -319,7 +319,7 @@ def _normalize_chat_endpoint(url: str) -> str:
     from src.endpoint_resolver import normalize_base, build_chat_url
     path = (urlparse(url).path or "").rstrip("/")
     if path == "/api" or path.startswith("/api/"):
-        return url  # native Ollama — handled by the native path downstream
+        return url  # native Ollama - handled by the native path downstream
     if path.endswith(("/chat/completions", "/messages", "/responses", "/completions")):
         return url  # already a concrete endpoint
     try:
@@ -344,7 +344,7 @@ class TaskScheduler:
         self._executing_lock = asyncio.Lock()
         self._pending_notifications = []  # completed task notifications
         self._task_defer_counts = {}
-        # Strict serial execution — exactly one task runs at a time. Anything
+        # Strict serial execution - exactly one task runs at a time. Anything
         # else (manual trigger, scheduled dispatch, task chain) waits behind
         # the semaphore as "queued" and starts when the current run finishes.
         # This is a hard guarantee, not configurable.
@@ -402,7 +402,7 @@ class TaskScheduler:
         """Store a notification about a completed task run. Tagged with the
         task's owner so `pop_notifications` can return only that user's
         notifications and prevent cross-tenant drain. `body` is the result
-        text — populated when output_target='notification' so the client can
+        text - populated when output_target='notification' so the client can
         show a rich browser Notification, not just a toast."""
         self._pending_notifications.append({
             "task_name": task_name,
@@ -422,14 +422,14 @@ class TaskScheduler:
         When `owner` is set, only matching notifications are returned (and
         cleared). Notifications stored before owner-tagging existed (or
         from owner-less tasks) are included when the caller is anonymous
-        or when no owner filter is given — preserves backward behaviour
+        or when no owner filter is given - preserves backward behaviour
         for the legacy single-user deploy.
         """
         if owner is None:
             notes = self._pending_notifications[:]
             self._pending_notifications.clear()
             return notes
-        # Strict owner scope — used to OR-in null-owner notifications for
+        # Strict owner scope - used to OR-in null-owner notifications for
         # "legacy single-user" compat but that leaked notification bodies to
         # any authenticated user once a second account existed.
         keep, take = [], []
@@ -517,7 +517,7 @@ class TaskScheduler:
                     keep = rows[0]
                     losers = rows[1:]
                     loser_ids = [r.id for r in losers]
-                    # Delete the orphaned tasks tied to the loser crews — they
+                    # Delete the orphaned tasks tied to the loser crews - they
                     # are duplicates of the keeper's check-ins.
                     n_tasks = db.query(ScheduledTask).filter(
                         ScheduledTask.crew_member_id.in_(loser_ids)
@@ -537,7 +537,7 @@ class TaskScheduler:
 
         self._running = True
         self._task = asyncio.create_task(self._loop())
-        # Internal background scanner that isn't a user-facing "task" — pure
+        # Internal background scanner that isn't a user-facing "task" - pure
         # infra (no LLM), shouldn't clutter the Tasks UI, fires on its own
         # cadence inside the scheduler process.
         #
@@ -591,7 +591,7 @@ class TaskScheduler:
         logger.info("Task scheduler stopped")
 
     async def _note_pings_loop(self):
-        """Built-in note-due scanner — ticks every 60s inside the scheduler.
+        """Built-in note-due scanner - ticks every 60s inside the scheduler.
         Pure infra (no LLM), doesn't surface in the Tasks UI. Iterates
         per-owner so cache pruning in `action_ping_notes` (which removes
         cache entries for notes not in the current scan's seen_ids) doesn't
@@ -611,11 +611,11 @@ class TaskScheduler:
             await asyncio.sleep(60)  # 1 min
 
     async def _event_pings_loop(self):
-        """Built-in calendar-event scanner — same recipe as note pings. Runs
+        """Built-in calendar-event scanner - same recipe as note pings. Runs
         every 10 min, fires reminders via dispatch_reminder. Not a user task.
         Iterates per-owner so each user only gets their own calendar pings
         (passing owner="" globally would email User B's events to User A's
-        configured SMTP "from" address — see review C3).
+        configured SMTP "from" address - see review C3).
         """
         await asyncio.sleep(90)
         from src.builtin_actions import action_ping_events, TaskNoop
@@ -740,7 +740,7 @@ class TaskScheduler:
                 task_id=task_id,
                 started_at=_utcnow(),
                 status="queued",
-                result="Queued — waiting for a free slot…",
+                result="Queued - waiting for a free slot…",
             )
             _q_db.add(run)
             _q_db.commit()
@@ -816,7 +816,7 @@ class TaskScheduler:
         try:
             task = db.query(ScheduledTask).filter(ScheduledTask.id == task_id).first()
             if not task or task.status != "active":
-                # Task was paused/deleted while queued — record that outcome
+                # Task was paused/deleted while queued - record that outcome
                 # so the run row doesn't sit as "queued" forever.
                 stale = db.query(TaskRun).filter(TaskRun.id == run_id).first()
                 if stale and stale.status == "queued":
@@ -851,7 +851,7 @@ class TaskScheduler:
             if gate_foreground:
                 waiting = db.query(TaskRun).filter(TaskRun.id == run_id).first()
                 if waiting and waiting.status == "queued":
-                    waiting.result = "Queued — waiting for Telemachos to be idle…"
+                    waiting.result = "Queued - waiting for Telemachos to be idle…"
                     db.commit()
                 from src.interactive_gate import wait_for_interactive_quiet
                 await wait_for_interactive_quiet(f"scheduled task {task.name}")
@@ -919,7 +919,7 @@ class TaskScheduler:
                     run.status = "success"
                     run.result = result
                 else:
-                    # LLM task — use agent loop for tool access
+                    # LLM task - use agent loop for tool access
                     result = await self._execute_llm_task(task, db)
                     run.status = "success"
                     run.result = result
@@ -976,7 +976,7 @@ class TaskScheduler:
             except TaskNoop as noop:
                 # Action reported "nothing to do". Mark the run as `skipped`
                 # with the reason in `result` so it surfaces in Activity as a
-                # slim "skipped — <reason>" row instead of vanishing silently.
+                # slim "skipped - <reason>" row instead of vanishing silently.
                 # (Previous behavior was `db.delete(run)`, which made the user
                 # think queued tasks had been dropped on the floor.)
                 logger.info(f"Task '{task.name}' no-op: {noop}")
@@ -1030,7 +1030,7 @@ class TaskScheduler:
             output = task.output_target or "session"
             # Per-task notification gate. Default True (notifications_enabled
             # defaults to True at column level), but skip when the user has
-            # explicitly turned them off for this task — quiets chatty
+            # explicitly turned them off for this task - quiets chatty
             # housekeeping cron tasks without disabling them entirely.
             should_notify = (
                 (task.task_type or "llm") in {"llm", "research"}
@@ -1054,13 +1054,13 @@ class TaskScheduler:
                 )
 
             # Log result to the assistant chat so all task activity is visible.
-            # Skip skipped/error rows — user shouldn't see "skipped: …" noise
+            # Skip skipped/error rows - user shouldn't see "skipped: …" noise
             # for cron tasks that no-op'd, or duplicate error spam for tasks
             # that already fired an error notification above.
             if run.status == "success":
                 self._log_to_assistant(db, task, run.result or "[success]")
 
-            # Task chaining — trigger the next task on success
+            # Task chaining - trigger the next task on success
             if run.status == "success" and task.then_task_id:
                 chain_id = task.then_task_id
                 chain_task = db.query(ScheduledTask).filter(ScheduledTask.id == chain_id).first()
@@ -1123,11 +1123,11 @@ class TaskScheduler:
                 try:
                     db.commit()
                 except Exception as commit_err:
-                    # Commit failed — without a fallback the run row stays
+                    # Commit failed - without a fallback the run row stays
                     # "running" forever AND next_run stays in the past, so the
                     # scheduler busy-loops dispatching the same task every tick
                     # until restart. Force the recovery in a fresh session.
-                    logger.warning("Task %s error-path commit failed: %s — falling back", task_id, commit_err)
+                    logger.warning("Task %s error-path commit failed: %s - falling back", task_id, commit_err)
                     try:
                         db.rollback()
                     except Exception:
@@ -1165,7 +1165,7 @@ class TaskScheduler:
 
 
     # Built-in housekeeping actions whose output is pure infra (no user-facing
-    # content) — don't pollute the assistant chat session with their summaries.
+    # content) - don't pollute the assistant chat session with their summaries.
     # Activity log + reminder email already carry everything the user needs.
     _SILENT_ACTIONS = frozenset({
         "check_email_urgency",
@@ -1247,7 +1247,7 @@ class TaskScheduler:
                 kwargs["prompt"] = task.prompt
             if task.action in ("run_script", "run_local", "ssh_command") and task.prompt:
                 kwargs["script" if task.action in ("run_script", "run_local") else "command"] = task.prompt
-            # cookbook_serve carries its JSON config in task.prompt — feed it
+            # cookbook_serve carries its JSON config in task.prompt - feed it
             # through as `command` so action_cookbook_serve can json.loads it.
             elif task.action == "cookbook_serve" and task.prompt:
                 kwargs["command"] = task.prompt
@@ -1262,7 +1262,7 @@ class TaskScheduler:
 
     # ── Check-in source discovery ──
     # Pattern-based: if an MCP server has a tool matching a pattern, it becomes
-    # a check-in source. Add new patterns here to support new integrations —
+    # a check-in source. Add new patterns here to support new integrations -
     # no code changes needed elsewhere.
     CHECKIN_MCP_PATTERNS = [
         {"detect": "list_emails",   "section": "Email",    "tool": "list_emails",
@@ -1305,7 +1305,7 @@ class TaskScheduler:
                 subject = m.group(1).strip().rstrip('|').strip()
                 sender = (m.group(2) or "").strip().rstrip('|').strip()
                 if sender:
-                    lines.append(f"- {sender} — {subject}")
+                    lines.append(f"- {sender} - {subject}")
                 else:
                     lines.append(f"- {subject}")
             elif line.startswith("[") or line.startswith("-"):
@@ -1368,7 +1368,7 @@ class TaskScheduler:
                             t = ev.dtstart.strftime("%a %b %d %H:%M")
                             tag = f" ({ev.event_type})" if ev.event_type else ""
                             loc = f" @ {ev.location}" if ev.location else ""
-                            lines.append(f"{marker} {t} — {ev.summary}{tag}{loc}")
+                            lines.append(f"{marker} {t} - {ev.summary}{tag}{loc}")
                     if lines:
                         raw[f"calendar_{label}"] = "\n".join(lines)
             finally:
@@ -1422,7 +1422,7 @@ class TaskScheduler:
                                 title = e.get("title", "?")
                                 feed = (e.get("feed") or {}).get("title", "?")
                                 url = e.get("url", "")
-                                lines.append(f"- [{feed}] {title} — {url}")
+                                lines.append(f"- [{feed}] {title} - {url}")
                             return "\n".join(lines)
                     try:
                         val = await _cached(("miniflux_unread", base_url), 180, _fetch_miniflux)
@@ -1482,11 +1482,11 @@ class TaskScheduler:
             "Write the check-in. YOU decide what matters, what to skip, how to format. "
             "Only show future events. Calendar events are pre-tagged with importance: "
             "[!!] critical, [!] high, plain = normal, ' ·' = low. "
-            "GROUP your output by importance — lead with critical/high, then normal, "
+            "GROUP your output by importance - lead with critical/high, then normal, "
             "skip low entirely unless explicitly relevant. Mention event type (work/health/travel/etc) "
             "where it adds context (e.g. 'leave 1h early for travel'). "
             "Flag anything coming up that needs prep (birthdays, deadlines, holidays). "
-            "Use tools to take action if needed. Keep it concise — no raw data dumps."
+            "Use tools to take action if needed. Keep it concise - no raw data dumps."
         )
 
         return await self._run_agent_loop(
@@ -1559,7 +1559,7 @@ class TaskScheduler:
 
         # Build system prompt: crew member persona overrides the default.
         # Built-in character_id (Socrates, Razor, etc.) further biases the
-        # voice — it prepends to whichever base prompt we landed on so the
+        # voice - it prepends to whichever base prompt we landed on so the
         # task still knows it's executing a scheduled task but in that
         # character's tone.
         system_prompt = (
@@ -1591,8 +1591,8 @@ class TaskScheduler:
 
         # Compute the disabled-tools set: the crew's enabled_tools allowlist
         # (inverted) plus the operator's global disabled_tools setting. The
-        # global list must be merged here — chat does the same merge before
-        # entering the agent loop (routes/chat_routes.py) — otherwise an admin
+        # global list must be merged here - chat does the same merge before
+        # entering the agent loop (routes/chat_routes.py) - otherwise an admin
         # or AUTH_ENABLED=false scheduled task would still see and call shell/
         # file tools after the operator disabled them globally, because the
         # prompt/schema/execution gates only enforce what is passed in.
@@ -1654,7 +1654,7 @@ class TaskScheduler:
 
         # Strip the model's chain-of-thought before saving/delivering. Task
         # output is LLM-only, so prose=True (which also removes untagged
-        # "The user wants me to…" reasoning) is safe here — without this the
+        # "The user wants me to…" reasoning) is safe here - without this the
         # thinking leaked into the saved result.
         try:
             from src.text_helpers import strip_think
@@ -1887,7 +1887,7 @@ class TaskScheduler:
         approval_pause = None
 
         # Honor per-task max_steps (defense against runaway agent loops).
-        # Falls back to 20 if not set — the historical default.
+        # Falls back to 20 if not set - the historical default.
         _task_max_rounds = task.max_steps if task.max_steps and task.max_steps > 0 else 20
         # Tasks are background workloads: use the shared task fallback chain
         # behind the primary endpoint so a downed primary won't silently yield
@@ -1926,7 +1926,7 @@ class TaskScheduler:
                             continue
                         full_text += data["delta"]
                     elif data.get("type") == "tool_output":
-                        # Tool results — capture summary so we have SOMETHING even
+                        # Tool results - capture summary so we have SOMETHING even
                         # if the model never produces a final text response
                         tool_summary = data.get("stdout") or data.get("output") or data.get("result") or ""
                         if isinstance(tool_summary, str) and tool_summary.strip():
@@ -1969,7 +1969,7 @@ class TaskScheduler:
                 "interactively to inspect and approve the action."
             )
 
-        # Grace summarization — if the model exhausted rounds on tool calls
+        # Grace summarization - if the model exhausted rounds on tool calls
         # without producing a final text response, do one last LLM call
         # asking it to summarize what it did. Guarantees output.
         if not full_text.strip():
@@ -2181,7 +2181,7 @@ class TaskScheduler:
         """Send the task result via an MCP tool (e.g. Gmail send).
 
         Resolves a recipient (so email-style tools have a 'to') by trying the
-        configured From address first (the `daily_brief` pattern — email
+        configured From address first (the `daily_brief` pattern - email
         yourself) then falling back to the task owner. Common recipient field
         names (to / recipient / email / address) are all populated so we don't
         have to special-case each tool's schema; the MCP tool ignores keys it
@@ -2193,7 +2193,7 @@ class TaskScheduler:
             logger.warning(f"Task {task.id}: MCP manager not available for delivery")
             return
 
-        # Resolve recipient — prefer the configured email From (the established
+        # Resolve recipient - prefer the configured email From (the established
         # "email yourself" pattern from daily_brief), fall back to task.owner.
         # `_get_email_config()` is the single source of truth that handles both
         # the legacy `email_from` setting and the per-account DB rows.
@@ -2225,7 +2225,7 @@ class TaskScheduler:
             args["address"] = recipient
         else:
             logger.warning(
-                f"Task {task.id}: no recipient resolved for MCP delivery via {tool_name} — "
+                f"Task {task.id}: no recipient resolved for MCP delivery via {tool_name} - "
                 "set an email From address in Settings or give the task an owner email."
             )
         try:
@@ -2349,7 +2349,7 @@ class TaskScheduler:
             ).delete(synchronize_session=False)
             # Sweep orphan TaskRun rows (parent task deleted previously) so
             # retired actions stop showing in Activity. Only runs when at least
-            # one live task exists — avoids wiping run history on a fresh DB.
+            # one live task exists - avoids wiping run history on a fresh DB.
             try:
                 live_ids = {row[0] for row in db.query(ScheduledTask.id).all()}
                 if live_ids:
@@ -2499,7 +2499,7 @@ class TaskScheduler:
                     "Housekeeping defaults for %s: seeded=%s renamed=%s deduped=%s retired=%s",
                     owner, seeded, sorted(set(renamed)), sorted(set(removed_dupes)), retired_count,
                 )
-            # Always commit — the orphan-run sweep above may have produced
+            # Always commit - the orphan-run sweep above may have produced
             # pending deletes even when no defaults changed.
             db.commit()
         except Exception as e:
@@ -2514,7 +2514,7 @@ class TaskScheduler:
 
     async def ensure_assistant_defaults(self, owner: str):
         """Create the personal-assistant CrewMember, its pinned session, and three
-        daily check-in ScheduledTasks for this owner — idempotent on is_default_assistant."""
+        daily check-in ScheduledTasks for this owner - idempotent on is_default_assistant."""
         # Hard-reject synthetic owners. Without this, AuthMiddleware-stamped
         # values like 'internal-tool' (loopback agent-tool callbacks) or 'api'
         # (bearer-token integrations) would get a real assistant + 3 daily
@@ -2544,12 +2544,12 @@ class TaskScheduler:
                 "You are the user's personal assistant. Concise, warm, a little dry. "
                 "Never waste time with fluff. Default to English. Only match the other language when replying to a non-English email.\n\n"
 
-                "CORE RULE: You MUST use your tools to take action — do not describe what you would do. "
-                "Never say 'I would check your calendar' — actually call manage_calendar. "
-                "Never say 'I can look that up' — actually call web_search or search_chats. "
+                "CORE RULE: You MUST use your tools to take action - do not describe what you would do. "
+                "Never say 'I would check your calendar' - actually call manage_calendar. "
+                "Never say 'I can look that up' - actually call web_search or search_chats. "
                 "If you have a tool for it, use it. No hypotheticals, no promises, only actions and results.\n\n"
 
-                "DECISION FRAMEWORK — follow these rules, not just tool descriptions:\n\n"
+                "DECISION FRAMEWORK - follow these rules, not just tool descriptions:\n\n"
 
                 "CONTEXT GATHERING (before any response involving a specific person):\n"
                 "1. resolve_contact if you only have a name and need their email\n"
@@ -2569,16 +2569,16 @@ class TaskScheduler:
                 "1. search_chats (fast, free)\n"
                 "2. manage_memory (fast, free)\n"
                 "3. web_search (medium cost)\n"
-                "4. trigger_research (expensive, async — only for complex multi-source questions)\n"
+                "4. trigger_research (expensive, async - only for complex multi-source questions)\n"
                 "Stop as soon as you have a sufficient answer.\n\n"
 
                 "'SEND TO [NAME]' FLOW:\n"
                 "1. resolve_contact to find their email\n"
                 "2. If a document is open, use its content as the body\n"
                 "3. Draft the email in a document (create_document with language='email')\n"
-                "4. Tell the user to review — NEVER auto-send\n\n"
+                "4. Tell the user to review - NEVER auto-send\n\n"
 
-                "SELF-IMPROVEMENT — use manage_memory constantly:\n"
+                "SELF-IMPROVEMENT - use manage_memory constantly:\n"
                 "- When the user corrects you, IMMEDIATELY store the correction as a memory.\n"
                 "- After every check-in or task, store new facts you learned (contacts, preferences, patterns).\n"
                 "- Before responding about a person or topic, search_chats and manage_memory FIRST.\n"

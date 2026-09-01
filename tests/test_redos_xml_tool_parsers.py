@@ -4,12 +4,12 @@ A previous fix (test_redos_llm_parsers.py) hardened the delimiter-bounded
 [TOOL_CALL]/<tool_call>/<tool_code> scanners but explicitly left four patterns
 that CodeQL (py/polynomial-redos) flagged on the next rescan:
 
-  * `args => { ... }` in `_parse_tool_call_block` — greedy `\\{([\\s\\S]*)\\}`
+  * `args => { ... }` in `_parse_tool_call_block` - greedy `\\{([\\s\\S]*)\\}`
     that `re.search` restarts from every `args:{` opener -> O(n^2).
-  * `_XML_INVOKE_RE` — lazy `<invoke ...>([\\s\\S]*?)</invoke>` that rescans to
+  * `_XML_INVOKE_RE` - lazy `<invoke ...>([\\s\\S]*?)</invoke>` that rescans to
     end-of-string from every opener when no `</invoke>` follows.
   * `_XML_DIRECT_TOOL_RE` and the `<tag>([\\s\\S]*?)</\\1>` param scan in
-    `_parse_tool_code_block` — lazy *backreference* patterns with the same
+    `_parse_tool_code_block` - lazy *backreference* patterns with the same
     opener-flood blowup.
 
 These run over untrusted model output (tool-call markup is attacker-influenced
@@ -118,7 +118,7 @@ def test_fenced_invoke_still_parsed():
 # ── pathological inputs no longer blow up ───────────────────────────────────
 
 def test_args_brace_opener_flood_is_fast():
-    # Many `args:{` openers, no closing `}` — old greedy capture restarted from
+    # Many `args:{` openers, no closing `}` - old greedy capture restarted from
     # every opener (>10s); the bounded opener + rfind is O(n).
     evil = "args:{{a" * 14000
     block, dt = _timed(_parse_tool_call_block, evil)
@@ -156,7 +156,7 @@ def test_xml_direct_backref_opener_flood_is_fast():
 
 
 def test_tool_code_param_backref_flood_is_fast():
-    # `<x><x>...` param flood inside tool_code args, no `</x>` closer — exercises
+    # `<x><x>...` param flood inside tool_code args, no `</x>` closer - exercises
     # the `<tag>([\\s\\S]*?)</\\1>` backreference scan in _parse_tool_code_block.
     args_flood = "tool => 'bash', args => " + "<x><x>a" * 6000
     block, dt = _timed(_parse_tool_code_block, args_flood)

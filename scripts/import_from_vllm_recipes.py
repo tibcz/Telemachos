@@ -147,12 +147,12 @@ def _stamp_from_recipe(entry: dict, recipe: dict) -> bool:
     if not entry.get("vllm_recipe"):
         entry["vllm_recipe"] = True
         changed = True
-    # Hardware support map — useful for filtering "which models run on my AMD box".
+    # Hardware support map - useful for filtering "which models run on my AMD box".
     hw = meta.get("hardware") or {}
     if hw and entry.get("recipe_hardware") != hw:
         entry["recipe_hardware"] = {k: str(v) for k, v in hw.items()}
         changed = True
-    # Tool/reasoning parser hints — purely informational at catalog level;
+    # Tool/reasoning parser hints - purely informational at catalog level;
     # the live launch command builder still reads them from the recipe API.
     if features.get("reasoning") and not entry.get("has_reasoning_parser"):
         entry["has_reasoning_parser"] = True
@@ -175,7 +175,7 @@ def _build_new_entry(repo: str, recipe: dict, hf_info=None) -> dict | None:
     active_raw = _parse_param_count(model.get("active_parameters"))
     ctx = model.get("context_length") or 0
 
-    # Pick the smallest-VRAM variant as the catalog quant — that's what most
+    # Pick the smallest-VRAM variant as the catalog quant - that's what most
     # users land on first. NVFP4/MXFP4 typically win this on Blackwell;
     # FP8 elsewhere; BF16 baseline only.
     pick_quant = None
@@ -305,7 +305,7 @@ def main():
                     hf_info = hf_api.model_info(repo, files_metadata=False)
                 except HfHubHTTPError as e:
                     code = getattr(getattr(e, "response", None), "status_code", "?")
-                    print(f"  HF {code} for {repo} — building from recipe only", file=sys.stderr)
+                    print(f"  HF {code} for {repo} - building from recipe only", file=sys.stderr)
                 except Exception as e:
                     print(f"  HF error for {repo}: {e}", file=sys.stderr)
             new_entry = _build_new_entry(repo, recipe, hf_info)
@@ -321,10 +321,10 @@ def main():
 
     elapsed = time.time() - started
     print()
-    print(f"Done in {elapsed:.1f}s — added={added}, updated={updated}, skipped={skipped}")
+    print(f"Done in {elapsed:.1f}s - added={added}, updated={updated}, skipped={skipped}")
 
     if args.dry_run:
-        print("Dry run — no write.")
+        print("Dry run - no write.")
         return
     if added or updated:
         tmp = CATALOG_PATH.with_suffix(".json.tmp")
@@ -334,7 +334,7 @@ def main():
         tmp.replace(CATALOG_PATH)
         print(f"Wrote {CATALOG_PATH} ({len(catalog)} entries)")
     else:
-        print("No changes — catalog untouched.")
+        print("No changes - catalog untouched.")
 
 
 if __name__ == "__main__":

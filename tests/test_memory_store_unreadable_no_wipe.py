@@ -2,15 +2,15 @@
 
 `MemoryManager.save` is atomic, and the add/import/extract paths are all
 read-modify-write: load the whole store, append, save it back. `load_all`
-used to answer a *failed read* with `[]` — indistinguishable from "no
-memories" — so a failed read turned into
+used to answer a *failed read* with `[]` - indistinguishable from "no
+memories" - so a failed read turned into
 
     load_all() -> []  ->  [].append(new)  ->  save([new])
 
 which atomically replaced the entire store with one entry.
 
 The trigger that actually bites is a store that is **readable but not
-parseable** — a truncated file, or one holding `{}` instead of `[]`. Nothing
+parseable** - a truncated file, or one holding `{}` instead of `[]`. Nothing
 obstructs the write, so the request succeeds with HTTP 200 and every existing
 memory is destroyed silently. Truncation is reachable: `core/database.py`
 rewrites memory.json during migration with a plain `open(..., "w")` +
@@ -18,7 +18,7 @@ rewrites memory.json during migration with a plain `open(..., "w")` +
 
 A live exclusive lock is NOT the dangerous case: it blocks the read and the
 `os.replace` alike, so the save fails too and the store survives (verified
-end-to-end — clean dev returns 500 there and loses nothing).
+end-to-end - clean dev returns 500 there and loses nothing).
 
 `load_all_for_update` is the strict loader those callers now use: it raises
 `MemoryStoreUnreadable` rather than reporting an empty store.
@@ -170,7 +170,7 @@ def test_claim_ownerless_skips_write_when_unreadable(tmp_path, monkeypatch):
 #
 # They use a truncated store rather than a read error on purpose: it reads
 # fine, so nothing stops the save, which is the case that silently destroyed
-# stores. The assertion is that the file is left byte-identical — still broken,
+# stores. The assertion is that the file is left byte-identical - still broken,
 # but still holding the user's memories, so it can be repaired by hand.
 
 

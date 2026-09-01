@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""telemachos-tasks — shell wrapper for the scheduled-tasks feature.
+"""telemachos-tasks - shell wrapper for the scheduled-tasks feature.
 
     telemachos-tasks list [--status active|paused|completed] [--limit N]
     telemachos-tasks show TASK_ID

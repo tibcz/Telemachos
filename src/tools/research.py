@@ -33,9 +33,9 @@ async def do_manage_research(content: str, owner: Optional[str] = None) -> Dict:
     # SECURITY: the research id is interpolated straight into a filesystem
     # path (data/deep_research/<rid>.json) for read AND delete. Without this
     # gate an agent-supplied id like "../settings" or "../../etc/passwd"
-    # escapes the research dir — reading exfiltrates arbitrary *.json into
+    # escapes the research dir - reading exfiltrates arbitrary *.json into
     # chat, deleting unlinks arbitrary *.json on disk. Allow only a bare
-    # token (research session ids are hex/uuid/slug — no separators).
+    # token (research session ids are hex/uuid/slug - no separators).
     if rid and not re.fullmatch(r"[A-Za-z0-9_-]+", rid):
         return {"error": "Invalid research id."}
 
@@ -73,7 +73,7 @@ async def do_manage_research(content: str, owner: Optional[str] = None) -> Dict:
             return {"output": f"Deleted research '{rid}'.", "exit_code": 0}
         return {"error": f"Research '{rid}' not found."}
 
-    # default: list — clickable [query](#research-<id>) rows, most-recent first
+    # default: list - clickable [query](#research-<id>) rows, most-recent first
     search = (args.get("search") or "").lower()
     items = []
     if data_dir.exists():
@@ -88,7 +88,7 @@ async def do_manage_research(content: str, owner: Optional[str] = None) -> Dict:
     items.sort(reverse=True)
     if not items:
         return {"output": "No research found in the library." + (f" (search: {search})" if search else ""), "exit_code": 0}
-    rows = "\n".join(f"- [{q or '(untitled)'}](#research-{sid}) — {n} sources" for _, sid, q, n in items[:50])
+    rows = "\n".join(f"- [{q or '(untitled)'}](#research-{sid}) - {n} sources" for _, sid, q, n in items[:50])
     return {"output": f"Research library ({len(items)} item{'s' if len(items) != 1 else ''}):\n{rows}", "exit_code": 0}
 
 

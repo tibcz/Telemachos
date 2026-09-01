@@ -1,5 +1,5 @@
 """
-YouTube handling — transcript extraction, comment fetching (yt-dlp),
+YouTube handling - transcript extraction, comment fetching (yt-dlp),
 and context formatting for LLM injection. Used by chat_handler.py.
 """
 
@@ -20,12 +20,12 @@ logger = logging.getLogger(__name__)
 
 YOUTUBE_INSTRUCTION_PROMPT = """When the user shares a YouTube video, respond with a structured breakdown:
 
-1. **Summary** — Concise overview of the video's content and main thesis (2-4 sentences)
-2. **Key Points** — Bullet list of the most important topics, arguments, or moments
-3. **Notable Timestamps** — If timestamps are available from the transcript, highlight 3-5 interesting moments with their approximate timestamps (e.g. "03:45 — discusses X")
-4. **Audience Reception** — If comments are available, summarize what viewers think: general sentiment, top reactions, any debate or controversy
+1. **Summary** - Concise overview of the video's content and main thesis (2-4 sentences)
+2. **Key Points** - Bullet list of the most important topics, arguments, or moments
+3. **Notable Timestamps** - If timestamps are available from the transcript, highlight 3-5 interesting moments with their approximate timestamps (e.g. "03:45 - discusses X")
+4. **Audience Reception** - If comments are available, summarize what viewers think: general sentiment, top reactions, any debate or controversy
 
-Keep it conversational and concise. Do NOT web search for this video — use only the transcript and comments provided."""
+Keep it conversational and concise. Do NOT web search for this video - use only the transcript and comments provided."""
 
 # ---------------------------------------------------------------------------
 # Init / helpers
@@ -69,7 +69,7 @@ def is_youtube_url(url: str) -> bool:
 _YT_HOSTS = ("www.youtube.com", "youtube.com", "m.youtube.com", "music.youtube.com")
 # Path prefixes whose first following segment is the video id. Covers the
 # /embed/ player, Shorts (/shorts/), live streams (/live/), and the legacy
-# /v/ embed — all of which `is_youtube_url` already treats as YouTube, so
+# /v/ embed - all of which `is_youtube_url` already treats as YouTube, so
 # they must be extractable or the link is silently dropped (neither web-fetched
 # nor transcript-fetched) by the chat pipeline.
 _YT_PATH_PREFIXES = ("/embed/", "/shorts/", "/live/", "/v/")
@@ -193,7 +193,7 @@ def format_transcript_for_context(
             if not isinstance(seg, dict):
                 continue
             ctx += f"[{seg['timestamp']}] {seg['text']}\n"
-        # Check length — fall back to plain text if too long
+        # Check length - fall back to plain text if too long
         if len(ctx) > 12000:
             ctx = ctx[:ctx.index("Timestamped Transcript:\n")]
             ctx += "Transcript:\n"
@@ -231,7 +231,7 @@ async def fetch_youtube_comments(
         )
         # Bound the wait on the process actually finishing, not on spawning it.
         # create_subprocess_exec returns as soon as the child starts, so wrapping
-        # it in wait_for never enforces the timeout — proc.communicate() is the
+        # it in wait_for never enforces the timeout - proc.communicate() is the
         # blocking step. Kill and reap the child if it overruns so it does not
         # linger after we return.
         try:
@@ -262,7 +262,7 @@ async def fetch_youtube_comments(
                 "likes": c.get("like_count", 0),
             })
 
-        # Sort by likes descending — most popular comments first
+        # Sort by likes descending - most popular comments first
         comments.sort(key=lambda x: x.get("likes", 0), reverse=True)
 
         return {"success": True, "comments": comments, "count": len(comments),
@@ -272,7 +272,7 @@ async def fetch_youtube_comments(
         logger.warning(f"Comment fetch timed out for {video_id}")
         return {"success": False, "error": "Comment fetch timed out", "comments": []}
     except FileNotFoundError:
-        logger.warning("yt-dlp not installed — cannot fetch comments")
+        logger.warning("yt-dlp not installed - cannot fetch comments")
         return {"success": False, "error": "yt-dlp not installed", "comments": []}
     except Exception as e:
         logger.warning(f"Failed to fetch comments for {video_id}: {e}")
@@ -285,7 +285,7 @@ def format_comments_for_context(comments_data: Dict[str, Any], url: str) -> str:
         return ""
 
     comments = comments_data["comments"]
-    ctx = f"\n[YOUTUBE VIDEO COMMENTS — Top {len(comments)} by popularity]\n"
+    ctx = f"\n[YOUTUBE VIDEO COMMENTS - Top {len(comments)} by popularity]\n"
     ctx += f"URL: {url}\n\n"
 
     for i, c in enumerate(comments, 1):

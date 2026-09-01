@@ -1,5 +1,5 @@
 /**
- * Lasso tool — freehand polygon selection. Mouse-down starts a fresh
+ * Lasso tool - freehand polygon selection. Mouse-down starts a fresh
  * polygon; every move appends a point and redraws the dashed outline;
  * mouse-up keeps the selection visible (the panel's action buttons
  * read `state.lassoPoints` to act on it).
@@ -56,7 +56,7 @@ export function createLassoTool({ composite, drawLassoOverlay, syncToolClearIndi
         syncToolClearIndicators();
         return;
       }
-      // Keep the selection drawn — the panel's action buttons use it.
+      // Keep the selection drawn - the panel's action buttons use it.
       composite();
       drawLassoOverlay();
       syncToolClearIndicators();

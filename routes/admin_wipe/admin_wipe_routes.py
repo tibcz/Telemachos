@@ -1,4 +1,4 @@
-"""Admin Danger Zone — per-category wipes.
+"""Admin Danger Zone - per-category wipes.
 
 Each endpoint is admin-only and truncates exactly one domain so the
 user can selectively reset memory / skills / notes / etc. without
@@ -64,7 +64,7 @@ def _rmtree_quiet(path: str):
 
 def setup_admin_wipe_routes(session_manager):
     """The session_manager is passed in so we can also clear its
-    in-memory cache when wiping chats — without it the DB is empty
+    in-memory cache when wiping chats - without it the DB is empty
     but the next /api/sessions returns stale entries."""
     router = APIRouter(prefix="/api/admin")
 
@@ -92,7 +92,7 @@ def setup_admin_wipe_routes(session_manager):
                 db.commit()
                 _wipe_memory_files()
                 # Drop the vector store too so semantic search doesn't
-                # return ghosts. Lazy import — chromadb may not be
+                # return ghosts. Lazy import - chromadb may not be
                 # initialised in every deployment.
                 try:
                     from src.memory_vector import get_memory_vector_store
@@ -110,7 +110,7 @@ def setup_admin_wipe_routes(session_manager):
                 skills_dir = SKILLS_DIR
                 count = 0
                 if os.path.isdir(skills_dir):
-                    # Count SKILL.md files for the response — quick walk.
+                    # Count SKILL.md files for the response - quick walk.
                     for _, _, files in os.walk(skills_dir):
                         count += sum(1 for f in files if f == "SKILL.md")
                     _rmtree_quiet(skills_dir)
@@ -130,7 +130,7 @@ def setup_admin_wipe_routes(session_manager):
                 return {"status": "deleted", "kind": kind, "count": count}
 
             if kind == "tasks":
-                # TaskRun rows reference tasks via FK — clear them first.
+                # TaskRun rows reference tasks via FK - clear them first.
                 db.query(TaskRun).delete()
                 count = db.query(ScheduledTask).count()
                 db.query(ScheduledTask).delete()
@@ -138,7 +138,7 @@ def setup_admin_wipe_routes(session_manager):
                 return {"status": "deleted", "kind": kind, "count": count}
 
             if kind == "documents":
-                # DocumentVersion FKs Document — clear children first.
+                # DocumentVersion FKs Document - clear children first.
                 db.query(DocumentVersion).delete()
                 count = db.query(Document).count()
                 db.query(Document).delete()
@@ -156,7 +156,7 @@ def setup_admin_wipe_routes(session_manager):
                 return {"status": "deleted", "kind": kind, "count": count}
 
             if kind == "calendar":
-                # Events FK calendars — clear children first, then both.
+                # Events FK calendars - clear children first, then both.
                 db.query(CalendarEvent).delete()
                 count = db.query(CalendarCal).count()
                 db.query(CalendarCal).delete()

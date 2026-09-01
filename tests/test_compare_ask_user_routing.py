@@ -43,7 +43,7 @@ def test_compare_restores_the_card_instead_of_dropping_a_timed_out_choice():
     """The card is removed the moment a choice is accepted.
 
     If the originating stream still owns the pane when the resume deadline
-    passes, the decision has nowhere to go — so the card has to come back
+    passes, the decision has nowhere to go - so the card has to come back
     rather than the click vanishing silently.
     """
 

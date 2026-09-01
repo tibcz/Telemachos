@@ -5546,7 +5546,7 @@
     "format": "mlx",
     "mlx_only": true,
     "collection": "Lens 3.8B (MLX)",
-    "description": "Apple MLX conversions of microsoft/Lens — 3.8B text-to-image DiT (GPT-OSS features + FLUX.2 VAE) for Apple Silicon. bf16 + int4/int8.",
+    "description": "Apple MLX conversions of microsoft/Lens - 3.8B text-to-image DiT (GPT-OSS features + FLUX.2 VAE) for Apple Silicon. bf16 + int4/int8.",
     "_discovered": true
   },
   {
@@ -6821,7 +6821,7 @@
     "format": "mlx",
     "mlx_only": true,
     "collection": "Lens 3.8B (MLX)",
-    "description": "Apple MLX conversions of microsoft/Lens — 3.8B text-to-image DiT (GPT-OSS features + FLUX.2 VAE) for Apple Silicon. bf16 + int4/int8.",
+    "description": "Apple MLX conversions of microsoft/Lens - 3.8B text-to-image DiT (GPT-OSS features + FLUX.2 VAE) for Apple Silicon. bf16 + int4/int8.",
     "_discovered": true
   },
   {
@@ -6921,7 +6921,7 @@
     "format": "mlx",
     "mlx_only": true,
     "collection": "Lens 3.8B (MLX)",
-    "description": "Apple MLX conversions of microsoft/Lens — 3.8B text-to-image DiT (GPT-OSS features + FLUX.2 VAE) for Apple Silicon. bf16 + int4/int8.",
+    "description": "Apple MLX conversions of microsoft/Lens - 3.8B text-to-image DiT (GPT-OSS features + FLUX.2 VAE) for Apple Silicon. bf16 + int4/int8.",
     "_discovered": true
   },
   {
@@ -7546,7 +7546,7 @@
     "format": "mlx",
     "mlx_only": true,
     "collection": "V-JEPA2 (MLX)",
-    "description": "Apple MLX fp16 ports of Meta V-JEPA2 ViT-L — video embeddings, JEPA predictor, SSv2 classifier. MIT.",
+    "description": "Apple MLX fp16 ports of Meta V-JEPA2 ViT-L - video embeddings, JEPA predictor, SSv2 classifier. MIT.",
     "_discovered": true
   },
   {
@@ -7621,7 +7621,7 @@
     "format": "mlx",
     "mlx_only": true,
     "collection": "Cocktail-Fork MRX (MLX)",
-    "description": "MERL MRX ported to Apple MLX — 3-stem music/speech/sfx soundtrack separation. Numerically exact vs PyTorch. 4 variants.",
+    "description": "MERL MRX ported to Apple MLX - 3-stem music/speech/sfx soundtrack separation. Numerically exact vs PyTorch. 4 variants.",
     "_discovered": true
   },
   {
@@ -7821,7 +7821,7 @@
     "format": "mlx",
     "mlx_only": true,
     "collection": "Cocktail-Fork MRX (MLX)",
-    "description": "MERL MRX ported to Apple MLX — 3-stem music/speech/sfx soundtrack separation. Numerically exact vs PyTorch. 4 variants.",
+    "description": "MERL MRX ported to Apple MLX - 3-stem music/speech/sfx soundtrack separation. Numerically exact vs PyTorch. 4 variants.",
     "_discovered": true
   },
   {
@@ -7896,7 +7896,7 @@
     "format": "mlx",
     "mlx_only": true,
     "collection": "V-JEPA2 (MLX)",
-    "description": "Apple MLX fp16 ports of Meta V-JEPA2 ViT-L — video embeddings, JEPA predictor, SSv2 classifier. MIT.",
+    "description": "Apple MLX fp16 ports of Meta V-JEPA2 ViT-L - video embeddings, JEPA predictor, SSv2 classifier. MIT.",
     "_discovered": true
   },
   {
@@ -7971,7 +7971,7 @@
     "format": "mlx",
     "mlx_only": true,
     "collection": "V-JEPA2 (MLX)",
-    "description": "Apple MLX fp16 ports of Meta V-JEPA2 ViT-L — video embeddings, JEPA predictor, SSv2 classifier. MIT.",
+    "description": "Apple MLX fp16 ports of Meta V-JEPA2 ViT-L - video embeddings, JEPA predictor, SSv2 classifier. MIT.",
     "_discovered": true
   },
   {
@@ -9496,7 +9496,7 @@
     "format": "mlx",
     "mlx_only": true,
     "collection": "Cocktail-Fork MRX (MLX)",
-    "description": "MERL MRX ported to Apple MLX — 3-stem music/speech/sfx soundtrack separation. Numerically exact vs PyTorch. 4 variants.",
+    "description": "MERL MRX ported to Apple MLX - 3-stem music/speech/sfx soundtrack separation. Numerically exact vs PyTorch. 4 variants.",
     "_discovered": true
   },
   {
@@ -9521,7 +9521,7 @@
     "format": "mlx",
     "mlx_only": true,
     "collection": "Lens 3.8B (MLX)",
-    "description": "Apple MLX conversions of microsoft/Lens — 3.8B text-to-image DiT (GPT-OSS features + FLUX.2 VAE) for Apple Silicon. bf16 + int4/int8.",
+    "description": "Apple MLX conversions of microsoft/Lens - 3.8B text-to-image DiT (GPT-OSS features + FLUX.2 VAE) for Apple Silicon. bf16 + int4/int8.",
     "_discovered": true
   },
   {
@@ -9821,7 +9821,7 @@
     "format": "mlx",
     "mlx_only": true,
     "collection": "Cocktail-Fork MRX (MLX)",
-    "description": "MERL MRX ported to Apple MLX — 3-stem music/speech/sfx soundtrack separation. Numerically exact vs PyTorch. 4 variants.",
+    "description": "MERL MRX ported to Apple MLX - 3-stem music/speech/sfx soundtrack separation. Numerically exact vs PyTorch. 4 variants.",
     "_discovered": true
   },
   {
@@ -14995,7 +14995,7 @@
     "release_date": "2026-03-16",
     "format": "mlx",
     "mlx_only": true,
-    "collection": "Demucs MLX — Music Source Separation",
+    "collection": "Demucs MLX - Music Source Separation",
     "description": "Demucs music stem separation for Apple Silicon. Float32 and float16 variants.",
     "_discovered": true
   },
@@ -15020,7 +15020,7 @@
     "release_date": "2026-03-16",
     "format": "mlx",
     "mlx_only": true,
-    "collection": "Demucs MLX — Music Source Separation",
+    "collection": "Demucs MLX - Music Source Separation",
     "description": "Demucs music stem separation for Apple Silicon. Float32 and float16 variants.",
     "_discovered": true
   },
@@ -15070,7 +15070,7 @@
     "release_date": "2026-05-28",
     "format": "mlx",
     "mlx_only": true,
-    "collection": "LongCat-Video-Avatar 1.5 — MLX",
+    "collection": "LongCat-Video-Avatar 1.5 - MLX",
     "description": "Apple MLX port of Meituan's audio-driven video diffusion. Source + recipe: github.com/xocialize/longcat-avatar-mlx",
     "_discovered": true
   },
@@ -15170,7 +15170,7 @@
     "release_date": "2026-06-04",
     "format": "mlx",
     "mlx_only": true,
-    "collection": "LongCat-Video — MLX",
+    "collection": "LongCat-Video - MLX",
     "description": "Apple MLX port of Meituan's 13.6B base text-to-video model. Six task variants share one DiT. github.com/xocialize/longcat-video-mlx",
     "_discovered": true
   },
@@ -15270,7 +15270,7 @@
     "release_date": "2026-06-04",
     "format": "mlx",
     "mlx_only": true,
-    "collection": "LongCat-Video — MLX",
+    "collection": "LongCat-Video - MLX",
     "description": "Apple MLX port of Meituan's 13.6B base text-to-video model. Six task variants share one DiT. github.com/xocialize/longcat-video-mlx",
     "_discovered": true
   },
@@ -15295,7 +15295,7 @@
     "release_date": "2026-06-04",
     "format": "mlx",
     "mlx_only": true,
-    "collection": "LongCat-Video — MLX",
+    "collection": "LongCat-Video - MLX",
     "description": "Apple MLX port of Meituan's 13.6B base text-to-video model. Six task variants share one DiT. github.com/xocialize/longcat-video-mlx",
     "_discovered": true
   },
@@ -15570,7 +15570,7 @@
     "release_date": "2026-05-28",
     "format": "mlx",
     "mlx_only": true,
-    "collection": "LongCat-Video-Avatar 1.5 — MLX",
+    "collection": "LongCat-Video-Avatar 1.5 - MLX",
     "description": "Apple MLX port of Meituan's audio-driven video diffusion. Source + recipe: github.com/xocialize/longcat-avatar-mlx",
     "_discovered": true
   },

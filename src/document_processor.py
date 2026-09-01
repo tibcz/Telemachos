@@ -262,20 +262,20 @@ def _process_office_document(
         # the agent knows it can read the rest.
         if doc_id and marker:
             marker = (
-                f"\n[…truncated for inline context — full {len(markdown):,} chars "
+                f"\n[…truncated for inline context - full {len(markdown):,} chars "
                 f"saved as document `{doc_id}`. Use `manage_documents` with "
                 f"action=read, document_id={doc_id}, offset=<N> to page through.]"
             )
 
-        return f"\n\n[Document content — {title}]:\n{body}{marker}"
+        return f"\n\n[Document content - {title}]:\n{body}{marker}"
 
     # No content: tell the user whether to install the optional dep or whether
     # the document simply had no extractable text.
     try:
         load_markitdown()
-        return f"\n\n[Attached document: {display_name} — no extractable text found.]"
+        return f"\n\n[Attached document: {display_name} - no extractable text found.]"
     except RuntimeError as exc:
-        return f"\n\n[Attached document: {display_name} — {exc}]"
+        return f"\n\n[Attached document: {display_name} - {exc}]"
 
 
 # Marker that _process_pdf prepends to extracted text.
@@ -336,13 +336,13 @@ def analyze_image_with_vl_result(image_path: str, owner: str | None = None) -> d
     try:
         settings = _load_vl_settings()
         if not settings.get("vision_enabled", True):
-            return {"text": "[Vision is disabled — enable it in Settings → Vision]", "model": ""}
+            return {"text": "[Vision is disabled - enable it in Settings → Vision]", "model": ""}
         vl_model = settings.get("vision_model", "")
 
         try:
             url, model_id, headers = _resolve_vl_model(vl_model, owner=owner)
         except ValueError:
-            return {"text": "[No vision model configured — set one in Settings → Vision]", "model": vl_model or ""}
+            return {"text": "[No vision model configured - set one in Settings → Vision]", "model": vl_model or ""}
 
         with open(image_path, "rb") as f:
             img_data = base64.b64encode(f.read()).decode("utf-8")
@@ -362,7 +362,7 @@ def analyze_image_with_vl_result(image_path: str, owner: str | None = None) -> d
         ]
         # Vision-specific fallback chain (Settings → Vision → Fallbacks). A
         # downed vision endpoint can fall through to the next configured model
-        # — same shape as task/chat but its own list (`vision_model_fallbacks`).
+        # - same shape as task/chat but its own list (`vision_model_fallbacks`).
         try:
             from src.endpoint_resolver import resolve_vision_fallback_candidates
             _vl_candidates = [(url, model_id, headers)] + resolve_vision_fallback_candidates(owner=owner)
@@ -483,7 +483,7 @@ def build_user_content(
                             create_plain_pdf_document,
                         )
                         title = os.path.splitext(os.path.basename(display_name))[0]
-                        # Pull the PDF prose once — used as either intro_text
+                        # Pull the PDF prose once - used as either intro_text
                         # (form path) or the doc body (plain path).
                         try:
                             pdf_body_text = strip_pdf_content_marker(_process_pdf(path, owner=owner))
@@ -498,7 +498,7 @@ def build_user_content(
 
                         # Inline the PDF body in the chat content too. Without
                         # this, the assistant only saw the "PDF attached"
-                        # banner and had no idea what was inside — even though
+                        # banner and had no idea what was inside - even though
                         # the sidebar Document held the full extracted text.
                         # Cap the inline copy so a multi-hundred-page PDF
                         # doesn't blow the model's context; the sidebar still
@@ -509,7 +509,7 @@ def build_user_content(
                         if body_for_chat and len(body_for_chat) > _MAX_INLINE_CHARS:
                             body_for_chat = body_for_chat[:_MAX_INLINE_CHARS]
                             truncated_marker = (
-                                "\n[…truncated for inline context — full text "
+                                "\n[…truncated for inline context - full text "
                                 "available in the document viewer.]"
                             )
 
@@ -525,13 +525,13 @@ def build_user_content(
                             )
                             if doc_id:
                                 extracted_text = (
-                                    f"\n\n[Form attached: {title} — {len(fields)} fields. "
-                                    f"Opened in editor — edit the values there and use "
+                                    f"\n\n[Form attached: {title} - {len(fields)} fields. "
+                                    f"Opened in editor - edit the values there and use "
                                     f"the Export PDF button when done.]"
                                 )
                                 if body_for_chat:
                                     extracted_text += (
-                                        f"\n\n[PDF content — {title}]:\n{body_for_chat}{truncated_marker}"
+                                        f"\n\n[PDF content - {title}]:\n{body_for_chat}{truncated_marker}"
                                     )
                         else:
                             doc_id = create_plain_pdf_document(
@@ -542,11 +542,11 @@ def build_user_content(
                             )
                             if doc_id:
                                 extracted_text = (
-                                    f"\n\n[PDF attached: {title} — opened in document viewer.]"
+                                    f"\n\n[PDF attached: {title} - opened in document viewer.]"
                                 )
                                 if body_for_chat:
                                     extracted_text += (
-                                        f"\n\n[PDF content — {title}]:\n{body_for_chat}{truncated_marker}"
+                                        f"\n\n[PDF content - {title}]:\n{body_for_chat}{truncated_marker}"
                                     )
 
                         if doc_id and auto_opened_docs is not None:

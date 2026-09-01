@@ -1,5 +1,5 @@
 /**
- * AI inpaint subsystem — Generate, Remove, and Outpaint variants
+ * AI inpaint subsystem - Generate, Remove, and Outpaint variants
  * all share a single `runInpaint` core; only the prompt, strength,
  * and button-target differ. Returns a wireInpaintButtons() function
  * to attach handlers to the three buttons (#ge-inpaint-run,
@@ -7,7 +7,7 @@
  *
  *   runInpaint:
  *     - Build a union mask from every visible mask sub-layer (across
- *       all parent layers) — the model sees the COMBINED region,
+ *       all parent layers) - the model sees the COMBINED region,
  *       not just the currently-active mask.
  *     - Dilate the mask ~padPx so the model fills a buffer zone the
  *       post-gen Feather/Edge slider can fade into.
@@ -48,7 +48,7 @@ export function wireInpaintButtons({
   saveState, createLayer, composite, renderLayerPanel,
   spinnerModule, uiModule,
 }) {
-  // Shared inpaint runner — used by Generate, Remove, and Outpaint.
+  // Shared inpaint runner - used by Generate, Remove, and Outpaint.
   async function runInpaint({ prompt, strength, btnId, labelId, idleLabel, busyLabel }) {
     // Pre-check: build the union mask the AI will receive and verify
     // at least one pixel is painted.
@@ -69,7 +69,7 @@ export function wireInpaintButtons({
       runWp.element.style.cssText = 'margin:0;flex-shrink:0;';
       btn.appendChild(runWp.element);
     } catch (_) { /* spinner is optional */ }
-    // Canvas-overlay whirlpool — visual feedback right where the
+    // Canvas-overlay whirlpool - visual feedback right where the
     // user's working, since the run button lives in the side panel
     // and may be out of view at high zoom. Positioned over the
     // mask's centroid in viewport coords.
@@ -124,7 +124,7 @@ export function wireInpaintButtons({
       // The AI fills a small buffer zone around the brush, so the
       // post-gen Edge feather slider has AI content to fade INTO
       // instead of fading straight to the original. The ORIGINAL
-      // (un-dilated) mask is cached on the layer — the feather blur
+      // (un-dilated) mask is cached on the layer - the feather blur
       // expands outward from that boundary into the dilated AI region.
       const padPx = Math.min(80, Math.max(20, Math.round(Math.min(state.imgWidth, state.imgHeight) * 0.04)));
       // Merge every visible mask sub-layer (across all parent
@@ -191,7 +191,7 @@ export function wireInpaintButtons({
           state.activeLayerId = resultLayer.id;
           state.lastInpaintLayerId = resultLayer.id;
           // Hide every mask sub-layer that contributed to the
-          // generation so the red overlay doesn't cover the result —
+          // generation so the red overlay doesn't cover the result -
           // but KEEP the mask pixels intact, and reflect "hidden"
           // on each sub-row's eye icon.
           for (const ly of state.layers) {
@@ -229,7 +229,7 @@ export function wireInpaintButtons({
             eSlider.value = '0';
           }
           if (eLabel) eLabel.textContent = '0px';
-          if (uiModule) uiModule.showToast('Inpaint complete — drag Edge feather / Edge stroke to blend', 5000);
+          if (uiModule) uiModule.showToast('Inpaint complete - drag Edge feather / Edge stroke to blend', 5000);
         } catch (renderErr) {
           console.error('[inpaint] render error', renderErr);
           if (uiModule) uiModule.showToast('Inpaint render failed: ' + (renderErr.message || renderErr), 6000);
@@ -265,7 +265,7 @@ export function wireInpaintButtons({
     });
   });
 
-  // Remove — detects backend type and substitutes a content-aware
+  // Remove - detects backend type and substitutes a content-aware
   // fill prompt. gpt-image-1 understands "remove …" semantically;
   // SDXL inpaint pipelines literally try to draw the prompt, so we
   // send a generic surroundings-matching prompt and crank strength.
@@ -283,7 +283,7 @@ export function wireInpaintButtons({
     } else {
       // SDXL inpaint: describe the surroundings, not what's there.
       // Crank strength to ensure the model fully overwrites the
-      // masked region — at low strength it would denoise toward
+      // masked region - at low strength it would denoise toward
       // what was there.
       prompt = 'seamless natural background, photorealistic, continuation of surrounding scene, empty area, no objects, no people, no text, clean';
       strength = 0.99;
@@ -296,7 +296,7 @@ export function wireInpaintButtons({
     });
   });
 
-  // Outpaint — auto-generate a mask covering empty (transparent)
+  // Outpaint - auto-generate a mask covering empty (transparent)
   // areas of the flattened composite, then run inpaint to fill them
   // seamlessly. Mask is dilated ~12px so the AI sees adjacent
   // opaque pixels as context. Ignores the user's drawn mask.
@@ -329,12 +329,12 @@ export function wireInpaintButtons({
       }
     }
     if (emptyCount === 0) {
-      if (uiModule) uiModule.showToast('No empty areas to outpaint — canvas is fully covered.');
+      if (uiModule) uiModule.showToast('No empty areas to outpaint - canvas is fully covered.');
       return;
     }
     mrCtx.putImageData(mrImg, 0, 0);
     // 3) Dilate the mask outward 12px so it overlaps a band of
-    //    opaque pixels — context for the model to blend cleanly.
+    //    opaque pixels - context for the model to blend cleanly.
     const expanded = document.createElement('canvas');
     expanded.width = state.imgWidth; expanded.height = state.imgHeight;
     const ectx = expanded.getContext('2d');

@@ -722,7 +722,7 @@ async def do_manage_settings(content: str, owner: Optional[str] = None) -> Dict:
                 # The full built-in email tool set, in BOTH spellings: the
                 # qualified mcp__email__* names drive MCP schema hiding, the
                 # bare names drive function-schema hiding, and the runtime
-                # gate accepts either — deriving from BUILTIN_EMAIL_TOOLS
+                # gate accepts either - deriving from BUILTIN_EMAIL_TOOLS
                 # keeps the toggle covering every tool the email server
                 # exposes instead of a hand-picked subset.
                 "email": sorted(BUILTIN_EMAIL_TOOLS)

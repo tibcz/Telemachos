@@ -4,7 +4,7 @@ This module is the PyInstaller entry script. It does three jobs, strictly in
 this order, because each one depends on the previous having finished:
 
 1. **Act as a Python interpreter when asked to.** Telemachos spawns helper
-   processes with ``sys.executable`` — the built-in MCP servers
+   processes with ``sys.executable`` - the built-in MCP servers
    (src/builtin_mcp.py) and the agent's Python tool
    (src/agent_tools/subprocess_tools.py). In a source checkout that is a real
    interpreter. Inside a frozen bundle it is *this binary*, so an unguarded
@@ -161,7 +161,7 @@ def configure_environment(port):
 
     # Vector store runs in-process. Without this the app would look for a
     # ChromaDB service on localhost:8100 and RAG/semantic memory would be dead
-    # on arrival — see src/chroma_client.py.
+    # on arrival - see src/chroma_client.py.
     os.environ.setdefault("CHROMADB_MODE", "embedded")
 
     # Single-user desktop app on loopback: there is no second party to

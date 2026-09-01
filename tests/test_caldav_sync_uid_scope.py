@@ -3,7 +3,7 @@
 CalendarEvent.uid is the global primary key. _sync_blocking looked up the
 existing event by uid with NO calendar scope, so when user B synced a uid
 that user A's calendar already held, the query returned A's row and the sync
-reassigned its calendar_id to B's calendar — stealing A's event. The lookup
+reassigned its calendar_id to B's calendar - stealing A's event. The lookup
 must be scoped to the calendar being synced.
 """
 import tempfile
@@ -61,7 +61,7 @@ def test_alice_event_is_not_moved():
         # Simulate the (fixed) sync deciding there is no existing row for calB.
         assert _find_existing_event(db, {}, "shared@svc", "calB") is None
         ev = db.query(CalendarEvent).filter(CalendarEvent.uid == "shared@svc").first()
-        assert ev.calendar_id == "calA"  # unchanged — not hijacked
+        assert ev.calendar_id == "calA"  # unchanged - not hijacked
     finally:
         db.close()
 

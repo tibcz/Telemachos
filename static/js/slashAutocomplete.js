@@ -1,6 +1,6 @@
 // static/js/slashAutocomplete.js
 // Lightweight popup that surfaces the existing /command registry as users
-// type. Reads COMMANDS from slashCommands.js — no command logic lives here.
+// type. Reads COMMANDS from slashCommands.js - no command logic lives here.
 
 import { COMMANDS, LEGACY_ALIASES } from './slashCommands.js';
 
@@ -9,7 +9,7 @@ const MAX_VISIBLE = 14;
 
 // Flatten the registry into a searchable list of leaf entries. Each entry is
 // either a top-level command or a "cmd sub" pair (so subcommands get their
-// own row when relevant — /toggle web, /chats new, etc).
+// own row when relevant - /toggle web, /chats new, etc).
 // Commands intentionally excluded from the autocomplete popup (pure easter
 // eggs with no productivity value, or internal machinery).
 const EXCLUDED = new Set(['flip','roll','8ball','fortune','odyssey','ascii']);
@@ -216,7 +216,7 @@ export function initSlashAutocomplete(textarea) {
     // Only trigger when the message starts with "/" (no leading space) and
     // contains at most one space after the command (so subcommands work).
     // If the user has moved past the slash command (newline, longer prose),
-    // the menu hides — we don't autocomplete mid-sentence.
+    // the menu hides - we don't autocomplete mid-sentence.
     if (!v.startsWith('/') || v.includes('\n')) { hide(); return; }
     const query = v.trim();
     const groupItems = _exactCommandGroupItems(all, query);
@@ -232,7 +232,7 @@ export function initSlashAutocomplete(textarea) {
     }
     if (!items.length && query.length > 1) { hide(); return; }
     if (!items.length) {
-      // Just "/" with no matches — fall back to showing everything up to MAX_VISIBLE
+      // Just "/" with no matches - fall back to showing everything up to MAX_VISIBLE
       items = all.slice(0, MAX_VISIBLE);
     }
     selectedIdx = 0;
@@ -278,12 +278,12 @@ export function initSlashAutocomplete(textarea) {
       _render(popup, items, selectedIdx, textarea.value);
     } else if (e.key === 'Tab' || (e.key === 'Enter' && !e.shiftKey)) {
       // Tab always inserts. Enter inserts only when the user hasn't already
-      // typed a full command + args — i.e. the popup is still in completion
+      // typed a full command + args - i.e. the popup is still in completion
       // mode, not in "ready to submit a typed-out command" mode.
       const v = textarea.value.trim();
       const exactHit = items.find(it => it.token === v || it.aliases.includes(v));
       if (e.key === 'Enter' && exactHit) {
-        // User typed the whole command — let the normal submit path handle it
+        // User typed the whole command - let the normal submit path handle it
         hide();
         return;
       }

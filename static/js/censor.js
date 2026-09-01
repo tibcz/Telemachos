@@ -102,12 +102,12 @@ function _startObserver() {
   });
 }
 
-// Debounce processing — content may still be streaming
+// Debounce processing - content may still be streaming
 const _pending = new WeakSet();
 function _scheduleProcess(el) {
   if (_pending.has(el)) return;
   _pending.add(el);
-  // Wait for streaming to settle — process after a short delay
+  // Wait for streaming to settle - process after a short delay
   // Re-process periodically during streaming
   let attempts = 0;
   const maxAttempts = 30;
@@ -204,7 +204,7 @@ function _contextCensor(el) {
     const txt = (elem.textContent || '').trim();
     if (!SENSITIVE_LABELS.test(txt)) continue;
 
-    // Found a label — censor value via multiple strategies
+    // Found a label - censor value via multiple strategies
     let censored = false;
 
     // A) Next text sibling node (e.g. <strong>Password</strong> value123)
@@ -222,7 +222,7 @@ function _contextCensor(el) {
           censored = true;
         }
       } else if (sibling.nodeType === 1 && !sibling.closest('.censored-item')) {
-        // Element sibling — censor its text
+        // Element sibling - censor its text
         const val = sibling.textContent.trim();
         if (val.length >= 4 && !SENSITIVE_LABELS.test(val)) {
           _censorAllText(sibling);

@@ -4,16 +4,16 @@ Security invariant under test:
 
     The original _apply_owner_filter used an OR predicate
     `(owner == user) | (owner IS NULL)`, which let a caller archive/delete
-    every null-owner session in the database — including unmigrated rows
+    every null-owner session in the database - including unmigrated rows
     from other tenants. The fix replaced it with strict equality.
 
     These tests pin:
 
-      1. _apply_owner_filter uses strict equality for authenticated callers —
+      1. _apply_owner_filter uses strict equality for authenticated callers -
          no null-OR predicate, no cross-owner rows (tests 1–3).
 
       2. owner=None (single-user / auth-disabled mode) leaves the query
-         unfiltered — intentional, mirrors owner_filter() in auth_helpers.py.
+         unfiltered - intentional, mirrors owner_filter() in auth_helpers.py.
 
       3. Both routes forward the resolved caller identity as `owner=` to the
          service layer; they do not hardcode a value or drop the parameter
@@ -26,7 +26,7 @@ import pytest
 
 
 # ---------------------------------------------------------------------------
-# Lightweight model/query stubs — no SQLAlchemy required.
+# Lightweight model/query stubs - no SQLAlchemy required.
 # Mirrors the pattern in test_document_tool_owner_scope.py.
 # ---------------------------------------------------------------------------
 
@@ -89,7 +89,7 @@ def cleanup_imports(monkeypatch):
 # ---------------------------------------------------------------------------
 
 def test_apply_owner_filter_strict_equality_no_null_predicate(cleanup_imports):
-    """Authenticated caller gets strict owner equality — null-owner rows excluded.
+    """Authenticated caller gets strict owner equality - null-owner rows excluded.
 
     The bug this pins: the previous OR predicate `(owner == user) | (owner IS NULL)`
     silently included every unmigrated/null-owner session in the caller's cleanup.
@@ -121,7 +121,7 @@ def test_apply_owner_filter_excludes_cross_owner_rows(cleanup_imports):
 def test_apply_owner_filter_none_bypasses_filter_for_single_user_mode(cleanup_imports):
     """owner=None (auth disabled / single-user) must leave the query unfiltered.
 
-    Intentional: mirrors owner_filter() in src/auth_helpers.py — in a
+    Intentional: mirrors owner_filter() in src/auth_helpers.py - in a
     single-user deployment there are no other tenants to protect.
     """
     apply_owner_filter, _ = cleanup_imports

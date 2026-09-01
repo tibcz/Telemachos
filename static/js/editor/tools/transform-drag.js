@@ -1,5 +1,5 @@
 /**
- * Transform-drag tool — handle drag interactions for the Transform
+ * Transform-drag tool - handle drag interactions for the Transform
  * tool (resize via corner/edge handles, rotation via the rot grip).
  *
  * The transform UI runs in TWO modes: the floating popup (W/H/rot
@@ -51,7 +51,7 @@ export function createTransformDragTool({
         state.transformOrigH = layer.canvas.height;
         return true;
       }
-      // No corner hit — if click inside the layer's bounding box, act
+      // No corner hit - if click inside the layer's bounding box, act
       // like Move so the user can drag the layer around without
       // switching tools.
       if (state.transformLayer) {
@@ -76,7 +76,7 @@ export function createTransformDragTool({
      */
     tryContinue(e) {
       if (!state.transformActive) return false;
-      // No drag in progress — just hover-cursor + pulse.
+      // No drag in progress - just hover-cursor + pulse.
       if (!state.transformHandle && state.mainCanvas) {
         const coords = canvasCoords(e, state.mainCanvas);
         const hovered = getTransformHandle(coords.x, coords.y);
@@ -90,7 +90,7 @@ export function createTransformDragTool({
       if (!state.transformHandle) return false;
       e.preventDefault();
       const coords = canvasCoords(e, state.mainCanvas);
-      // Rotation grip — angle measured from the layer's geometric
+      // Rotation grip - angle measured from the layer's geometric
       // centre to the cursor. Mirror into the popup if it's open.
       if (state.transformHandle === 'rot') {
         const layer = state.transformLayer;

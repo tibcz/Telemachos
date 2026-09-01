@@ -1,4 +1,4 @@
-"""Issue #800 — CalDAV write-back pushes local changes to the remote server.
+"""Issue #800 - CalDAV write-back pushes local changes to the remote server.
 
 Unit-tests the pure pieces against a fake caldav calendar (no network): the
 iCalendar serialization, hash-based remote-calendar discovery, and the

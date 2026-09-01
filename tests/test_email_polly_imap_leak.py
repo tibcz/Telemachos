@@ -4,7 +4,7 @@
 30-minute background cadence (via `_auto_summarize_poller`) and on-demand
 for one-shot scheduled tasks. It opens a long-lived IMAP connection at
 line 171 (`conn = _imap_connect(...)`) and then performs ~700 lines of
-work — IMAP `select`/`FETCH`/`SEARCH`, network POSTs to the LLM endpoint,
+work - IMAP `select`/`FETCH`/`SEARCH`, network POSTs to the LLM endpoint,
 SQLite writes, and per-uid awaits.
 
 If anything in that body raised before this fix, the outer `except`
@@ -19,7 +19,7 @@ unbounded connection leak per crashed pass.
 This is the exact same shape as the just-merged upstream fixes #1325
 (`_imap_move` in `routes/email_helpers.py`) and #1330 (`_list_emails_sync`
 in `routes/email_routes.py`), but the request-path fixes did not cover
-the *background* poller path — so this is the obvious third instance a
+the *background* poller path - so this is the obvious third instance a
 careful reviewer would ask "did we get all of them?".
 
 The fix is the same try/finally pattern from #1330:

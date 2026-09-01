@@ -1,7 +1,7 @@
 """Bridge between extracted PDF form fields and the document editor.
 
-Design: the user edits the form as readable markdown — labels as bullets,
-values as plain text — exactly like any other document in the editor.
+Design: the user edits the form as readable markdown - labels as bullets,
+values as plain text - exactly like any other document in the editor.
 
 A hidden HTML-comment front-matter pointer at the top of the markdown
 links the document back to the source PDF and the field-schema sidecar:
@@ -26,7 +26,7 @@ _FRONT_MATTER_RE = re.compile(
     r'<!--\s*pdf_form_source\s+upload_id="(?P<upload_id>[^"]+)"(?:\s+fields="(?P<fields>\d+)")?\s*-->'
 )
 
-# Freeform annotation bullet — mirrors the JS regex in static/js/document.js.
+# Freeform annotation bullet - mirrors the JS regex in static/js/document.js.
 # Coords are page percentages (0–100); kind/lh are optional for backward compat.
 _ANNOTATION_RE = re.compile(
     r'^[ \t]*-\s+(?P<value>.*?)\s*<!--\s*annotation\s+id=(?P<id>[\w-]+)\s+page=(?P<page>\d+)\s+x=(?P<x>[\d.]+)\s+y=(?P<y>[\d.]+)\s+w=(?P<w>[\d.]+)\s+h=(?P<h>[\d.]+)(?:\s+kind=(?P<kind>\w+))?(?:\s+lh=(?P<lh>[\d.]+))?\s*-->[ \t]*$',
@@ -60,7 +60,7 @@ def parse_markdown_annotations(content: str) -> list[dict]:
     """Return the list of freeform annotation dicts embedded in a doc's markdown.
 
     Each entry: {id, page, x, y, w, h, kind, line_height, value}.
-    Coordinates are page percentages (0–100) — caller scales them to PDF user
+    Coordinates are page percentages (0–100) - caller scales them to PDF user
     units when stamping.
     """
     out: list[dict] = []
@@ -126,8 +126,8 @@ def _decode_name(enc: str) -> str:
     """Inverse of _encode_name."""
     import urllib.parse
     return urllib.parse.unquote(enc or "")
-# Label segment is non-greedy (.+?) so labels containing '*' — the near-universal
-# required-field marker, e.g. "Email *" — are tolerated, while still splitting at
+# Label segment is non-greedy (.+?) so labels containing '*' - the near-universal
+# required-field marker, e.g. "Email *" - are tolerated, while still splitting at
 # the FIRST ':**' / '**[' so a value that itself contains ':**' is preserved.
 # (The old [^*]+ refused to match any label with an asterisk and silently
 # dropped that field's value on export.)
@@ -261,7 +261,7 @@ def create_plain_pdf_document(
 def parse_markdown_to_values(content: str) -> dict[str, Any]:
     """Recover {field_name: value} from the rendered markdown.
 
-    Deterministic — relies on the hidden HTML-comment field markers in each
+    Deterministic - relies on the hidden HTML-comment field markers in each
     bullet. Lines whose markers are intact survive arbitrary edits to label
     and value text. Lines whose markers were stripped are silently skipped;
     those fields just won't be filled in the output PDF.
@@ -363,7 +363,7 @@ def render_form_as_markdown(
         "",
         f"# {title}",
         "",
-        "Edit values in place — change the text after each label, tick/untick "
+        "Edit values in place - change the text after each label, tick/untick "
         "checkboxes, and pick one of the listed options for choice fields. "
         "When done, click **Export PDF** to download the filled form.",
         "",
@@ -398,7 +398,7 @@ def create_form_markdown_document(
     """Create a markdown Document for an editable form and set it active.
 
     Returns the new doc_id, or None on failure. The Document's language is
-    "markdown" — the form-ness is signalled only by the front-matter pointer
+    "markdown" - the form-ness is signalled only by the front-matter pointer
     inside the content, which the export route looks for.
     """
     from src.database import SessionLocal, Document, DocumentVersion, Session as DbSession

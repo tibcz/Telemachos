@@ -1,4 +1,4 @@
-"""Regression guard for #5559 — the KEYWORD index (load_personal_index, which
+"""Regression guard for #5559 - the KEYWORD index (load_personal_index, which
 PersonalDocsManager.refresh_index builds from) must skip hidden dirs, hidden
 files, and junk dirs at ANY depth, the same as the vector index. Both walkers
 share one pruning helper (src/index_walk) so they cannot drift again.

@@ -76,7 +76,7 @@ def main():
 
         # Documents (have their own owner column; claim the ownerless ones,
         # mirroring the sessions/gallery/comparisons blocks). The old query set
-        # session_id to itself — a no-op — and never set owner, so ownerless
+        # session_id to itself - a no-op - and never set owner, so ownerless
         # documents stayed ownerless and invisible in the user's Library.
         count = db.query(Document).filter(Document.owner == None).update({"owner": owner})
         print(f"  documents: claimed {count}")

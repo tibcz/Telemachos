@@ -79,8 +79,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     /// Stop the engine before the app goes away.
     ///
-    /// Deferring termination gives the engine time to shut down cleanly —
-    /// flushing the database and closing the built-in MCP servers — instead of
+    /// Deferring termination gives the engine time to shut down cleanly -
+    /// flushing the database and closing the built-in MCP servers - instead of
     /// being killed mid-write when the process tree is torn down.
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
         Task { @MainActor in

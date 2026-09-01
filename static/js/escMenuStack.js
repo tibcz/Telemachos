@@ -1,6 +1,6 @@
 // static/js/escMenuStack.js
 //
-// Dismissal registry for transient, ad-hoc overlays — dropdown menus and
+// Dismissal registry for transient, ad-hoc overlays - dropdown menus and
 // context popups that are built on the fly and appended to <body>, living
 // OUTSIDE the .modal system. The global Escape arbiter in ui.js can find
 // modals but not these, so each menu registers a dismiss callback here while
@@ -51,8 +51,8 @@ export function _openMenuCount() {
 /**
  * Tear a transient menu down through its registered dismiss callback if it has
  * one (releasing its Escape-stack entry and any listeners), else fall back to a
- * plain node removal. Use this anywhere menus are cleared in bulk — scroll /
- * swipe / modal-dismiss cleanup, or a "close the previous one" reopen sweep —
+ * plain node removal. Use this anywhere menus are cleared in bulk - scroll /
+ * swipe / modal-dismiss cleanup, or a "close the previous one" reopen sweep -
  * instead of a raw `el.remove()`, which would strand the stack entry.
  */
 export function dismissOrRemove(el) {

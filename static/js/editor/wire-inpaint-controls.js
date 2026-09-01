@@ -1,12 +1,12 @@
 /**
- * Inpaint panel controls — the non-AI side-panel UI for the inpaint
+ * Inpaint panel controls - the non-AI side-panel UI for the inpaint
  * tool (the AI Generate/Remove/Outpaint buttons live in
  * editor/ai-inpaint.js).
  *
  *   Pre-gen sliders (Feather + Strength swatch previews):
  *     #ge-strength-slider     just-updates-the-label-and-swatch
  *
- *   Post-gen live edge tuners — alpha-blur + dilate/erode on the most
+ *   Post-gen live edge tuners - alpha-blur + dilate/erode on the most
  *   recent Inpaint Result layer, rAF-throttled so dragging stays
  *   smooth on big canvases:
  *     #ge-feather-slider       calls applyInpaintFeather + composite
@@ -21,7 +21,7 @@
  *
  *   Mask tint pickers (wired to keep both visually in sync):
  *     .ge-inpaint-mask-color   (inpaint section)
- *     #ge-topbar-mask-color    (topbar swatch — HSV picker attached)
+ *     #ge-topbar-mask-color    (topbar swatch - HSV picker attached)
  *
  * @param {{
  *   composite:                () => void,

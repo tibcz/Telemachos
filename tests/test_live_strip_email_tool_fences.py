@@ -1,4 +1,4 @@
-"""Regression test for #3993 — live chat leaves executed tool fences visible.
+"""Regression test for #3993 - live chat leaves executed tool fences visible.
 
 The backend strips every fenced tool block (``src/tool_parsing.py`` builds its
 regex from the full ``TOOL_TAGS`` set), so a reloaded session renders cleanly.
@@ -6,7 +6,7 @@ The live frontend path uses its own regex, ``EXEC_FENCE_RE`` in
 ``static/js/chatRenderer.js``.
 
 Originally that regex came from a hand-maintained subset, so any executable tool
-not in it — and every *future* tool added to ``TOOL_TAGS`` — left its executed
+not in it - and every *future* tool added to ``TOOL_TAGS`` - left its executed
 fence lingering as a raw code block in the live bubble until reload. The fix
 makes ``TOOL_TAGS`` the single source: ``chatRenderer.js`` no longer hard-codes a
 tool list at all. It fetches the backend's authoritative set once from
@@ -17,7 +17,7 @@ drift.
 
 ``chatRenderer.js`` pulls browser globals and can't be imported under node, so
 the behavioral tests exercise an equivalent Python regex built straight from the
-backend ``TOOL_TAGS`` — the same source the live regex now derives from — and
+backend ``TOOL_TAGS`` - the same source the live regex now derives from - and
 source-level guards assert the frontend keeps no hard-coded list.
 """
 import json
@@ -33,7 +33,7 @@ _NON_STRIPPED = {"bash", "python"}
 
 
 def _tool_tags() -> set[str]:
-    """The backend TOOL_TAGS set — the same authoritative set GET /api/tools
+    """The backend TOOL_TAGS set - the same authoritative set GET /api/tools
     serves (sorted) and the live EXEC_FENCE_RE derives from. Imported rather
     than source-scraped so it reflects the real set however it is composed: the
     literal plus the ``| BUILTIN_EMAIL_TOOLS`` union (email tool names live in
@@ -105,7 +105,7 @@ def test_preserves_existing_web_search_stripping():
 
 
 def test_does_not_strip_bash_or_python_code_examples():
-    """bash/python fences are deliberately excluded — they are legitimate code
+    """bash/python fences are deliberately excluded - they are legitimate code
     examples a user may have asked the model to show, not tool invocations."""
     for lang in sorted(_NON_STRIPPED):
         example = f"```{lang}\nls -la\n```"
@@ -123,7 +123,7 @@ def test_does_not_strip_invalid_inline_json_metadata():
 def test_frontend_keeps_no_hardcoded_tool_list():
     """Root-cause guard for #3993: chatRenderer.js must NOT reintroduce a
     hand-maintained tool list. A hard-coded mirror of TOOL_TAGS silently drifts
-    when a new tool is added — leaving its executed fence in the live bubble
+    when a new tool is added - leaving its executed fence in the live bubble
     until reload. The live regex must instead be built from the backend's
     authoritative set fetched at runtime."""
     source = _SRC.read_text(encoding="utf-8")
@@ -152,7 +152,7 @@ def test_frontend_keeps_no_hardcoded_tool_list():
 
 def test_api_tools_endpoint_serves_full_tool_tags():
     """The frontend's single source is GET /api/tools. Guard that the endpoint
-    serves the complete TOOL_TAGS set (sorted) — if it ever served a subset, the
+    serves the complete TOOL_TAGS set (sorted) - if it ever served a subset, the
     live-strip list would silently shrink with no second list to catch it."""
     source = _ROUTES_SRC.read_text(encoding="utf-8")
     assert re.search(r"for\s+tag\s+in\s+sorted\(\s*TOOL_TAGS\s*\)", source), (

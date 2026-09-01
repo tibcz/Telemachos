@@ -3,7 +3,7 @@
 The auto-spam poller passes a real IMAP UID (from conn.uid("SEARCH", ...))
 to _imap_move, but the function used conn.copy()/conn.store(), which operate
 on message SEQUENCE NUMBERS. So a UID like 90521 was interpreted as sequence
-number 90521 — moving/deleting the wrong message or silently no-oping. It
+number 90521 - moving/deleting the wrong message or silently no-oping. It
 must use the UID commands.
 """
 import sys

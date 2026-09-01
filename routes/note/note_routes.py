@@ -126,12 +126,12 @@ def _reminder_text_from_note(note: Note) -> tuple[str, str]:
 
 
 # ---------------------------------------------------------------------------
-# Reminder dispatch — module-level so background tasks (built-in actions)
+# Reminder dispatch - module-level so background tasks (built-in actions)
 # can call it directly without an HTTP roundtrip + auth cookie. The route
 # version below is a thin wrapper that pulls `owner` from the request.
 # ---------------------------------------------------------------------------
 
-# Scheduler reference — set by setup_note_routes() so dispatch_reminder can
+# Scheduler reference - set by setup_note_routes() so dispatch_reminder can
 # push a parallel in-app notification (frontend polls the scheduler's queue
 # and fires real browser Notification(...) popups). Optional; works without it.
 _scheduler_ref = None
@@ -151,12 +151,12 @@ async def dispatch_reminder(
         title: short headline shown to the user
         note_body: longer body text
         note_id: stable id (used as tag/dedupe in browser notifications)
-        owner: the user this reminder belongs to — scopes SMTP config to
+        owner: the user this reminder belongs to - scopes SMTP config to
                their account so we don't cross-leak credentials
 
     Returns: {synthesis, email_sent, ntfy_sent}. Browser channel is wired via
     the in-memory notification queue picked up by the frontend poller, so
-    nothing is "sent" synchronously for it — the channel just routes there.
+    nothing is "sent" synchronously for it - the channel just routes there.
     """
     from src.settings import load_settings
     settings = {**load_settings(), **(settings_override or {})}
@@ -205,7 +205,7 @@ async def dispatch_reminder(
             logger.debug(f"dispatch_reminder: cache read failed: {_e}")
 
     synthesis = None
-    _SYNTH_FAILED_TAG = "[utility model unavailable — no summary generated]"
+    _SYNTH_FAILED_TAG = "[utility model unavailable - no summary generated]"
     if llm_on:
         try:
             from src.endpoint_resolver import resolve_endpoint
@@ -236,7 +236,7 @@ async def dispatch_reminder(
                 # reasoning + answer on consecutive lines inside one paragraph
                 # (e.g. "I should write... [\n] You have one task waiting...").
                 # Walk lines, drop reasoning/prompt-echo lines, then keep the
-                # last surviving line — that's the actual warm sentence.
+                # last surviving line - that's the actual warm sentence.
                 if synthesis:
                     import re as _re
                     # Tightened: target ACTUAL self-talk (model narrating what
@@ -282,7 +282,7 @@ async def dispatch_reminder(
                     cleaned = [ln for ln in lines if not _reasoning.match(ln) and not _echo.match(ln)]
                     if cleaned:
                         # The model's actual answer is normally the LAST surviving
-                        # line — reasoning leads, answer trails.
+                        # line - reasoning leads, answer trails.
                         synthesis = cleaned[-1].strip()
             else:
                 synthesis = _SYNTH_FAILED_TAG
@@ -430,7 +430,7 @@ async def dispatch_reminder(
                     else:
                         # Render template: JSON-escape the values so the result
                         # is always valid JSON regardless of special characters.
-                        # dumps() returns `"value"` — strip outer quotes.
+                        # dumps() returns `"value"` - strip outer quotes.
                         msg = (synthesis or note_body or title or "Reminder")[:4000]
                         _t = _wjson.dumps(title or "Reminder")[1:-1]
                         _m = _wjson.dumps(msg)[1:-1]
@@ -444,7 +444,7 @@ async def dispatch_reminder(
                             elif auth_type == "header":
                                 hdrs[intg.get("auth_header") or "Authorization"] = api_key
                         url = intg["base_url"].rstrip("/")
-                        # SSRF guard — matches the pattern used by webhook_routes,
+                        # SSRF guard - matches the pattern used by webhook_routes,
                         # CalDAV, search, and embeddings. Blocks link-local / metadata
                         # addresses (169.254.x.x) by default; set
                         # REMINDER_WEBHOOK_BLOCK_PRIVATE_IPS=true to also block
@@ -486,7 +486,7 @@ async def dispatch_reminder(
                 api_key = intg.get("api_key", "")
                 if api_key:
                     hdrs["Authorization"] = f"Bearer {api_key}"
-                # SSRF guard — same check (and env knob) as the webhook branch
+                # SSRF guard - same check (and env knob) as the webhook branch
                 # above: link-local / metadata addresses are always rejected;
                 # REMINDER_WEBHOOK_BLOCK_PRIVATE_IPS=true also blocks RFC-1918
                 # so a ntfy base_url can't be pointed at internal services.
@@ -510,7 +510,7 @@ async def dispatch_reminder(
 
     # In-app browser notification ALWAYS fires (regardless of channel). The
     # frontend polls `/api/tasks/notifications` and turns any entry with a
-    # `body` into a real `Notification(...)` — same surface as task-success
+    # `body` into a real `Notification(...)` - same surface as task-success
     # popups. Lets the user see reminders inside the app even when the
     # primary channel is email/ntfy and the tab is open.
     browser_sent = False
@@ -589,7 +589,7 @@ def setup_note_routes(task_scheduler=None, upload_handler=None):
         # require_user, not bare get_current_user: a request that reaches
         # these owner-scoped routes with NO identity (auth-middleware
         # regression, SSRF from a sibling service) must fail closed (401)
-        # when auth is configured — not be treated as the single-user mode
+        # when auth is configured - not be treated as the single-user mode
         # and handed blanket access to every account's notes. The documented
         # anonymous modes (AUTH_ENABLED=false, LOCALHOST_BYPASS on loopback,
         # unconfigured first-run) still resolve to None, the single-user
@@ -693,7 +693,7 @@ def setup_note_routes(task_scheduler=None, upload_handler=None):
             note = db.query(Note).filter(Note.id == note_id).first()
             if not note:
                 raise HTTPException(404, "Note not found")
-            # SECURITY: strict ownership — previously `note.owner and note.owner != user`
+            # SECURITY: strict ownership - previously `note.owner and note.owner != user`
             # let any user touch a row whose owner field was null/empty.
             if user is not None and note.owner != user:
                 raise HTTPException(404, "Note not found")
@@ -710,7 +710,7 @@ def setup_note_routes(task_scheduler=None, upload_handler=None):
             note = db.query(Note).filter(Note.id == note_id).first()
             if not note:
                 raise HTTPException(404, "Note not found")
-            # SECURITY: strict ownership — previously `note.owner and note.owner != user`
+            # SECURITY: strict ownership - previously `note.owner and note.owner != user`
             # let any user touch a row whose owner field was null/empty.
             if user is not None and note.owner != user:
                 raise HTTPException(404, "Note not found")
@@ -765,7 +765,7 @@ def setup_note_routes(task_scheduler=None, upload_handler=None):
             note = db.query(Note).filter(Note.id == note_id).first()
             if not note:
                 raise HTTPException(404, "Note not found")
-            # SECURITY: strict ownership — previously `note.owner and note.owner != user`
+            # SECURITY: strict ownership - previously `note.owner and note.owner != user`
             # let any user touch a row whose owner field was null/empty.
             if user is not None and note.owner != user:
                 raise HTTPException(404, "Note not found")
@@ -784,7 +784,7 @@ def setup_note_routes(task_scheduler=None, upload_handler=None):
             note = db.query(Note).filter(Note.id == note_id).first()
             if not note:
                 raise HTTPException(404, "Note not found")
-            # SECURITY: strict ownership — previously `note.owner and note.owner != user`
+            # SECURITY: strict ownership - previously `note.owner and note.owner != user`
             # let any user touch a row whose owner field was null/empty.
             if user is not None and note.owner != user:
                 raise HTTPException(404, "Note not found")
@@ -803,7 +803,7 @@ def setup_note_routes(task_scheduler=None, upload_handler=None):
             note = db.query(Note).filter(Note.id == note_id).first()
             if not note:
                 raise HTTPException(404, "Note not found")
-            # SECURITY: strict ownership — previously `note.owner and note.owner != user`
+            # SECURITY: strict ownership - previously `note.owner and note.owner != user`
             # let any user touch a row whose owner field was null/empty.
             if user is not None and note.owner != user:
                 raise HTTPException(404, "Note not found")
@@ -822,7 +822,7 @@ def setup_note_routes(task_scheduler=None, upload_handler=None):
             note = db.query(Note).filter(Note.id == note_id).first()
             if not note:
                 raise HTTPException(404, "Note not found")
-            # SECURITY: strict ownership — previously `note.owner and note.owner != user`
+            # SECURITY: strict ownership - previously `note.owner and note.owner != user`
             # let any user touch a row whose owner field was null/empty.
             if user is not None and note.owner != user:
                 raise HTTPException(404, "Note not found")
@@ -848,7 +848,7 @@ def setup_note_routes(task_scheduler=None, upload_handler=None):
         LLM synthesis line and/or sends an email through configured SMTP.
         Returns {synthesis, email_sent}.
         """
-        # Gate against anonymous callers — LLM synthesis can burn tokens.
+        # Gate against anonymous callers - LLM synthesis can burn tokens.
         user = require_user(request)
         body = await request.json()
         note_id = str(body.get("note_id") or "").strip()

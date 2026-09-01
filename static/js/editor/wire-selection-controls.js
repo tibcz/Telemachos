@@ -1,5 +1,5 @@
 /**
- * Lasso + Magic Wand panel controls — sliders, mode toggles, and the
+ * Lasso + Magic Wand panel controls - sliders, mode toggles, and the
  * panel action buttons (Invert / Clear / Delete / Copy / To Mask /
  * Bg Remove). The actual selection algorithms live in their tool
  * modules (editor/tools/lasso.js, editor/tools/wand.js); this file
@@ -96,7 +96,7 @@ export function wireSelectionControls({
     composite();
   });
 
-  // Tolerance slider fires `input` rapidly — coalesce to one wand run
+  // Tolerance slider fires `input` rapidly - coalesce to one wand run
   // per frame with rAF. Label updates synchronously so the number
   // tracks the cursor even when the flood-fill runs at ~60fps.
   let wandRetuneRaf = null;
@@ -153,7 +153,7 @@ export function wireSelectionControls({
   document.getElementById('ge-wand-delete')?.addEventListener('click', wandDeleteSelection);
   document.getElementById('ge-wand-copy')?.addEventListener('click', wandCopyToNewLayer);
   document.getElementById('ge-wand-mask')?.addEventListener('click', wandToMask);
-  // Selection-constrained Bg Remove — reuses the same path the toolbar
+  // Selection-constrained Bg Remove - reuses the same path the toolbar
   // Bg Remove button does. buildSelectionHintMask picks the active
   // wand/lasso selection, so this just kicks off the existing flow.
   document.getElementById('ge-wand-rembg')?.addEventListener('click', async () => {

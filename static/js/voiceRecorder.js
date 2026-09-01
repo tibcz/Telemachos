@@ -4,10 +4,10 @@
  * Voice recording with optional Speech-to-Text transcription.
  *
  * STT providers:
- *   "disabled"       — record audio as file attachment (original behavior)
- *   "browser"        — use Web Speech API for real-time transcription
- *   "local"          — send recording to server /api/stt/transcribe (Whisper)
- *   "endpoint:<id>"  — send recording to server /api/stt/transcribe (API)
+ *   "disabled"       - record audio as file attachment (original behavior)
+ *   "browser"        - use Web Speech API for real-time transcription
+ *   "local"          - send recording to server /api/stt/transcribe (Whisper)
+ *   "endpoint:<id>"  - send recording to server /api/stt/transcribe (API)
  */
 
 let mediaRecorder = null;
@@ -20,7 +20,7 @@ let recordingInterval = null;
 let _recognition = null;
 let _browserTranscript = '';
 
-// Cached STT provider — refreshed on settings change
+// Cached STT provider - refreshed on settings change
 let _sttProvider = 'disabled';
 
 /**
@@ -207,7 +207,7 @@ export function startRecording(onFileCreated, showToast, showError) {
             if (onFileCreated) onFileCreated(audioFile);
           }
         } else {
-          // STT disabled — attach audio file
+          // STT disabled - attach audio file
           const audioFile = new File([audioBlob], `voice-message-${Date.now()}.webm`, { type: 'audio/webm' });
           if (onFileCreated) onFileCreated(audioFile);
         }

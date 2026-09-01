@@ -2,8 +2,8 @@
 //
 // Emoji shortcode → Unicode conversion (issue #345).
 //
-// Chat models frequently emit GitHub/Slack-style `:shortcode:` text — e.g.
-// `:blush:`, `:fire:`, `:microphone:` — instead of the actual emoji character.
+// Chat models frequently emit GitHub/Slack-style `:shortcode:` text - e.g.
+// `:blush:`, `:fire:`, `:microphone:` - instead of the actual emoji character.
 // Nothing in the render pipeline used to translate these, so they showed up as
 // literal `:blush:` text in the chat bubble.
 //
@@ -420,7 +420,7 @@ export function hasEmojiShortcode(text) {
   return !!text && text.indexOf(':') !== -1 && /:[a-z0-9_+-]{1,40}:/i.test(text);
 }
 
-// A shortcode must stand on its own — flanked by whitespace, punctuation, a
+// A shortcode must stand on its own - flanked by whitespace, punctuation, a
 // string edge, or markup, never glued to an ASCII word character. Without this
 // guard, real `:name:` shortcodes that happen to sit inside a longer run of
 // digits/letters get converted by mistake and mangle perfectly literal text:

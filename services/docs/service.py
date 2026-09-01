@@ -1,5 +1,5 @@
 # services/docs/service.py
-"""Docs service — personal document RAG."""
+"""Docs service - personal document RAG."""
 
 from dataclasses import dataclass
 from typing import List, Dict, Any

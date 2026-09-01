@@ -18,7 +18,7 @@
 export function lassoOffsetPoints(points, grow) {
   const n = points.length;
   if (n < 3 || !grow) return points;
-  // Polygon winding (positive = CCW) — flip the normal so it points
+  // Polygon winding (positive = CCW) - flip the normal so it points
   // away from the interior regardless of draw direction.
   let area = 0;
   for (let i = 0; i < n; i++) {
@@ -85,7 +85,7 @@ export function buildLassoMask(points, w, h, offX, offY, feather, grow) {
   hCtx.fillStyle = '#fff';
   hCtx.fill();
 
-  // Step 1b: grow / shrink — blur the hard mask, threshold low for
+  // Step 1b: grow / shrink - blur the hard mask, threshold low for
   // grow and high for shrink. Same technique as the bg-remove edge
   // tuner. RGB is left alone, alpha is replaced.
   if (grow && grow !== 0) {

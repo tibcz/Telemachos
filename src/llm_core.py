@@ -223,7 +223,7 @@ _response_model_cache = {}
 # one unreachable upstream from jamming chat across the rest of the app.
 #
 # But a SINGLE transient blip (local model briefly busy, a momentary
-# Tailscale hiccup) used to trip a full 60s lockout — the user saw a
+# Tailscale hiccup) used to trip a full 60s lockout - the user saw a
 # 503 and thought the model died when it was fine a second later. So:
 #   - require FAIL_THRESHOLD consecutive failures before cooling
 #   - shorter cooldown so recovery is quick
@@ -313,7 +313,7 @@ class _HarmonyStreamRouter:
             return
         if self._in_message:
             # analysis + commentary (tool-call preambles / function-arg bodies)
-            # are internal, not user-facing — route them to thinking so they
+            # are internal, not user-facing - route them to thinking so they
             # don't leak into the visible answer; only `final` is visible.
             out.append((text, self._channel in ("analysis", "commentary")))
 
@@ -643,13 +643,13 @@ def _ollama_normalize_messages(messages: List[Dict]) -> List[Dict]:
        aborting every follow-up (tool-result) round. Parse the arguments back
        into an object here, on a shallow copy, leaving non-tool messages
        untouched. The opaque Gemini `extra_content` (thought_signature) is
-       dropped — it is meaningless to Ollama and only matters when the
+       dropped - it is meaningless to Ollama and only matters when the
        conversation is replayed to Gemini.
 
     2. Images (issue #4723): Telemachos carries multimodal user content as an
        OpenAI-style list ``[{type: "text", ...}, {type: "image_url",
        image_url: {url: "data:image/...;base64,XXX"}}, ...]``. Native Ollama
-       does not accept a list for ``content`` — it wants ``content`` as a
+       does not accept a list for ``content`` - it wants ``content`` as a
        string plus a separate ``images`` array of raw base64 strings (no
        ``data:`` prefix). Without this conversion the image blocks pass
        through untouched, the vision-capable model never sees the picture,
@@ -700,7 +700,7 @@ def _ollama_normalize_messages(messages: List[Dict]) -> List[Dict]:
                     if not url:
                         continue
                     if url.startswith("data:"):
-                        # Strip the ``data:[...];base64,`` prefix — native
+                        # Strip the ``data:[...];base64,`` prefix - native
                         # Ollama wants only the base64 bytes.
                         _, _, b64 = url.partition(",")
                         if b64:
@@ -724,7 +724,7 @@ def _ollama_normalize_messages(messages: List[Dict]) -> List[Dict]:
 
 
 # Backward-compatible alias for callers/tests that imported the older name
-# (it only handled tool messages originally — issue #4723 broadened scope).
+# (it only handled tool messages originally - issue #4723 broadened scope).
 _ollama_normalize_tool_messages = _ollama_normalize_messages
 
 
@@ -746,7 +746,7 @@ def _build_ollama_payload(
     context length through ``num_ctx``; this builder only emits it when
     the value is trusted (not the ``DEFAULT_CONTEXT`` fallback), so we
     don't guess for unknown models but do tell Ollama the real window
-    when we know it — even if it's smaller than 2048.
+    when we know it - even if it's smaller than 2048.
     """
     payload: Dict = {
         "model": model,
@@ -967,8 +967,8 @@ def _detect_provider(url: str) -> str:
     """Detect the API provider from a configured endpoint URL.
 
     Matches on hostname (exact or subdomain) rather than substring, so a URL
-    that merely contains a provider's domain in its path or query — or a
-    look-alike host such as ``anthropic.com.example`` — is not misclassified.
+    that merely contains a provider's domain in its path or query - or a
+    look-alike host such as ``anthropic.com.example`` - is not misclassified.
     Unknown hosts fall back to the OpenAI-compatible default, which the
     majority of providers implement.
     """
@@ -1180,7 +1180,7 @@ def _model_disallows_reasoning_effort_with_chat_tools(model: str) -> bool:
 # name therefore gets called with the built-in convention: the model emits raw
 # code, the server tries to parse it as JSON, and the whole request dies
 # ("error parsing tool call: raw='import sys, ...'"). In streaming mode Ollama
-# does not even report it — it truncates the stream, so the turn looks like an
+# does not even report it - it truncates the stream, so the turn looks like an
 # empty response. `bash` collides the same way in practice.
 #
 # Measured on gpt-oss:20b via Ollama /v1 with a fixed agentic prompt:
@@ -1293,7 +1293,7 @@ def _build_chatgpt_responses_payload(
     }
     if not _restricts_temperature(model):
         payload["temperature"] = temperature
-    # ChatGPT Subscription Codex API does not support max_output_tokens —
+    # ChatGPT Subscription Codex API does not support max_output_tokens -
     # passing it returns HTTP 400 "Unsupported parameter: max_output_tokens".
     # Do not include it in the payload.
     return payload
@@ -1337,11 +1337,11 @@ def _format_upstream_error(status: int, body: bytes | str, url: str) -> str:
         if status == 403:
             msg = f"{provider} denied access (403)"
         if detail:
-            msg += f" — {detail}"
+            msg += f" - {detail}"
         msg += ". Check Model Endpoints → {} and re-paste the key.".format(provider)
         return msg
     if status == 404:
-        return f"{provider} returned 404 — check the base URL and model name." + (f" ({detail})" if detail else "")
+        return f"{provider} returned 404 - check the base URL and model name." + (f" ({detail})" if detail else "")
     if status == 429:
         return f"{provider} rate-limited the request (429)." + (f" {detail}" if detail else "")
     if status >= 500:
@@ -1359,11 +1359,11 @@ def _uses_max_completion_tokens(model: str) -> bool:
     return any(m.startswith(p) or f"/{p}" in m for p in _MAX_COMPLETION_TOKENS_MODELS)
 
 # OpenAI reasoning models (o1, o3, o4, gpt-5 families) only accept the default
-# temperature. Sending any explicit value — even 0.0 — returns HTTP 400
+# temperature. Sending any explicit value - even 0.0 - returns HTTP 400
 # ("Only the default (1) value is supported"). That otherwise breaks chat when a
 # preset sets a non-default temperature, and makes endpoint probing report a
 # perfectly good model as failing. For these models we omit the field and let
-# the API use its required default. (gpt-4.5 is intentionally excluded — it is
+# the API use its required default. (gpt-4.5 is intentionally excluded - it is
 # not a reasoning model and accepts temperature normally.)
 _FIXED_TEMPERATURE_MODELS = ("o1", "o3", "o4", "gpt-5", "kimi-for-coding")
 
@@ -1397,8 +1397,8 @@ def _omit_temperature(provider: str, model: str) -> bool:
 
 
 # Anthropic removed the sampling parameters (temperature, top_p, top_k) starting
-# with Claude Opus 4.7. On Opus 4.7 and later, sending `temperature` at all —
-# even 0.0 — returns HTTP 400. Earlier Claude models (Opus 4.6 and below, every
+# with Claude Opus 4.7. On Opus 4.7 and later, sending `temperature` at all -
+# even 0.0 - returns HTTP 400. Earlier Claude models (Opus 4.6 and below, every
 # Sonnet/Haiku) still accept temperature in [0.0, 1.0], so the omission must be
 # version-gated rather than applied to all `claude-*` models.
 def _anthropic_rejects_temperature(model: str) -> bool:
@@ -1417,7 +1417,7 @@ def _anthropic_rejects_temperature(model: str) -> bool:
     #
     # The minor is optional and a missing minor reads as `.0`, so major-only ids
     # like `claude-opus-5` are correctly treated as >= 4.7 (issue #5753). Without
-    # this, every Opus 5 call kept `temperature` and failed with HTTP 400 — visible
+    # this, every Opus 5 call kept `temperature` and failed with HTTP 400 - visible
     # only on paths that pass a temperature, e.g. scheduled tasks inheriting
     # `stream_agent_loop`'s 0.3 default, which returned empty responses.
     match = re.search(
@@ -1430,12 +1430,12 @@ def _anthropic_rejects_temperature(model: str) -> bool:
     return (major, minor) >= (4, 7)
 
 # Reasoning effort level sent to Mistral thinking-capable models. Mistral's
-# API accepts "high", "medium", "low", "none" — see
+# API accepts "high", "medium", "low", "none" - see
 # https://docs.mistral.ai/capabilities/reasoning/. Override via env var
 # TELEMACHOS_MISTRAL_REASONING_EFFORT (e.g. set to "medium" for cheaper chat).
 _MISTRAL_REASONING_EFFORT = os.getenv("TELEMACHOS_MISTRAL_REASONING_EFFORT", "high")
 
-# Models that support structured thinking — may output </think> without opening tag
+# Models that support structured thinking - may output </think> without opening tag
 _THINKING_MODEL_PATTERNS = (
     "qwen3", "qwq", "deepseek-r1", "deepseek-reasoner", "deepseek-v4",
     "minimax", "m2-reap", "gemma", "stepfun", "step-3", "step3",
@@ -1512,7 +1512,7 @@ def _convert_openai_content_to_anthropic(content):
                     },
                 })
             else:
-                # External URL — use Anthropic's URL source
+                # External URL - use Anthropic's URL source
                 converted.append({
                     "type": "image",
                     "source": {"type": "url", "url": url},
@@ -1566,8 +1566,8 @@ def _build_anthropic_payload(model, messages, temperature, max_tokens, stream=Fa
             chat_messages.append({"role": m["role"], "content": content})
     # Anthropic only accepts temperature in [0.0, 1.0] and 400s on anything above
     # 1.0. Clamp here (in the Anthropic builder only) so presets/sliders that use
-    # the wider OpenAI 0.0-2.0 range — e.g. the shipped "Nietzsche" preset at 1.2
-    # — don't hard-break every Claude request. OpenAI's own path is left untouched.
+    # the wider OpenAI 0.0-2.0 range - e.g. the shipped "Nietzsche" preset at 1.2
+    # - don't hard-break every Claude request. OpenAI's own path is left untouched.
     if temperature is not None:
         temperature = max(0.0, min(temperature, 1.0))
     payload = {
@@ -1575,7 +1575,7 @@ def _build_anthropic_payload(model, messages, temperature, max_tokens, stream=Fa
         "messages": chat_messages,
         "max_tokens": max_tokens if max_tokens and max_tokens > 0 else 4096,
     }
-    # Opus 4.7+ removed the sampling parameters — sending `temperature` (even 0.0)
+    # Opus 4.7+ removed the sampling parameters - sending `temperature` (even 0.0)
     # returns HTTP 400. Omit it for those models; older Claude models still take it.
     if not _anthropic_rejects_temperature(model):
         payload["temperature"] = temperature
@@ -1605,7 +1605,7 @@ def _build_anthropic_payload(model, messages, temperature, max_tokens, stream=Fa
                     "input_schema": fn.get("parameters", {"type": "object", "properties": {}}),
                 })
         if anthropic_tools:
-            # Cache the tool schemas too — they're stable for the whole agent run.
+            # Cache the tool schemas too - they're stable for the whole agent run.
             # The breakpoint caches all tool defs preceding it in the request.
             anthropic_tools[-1]["cache_control"] = {"type": "ephemeral"}
             payload["tools"] = anthropic_tools
@@ -1676,7 +1676,7 @@ def _sanitize_llm_messages(messages: List[Dict]) -> List[Dict]:
     Per the OpenAI chat format: user/system messages must have content; a tool
     message needs content + tool_call_id; an assistant message may carry content,
     tool_calls, or both. The old guard required content on every message, which
-    dropped a valid assistant message that has only tool_calls — e.g. the
+    dropped a valid assistant message that has only tool_calls - e.g. the
     follow-up message _append_tool_results builds for a no-prose native tool call
     (content=None, since Gemini/Ollama reject tool_calls alongside ""). Dropping
     it leaves the tool result dangling and breaks the next round.
@@ -1972,7 +1972,7 @@ def llm_call(url: str, model: str, messages: List[Dict], temperature: float = LL
     """Synchronous LLM call with optional prompt type enhancement."""
     h = _provider_headers(_detect_provider(url))
     # Tolerate headers that arrive as a JSON string (some sessions stored them
-    # double-encoded) — otherwise h.update() throws "dictionary update sequence
+    # double-encoded) - otherwise h.update() throws "dictionary update sequence
     # element #0 has length 1; 2 is required".
     if isinstance(headers, str):
         try:
@@ -2051,7 +2051,7 @@ def llm_call(url: str, model: str, messages: List[Dict], temperature: float = LL
             msg = data["choices"][0]["message"]
             content = msg.get("content")
             if isinstance(content, list):
-                # Mistral structured content — extract thinking + text
+                # Mistral structured content - extract thinking + text
                 text_part, thinking_part = _normalize_mistral_content(content)
                 if thinking_part:
                     response = thinking_part + "\n\n" + (text_part or "")
@@ -2156,7 +2156,7 @@ def llm_call_with_fallback(candidates, messages, **kwargs) -> str:
 
 
 async def llm_call_async_with_fallback(candidates, messages, **kwargs) -> str:
-    """Async variant of `llm_call_with_fallback` — same semantics."""
+    """Async variant of `llm_call_with_fallback` - same semantics."""
     cands = dedupe_model_candidates(candidates)
     if not cands:
         raise HTTPException(503, "No model endpoint configured")
@@ -2392,7 +2392,7 @@ async def llm_call_async(
         if max_tokens and max_tokens > 0:
             tok_key = "max_completion_tokens" if _uses_max_completion_tokens(model) else "max_tokens"
             payload[tok_key] = max_tokens
-        # Suppress thinking for qwen3/gemma4 on Ollama /v1 — same as stream_llm.
+        # Suppress thinking for qwen3/gemma4 on Ollama /v1 - same as stream_llm.
         if _is_ollama_openai_compat_url(url) and _supports_thinking(model):
             payload["think"] = False
         if provider == "mistral" and _supports_thinking(model):
@@ -2450,7 +2450,7 @@ async def llm_call_async(
                     msg = data["choices"][0]["message"]
                     content = msg.get("content")
                     if isinstance(content, list):
-                        # Mistral structured content — extract thinking + text
+                        # Mistral structured content - extract thinking + text
                         # (same contract as llm_call / stream_llm; see #5435).
                         text_part, thinking_part = _normalize_mistral_content(content)
                         if thinking_part:
@@ -2479,7 +2479,7 @@ async def llm_call_async(
         except (httpx.ConnectError, httpx.ConnectTimeout) as e:
             _cooled = _mark_host_dead(target_url)
             duration = time.time() - start
-            _tail = f" — host cooled for {DEAD_HOST_COOLDOWN:.0f}s" if _cooled else " — transient, will retry"
+            _tail = f" - host cooled for {DEAD_HOST_COOLDOWN:.0f}s" if _cooled else " - transient, will retry"
             logger.warning(f"LLM async connect to {target_url} failed after {duration:.2f}s: {e}{_tail}")
             if _cooled or attempt >= max_retries:
                 raise HTTPException(503, f"Cannot reach {_host_key(target_url)}: {e}")
@@ -2587,10 +2587,10 @@ async def _stream_llm_inner(url: str, model: str, messages: List[Dict], temperat
     """Stream LLM responses with improved error handling.
 
     Yields SSE chunks:
-      - data: {"delta": "text"}           — text content
-      - data: {"type": "tool_calls", ...}  — accumulated native tool calls (before DONE)
-      - event: error                       — errors
-      - data: [DONE]                       — end of stream
+      - data: {"delta": "text"}           - text content
+      - data: {"type": "tool_calls", ...}  - accumulated native tool calls (before DONE)
+      - event: error                       - errors
+      - data: [DONE]                       - end of stream
     """
     provider = _detect_provider(url)
     messages_copy = _sanitize_llm_messages(messages)
@@ -2645,7 +2645,7 @@ async def _stream_llm_inner(url: str, model: str, messages: List[Dict], temperat
             payload["tools"] = _alias_harmony_tools(tools, model)
         elif tool_choice_none:
             payload["tool_choice"] = "none"
-        # Mistral thinking-capable models — send reasoning_effort so Mistral
+        # Mistral thinking-capable models - send reasoning_effort so Mistral
         # activates thinking mode and returns structured reasoning_content.
         # Effort level is configurable via TELEMACHOS_MISTRAL_REASONING_EFFORT
         # (high / medium / low / none); default "high".
@@ -2781,7 +2781,7 @@ async def _stream_llm_inner(url: str, model: str, messages: List[Dict], temperat
                 yield "data: [DONE]\n\n"
         except (httpx.ConnectError, httpx.ConnectTimeout) as e:
             _cooled = _mark_host_dead(target_url)
-            _tail = f" — host cooled for {DEAD_HOST_COOLDOWN:.0f}s" if _cooled else " — transient, will retry"
+            _tail = f" - host cooled for {DEAD_HOST_COOLDOWN:.0f}s" if _cooled else " - transient, will retry"
             logger.warning(f"ChatGPT Subscription stream connect to {target_url} failed: {e}{_tail}")
             yield f'event: error\ndata: {json.dumps({"error": f"Cannot reach {_host_key(target_url)}", "status": 503})}\n\n'
         except httpx.ReadTimeout:
@@ -2875,7 +2875,7 @@ async def _stream_llm_inner(url: str, model: str, messages: List[Dict], temperat
                 yield "data: [DONE]\n\n"
         except (httpx.ConnectError, httpx.ConnectTimeout) as e:
             _cooled = _mark_host_dead(target_url)
-            _tail = f" — host cooled for {DEAD_HOST_COOLDOWN:.0f}s" if _cooled else " — transient, will retry"
+            _tail = f" - host cooled for {DEAD_HOST_COOLDOWN:.0f}s" if _cooled else " - transient, will retry"
             logger.warning(f"Ollama stream connect to {target_url} failed: {e}{_tail}")
             yield f'event: error\ndata: {json.dumps({"error": f"Cannot reach {_host_key(target_url)}", "status": 503})}\n\n'
         except httpx.ReadTimeout:
@@ -3028,7 +3028,7 @@ async def _stream_llm_inner(url: str, model: str, messages: List[Dict], temperat
                 yield "data: [DONE]\n\n"
         except (httpx.ConnectError, httpx.ConnectTimeout) as e:
             _cooled = _mark_host_dead(target_url)
-            _tail = f" — host cooled for {DEAD_HOST_COOLDOWN:.0f}s" if _cooled else " — transient, will retry"
+            _tail = f" - host cooled for {DEAD_HOST_COOLDOWN:.0f}s" if _cooled else " - transient, will retry"
             logger.warning(f"Anthropic stream connect to {target_url} failed: {e}{_tail}")
             yield f'event: error\ndata: {json.dumps({"error": f"Cannot reach {_host_key(target_url)}", "status": 503})}\n\n'
         except httpx.ReadTimeout:
@@ -3164,7 +3164,7 @@ async def _stream_llm_inner(url: str, model: str, messages: List[Dict], temperat
                                     if _usage_data is None:
                                         continue
                                     # llama.cpp puts a `timings` block alongside `usage` with the
-                                    # TRUE generation speed (predicted_per_second) — pure decode,
+                                    # TRUE generation speed (predicted_per_second) - pure decode,
                                     # excluding prefill/network. Pass it through so the UI shows the
                                     # real gen t/s instead of recomputing tokens/wall-clock (which
                                     # includes prefill and reads ~20-40% low). Prefill speed too.
@@ -3215,7 +3215,7 @@ async def _stream_llm_inner(url: str, model: str, messages: List[Dict], temperat
                                             content = re.sub(r"</mm:think>", "</think>", content, flags=re.IGNORECASE)
                                             stripped = content.lstrip()
                                             # gpt-oss harmony format (<|channel|>analysis/final): route via the harmony
-                                            # stream router. Sticky once the first marker appears — distinct from the
+                                            # stream router. Sticky once the first marker appears - distinct from the
                                             # <think> path below (handled in the else, preserving #2588 behaviour).
                                             if _harmony_active or "<|" in content:
                                                 _harmony_active = True
@@ -3236,7 +3236,7 @@ async def _stream_llm_inner(url: str, model: str, messages: List[Dict], temperat
                                                         think_part = content[:close_idx]
                                                         if not _think_open_stripped:
                                                             # Strip the opening <think[...] > from the first chunk.
-                                                            # Use a dedicated flag — _first_content_sent stays False
+                                                            # Use a dedicated flag - _first_content_sent stays False
                                                             # throughout the think block, so it must not be reused.
                                                             tag_end = think_part.lower().find(">")
                                                             if tag_end != -1:
@@ -3268,7 +3268,7 @@ async def _stream_llm_inner(url: str, model: str, messages: List[Dict], temperat
                                                         content = "<think>" + content
                                                     _first_content_sent = True
                                                     yield f'data: {json.dumps({"delta": content})}\n\n'
-                                        # Native tool calls — accumulate across chunks
+                                        # Native tool calls - accumulate across chunks
                                         for tc in delta.get("tool_calls") or []:
                                             if tc is None:
                                                 continue
@@ -3279,7 +3279,7 @@ async def _stream_llm_inner(url: str, model: str, messages: List[Dict], temperat
                                                 # parallel tool calls (every delta arrives as
                                                 # index=None) and sends each call complete in one
                                                 # delta. Without this, all parallel calls collide
-                                                # into slot 0 — later calls overwrite the first's
+                                                # into slot 0 - later calls overwrite the first's
                                                 # name and CORRUPT its arguments by concatenation,
                                                 # so only one malformed call survives and the
                                                 # follow-up round 400s. A function name marks the
@@ -3344,7 +3344,7 @@ async def _stream_llm_inner(url: str, model: str, messages: List[Dict], temperat
 
     except (httpx.ConnectError, httpx.ConnectTimeout) as e:
         _cooled = _mark_host_dead(target_url)
-        _tail = f" — host cooled for {DEAD_HOST_COOLDOWN:.0f}s" if _cooled else " — transient, will retry"
+        _tail = f" - host cooled for {DEAD_HOST_COOLDOWN:.0f}s" if _cooled else " - transient, will retry"
         logger.warning(f"Stream connect to {target_url} failed: {e}{_tail}")
         yield f'event: error\ndata: {json.dumps({"error": f"Cannot reach {_host_key(target_url)}", "status": 503})}\n\n'
     except httpx.ReadTimeout:
@@ -3611,7 +3611,7 @@ async def stream_llm_with_fallback(candidates, messages, **kwargs):
                         )
                     )
                     if not emitted and not is_last and eligible:
-                        # Pre-content failure with fallbacks left — swallow and
+                        # Pre-content failure with fallbacks left - swallow and
                         # move to the next candidate.
                         last_error = chunk
                         failures.append({
@@ -3654,7 +3654,7 @@ async def stream_llm_with_fallback(candidates, messages, **kwargs):
                 if substantive and not emitted:
                     # First real output from a NON-primary candidate: tell the client
                     # the selected model failed and another answered. Without this the
-                    # fallback is invisible — a misconfigured provider looks like it
+                    # fallback is invisible - a misconfigured provider looks like it
                     # works because the reply is shown under the originally selected
                     # model's name (e.g. a Bedrock/Claude endpoint that 400s every
                     # request but appears fine because another model silently answered).

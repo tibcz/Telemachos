@@ -138,7 +138,7 @@ def test_stream_llm_passes_through_llamacpp_timings(monkeypatch):
 
 def test_stream_llm_omits_tps_when_backend_has_no_timings(monkeypatch):
     # A backend (e.g. a cloud API) that reports usage but no `timings` block must
-    # not invent gen_tps/prefill_tps — the caller then falls back to wall-clock.
+    # not invent gen_tps/prefill_tps - the caller then falls back to wall-clock.
     no_timings = [
         'data: ' + json.dumps({"choices": [{"index": 0, "delta": {"content": "Hi"}}]}),
         'data: ' + json.dumps({

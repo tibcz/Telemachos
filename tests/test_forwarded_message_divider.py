@@ -4,7 +4,7 @@
 `_ORIG_RE` already recognised the Japanese forward marker (転送) but not the
 English "Forwarded message" one, so forwarded mail produced by Telemachos itself
 (static/js/emailInbox.js emits exactly `---------- Forwarded message ----------`)
-leaked the divider into the level-0 reply bubble — or, with no Outlook header
+leaked the divider into the level-0 reply bubble - or, with no Outlook header
 block to fall back on, was not split into turns at all.
 """
 from src.email_thread_parser import parse_thread
@@ -23,7 +23,7 @@ def test_forwarded_divider_not_leaked_into_reply_body():
     turns = parse_thread(None, text)
     assert turns is not None
 
-    # The reply turn must be clean — the divider is noise, not reply content.
+    # The reply turn must be clean - the divider is noise, not reply content.
     assert turns[0]["level"] == 0
     assert "Forwarded message" not in turns[0]["body_html"]
     # No turn at all should carry the raw divider in its rendered body.
@@ -37,7 +37,7 @@ def test_forwarded_divider_not_leaked_into_reply_body():
 
 
 def test_forwarded_divider_alone_triggers_split():
-    # No Outlook header block — only the divider marks the forward. Before the
+    # No Outlook header block - only the divider marks the forward. Before the
     # fix this returned None (no split), folding the forward into the reply.
     text = (
         "See the message below.\n\n"

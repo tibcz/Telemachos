@@ -6,7 +6,7 @@ import paths and the canonical ``routes.document.*`` paths resolve to the
 *same* module objects. This is required because multiple tests do
 ``import routes.document_routes as droutes`` followed by
 ``droutes.SessionLocal = ...`` / ``monkeypatch.setattr(droutes, ...)`` and
-``sys.modules.pop("routes.document_helpers")`` + re-import — for those to
+``sys.modules.pop("routes.document_helpers")`` + re-import - for those to
 take effect at runtime, the legacy and canonical module objects must be
 identical.
 """

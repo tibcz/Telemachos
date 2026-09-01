@@ -1,9 +1,9 @@
-"""Unified-memory NVIDIA detection — Grace Blackwell GB10 / DGX Spark (#1340).
+"""Unified-memory NVIDIA detection - Grace Blackwell GB10 / DGX Spark (#1340).
 
 GB10 (and other unified-memory NVIDIA parts) report `nvidia-smi
 --query-gpu=memory.total` as "[N/A]"/"Not Supported" because the GPU shares the
 system LPDDR pool instead of carrying discrete VRAM. The detector did
-`float(memory.total)` and, on the ValueError, `continue`d — dropping the only
+`float(memory.total)` and, on the ValueError, `continue`d - dropping the only
 GPU row, so a real GB10 running vLLM was reported as "No GPU" and Cookbook
 recommendations/model-switching broke. These pin that such a device is detected
 as a unified-memory CUDA GPU backed by system RAM, while discrete GPUs are

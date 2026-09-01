@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""telemachos-skills — shell wrapper for AI skill scripts.
+"""telemachos-skills - shell wrapper for AI skill scripts.
 
 Skills are `SKILL.md` files under `data/skills/<category>/<name>/`. Each
 captures a reusable how-to the assistant has learned. This CLI lets you

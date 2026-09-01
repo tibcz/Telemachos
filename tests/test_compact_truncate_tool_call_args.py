@@ -1,4 +1,4 @@
-"""Issue #2947 — _truncate_message_to_token_budget must shrink oversized tool_calls
+"""Issue #2947 - _truncate_message_to_token_budget must shrink oversized tool_calls
 arguments, not just text content.
 
 A tool-only assistant turn persists content=None with its whole payload in

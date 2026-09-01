@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-add_hwfit_models.py — bulk-add Hugging Face models to the hwfit catalog
+add_hwfit_models.py - bulk-add Hugging Face models to the hwfit catalog
 (services/hwfit/data/hf_models.json).
 
 Adds:
@@ -84,8 +84,8 @@ def _params_from_config(cfg):
         ``n_routed_experts`` (+ ``n_shared_experts``). Active count assumes
         ``num_experts_per_tok`` routed experts plus any shared experts.
 
-    The estimate is intentionally coarse — within ~5-10% of the true count for
-    standard decoder-only architectures — which is fine for the downstream
+    The estimate is intentionally coarse - within ~5-10% of the true count for
+    standard decoder-only architectures - which is fine for the downstream
     ``min_vram_gb`` heuristic (it already buckets via ``parameter_count`` to
     one decimal place of "B").
     """
@@ -170,7 +170,7 @@ _CONFIG_CACHE = {}
 def _fetch_config_json(repo_id):
     """Download and cache a repo's config.json. Returns a dict or None.
 
-    Network / 404 / private-repo failures are swallowed — the caller already
+    Network / 404 / private-repo failures are swallowed - the caller already
     has a safetensors fallback below this. We rely on huggingface_hub's own
     on-disk cache so repeated script runs don't re-hit the Hub.
     """
@@ -182,7 +182,7 @@ def _fetch_config_json(repo_id):
         _CONFIG_CACHE[repo_id] = None
         return None
     except Exception:
-        # Network hiccup, gated repo, etc. — don't crash the bulk run.
+        # Network hiccup, gated repo, etc. - don't crash the bulk run.
         _CONFIG_CACHE[repo_id] = None
         return None
     try:
@@ -264,7 +264,7 @@ def _entry_from_modelinfo(mi, overrides):
                 total = bt
                 if ba and active is None:
                     active = ba
-    # Determine quant first — we need it to unpack the safetensors fallback.
+    # Determine quant first - we need it to unpack the safetensors fallback.
     quant = _quant_from_name(name)
     # Next-to-last resort: parse config.json. This is robust against
     # parameter-less repo names (e.g. "GLM-4.5" with no "9B" suffix) where
@@ -317,7 +317,7 @@ def _entry_from_modelinfo(mi, overrides):
         except Exception:
             pass
     if total is None:
-        return None  # can't size it — skip
+        return None  # can't size it - skip
     pb = total / 1e9
     created = getattr(mi, "created_at", None)
     rel = created.strftime("%Y-%m-%d") if created else datetime.utcnow().strftime("%Y-%m-%d")

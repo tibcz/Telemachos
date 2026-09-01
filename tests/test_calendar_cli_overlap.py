@@ -39,7 +39,7 @@ class _Col:
     def __gt__(self, other):
         return _Clause(self.name, ">", other)
 
-    # asc()/order_by helpers used by cmd_list — return self, harmless.
+    # asc()/order_by helpers used by cmd_list - return self, harmless.
     def asc(self):
         return self
 

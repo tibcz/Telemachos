@@ -1,4 +1,4 @@
-// compare/vote.js — voting, revealing, confetti
+// compare/vote.js - voting, revealing, confetti
 import Storage from '../storage.js';
 import state from './state.js';
 import { _modelDisplayNames } from './models.js';
@@ -37,7 +37,7 @@ function addFinishBadge(paneIdx) {
 }
 
 /** Build vote/action bar. The per-model "vote for this" buttons live
- *  inside each pane's footer now — this bar carries only the shared
+ *  inside each pane's footer now - this bar carries only the shared
  *  actions (Tie, Reveal, Reset). */
 function buildVoteBar(n) {
   const bar = document.getElementById('compare-vote-bar');
@@ -49,7 +49,7 @@ function buildVoteBar(n) {
   const noPrompt = !state._lastPrompt;
 
   // Sync per-pane vote button state to match the prompt-sent / blind-mode
-  // state — these elements were created when the panes were built, but
+  // state - these elements were created when the panes were built, but
   // their enabled/labelled state needs to refresh whenever this bar is
   // (re)built (e.g. after sending the first prompt or revealing models).
   for (let i = 0; i < n; i++) {
@@ -70,7 +70,7 @@ function buildVoteBar(n) {
   tieBtn.addEventListener('click', () => handleVote(-1));
   bar.appendChild(tieBtn);
 
-  // Scoreboard button — sits next to Tie. Stays enabled even after a vote (and
+  // Scoreboard button - sits next to Tie. Stays enabled even after a vote (and
   // before a prompt) since viewing the scoreboard is always allowed.
   const scoreBtn = document.createElement('button');
   scoreBtn.className = 'compare-vote-btn compare-score-btn';
@@ -144,7 +144,7 @@ function _saveVote(winnerIdx) {
 function handleVote(winnerIdx) {
   const displayNames = _modelDisplayNames(state._selectedModels);
 
-  // Reveal only — just show names, keep vote buttons active
+  // Reveal only - just show names, keep vote buttons active
   if (winnerIdx === -2) {
     for (let i = 0; i < state._selectedModels.length; i++) {
       const el = document.getElementById('cmp-title-' + i);
@@ -157,7 +157,7 @@ function handleVote(winnerIdx) {
     return;
   }
 
-  // Guard against double-voting — the per-pane vote buttons (.pane-vote-btn)
+  // Guard against double-voting - the per-pane vote buttons (.pane-vote-btn)
   // aren't covered by the .compare-vote-btn disable below, so without this a
   // user could spam a pane's vote button and record a score on every click.
   if (state._voted) return;
@@ -202,7 +202,7 @@ function handleVote(winnerIdx) {
     });
   }
 
-  // Disable vote buttons but keep reset active — include the per-pane vote
+  // Disable vote buttons but keep reset active - include the per-pane vote
   // buttons (.pane-vote-btn) so they can't be spammed after a vote.
   document.querySelectorAll('.compare-vote-btn:not(.compare-rematch-btn):not(.compare-score-btn), .pane-vote-btn').forEach(b => {
     b.disabled = true; b.style.opacity = '0.4';

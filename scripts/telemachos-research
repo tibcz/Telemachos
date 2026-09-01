@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""telemachos-research — shell wrapper for deep-research sessions.
+"""telemachos-research - shell wrapper for deep-research sessions.
 
 Each research run is a JSON blob in `data/deep_research/<id>.json`
 holding the query, findings, sources, and final report. This CLI
-enumerates and inspects them — running new research requires the
+enumerates and inspects them - running new research requires the
 streaming endpoint, so it's not exposed here.
 
     telemachos-research list [--limit N] [--status complete|running|cancelled]

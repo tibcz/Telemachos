@@ -1,19 +1,19 @@
-"""Editor draft routes — persisted in-progress gallery-editor sessions.
+"""Editor draft routes - persisted in-progress gallery-editor sessions.
 
 The gallery editor (image canvas) lets users layer edits on top of a
 photo (or a blank canvas). Persisting those layered sessions to the
-server makes them survive cache clears and roams across devices —
+server makes them survive cache clears and roams across devices -
 unlike the legacy per-image localStorage drafts.
 
 Each draft carries:
-  - id           — opaque uuid (the client never sees gallery-image ids
+  - id           - opaque uuid (the client never sees gallery-image ids
                     as draft ids, so blank-canvas drafts work too)
-  - source_image_id (nullable) — back-pointer for "this draft started as
+  - source_image_id (nullable) - back-pointer for "this draft started as
                     an edit of GalleryImage X"
-  - payload      — full JSON snapshot (layers as base64 PNG dataURLs,
+  - payload      - full JSON snapshot (layers as base64 PNG dataURLs,
                     offsets, opacities, etc.) the editor knows how to
                     rehydrate
-  - thumbnail    — small data URL for the landing-list grid
+  - thumbnail    - small data URL for the landing-list grid
 """
 
 import json
@@ -54,7 +54,7 @@ def _owns(d: EditorDraft, user: Optional[str]) -> bool:
 
 
 def _summary(d: EditorDraft) -> Dict[str, Any]:
-    """List-view representation — omits the bulky payload."""
+    """List-view representation - omits the bulky payload."""
     return {
         "id": d.id,
         "name": d.name or "Untitled",

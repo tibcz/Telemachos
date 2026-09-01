@@ -2,7 +2,7 @@
 
 The agent soft-trims its input context to ``agent_input_token_budget`` (default
 6000). The old computation was ``min(context_length or budget, budget)``, which
-made the 6000 default a hard ceiling for *every* model — so a 128K or 1M context
+made the 6000 default a hard ceiling for *every* model - so a 128K or 1M context
 model was silently capped at 6000 input tokens even though it can hold far more.
 
 This derives the effective budget from the model's discovered context window when
@@ -39,7 +39,7 @@ def compute_input_token_budget(
     Args:
         configured: the value read from settings (may be the default).
         context_length: the model's discovered context window. Pass 0 when the
-            window is unknown / only a bare fallback — auto-scaling then stays
+            window is unknown / only a bare fallback - auto-scaling then stays
             conservative instead of trusting an unproven window (review on #4122).
         explicit: True if the user set a NON-default budget. The default value is
             the "auto" sentinel (scale to the window); any other value is an
@@ -49,9 +49,9 @@ def compute_input_token_budget(
     Rules:
         - Explicit user budget is honoured exactly, only clamped to the model's
           window when that window is known (the user's deliberate choice wins;
-          ``hard_max`` is an auto-budget ceiling only — see #1230).
+          ``hard_max`` is an auto-budget ceiling only - see #1230).
         - Otherwise (auto), scale to ``headroom`` of the context window, capped at
-          ``hard_max`` — so long-context models use their capacity.
+          ``hard_max`` - so long-context models use their capacity.
         - When the window is unknown (context_length <= 0), use the conservative
           ``default`` budget and do NOT scale off the fallback.
     """
@@ -73,7 +73,7 @@ def budget_is_explicit(configured: int, *, default: int = DEFAULT_BUDGET) -> boo
 
     The default value is the "auto" sentinel (scale to the model's window), so only
     a NON-default positive value counts as explicit. This keys off the VALUE, not
-    settings *presence* — the settings-save path materializes every default into
+    settings *presence* - the settings-save path materializes every default into
     settings.json, so a persisted default must still read as auto (the regression
     #4121 / #1230 are about). Centralised here so the materialized-default contract
     is unit-testable and can't silently regress to a presence check.

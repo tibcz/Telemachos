@@ -10,10 +10,10 @@
 //   - if the remaining chat width would drop under 380px, the wide
 //     sidebar auto-collapses to the icon rail (mirrors notes-view UX)
 //
-// Drag-away from the right edge un-docks back to a centered window —
+// Drag-away from the right edge un-docks back to a centered window -
 // the same restore values the snap-to-top exit path uses.
 
-// Wider snap zone than the top-snap fullscreen (6px) — the right edge
+// Wider snap zone than the top-snap fullscreen (6px) - the right edge
 // is harder to hit precisely since most users drag broadly toward the
 // side rather than aiming at a 1px line. 60px feels generous without
 // false-positive triggers from casual repositioning.
@@ -170,7 +170,7 @@ function _shouldAutoCollapseSidebar(dockW) {
   return remaining < MIN_CHAT_WIDTH;
 }
 
-// Right edge (px) of whatever left navigation is currently showing — the
+// Right edge (px) of whatever left navigation is currently showing - the
 // expanded sidebar if visible, otherwise the icon rail. Used to anchor the
 // left dock so it always sits flush to the right of the nav.
 function _leftNavRight() {
@@ -271,7 +271,7 @@ function _resolveEmailDocSplitWidth(content, left) {
 //
 // Also: if the document editor pane is rendered to the right of the chat
 // area, cap the email's right edge to stop just before it so the two share
-// the row instead of overlapping. Pure geometry read — no CSS class changes
+// the row instead of overlapping. Pure geometry read - no CSS class changes
 // (the previous attempt that flipped body classes here caused layout thrash
 // and broke the whole tab).
 function _anchorLeftDock(content) {
@@ -287,7 +287,7 @@ function _anchorLeftDock(content) {
   // (style.css `body.email-doc-split-active.doc-view .doc-editor-pane`) so
   // the doc-pane becomes position:fixed starting at the email's right edge.
   // No flex/max-width fighting; the doc just owns the right side from the
-  // email's right edge to the viewport edge — they touch flush, no gap.
+  // email's right edge to the viewport edge - they touch flush, no gap.
   const docOpen = document.body.classList.contains('doc-view') && _isEmailDockOwner(content._dockOwner);
   if (docOpen) {
     if (!document.body.classList.contains('email-doc-split-active')) {
@@ -309,7 +309,7 @@ function _collapseSidebarToRail() {
   if (!sidebar || !rail) return;
   // Mark the collapse as route/dock-driven so the paired restore in
   // app.js (window._restoreSidebarIfRouteCollapsed) knows it owns the
-  // un-collapse. Same marker the /email and /notes openers use — they
+  // un-collapse. Same marker the /email and /notes openers use - they
   // can't both be active at once so no conflict.
   if (!sidebar.classList.contains('hidden')) {
     document.body.dataset.routeCollapsedSidebar = '1';
@@ -349,7 +349,7 @@ function _applyDockInternal(modal, side, dockClass) {
   if (!content) return 0;
   // If the modal is currently docked on the OTHER side (e.g. the user
   // manually docked it right, then a reply re-docks it left), clear that
-  // side's class + body push first. Otherwise both sides' state coexist —
+  // side's class + body push first. Otherwise both sides' state coexist -
   // the old dock keeps pushing/overlapping and the reply doc opens beneath
   // the still-docked window. We keep _preDockSnapshot (the guard below skips
   // re-capturing) so un-dock still restores the original floating geometry.
@@ -368,7 +368,7 @@ function _applyDockInternal(modal, side, dockClass) {
   // Snapshot the actual rendered rect + inline styles so un-dock can
   // restore the exact same floating window the user had before. Without
   // this, a window the user had carefully resized would snap back to
-  // some 720×85vh default — feels like the dock ate their layout.
+  // some 720×85vh default - feels like the dock ate their layout.
   if (!content._preDockSnapshot) {
     const r = content.getBoundingClientRect();
     content._preDockSnapshot = {
@@ -387,7 +387,7 @@ function _applyDockInternal(modal, side, dockClass) {
         transform: content.style.transform,
         margin: content.style.margin,
       },
-      // Track whether we collapsed the wide sidebar — only restore it
+      // Track whether we collapsed the wide sidebar - only restore it
       // on un-dock if the dock was responsible for the collapse.
       collapsedSidebar: false,
     };
@@ -443,7 +443,7 @@ function _applyDockInternal(modal, side, dockClass) {
       };
       const navObs = new MutationObserver(reanchor);
       if (sidebar) navObs.observe(sidebar, { attributes: true, attributeFilter: ['class', 'style'] });
-      // Only react to doc-view toggling — NOT to every body attribute mutation.
+      // Only react to doc-view toggling - NOT to every body attribute mutation.
       // Listening broadly caused thrashing last time and crashed the tab.
       let _lastDocView = document.body.classList.contains('doc-view');
       const bodyObs = new MutationObserver(() => {
@@ -451,7 +451,7 @@ function _applyDockInternal(modal, side, dockClass) {
         if (cur !== _lastDocView) {
           _lastDocView = cur;
           reanchor();
-          // Rebind the resize observer — the doc pane gets created/destroyed
+          // Rebind the resize observer - the doc pane gets created/destroyed
           // when doc-view flips, so the previous target may be stale.
           _bindDocResizeObs();
         }
@@ -460,7 +460,7 @@ function _applyDockInternal(modal, side, dockClass) {
 
       // ResizeObserver on the current .doc-editor-pane so dragging its
       // divider live-reflows the email's right edge. Also observe
-      // #chat-container — its width changes when the sidebar collapses,
+      // #chat-container - its width changes when the sidebar collapses,
       // when right-dock padding drains, or when doc content paint reflows
       // the row, all of which shift the doc pane's left edge without
       // necessarily resizing the doc pane itself.
@@ -518,8 +518,8 @@ function _applyDockInternal(modal, side, dockClass) {
   if (!modal._dockCloseWatcher && typeof MutationObserver !== 'undefined') {
     const onGone = () => _onDockedModalGone(modal, dockClass);
     // Watch the modal for: the `.hidden` class flip, an inline
-    // `display:none` (how the draggable modals — calendar, plan, workspace,
-    // etc. — actually close), and parent removal. Without the `style` filter
+    // `display:none` (how the draggable modals - calendar, plan, workspace,
+    // etc. - actually close), and parent removal. Without the `style` filter
     // a display:none close left the body's dock padding on, so the chat
     // stayed shifted after the docked modal was closed.
     const _isGone = () => !modal.isConnected
@@ -527,7 +527,7 @@ function _applyDockInternal(modal, side, dockClass) {
       || modal.style.display === 'none';
     const obs = new MutationObserver(() => { if (_isGone()) onGone(); });
     obs.observe(modal, { attributes: true, attributeFilter: ['class', 'style'] });
-    // A second observer catches DOM removal — childList on the parent
+    // A second observer catches DOM removal - childList on the parent
     // is the reliable signal for `.remove()` / `.removeChild()` calls.
     if (modal.parentNode) {
       const parentObs = new MutationObserver(() => {
@@ -543,7 +543,7 @@ function _applyDockInternal(modal, side, dockClass) {
 }
 
 // Internal: tear down dock state when a docked modal vanishes (close
-// button, X, escape, or programmatic removal). Idempotent — bails out
+// button, X, escape, or programmatic removal). Idempotent - bails out
 // if the dock is already cleared so multiple observers can fire safely.
 function _onDockedModalGone(modal, dockClass) {
   if (!modal) return;
@@ -574,7 +574,7 @@ function _onDockedModalGone(modal, dockClass) {
   // Clear the content's docked inline geometry. Singleton modals (plan,
   // workspace, calendar, …) reuse the same element across open/close, so if we
   // only drop the body push the element stays positioned (position:fixed;
-  // right:0; fixed width) on the next open — floating over the chat with no
+  // right:0; fixed width) on the next open - floating over the chat with no
   // push. We deliberately do NOT restore the pre-dock snapshot here: that
   // snapshot is the drag position from when the user pulled the window to the
   // edge (near the side), so restoring it would reopen the modal off to the
@@ -609,7 +609,7 @@ export function clearRightDock(modal, cx, cy, dockClass) {
   if (!nodes) return;
   const content = nodes.content;
   if (!content) return;
-  // Figure out which side was docked — fall back to right for legacy callers.
+  // Figure out which side was docked - fall back to right for legacy callers.
   const side = content._dockSide || (modal.classList.contains('modal-left-docked') ? 'left' : 'right');
   if (!dockClass) dockClass = side === 'left' ? 'modal-left-docked' : 'modal-right-docked';
   if (!modal.classList.contains(dockClass)) return;
@@ -622,12 +622,12 @@ export function clearRightDock(modal, cx, cy, dockClass) {
   delete content._dockOwner;
   _disconnectLeftDockObservers(content);
   const snap = content._preDockSnapshot;
-  // Re-expand the wide sidebar if we collapsed it — but only if the
+  // Re-expand the wide sidebar if we collapsed it - but only if the
   // user didn't manually toggle it during the dock (we don't want to
   // override their explicit choice).
   if (snap && snap.collapsedSidebar && !_hasAnyOtherDockedWindow(modal)) _expandSidebarFromRail();
   // Restore the exact inline style values the modal had before docking
-  // (width: min(720px, 92vw), max-height: 85vh, etc. — whatever the
+  // (width: min(720px, 92vw), max-height: 85vh, etc. - whatever the
   // mount path set). Setting an empty string here removes the property
   // from the inline style attribute, letting CSS rules take back over.
   const r = snap && snap.rect;
@@ -636,7 +636,7 @@ export function clearRightDock(modal, cx, cy, dockClass) {
   content.style.right = sty.right || '';
   content.style.bottom = sty.bottom || '';
   // Inline width/height may have been empty on the original (CSS-driven)
-  // modal — but we're now forcing position:fixed, which kills the
+  // modal - but we're now forcing position:fixed, which kills the
   // CSS-flex-centered layout that produced the original size. Without a
   // fallback, position:fixed + width:auto collapses the window to its
   // content's min-width and the user sees a tiny pane after undock.
@@ -669,7 +669,7 @@ export function clearRightDock(modal, cx, cy, dockClass) {
 }
 
 // Temporarily release a docked modal's body push (chat returns to full
-// width) WITHOUT un-docking the window — used when a docked modal is
+// width) WITHOUT un-docking the window - used when a docked modal is
 // MINIMIZED. The modal keeps its docked geometry + class + snapshot so
 // resumeDock() can snap it right back when the chip is reopened. Returns the
 // docked side, or null if the modal wasn't docked.
@@ -684,7 +684,7 @@ export function suspendDock(modal) {
         : modal.classList.contains('modal-right-docked') ? 'right' : null);
   if (!side) return null;
   // Stop the close-watcher from tearing the dock fully down when `.hidden`
-  // is added by minimize — we want to keep the dock, just release the push.
+  // is added by minimize - we want to keep the dock, just release the push.
   if (modal._dockCloseWatcher) {
     try { modal._dockCloseWatcher.obs && modal._dockCloseWatcher.obs.disconnect(); } catch (_) {}
     try { modal._dockCloseWatcher.parentObs && modal._dockCloseWatcher.parentObs.disconnect(); } catch (_) {}

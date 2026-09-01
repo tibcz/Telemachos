@@ -3,7 +3,7 @@
 Split from `test_provider_classification.py` to keep the token-param quirk
 separate from provider identification and error formatting.
 
-  * `_uses_max_completion_tokens` — the gpt-5 / o-series quirk that the probe
+  * `_uses_max_completion_tokens` - the gpt-5 / o-series quirk that the probe
     and chat payload builders branch on.
 
 conftest.py stubs the heavy deps (sqlalchemy, src.database), so importing the

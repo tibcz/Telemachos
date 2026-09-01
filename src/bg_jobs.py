@@ -1,7 +1,7 @@
 """Background job execution for the agent's `bash` tool.
 
 Long commands (installs, ffmpeg, model downloads) should NOT block the chat
-stream — a multi-minute held SSE connection is fragile (model-stops-early,
+stream - a multi-minute held SSE connection is fragile (model-stops-early,
 timeouts, tab suspend). Instead we launch them **detached** and let an
 always-on monitor re-invoke the agent when they finish ("auto-continue").
 
@@ -10,7 +10,7 @@ Design goals:
     PID, so a uvicorn restart never loses a job or its result.
   * Idempotent follow-up: a job stays {done, followed_up: False} until the
     agent has actually been re-invoked, so completion can never silently
-    "do nothing" — the monitor retries on the next tick.
+    "do nothing" - the monitor retries on the next tick.
   * Bounded: a hard max-runtime marks a runaway job failed and STILL triggers
     a follow-up ("timed out"), so you always hear back.
 
@@ -72,7 +72,7 @@ def _save(jobs: Dict[str, Dict[str, Any]]) -> None:
 
 def _pid_alive(pid: Optional[int]) -> bool:
     # Delegates to the platform-safe probe. NB: a bare os.kill(pid, 0) is unsafe
-    # on Windows — CPython routes it to TerminateProcess, which would KILL the
+    # on Windows - CPython routes it to TerminateProcess, which would KILL the
     # job we're only trying to check. core.platform_compat.pid_alive handles
     # both OSes correctly.
     return pid_alive(pid)
@@ -93,14 +93,14 @@ def launch(command: str, session_id: str, cwd: Optional[str] = None,
 
     # The user command goes in its OWN script file, run as a child `bash`. This
     # is what isolates it: an `exit` inside it only ends that child (so the
-    # wrapper still records the exit code), and — unlike textually wrapping the
-    # command in `( … )` — the wrapper can't be broken by an unbalanced paren or
+    # wrapper still records the exit code), and - unlike textually wrapping the
+    # command in `( … )` - the wrapper can't be broken by an unbalanced paren or
     # a trailing line-continuation in the command. `$?` is the child's real
     # exit status.
     bash = find_bash()
     if bash:
         # POSIX, or Windows with Git Bash/WSL. The user command goes in its OWN
-        # script file, run as a child `bash` — an `exit` inside it only ends
+        # script file, run as a child `bash` - an `exit` inside it only ends
         # that child (so the wrapper still records the exit code), and an
         # unbalanced paren / trailing line-continuation in the command can't
         # break the wrapper. `$?` is the child's real exit status. Paths are
@@ -165,7 +165,7 @@ def _read_output(rec: Dict[str, Any]) -> str:
     except Exception:
         return ""
     if len(txt) > _MAX_OUTPUT_CHARS:
-        # Keep head + tail — the interesting bits are usually at both ends.
+        # Keep head + tail - the interesting bits are usually at both ends.
         head = txt[: _MAX_OUTPUT_CHARS // 2]
         tail = txt[-_MAX_OUTPUT_CHARS // 2:]
         txt = head + "\n…[truncated]…\n" + tail
@@ -190,7 +190,7 @@ def _prune(jobs: Dict[str, Dict[str, Any]], now: float) -> bool:
 
 def refresh() -> Dict[str, Dict[str, Any]]:
     """Reconcile every running job against disk. Marks done/failed (incl.
-    timeout). Idempotent — safe to call from a poll loop. Returns the store."""
+    timeout). Idempotent - safe to call from a poll loop. Returns the store."""
     jobs = _load()
     changed = False
     now = time.time()
@@ -208,7 +208,7 @@ def refresh() -> Dict[str, Dict[str, Any]]:
             rec["ended_at"] = now
             changed = True
         elif (now - rec.get("started_at", now)) > rec.get("max_runtime_s", DEFAULT_MAX_RUNTIME_S):
-            # Runaway / stuck — reap it but STILL surface a follow-up.
+            # Runaway / stuck - reap it but STILL surface a follow-up.
             _kill(rec.get("pid"))
             rec["status"] = "failed"
             rec["exit_code"] = -1

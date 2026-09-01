@@ -4,7 +4,7 @@ import os
 
 from src.runtime_paths import get_app_root, get_default_data_dir
 
-APP_VERSION = "1.0.4"
+APP_VERSION = "1.0.5"
 
 # Base paths
 BASE_DIR = os.path.join(get_app_root(), "")
@@ -68,7 +68,7 @@ MAIL_ATTACHMENTS_DIR = os.getenv("TELEMACHOS_MAIL_ATTACHMENTS_DIR", os.path.join
 # init and all vector features (RAG, semantic memory, tool index) silently degrade.
 FASTEMBED_CACHE_DIR = os.getenv("FASTEMBED_CACHE_PATH") or os.path.join(DATA_DIR, "fastembed_cache")
 
-# Agent tool output limits (single source of truth — imported by tool_execution.py,
+# Agent tool output limits (single source of truth - imported by tool_execution.py,
 # tool_implementations.py, agent_tools.py, and any other module that needs them)
 MAX_OUTPUT_CHARS = 10_000       # cap for bash/python/web_search/web_fetch output
 MAX_READ_CHARS = 20_000         # cap for read_file / document preview

@@ -1,4 +1,4 @@
-"""Backward-compat shim — canonical location is routes/contacts/contacts_routes.py.
+"""Backward-compat shim - canonical location is routes/contacts/contacts_routes.py.
 
 This module is replaced in ``sys.modules`` by the canonical module object so
 that ``import routes.contacts_routes``, ``from routes.contacts_routes import X``,

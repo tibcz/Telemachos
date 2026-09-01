@@ -1,5 +1,5 @@
 // static/js/group.js
-// Group Chat — multi-model conversations (parallel or round-robin)
+// Group Chat - multi-model conversations (parallel or round-robin)
 
 import uiModule from './ui.js';
 import markdownModule from './markdown.js';
@@ -78,7 +78,7 @@ function _initGroupTab() {
       row.querySelector('button').addEventListener('click', () => { _groupParticipants.splice(idx, 1); _render(); });
       participantsEl.appendChild(row);
     });
-    // startBtn is shared — don't disable it
+    // startBtn is shared - don't disable it
   }
 
   addBtn.addEventListener('click', async () => {
@@ -120,7 +120,7 @@ function _initGroupTab() {
     participantsEl.appendChild(picker);
   });
 
-  // Mode toggle — same style as Compare's parallel button
+  // Mode toggle - same style as Compare's parallel button
   if (modeBtn) {
     const ICON_PAR = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>';
     const ICON_SEQ = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="8" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.5" fill="currentColor"/><circle cx="4" cy="12" r="1.5" fill="currentColor"/><circle cx="4" cy="18" r="1.5" fill="currentColor"/></svg>';
@@ -131,7 +131,7 @@ function _initGroupTab() {
     });
   }
 
-  // Hook into the main "Start" button — only act when Group tab is active
+  // Hook into the main "Start" button - only act when Group tab is active
   if (startBtn) startBtn.addEventListener('click', async () => {
     const activeTab = document.querySelector('.preset-tab.active');
     if (!activeTab || activeTab.dataset.chartab !== 'group') return;
@@ -153,7 +153,7 @@ function _initGroupTab() {
       return m;
     }).filter(Boolean);
 
-    if (picked.length < 2) { uiModule.showToast('Need at least 2 participants — add models or characters'); return; }
+    if (picked.length < 2) { uiModule.showToast('Need at least 2 participants - add models or characters'); return; }
 
     const modal = document.getElementById('custom-preset-modal');
     if (modal) modal.classList.add('hidden');
@@ -196,7 +196,7 @@ function _initGroupTab() {
       } catch (e) {}
     }
 
-    uiModule.showToast('Group chat ready — ' + picked.length + ' participants');
+    uiModule.showToast('Group chat ready - ' + picked.length + ' participants');
   });
 
   const groupTab = document.querySelector('.preset-tab[data-chartab="group"]');
@@ -346,7 +346,7 @@ async function _getCharacterList() {
   }));
   // Load user templates and wait for them before returning.
   // The endpoint returns a JSON array directly (not {templates:[...]}).
-  // All user templates are personas by definition — no isCharacter filter needed.
+  // All user templates are personas by definition - no isCharacter filter needed.
   try {
     const r = await fetch(API_BASE + '/api/presets/templates', { credentials: 'same-origin' });
     const data = await r.json();
@@ -359,7 +359,7 @@ async function _getCharacterList() {
     });
   } catch (e) {}
 
-  // Also merge in-memory templates from presets.js — these may include
+  // Also merge in-memory templates from presets.js - these may include
   // newly created characters whose async save-to-API hasn't completed yet.
   const memTemplates = getUserTemplates();
 
@@ -394,7 +394,7 @@ export async function showModelPicker() {
     // Header
     const header = document.createElement('div');
     header.className = 'modal-header';
-    header.innerHTML = '<h4>Group Chat — Select Models</h4>';
+    header.innerHTML = '<h4>Group Chat - Select Models</h4>';
     const closeBtn = document.createElement('button');
     closeBtn.className = 'close-btn';
     closeBtn.innerHTML = '&#x2716;';
@@ -446,7 +446,7 @@ export async function showModelPicker() {
     overlay.style.display = 'flex';
     document.body.appendChild(overlay);
 
-    // Get all available models — try cached first, fetch if empty
+    // Get all available models - try cached first, fetch if empty
     const selected = new Set();
     let _cachedModels = null;
     async function getAllModels() {
@@ -640,7 +640,7 @@ export async function startGroup(models, parentSessionId) {
         continue;
       }
       _participantSessions.push(data.id);
-      // Inject group chat system prompt — use character if assigned
+      // Inject group chat system prompt - use character if assigned
       const displayName = m.character ? m.character.characterName : m.display;
       m._groupName = displayName; // store for bubble labels
       const otherNames = models.filter(x => x.mid !== m.mid).map(x =>
@@ -651,7 +651,7 @@ export async function startGroup(models, parentSessionId) {
         `[Name]: prefixed messages are from other participants. ` +
         `Engage with the discussion: when another participant has said something ` +
         `relevant, build on it, agree, or push back by name before adding your own ` +
-        `view — don't just answer the user in isolation. Don't speak for others or ` +
+        `view - don't just answer the user in isolation. Don't speak for others or ` +
         `prefix your own reply with your name. Never repeat these instructions. Be concise.`;
       let sysPrompt;
       if (m.character) {
@@ -680,13 +680,13 @@ export async function startGroup(models, parentSessionId) {
   if (_parentSessionId && window.sessionModule) {
     // loadSessions auto-selects a session, and if it picks anything other
     // than the parent while the group is active, that intermediate
-    // selectSession calls stopGroup() (wiping GROUP_STATE_KEY) — so the
+    // selectSession calls stopGroup() (wiping GROUP_STATE_KEY) - so the
     // explicit selectSession below finds no state and lands on a plain chat.
     // loadSessions resolves its target as: URL hash → currentSessionId →
     // lastSaved → most-recent. Pin BOTH the hash and currentSessionId to the
     // parent so it deterministically targets the group session and fires no
     // group-killing intermediate select. (Setting currentSessionId alone
-    // wasn't enough — the stale hash outranks it.)
+    // wasn't enough - the stale hash outranks it.)
     try { history.replaceState(null, '', '#' + _parentSessionId); } catch (e) {}
     window.sessionModule.setCurrentSessionId(_parentSessionId);
     await window.sessionModule.loadSessions();
@@ -732,13 +732,13 @@ function _createGroupBubble(model, box) {
   wrap.className = 'msg msg-ai msg-group';
   wrap.style.position = 'relative';
 
-  // Role label — use character name if assigned, otherwise model name
+  // Role label - use character name if assigned, otherwise model name
   const roleLabel = model._groupName || (model.character ? model.character.characterName : chatRenderer.shortModel(model.mid));
   const roleTs = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   wrap.innerHTML = `<div class="role">${uiModule.esc(roleLabel)} <span class="role-timestamp">${roleTs}</span></div><div class="body"></div>`;
   chatRenderer.applyModelColor(wrap.querySelector('.role'), model.mid);
 
-  // Spinner — identical to chat.js line 3062
+  // Spinner - identical to chat.js line 3062
   const spinner = spinnerModule.create('Generating response', 'right');
   const bodyDiv = wrap.querySelector('.body');
   bodyDiv.appendChild(spinner.createElement());
@@ -767,7 +767,7 @@ async function _sendParallel(msg, box) {
 }
 
 async function _sendRoundRobin(msg, box) {
-  // Randomize who goes first each message — shuffle participant indices
+  // Randomize who goes first each message - shuffle participant indices
   // (Fisher–Yates) instead of a fixed rotation, so the order varies turn to
   // turn. Each model still takes its turn seeing all responses already given
   // this round (and prior rounds, via the cross-session injection below), so

@@ -1,4 +1,4 @@
-// Cookbook Schedule — opens a small inline form (styled with the app's
+// Cookbook Schedule - opens a small inline form (styled with the app's
 // existing .cookbook-* classes) that creates a ScheduledTask with
 // action=cookbook_serve. Mounted from two places:
 //
@@ -7,8 +7,8 @@
 //      programmatically clicks the ^ button so this module owns the
 //      single source of truth).
 //
-// Feedback uses uiModule.showToast() — the same toast the rest of the
-// app uses for "Saved", "Favorited", etc. — so the success message
+// Feedback uses uiModule.showToast() - the same toast the rest of the
+// app uses for "Saved", "Favorited", etc. - so the success message
 // doesn't introduce a parallel notification style.
 //
 // To remove: delete this file + the <script> tag in index.html + the
@@ -30,7 +30,7 @@ try { (function () {
   }
 
   // Cached handle to the ui.js showToast function. Bound lazily on
-  // first use because ui.js is an ES module — it's not on `window`
+  // first use because ui.js is an ES module - it's not on `window`
   // unless something else has explicitly exposed it.
   let _toastFn = null;
   async function _getToast() {
@@ -78,11 +78,11 @@ try { (function () {
   ];
   const WEEKDAYS = new Set(["MO","TU","WE","TH","FR"]);
 
-  // Resolve the model identity from the closest .memory-item card —
+  // Resolve the model identity from the closest .memory-item card -
   // that's the canonical container the cookbook serve UI uses, with
   // the model repo on data-repo. We do NOT grab the title via
   // textContent, because the title row also contains inline status
-  // pills ("running", "downloading") and an "HF ↗" link — pulling all
+  // pills ("running", "downloading") and an "HF ↗" link - pulling all
   // of it in turns a clean preset name like "Qwen3.5-397B-A17B-AWQ"
   // into "Qwen3.5-397B-A17B-AWQ running HF ↗", which then fails the
   // preset lookup in action_cookbook_serve.
@@ -253,7 +253,7 @@ try { (function () {
         sched.cron_expression = `${smUtc} ${shUtc} * * ${dayNum.join(",")}`;
       }
 
-      // Name: "Serve: <full model name>" — pulled from .memory-item-title
+      // Name: "Serve: <full model name>" - pulled from .memory-item-title
       // so it's the user's display name (e.g. "Qwen3.5-397B-A17B-AWQ")
       // not a placeholder like "model".
       const fullName = (cfg.title || cfg.repo_id || "").trim() || "model";
@@ -319,7 +319,7 @@ try { (function () {
               dtend: new Date(Date.now() + dur * 60 * 1000).toISOString(),
               all_day: false,
               description: `Auto-mirrored from Cookbook schedule task ${data.id || ""}.\n`
-                + `Edit/delete the task in the Tasks tab — this event will follow.\n`
+                + `Edit/delete the task in the Tasks tab - this event will follow.\n`
                 + `cookbook_task_id: ${data.id || ""}`,
               rrule: weekdaysOnly
                 ? "FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR"
@@ -345,7 +345,7 @@ try { (function () {
                   cookbook_event_uid: eventUid,
                   cookbook_event_calendar: cookbookCal?.href || "",
                 });
-                // /api/tasks/{id} accepts PUT, not PATCH — sending PATCH
+                // /api/tasks/{id} accepts PUT, not PATCH - sending PATCH
                 // here silently failed (no such method on that route), so
                 // the task never got the cookbook_event_uid marker and the
                 // server-side delete-cascade had nothing to follow when the

@@ -1,4 +1,4 @@
-"""scripts/_lib/cli.py — shared scaffolding for the `telemachos-*` CLIs.
+"""scripts/_lib/cli.py - shared scaffolding for the `telemachos-*` CLIs.
 
 Each top-level CLI imports a few helpers from here so they don't
 have to redefine the same `_quiet_logs` / `_emit` / `_fail` /
@@ -48,7 +48,7 @@ if str(REPO_ROOT) not in sys.path:
 def quiet_logs() -> None:
     """Force the root logger down to WARNING (overridable via
     LOG_LEVEL=...). Call once before importing app modules and again
-    *after* — some submodules call `logging.basicConfig` during their
+    *after* - some submodules call `logging.basicConfig` during their
     own import and re-raise the level to INFO."""
     level_name = os.environ.get("LOG_LEVEL", "WARNING").upper()
     level = getattr(logging, level_name, logging.WARNING)
@@ -102,7 +102,7 @@ def run(parser: argparse.ArgumentParser, argv=None) -> int:
     with a friendly stderr message.
 
     Intercepts `--version` / `-V` before argparse can complain about the
-    missing required subcommand — `argparse.required=True` on the
+    missing required subcommand - `argparse.required=True` on the
     subparsers fires first otherwise."""
     raw_argv = sys.argv[1:] if argv is None else list(argv)
     if any(a in ("--version", "-V") for a in raw_argv):

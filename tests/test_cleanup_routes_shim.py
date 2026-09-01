@@ -5,7 +5,7 @@ replacement so the legacy import path and the canonical ``routes.cleanup.*``
 path resolve to the *same* module object. This is required because
 ``test_cleanup_owner_scope.py`` uses string-targeted
 ``monkeypatch.setattr("routes.cleanup_routes.get_cleanup_preview", ...)`` and
-``monkeypatch.delitem(sys.modules, "routes.cleanup_routes")`` + re-import —
+``monkeypatch.delitem(sys.modules, "routes.cleanup_routes")`` + re-import -
 for those patches to take effect at runtime, the legacy module object and
 the canonical one must be identical.
 """

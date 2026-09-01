@@ -251,7 +251,7 @@ async def test_unparseable_read_does_not_mark_seen(monkeypatch, tmp_path):
 async def test_cached_seen_store_failure_returns_the_cached_body(monkeypatch, tmp_path):
     """A cache hit already holds a complete message; a failed STORE cannot take it away.
 
-    This is the path where withholding the body would be least defensible — the
+    This is the path where withholding the body would be least defensible - the
     response is served from memory and needed no network at all.
     """
     email_routes, connections, indexed_updates = _install_fakes(

@@ -7,7 +7,7 @@ from src.task_scheduler import _digest_windows
 def test_windows_are_contiguous_with_no_gap():
     now = datetime(2026, 6, 2, 9, 0, 0)
     windows = _digest_windows(now)
-    # Each window starts exactly where the previous ended — no gap between
+    # Each window starts exactly where the previous ended - no gap between
     # buckets (the old code jumped from now+7d to now+8d, dropping events).
     for (prev, cur) in zip(windows, windows[1:]):
         assert cur[1] == prev[2]

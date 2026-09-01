@@ -19,7 +19,7 @@ class _FakeResponse:
 
 
 # ════════════════════════════════════════════════════════════
-# discover_models — scan list includes 8080 (llama-server default)
+# discover_models - scan list includes 8080 (llama-server default)
 # ════════════════════════════════════════════════════════════
 
 class TestLlamaCppScanPort:
@@ -42,7 +42,7 @@ class TestLlamaCppScanPort:
 
 
 # ════════════════════════════════════════════════════════════
-# _fingerprint_provider — llama-server via /props
+# _fingerprint_provider - llama-server via /props
 # ════════════════════════════════════════════════════════════
 
 class TestLlamaCppFingerprint:
@@ -137,7 +137,7 @@ class TestLlamaCppFingerprint:
 
 
 # ════════════════════════════════════════════════════════════
-# Docker loopback rewrite — host.docker.internal:8080 in scan
+# Docker loopback rewrite - host.docker.internal:8080 in scan
 # ════════════════════════════════════════════════════════════
 
 class TestDockerLoopbackScan:
@@ -155,7 +155,7 @@ class TestDockerLoopbackScan:
 
     def test_discovered_endpoint_url_uses_provided_host(self, monkeypatch):
         """When host.docker.internal:8080 is probed, the returned base_url
-        contains host.docker.internal — not a rewritten 127.0.0.1."""
+        contains host.docker.internal - not a rewritten 127.0.0.1."""
         from src.model_discovery import ModelDiscovery as _MD
 
         discovery = _MD(default_host="localhost")

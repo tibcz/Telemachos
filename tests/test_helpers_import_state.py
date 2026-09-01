@@ -13,11 +13,11 @@ from tests.helpers.import_state import (
 
 _SENTINEL = "tests._import_state_test_sentinel"
 
-# Names touched by clear_fake_database_modules — snapshot/restore these so the
+# Names touched by clear_fake_database_modules - snapshot/restore these so the
 # tests never leak into the real core/src packages.
 _DB_NAMES = ("core", "core.database", "src", "src.database")
 
-# Names touched by clear_fake_endpoint_resolver_modules — snapshot/restore these
+# Names touched by clear_fake_endpoint_resolver_modules - snapshot/restore these
 # so the tests never leak into the real src/routes packages.
 _RESOLVER_NAMES = (
     "src",
@@ -143,7 +143,7 @@ def test_parent_attr_restored_correctly_when_parent_also_preserved():
     try:
         # child before parent: old single-pass restore would write the child attr
         # onto the still-mutated parent, then replace sys.modules["_fake_istate_parent"]
-        # — leaving fake_parent.child untouched.
+        # - leaving fake_parent.child untouched.
         with preserve_import_state("_fake_istate_parent.child", "_fake_istate_parent"):
             new_parent = types.ModuleType("_fake_istate_parent")
             new_child = types.ModuleType("_fake_istate_parent.child")
@@ -221,7 +221,7 @@ def test_clear_fake_database_leaves_src_database_when_core_is_real():
 
 def test_clear_fake_database_keeps_parent_attr_pointing_elsewhere():
     """When the cached core.database is a stub but the `database` attr on the
-    core package points at a *different* object, the attr is left intact —
+    core package points at a *different* object, the attr is left intact -
     only the same fake object is unlinked."""
     with preserve_import_state(*_DB_NAMES):
         fake_core = types.ModuleType("core")
@@ -313,7 +313,7 @@ def test_clear_fake_resolver_evicts_empty_file_resolver():
 
 
 def test_clear_fake_resolver_removes_model_routes_when_resolver_fake():
-    """model_routes is dropped, and its parent `routes` attr is cleared too —
+    """model_routes is dropped, and its parent `routes` attr is cleared too -
     the behavior delta over the old bare sys.modules.pop() guards."""
     with preserve_import_state(*_RESOLVER_NAMES):
         fake_src = types.ModuleType("src")
@@ -392,7 +392,7 @@ def test_clear_fake_resolver_noop_when_nothing_cached():
 def test_clear_fake_resolver_keeps_parent_attr_pointing_elsewhere():
     """When the cached src.endpoint_resolver is a stub but the `endpoint_resolver`
     attr on the src package points at a *different* object, the attr is left
-    intact — only the same fake object is unlinked."""
+    intact - only the same fake object is unlinked."""
     with preserve_import_state(*_RESOLVER_NAMES):
         fake_src = types.ModuleType("src")
         cached_fake = types.ModuleType("src.endpoint_resolver")  # the stub in sys.modules

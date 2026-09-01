@@ -1,4 +1,4 @@
-"""Tests for endpoint_resolver — URL normalization and URL construction."""
+"""Tests for endpoint_resolver - URL normalization and URL construction."""
 import pytest
 
 from src.endpoint_resolver import (

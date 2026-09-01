@@ -137,7 +137,7 @@ def test_update_recovers_from_non_dict_oauth_tokens():
 # The redirect URI is registered with the authorization server (dynamically for
 # remote MCP servers, by hand for Google ones) and the browser is sent to it
 # after authorizing. It is resolved once, outside any request, so it cannot be
-# derived from the request the way the email OAuth routes derive theirs — an
+# derived from the request the way the email OAuth routes derive theirs - an
 # operator-supplied origin is the only thing that can be right behind a proxy.
 # What the default can get right is the port, which the app knows.
 
@@ -164,7 +164,7 @@ def test_redirect_base_keeps_7000_when_app_port_is_unset(monkeypatch):
 
 def test_redirect_base_prefers_the_explicit_origin(monkeypatch):
     # Only an operator-supplied origin can be right behind a TLS proxy, so it
-    # outranks the derived default — and its trailing slash is trimmed.
+    # outranks the derived default - and its trailing slash is trimmed.
     resolved = _resolve_base(
         monkeypatch, OAUTH_REDIRECT_BASE_URL="https://telemachos.example/", APP_PORT="7860"
     )
@@ -237,7 +237,7 @@ def test_redirect_base_override_is_documented():
 # The derived default is only as good as APP_PORT, and every launcher hands the
 # port to uvicorn as a command-line flag, which the app cannot read back. Each
 # one has to put the same value in the environment or the callback falls back to
-# 7000 — which is the macOS-launcher-on-7860 case this whole change is about.
+# 7000 - which is the macOS-launcher-on-7860 case this whole change is about.
 # internal_api_base() and companion pairing read APP_PORT too, so they go wrong
 # in the same way.
 

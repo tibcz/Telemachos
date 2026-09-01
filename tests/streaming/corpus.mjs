@@ -1,6 +1,6 @@
 // A spread of markdown samples exercising the constructs the renderer supports.
 // Used by the streaming-invariant fuzz test (fed token-by-token) and the renderer
-// integration test. Keep samples small but structurally varied — the fuzz test
+// integration test. Keep samples small but structurally varied - the fuzz test
 // runs every prefix of every sample, so length is quadratic on cost.
 export const CORPUS = [
   ['plain paragraph', 'Just a single sentence of text.'],

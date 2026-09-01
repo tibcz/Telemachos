@@ -1,5 +1,5 @@
 // ============================================
-// Sidebar Layout — icon rail, hamburger cycling, mobile backdrop & swipe
+// Sidebar Layout - icon rail, hamburger cycling, mobile backdrop & swipe
 // ============================================
 
 let _syncRailSideFn = null;
@@ -83,7 +83,7 @@ export function initSidebarLayout(Storage, opts) {
     const railHidden = iconRail.classList.contains('rail-hidden');
     const isMobileMini = iconRail.classList.contains('mobile-mini');
     iconRail.classList.toggle('right-side', isRight);
-    // On mobile mini mode, JS already set inline styles — don't touch
+    // On mobile mini mode, JS already set inline styles - don't touch
     if (isMobileMini) {
       // Just update side positioning
       if (isRight) {
@@ -96,7 +96,7 @@ export function initSidebarLayout(Storage, opts) {
     } else {
       iconRail.style.display = (sidebarHidden && !railHidden) ? '' : 'none';
     }
-    // Hamburger is always visible — just update body classes for CSS layout adjustments
+    // Hamburger is always visible - just update body classes for CSS layout adjustments
     if (hamburgerBtn) {
       document.body.classList.toggle('hamburger-right', isRight);
       document.body.classList.toggle('hamburger-left', !isRight);
@@ -126,7 +126,7 @@ export function initSidebarLayout(Storage, opts) {
   _applyStoredSidebarMode();
   syncRailSide();
 
-  // In-sidebar toggle button — same behavior as hamburger
+  // In-sidebar toggle button - same behavior as hamburger
   const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
   if (sidebarToggleBtn) {
     sidebarToggleBtn.addEventListener('click', (e) => {
@@ -153,11 +153,11 @@ export function initSidebarLayout(Storage, opts) {
   // module scope). It MUST set _userToggledSidebar so the auto-collapse
   // MutationObserver doesn't immediately re-hide it (the swipe was opening it,
   // then checkSidebarAutoCollapse re-added .hidden because this flag was unset
-  // — looked like nothing happened). Mirrors the hamburger's mobile-open path.
+  // - looked like nothing happened). Mirrors the hamburger's mobile-open path.
   window._odyOpenSidebar = function(side) {
     const sidebar = document.getElementById('sidebar');
     if (!sidebar) return;
-    // On mobile, never open the sidebar while Compare is running — the panes
+    // On mobile, never open the sidebar while Compare is running - the panes
     // own the screen and stray gestures (swipe, dragging a dock chip to the X)
     // were popping it open. Blocking the open helper covers every path.
     const cc = document.getElementById('chat-container');
@@ -189,7 +189,7 @@ export function initSidebarLayout(Storage, opts) {
       const isSidebarVisible = !sidebar.classList.contains('hidden');
 
       if (window.innerWidth < 768) {
-        // Mobile: full sidebar ↔ hidden — simple toggle, no mini rail
+        // Mobile: full sidebar ↔ hidden - simple toggle, no mini rail
         const backdrop = document.getElementById('sidebar-backdrop');
         if (iconRail) { iconRail.classList.remove('mobile-mini'); iconRail.style.cssText = ''; }
 
@@ -200,12 +200,12 @@ export function initSidebarLayout(Storage, opts) {
           if (backdrop) backdrop.classList.remove('visible');
         } else {
           // Mobile: the hamburger always opens the sidebar from the RIGHT.
-          // (Not persisted — keeps the desktop side preference untouched.)
+          // (Not persisted - keeps the desktop side preference untouched.)
           if (!sidebar.classList.contains('right-side')) {
             sidebar.classList.add('right-side');
             if (documentModule && documentModule.swapSide) { try { documentModule.swapSide(); } catch (_) {} }
           }
-          // Opening sidebar — blur keyboard first, then open after layout settles
+          // Opening sidebar - blur keyboard first, then open after layout settles
           if (document.activeElement && document.activeElement !== document.body
               && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
             document.activeElement.blur();
@@ -226,7 +226,7 @@ export function initSidebarLayout(Storage, opts) {
         return;
       }
 
-      // Desktop: full sidebar ↔ mini (icon rail) — simple toggle
+      // Desktop: full sidebar ↔ mini (icon rail) - simple toggle
       if (isSidebarVisible) {
         sidebar.classList.add('hidden');
         if (iconRail) iconRail.classList.remove('rail-hidden');
@@ -241,7 +241,7 @@ export function initSidebarLayout(Storage, opts) {
     });
   }
 
-  // Icon rail section clicks — open sidebar and scroll to section
+  // Icon rail section clicks - open sidebar and scroll to section
   if (iconRail) {
     iconRail.addEventListener('click', (e) => {
       const btn = e.target.closest('.icon-rail-btn');
@@ -270,7 +270,7 @@ export function initSidebarLayout(Storage, opts) {
     const isHidden = sidebar.classList.contains('hidden');
 
     // Check if chat area is too narrow (e.g. sidebar + doc panel both open).
-    // BUT — if a tile-snapped modal exists, IT is what's making chat narrow,
+    // BUT - if a tile-snapped modal exists, IT is what's making chat narrow,
     // and that's the user's explicit choice. Don't auto-collapse the sidebar
     // in response, or we get a reactive loop: snap → narrow chat → hide
     // sidebar → safe-rect changes → reclamp modal → new chat width → ...
@@ -332,7 +332,7 @@ export function initSidebarLayout(Storage, opts) {
   window._suppressSidebarClose = false;
   mobileBackdrop.addEventListener('click', (e) => {
     if (window._suppressSidebarClose) return;
-    // Don't close while a session is being renamed inline — the rename input
+    // Don't close while a session is being renamed inline - the rename input
     // lives inside the sidebar, and a backdrop tap (e.g. to dismiss the
     // keyboard) would otherwise kick the user out mid-rename.
     if (document.querySelector('.session-rename-input')) return;
@@ -396,7 +396,7 @@ export function initSidebarLayout(Storage, opts) {
     // Ignore clicks inside modals or the chat input area
     if (e.target.closest('.modal') || e.target.closest('.input-bar') || e.target.closest('#message')) return;
     // Ignore clicks on session/folder dropdowns and the styled prompt
-    // overlay — they're body-level elements logically tied to a sidebar
+    // overlay - they're body-level elements logically tied to a sidebar
     // action (e.g. "Move to folder → New Folder…"), so closing the
     // sidebar when the user clicks one yanks the action mid-flight.
     if (e.target.closest('.session-dropdown, .folder-submenu, #styled-prompt-overlay, #styled-confirm-overlay')) return;
@@ -420,7 +420,7 @@ export function initSidebarLayout(Storage, opts) {
 
   // ── Mobile: close sidebar/rail when a tool button is tapped ──
   // The user expects the sidebar to get out of the way the moment a tool
-  // window opens — otherwise the modal lands behind the sidebar on phones.
+  // window opens - otherwise the modal lands behind the sidebar on phones.
   // We remember whether the sidebar was open at the moment the tool was
   // tapped so we can re-open it when the tool's modal is dismissed; that
   // way clicking around the app doesn't leave the sidebar permanently
@@ -455,7 +455,7 @@ export function initSidebarLayout(Storage, opts) {
   });
 
   // When a tool is dismissed by swiping it down (ui.js fires `modal-dismissed`),
-  // don't bounce the sidebar back open — the swipe should just dismiss the tool.
+  // don't bounce the sidebar back open - the swipe should just dismiss the tool.
   // Button-close still restores the prior sidebar state (no event fired there).
   window.addEventListener('modal-dismissed', () => {
     _sidebarWasOpenBeforeTool = false;
@@ -471,10 +471,10 @@ export function initSidebarLayout(Storage, opts) {
       const sb = document.getElementById('sidebar');
       const rail = document.getElementById('icon-rail');
       const backdrop = document.getElementById('sidebar-backdrop');
-      // Skip if any modal is still visible (.modal without .hidden) — we only
+      // Skip if any modal is still visible (.modal without .hidden) - we only
       // restore once the user is back to bare chat. A tool swiped DOWN to a
       // dock chip is minimized (display:none via .modal-minimized), not closed
-      // — it's still "around", so don't bounce the sidebar open behind it. Only
+      // - it's still "around", so don't bounce the sidebar open behind it. Only
       // a full close (no minimized modal, no dock chips) should restore.
       const anyOpen = [...document.querySelectorAll('.modal')]
         .some(m => (!m.classList.contains('hidden') && getComputedStyle(m).display !== 'none')
@@ -482,7 +482,7 @@ export function initSidebarLayout(Storage, opts) {
       const anyDocked = document.querySelectorAll('.minimized-dock-chip').length > 0;
       if (anyOpen || anyDocked) {
         // A tool is still minimized/docked. The user has left the "launched
-        // from the sidebar" context — drop the restore intent so that later
+        // from the sidebar" context - drop the restore intent so that later
         // FULLY closing the tool (e.g. dragging its chip to the trash) doesn't
         // bounce the sidebar open. (The modal-dismissed listener that normally
         // clears these gets blocked by modalManager's stopImmediatePropagation.)
@@ -514,8 +514,8 @@ export function initSidebarLayout(Storage, opts) {
     _modalObs.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
   }
 
-  // (Mobile swipe-to-open-sidebar is wired at MODULE scope — see
-  // _initChatSwipeToOpenSidebar() at the bottom of this file — so it attaches
+  // (Mobile swipe-to-open-sidebar is wired at MODULE scope - see
+  // _initChatSwipeToOpenSidebar() at the bottom of this file - so it attaches
   // independently of this init function completing.)
 }
 
@@ -524,7 +524,7 @@ export function initSidebarLayout(Storage, opts) {
 // that init can't drop this listener. Bound on `document` so it catches the
 // touch regardless of which child element is under the finger. touchmove is
 // NON-passive and calls preventDefault() once the gesture is locked
-// horizontal — without that, Firefox (and others) treat the horizontal swipe
+// horizontal - without that, Firefox (and others) treat the horizontal swipe
 // as their own scroll/navigation gesture and our handler never gets to act.
 function _initChatSwipeToOpenSidebar() {
   if (window.__odySwipeWired) return;
@@ -553,7 +553,7 @@ function _initChatSwipeToOpenSidebar() {
     // (body.doc-view), notes is open (body.notes-view), or a tool modal is up.
     if (document.body.classList.contains('doc-view') ||
         document.body.classList.contains('notes-view')) return;
-    // Not while Compare is running — it takes over #chat-container with its own
+    // Not while Compare is running - it takes over #chat-container with its own
     // panes/scroll, and the swipe-to-open-sidebar gesture gets in the way there.
     const cc = document.getElementById('chat-container');
     if (cc && cc.classList.contains('compare-active')) return;

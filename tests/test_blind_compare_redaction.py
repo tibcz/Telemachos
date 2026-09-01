@@ -1,4 +1,4 @@
-"""Regression tests for issue #1285 — blind Compare must not leak model
+"""Regression tests for issue #1285 - blind Compare must not leak model
 identities through helper-session names or GET /api/sessions.
 
 Two guards are pinned here:
@@ -45,7 +45,7 @@ with preserve_import_state(*_TEMP_STUBS, "core.session_manager", "routes.session
 
 def test_public_model_blanks_blind_compare_sessions():
     """A blind-compare helper session ("[CMP] Model A") must not expose its
-    real model in the session list — that is the de-anonymization vector."""
+    real model in the session list - that is the de-anonymization vector."""
     assert SR._public_model("[CMP] Model A", "gpt-4o") == ""
     assert SR._public_model("[CMP] Model B", "llama-3.1-70b") == ""
 
@@ -58,7 +58,7 @@ def test_public_model_blanks_any_cmp_prefixed_session():
 
 
 def test_public_model_preserves_normal_sessions():
-    """Ordinary chats are untouched — only the [CMP] prefix triggers redaction.
+    """Ordinary chats are untouched - only the [CMP] prefix triggers redaction.
     The post-vote "Compare: a vs b" folder is a normal session, not a helper."""
     assert SR._public_model("My research chat", "gpt-4o") == "gpt-4o"
     assert SR._public_model("", "claude-sonnet") == "claude-sonnet"

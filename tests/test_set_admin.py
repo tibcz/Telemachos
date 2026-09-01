@@ -98,7 +98,7 @@ def test_cannot_demote_past_the_last_admin_sequentially(tmp_path):
     mgr.create_user("bob", "pw-123456", is_admin=True)
 
     assert mgr.set_admin("bob", False, "admin") is auth_mod.SetAdminResult.OK
-    # Now "admin" is the only admin left — demoting them must be refused.
+    # Now "admin" is the only admin left - demoting them must be refused.
     assert mgr.set_admin("admin", False, "admin") is auth_mod.SetAdminResult.LAST_ADMIN
     assert mgr.is_admin("admin") is True
 
@@ -199,7 +199,7 @@ def test_pre_admin_privileges_survive_manager_reload(tmp_path):
     assert mgr.set_privileges("bob", {"can_use_research": False}) is True
     assert mgr.set_admin("bob", True, "admin") is auth_mod.SetAdminResult.OK
 
-    # Fresh manager on the same auth.json — the stash must round-trip disk.
+    # Fresh manager on the same auth.json - the stash must round-trip disk.
     mgr2 = auth_mod.AuthManager(str(tmp_path / "auth.json"))
     assert mgr2.set_admin("bob", False, "admin") is auth_mod.SetAdminResult.OK
     assert mgr2.get_privileges("bob")["can_use_research"] is False

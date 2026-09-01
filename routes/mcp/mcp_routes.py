@@ -253,7 +253,7 @@ def setup_mcp_routes(mcp_manager: McpManager):
         finally:
             db.close()
 
-        # Check if OAuth token already exists — skip connection attempt if not
+        # Check if OAuth token already exists - skip connection attempt if not
         needs_oauth = False
         if parsed_oauth_config:
             needs_oauth = _mcp_oauth_token_missing(parsed_oauth_config)
@@ -451,7 +451,7 @@ def setup_mcp_routes(mcp_manager: McpManager):
             client_id = keys["client_id"]
             scopes = oauth_cfg.get("scopes", [])
 
-            # For Desktop App creds, default to localhost — the user will
+            # For Desktop App creds, default to localhost - the user will
             # paste the resulting URL back if they're on a different device.
             redirect_uri = _mcp_oauth_redirect_uri()
 
@@ -471,10 +471,10 @@ def setup_mcp_routes(mcp_manager: McpManager):
             is_local = host.startswith("localhost") or host.startswith("127.0.0.1")
 
             if is_local:
-                # Same machine — just redirect, callback will work directly
+                # Same machine - just redirect, callback will work directly
                 return RedirectResponse(auth_url)
             else:
-                # Remote device — show paste-back page
+                # Remote device - show paste-back page
                 return HTMLResponse(_oauth_authorize_page(auth_url, server_id, redirect_uri))
         finally:
             db.close()
@@ -496,7 +496,7 @@ def setup_mcp_routes(mcp_manager: McpManager):
 
     @router.post("/oauth/exchange/{server_id}")
     async def oauth_exchange(server_id: str, request: Request, callback_url: str = Form(...)):
-        """Manual code exchange — user pastes the callback URL from their browser."""
+        """Manual code exchange - user pastes the callback URL from their browser."""
         require_admin(request)
         try:
             parsed = urllib.parse.urlparse(callback_url)
@@ -622,7 +622,7 @@ def _oauth_authorize_page(
     redirect_uri = html.escape(redirect_uri, quote=True)
     return f"""<!DOCTYPE html>
 <html><head>
-<meta charset="UTF-8"><title>Authorize — Telemachos</title>
+<meta charset="UTF-8"><title>Authorize - Telemachos</title>
 <style>
   body {{ font-family: 'Fira Code', monospace; background: #0f0f0f; color: #e0e0e0;
     display: flex; justify-content: center; align-items: center; min-height: 100vh; }}
@@ -656,7 +656,7 @@ def _oauth_authorize_page(
   <h2>Authorize Google Account</h2>
   <div class="step">
     <b>1.</b> Click the button below to sign in with Google<br>
-    <b>2.</b> After approving, your browser will show an error page — that's normal<br>
+    <b>2.</b> After approving, your browser will show an error page - that's normal<br>
     <b>3.</b> Copy the full URL from your browser's address bar<br>
     <b>4.</b> Paste it below and click Connect
   </div>
@@ -666,7 +666,7 @@ def _oauth_authorize_page(
        served from, so the form follows the user through any proxy without the
        app having to know the scheme or the host. An absolute http:// action is
        blocked as mixed content on exactly the HTTPS deployments that need
-       paste-back, and request.url.scheme cannot be trusted to spot them —
+       paste-back, and request.url.scheme cannot be trusted to spot them -
        uvicorn only honours X-Forwarded-Proto from a peer in
        --forwarded-allow-ips, which defaults to 127.0.0.1 and excludes a proxy
        arriving over the Docker bridge. -->

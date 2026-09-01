@@ -1,5 +1,5 @@
 // ============================================
-// Keyboard Shortcuts — dynamic keybinds
+// Keyboard Shortcuts - dynamic keybinds
 // ============================================
 
 import { IS_MAC, isAltGrEvent } from './platform.js';
@@ -19,7 +19,7 @@ const _defaultKeybinds = {
 export function _matchesCombo(e, combo, isMac = IS_MAC) {
   if (typeof combo !== 'string' || !combo) return false;
   // Drop AltGr keystrokes so typing characters on non-US layouts can't fire a
-  // Ctrl+Alt shortcut — e.g. the destructive delete_session. See platform.js.
+  // Ctrl+Alt shortcut - e.g. the destructive delete_session. See platform.js.
   if (isAltGrEvent(e, isMac)) return false;
   const parts = combo.split('+');
   const needCtrl = parts.includes('ctrl');
@@ -65,9 +65,9 @@ export function initKeyboardShortcuts(modules) {
   // Every tool's bulk-select bar has a `*-bulk-cancel` button whose click
   // already runs the correct teardown (clears selection, hides the bar,
   // re-renders). So a single global handler that clicks whichever cancel
-  // button is currently visible covers all of them — notes, skills,
+  // button is currently visible covers all of them - notes, skills,
   // memory, gallery, sessions, doc library (chats/archive/research/docs),
-  // email, cookbook serve — without each module wiring its own listener.
+  // email, cookbook serve - without each module wiring its own listener.
   // Capture phase + stopPropagation so Esc cancels select instead of
   // closing the surrounding modal.
   document.addEventListener('keydown', (e) => {
@@ -92,7 +92,7 @@ export function initKeyboardShortcuts(modules) {
     }
   }, true);
 
-  // ── "Toggle Window" — close whatever tool window is open, or reopen the
+  // ── "Toggle Window" - close whatever tool window is open, or reopen the
   // last one. Maps each window's modal element to the button/title that
   // opens it (mirrors modalManager's _AUTO_WIRE, plus email's section title).
   const _WINDOW_TRIGGERS = {
@@ -249,7 +249,7 @@ export function initKeyboardShortcuts(modules) {
     if (_matchesCombo(e, kb.incognito)) {
       e.preventDefault();
       // Drive the visible button so the real toggle logic runs (visual
-      // state, welcome-screen guard, checkbox sync) — flipping the hidden
+      // state, welcome-screen guard, checkbox sync) - flipping the hidden
       // checkbox alone did nothing.
       const btn = el('incognito-btn');
       if (btn) btn.click();
@@ -260,7 +260,7 @@ export function initKeyboardShortcuts(modules) {
       _toggleActiveWindow();
       return;
     }
-    // Open-tool shortcuts — click the sidebar tool button so each tool's
+    // Open-tool shortcuts - click the sidebar tool button so each tool's
     // own open/toggle logic runs. Unbound (empty) combos never match.
     const _toolBtns = {
       open_calendar: 'tool-calendar-btn',

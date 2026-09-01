@@ -1,7 +1,7 @@
 """Pin the auth exemption for task webhook-trigger URLs.
 
 The task router exposes ``POST /api/tasks/{task_id}/webhook/{token}`` as a
-public webhook entrypoint — the path-embedded ``webhook_token`` is the
+public webhook entrypoint - the path-embedded ``webhook_token`` is the
 credential, and the route handler in ``routes/task_routes.py`` validates
 it against the row and returns 404 on mismatch. The UI advertises the
 URL as "no auth needed" because external callers (Zapier, n8n, curl)
@@ -30,7 +30,7 @@ def _read_app_source() -> str:
 def test_webhook_trigger_path_is_in_exempt_patterns():
     """The dynamic webhook trigger path must match an AUTH_EXEMPT_PATTERNS
     entry. Pull every regex literal compiled inside the block out of the
-    source and apply it directly — extraction has to tolerate nested
+    source and apply it directly - extraction has to tolerate nested
     brackets inside each character class (e.g. ``[^/]+``)."""
     src = _read_app_source()
     # Find the start of the list, then walk character-by-character to the
@@ -82,7 +82,7 @@ def test_webhook_trigger_handler_still_validates_token():
     routes/task_routes.py still checks the token against the row and
     returns 404 on mismatch. Pin that behaviour so a refactor of the
     handler doesn't quietly make the endpoint truly anonymous. Read the
-    source directly — importing task_routes pulls in SQLAlchemy and
+    source directly - importing task_routes pulls in SQLAlchemy and
     fails under the conftest stubs."""
     routes_path = os.path.join(
         os.path.dirname(os.path.dirname(os.path.abspath(__file__))),

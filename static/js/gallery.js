@@ -1,5 +1,5 @@
 /**
- * Gallery Module — photo backup + AI-generated image library.
+ * Gallery Module - photo backup + AI-generated image library.
  */
 
 import uiModule from './ui.js';
@@ -42,7 +42,7 @@ async function openEditor(...args) {
     try {
       mod = await _loadEditor();
     } catch (e) {
-      // Previously unreachable — a static import either loaded or the whole
+      // Previously unreachable - a static import either loaded or the whole
       // page failed. Now it can fail on its own (offline before the panel was
       // ever cached), so say so instead of doing nothing.
       console.error('[gallery] image editor failed to load', e);
@@ -57,7 +57,7 @@ function closeEditor(...args) {
   return _editorMod ? _editorMod.closeEditor(...args) : undefined;
 }
 
-// True while the module is still in flight as well — the gallery-close paths
+// True while the module is still in flight as well - the gallery-close paths
 // use this to refuse to tear the container down under an edit that is opening.
 function isEditorOpen() {
   return _editorLoading || (_editorMod ? _editorMod.isEditorOpen() : false);
@@ -82,7 +82,7 @@ function _updateTagCount() {
   if (el) el.textContent = _total ? `${_totalTagged}/${_total} tagged` : '';
 }
 let _search = '';
-// Stack of active tag filters. Multiple tags AND together — the user
+// Stack of active tag filters. Multiple tags AND together - the user
 // builds this up by clicking tag chips or by hitting Enter in the
 // search box, and tears it down with the × on each pill.
 let _activeTags = [];
@@ -93,7 +93,7 @@ let _favoritesOnly = false;
 let _sort = 'recent';
 let _shuffleSeed = Math.floor(Math.random() * 2 ** 31);
 let _offset = 0;
-// Page size — computed from the grid's visible area so taller / wider
+// Page size - computed from the grid's visible area so taller / wider
 // windows (fullscreen) fetch enough photos to fill the screen instead
 // of leaving blank space below a fixed 24-photo page. Capped at the
 // backend's max (100).
@@ -112,7 +112,7 @@ function _computeFetchLimit() {
 let _searchDebounce = null;
 let _escHandler = null;
 let _albums = [];
-// Albums tab — search filter + multi-select state. Mirrors what the
+// Albums tab - search filter + multi-select state. Mirrors what the
 // Photos tab does (_search, _selectMode) but scoped to the albums grid.
 let _albumSearch = '';
 let _albumSelectMode = false;
@@ -126,7 +126,7 @@ async function _fetchLibrary(append) {
   _limit = _computeFetchLimit();
   // First load with nothing on screen → show skeleton tiles instead of a blank
   // grid that then snaps to full. BUT: if the last successful load returned
-  // zero items, skip the skeleton entirely — otherwise empty accounts flash
+  // zero items, skip the skeleton entirely - otherwise empty accounts flash
   // 8-20 placeholder tiles for ~200ms before snapping to the "No photos yet"
   // message, which read as glitchy.
   if (!append && _items.length === 0) {
@@ -136,7 +136,7 @@ async function _fetchLibrary(append) {
   }
   if (!append) {
     _offset = 0;
-    // Leave _items untouched until the response arrives — that's the
+    // Leave _items untouched until the response arrives - that's the
     // stale-while-revalidate trick that lets the gallery feel instant on
     // re-open. The new list replaces _items on success below; if the fetch
     // fails, the previous photos stay visible.
@@ -230,7 +230,7 @@ async function _deleteImage(id) {
 // ---- Bulk upload with progress ----
 
 // Accepts either File[] (uploads all into fallbackAlbumId) or
-// {file, albumId}[] (per-file album targeting — used for folder drops).
+// {file, albumId}[] (per-file album targeting - used for folder drops).
 async function _bulkUpload(filesOrItems, fallbackAlbumId) {
   const bar = document.getElementById('gallery-upload-bar');
   const progress = document.getElementById('gallery-upload-progress');
@@ -245,7 +245,7 @@ async function _bulkUpload(filesOrItems, fallbackAlbumId) {
   let done = 0, dupes = 0, errors = 0;
   const total = items.length;
 
-  // Concurrency pool — N workers pulling from the queue. 4 is a reasonable
+  // Concurrency pool - N workers pulling from the queue. 4 is a reasonable
   // default for a local server: enough to overlap network + EXIF + disk
   // without flooding SQLite (which serializes writes anyway). Videos in
   // particular benefit because they're large enough to be I/O-bound.
@@ -291,7 +291,7 @@ async function _bulkUpload(filesOrItems, fallbackAlbumId) {
   _fetchAlbums();
 }
 
-// True if this File / filename should be uploaded — images and common videos.
+// True if this File / filename should be uploaded - images and common videos.
 function _isMediaFile(f) {
   const t = (f?.type || '').toLowerCase();
   if (t.startsWith('image/') || t.startsWith('video/')) return true;
@@ -301,7 +301,7 @@ function _isMediaFile(f) {
   return ['png','jpg','jpeg','webp','gif','mp4','mov','webm','mkv','m4v'].includes(ext);
 }
 
-// True if a URL/filename refers to a video — used to pick <video> vs <img>.
+// True if a URL/filename refers to a video - used to pick <video> vs <img>.
 function _isVideoUrl(url) {
   const ext = (url || '').toLowerCase().split('?')[0].split('.').pop();
   return ['mp4','mov','webm','mkv','m4v'].includes(ext);
@@ -380,7 +380,7 @@ async function _handleGalleryDrop(e) {
     return;
   }
 
-  // Nothing usable — either an empty folder, an unreadable folder URI, or a
+  // Nothing usable - either an empty folder, an unreadable folder URI, or a
   // non-image drop. If the dataTransfer types hint at a folder/URI drop,
   // explain the limitation and point at the Upload album button.
   const types = [...(e.dataTransfer?.types || [])];
@@ -404,7 +404,7 @@ function _renderStats() {
 }
 
 function _renderTags(tags) {
-  // The global "every tag in the gallery" chip row under the search is gone —
+  // The global "every tag in the gallery" chip row under the search is gone -
   // it just piled up every user-added tag with no way to remove it. Filter by
   // tapping a tag on a photo (→ a removable pill in the header) or via search.
   const container = document.getElementById('gallery-tag-chips');
@@ -439,12 +439,12 @@ function _renderAlbums() {
       fhtml += `<button class="gallery-chip gallery-chip-fav${_favoritesOnly ? ' active' : ''}" data-fav="true" title="Favorites">&#9829;</button>`;
     }
     _activeTags.forEach(t => {
-      fhtml += `<span class="gallery-chip gallery-chip-active-album" title="Filtered to tag — click × to remove"><span>#${_esc(t)}</span><button class="gallery-chip-clear" data-clear-tag="${_esc(t)}" aria-label="Remove tag filter">&times;</button></span>`;
+      fhtml += `<span class="gallery-chip gallery-chip-active-album" title="Filtered to tag - click × to remove"><span>#${_esc(t)}</span><button class="gallery-chip-clear" data-clear-tag="${_esc(t)}" aria-label="Remove tag filter">&times;</button></span>`;
     });
     if (_activeAlbum) {
       const a = _albums.find(x => x.id === _activeAlbum);
       if (a) {
-        fhtml += `<span class="gallery-chip gallery-chip-active-album" title="Currently showing this album — click X to clear"><span>${_esc(a.name)}</span><button class="gallery-chip-clear" data-clear="album" aria-label="Clear album filter">&times;</button></span>`;
+        fhtml += `<span class="gallery-chip gallery-chip-active-album" title="Currently showing this album - click X to clear"><span>${_esc(a.name)}</span><button class="gallery-chip-clear" data-clear="album" aria-label="Clear album filter">&times;</button></span>`;
       }
     }
     filterC.innerHTML = fhtml;
@@ -477,11 +477,11 @@ function _renderAlbums() {
       });
     });
   }
-  // The above-search row is no longer used — all filter chips live below now.
+  // The above-search row is no longer used - all filter chips live below now.
   if (container) container.innerHTML = '';
 }
 
-// Albums tab — renders the album list as a grid of cover-thumbnailed cards.
+// Albums tab - renders the album list as a grid of cover-thumbnailed cards.
 // Clicking an album switches to the Photos tab filtered by that album.
 //
 // Structure mirrors the Photos tab: persistent toolbar (search + Select)
@@ -518,7 +518,7 @@ function _ensureAlbumsToolbar(container) {
     <div id="gallery-albums-grid-wrap"></div>
   `;
 
-  // Wire search — debounced re-render, same pattern as Photos.
+  // Wire search - debounced re-render, same pattern as Photos.
   const searchInput = container.querySelector('#gallery-albums-search');
   let _albumSearchDebounce = null;
   searchInput.addEventListener('input', () => {
@@ -529,7 +529,7 @@ function _ensureAlbumsToolbar(container) {
     }, 150);
   });
 
-  // Wire Select + bulk bar — Cancel restores the normal click-to-open
+  // Wire Select + bulk bar - Cancel restores the normal click-to-open
   // behavior; Actions opens a dropdown anchored on the button.
   container.querySelector('#gallery-albums-select-btn').addEventListener('click', () => {
     _setAlbumSelectMode(!_albumSelectMode);
@@ -596,7 +596,7 @@ function _renderAlbumsGrid() {
   }
 
   let html = '<div class="gallery-albums-grid">';
-  // Action tiles (New / Upload) — hidden in select mode so they don't
+  // Action tiles (New / Upload) - hidden in select mode so they don't
   // visually compete with the selection dots and can't be accidentally
   // toggled like real albums.
   if (!_albumSelectMode) {
@@ -622,7 +622,7 @@ function _renderAlbumsGrid() {
       </div>`;
   }
   albums.forEach(a => {
-    // Empty albums get the placeholder icon even if cover_url is set —
+    // Empty albums get the placeholder icon even if cover_url is set -
     // a stale cover from before the album was emptied looks like the
     // album still has photos in it.
     const cover = (a.cover_url && a.count > 0)
@@ -668,7 +668,7 @@ function _renderAlbumsGrid() {
   _wireAlbumsEvents(wrap);
 }
 
-// Per-card / per-popmenu event wiring — extracted so both the empty
+// Per-card / per-popmenu event wiring - extracted so both the empty
 // state and the real grid can reuse it.
 function _wireAlbumsEvents(scope) {
   const container = document.getElementById('gallery-albums-container');
@@ -694,7 +694,7 @@ function _wireAlbumsEvents(scope) {
       }
       _activeAlbum = card.dataset.album || null;
       _favoritesOnly = false;
-      // Hide any open photo detail before swapping context — otherwise the
+      // Hide any open photo detail before swapping context - otherwise the
       // previously-viewed photo lingers on top when the user lands back on
       // the Photos tab.
       const _detail = document.getElementById('gallery-detail');
@@ -898,7 +898,7 @@ function _draftsShowLoading(section) {
     section.appendChild(ov);
   }
   // Start the overlay exactly at the grid's top so it covers ONLY the projects
-  // list — not the header's search/select above it (the old fixed 30px offset
+  // list - not the header's search/select above it (the old fixed 30px offset
   // assumed a short header and ended up covering half the search/select).
   const _grid = section.querySelector('.gallery-editor-drafts-grid');
   const _hdr = section.querySelector('.gallery-editor-drafts-header');
@@ -1022,7 +1022,7 @@ function _draftsPaint() {
         await fetch(`${API_BASE}/api/editor-drafts/${encodeURIComponent(id)}`, {
           method: 'DELETE', credentials: 'same-origin',
         });
-      } catch (_) { /* swallow — refresh below */ }
+      } catch (_) { /* swallow - refresh below */ }
       await new Promise(r => setTimeout(r, 240));   // let the animation finish
       _draftsSelected.delete(id);
       _renderEditorDrafts();
@@ -1041,7 +1041,7 @@ function _draftsSyncBulkBar() {
     selectBtn.textContent = _draftsSelectMode ? 'Cancel' : 'Select';
     selectBtn.classList.toggle('active', _draftsSelectMode);
   }
-  // "All" checkbox state — checked when all visible drafts are selected,
+  // "All" checkbox state - checked when all visible drafts are selected,
   // indeterminate when only some (matches the Photos tab).
   const all = document.getElementById('gallery-editor-drafts-select-all');
   if (all) {
@@ -1113,7 +1113,7 @@ function _humanRelativeDate(when) {
   return when.toLocaleDateString();
 }
 
-// Edit tab empty state — shown when the user clicks the tab without a photo
+// Edit tab empty state - shown when the user clicks the tab without a photo
 // loaded. Lets them start a blank canvas or jump back to pick a photo.
 function _renderEditorLanding() {
   const container = document.getElementById('gallery-editor-container');
@@ -1122,17 +1122,17 @@ function _renderEditorLanding() {
   // tab is still active so make sure the landing is actually visible.
   container.style.display = 'flex';
   // Templates rendered as a native <select>. Browsers handle all the layout
-  // and styling natively — no custom flex grid, no clipping, no empty boxes.
+  // and styling natively - no custom flex grid, no clipping, no empty boxes.
   // Picking an option fires `change` and goes straight into the editor.
   const presets = [
-    { w: 1024, h: 1024, label: 'Square HD — 1024 × 1024' },
-    { w: 1920, h: 1080, label: 'Widescreen — 1920 × 1080' },
-    { w: 1080, h: 1920, label: 'Portrait — 1080 × 1920' },
-    { w: 1080, h: 1080, label: 'Instagram — 1080 × 1080' },
-    { w: 1500, h: 1050, label: 'Postcard — 1500 × 1050' },
-    { w: 2480, h: 3508, label: 'A4 (300dpi) — 2480 × 3508' },
-    { w: 2550, h: 3300, label: 'Letter (300dpi) — 2550 × 3300' },
-    { w: 3840, h: 2160, label: '4K — 3840 × 2160' },
+    { w: 1024, h: 1024, label: 'Square HD - 1024 × 1024' },
+    { w: 1920, h: 1080, label: 'Widescreen - 1920 × 1080' },
+    { w: 1080, h: 1920, label: 'Portrait - 1080 × 1920' },
+    { w: 1080, h: 1080, label: 'Instagram - 1080 × 1080' },
+    { w: 1500, h: 1050, label: 'Postcard - 1500 × 1050' },
+    { w: 2480, h: 3508, label: 'A4 (300dpi) - 2480 × 3508' },
+    { w: 2550, h: 3300, label: 'Letter (300dpi) - 2550 × 3300' },
+    { w: 3840, h: 2160, label: '4K - 3840 × 2160' },
   ];
   const optionsHtml = presets
     .map((p, i) => `<option value="${i}">${p.label}</option>`)
@@ -1179,7 +1179,7 @@ function _renderEditorLanding() {
     if (p) openEditor(null, null, { w: p.w, h: p.h }, `${p.w}×${p.h}`);
   });
   document.getElementById('gallery-editor-new')?.addEventListener('click', async () => {
-    // openEditor() now returns a Promise — it's async because the size
+    // openEditor() now returns a Promise - it's async because the size
     // prompt is a styled modal. Await it before checking whether the
     // editor actually opened (the user may have cancelled).
     await openEditor(null, null, null, 'New canvas');
@@ -1293,7 +1293,7 @@ function _renderGrid() {
   _wireUploadTile();
 
   // Domino-in cascade the first render after opening (not on filter/sort/
-  // load-more re-renders) — mirrors the document library.
+  // load-more re-renders) - mirrors the document library.
   if (!_galleryCascaded) {
     _galleryCascaded = true;
     grid.classList.add('gallery-just-opened');
@@ -1492,7 +1492,7 @@ function _openDetail(img) {
         ${img.gps ? `<div class="gallery-detail-section"><label>Location</label><div>${img.gps.lat}, ${img.gps.lng}</div></div>` : ''}
         ${img.model ? `<div class="gallery-detail-section"><label>Source</label><div>${_esc(img.model)}</div></div>` : ''}
         ${img.session_name ? `<div class="gallery-detail-section"><label>Session</label><div>${_esc(img.session_name)}</div></div>` : ''}
-        ${aiTags ? `<div class="gallery-detail-section"><label>AI Tags</label><div class="gallery-ai-tags">${aiTags.split(',').map(t => t.trim()).filter(Boolean).map(t => `<button class="gallery-ai-chip gallery-aitag-chip" data-tag-filter="${_esc(t)}" title="AI-generated tag — click to filter to photos tagged “${_esc(t)}”"><span class="gallery-aitag-mark" aria-hidden="true">✦</span>${_esc(t)}</button>`).join('')}</div></div>` : ''}
+        ${aiTags ? `<div class="gallery-detail-section"><label>AI Tags</label><div class="gallery-ai-tags">${aiTags.split(',').map(t => t.trim()).filter(Boolean).map(t => `<button class="gallery-ai-chip gallery-aitag-chip" data-tag-filter="${_esc(t)}" title="AI-generated tag - click to filter to photos tagged “${_esc(t)}”"><span class="gallery-aitag-mark" aria-hidden="true">✦</span>${_esc(t)}</button>`).join('')}</div></div>` : ''}
         <div class="gallery-detail-section">
           <label>Tags</label>
           <div class="gallery-ai-tags" id="gallery-user-tag-chips">${userTags.split(',').map(t => t.trim()).filter(Boolean).map(t => `<button class="gallery-ai-chip gallery-user-chip" data-tag-filter="${_esc(t)}" title="Filter to photos tagged “${_esc(t)}”">${_esc(t)}<span class="gallery-tag-x" title="Remove tag" aria-label="Remove tag">×</span></button>`).join('')}</div>
@@ -1561,7 +1561,7 @@ function _openDetail(img) {
     }
   });
 
-  // Clickable tag chips — both AI Tags and User Tags. Clicking a chip
+  // Clickable tag chips - both AI Tags and User Tags. Clicking a chip
   // closes the detail, sets the tag filter on the main grid, and
   // re-fetches so the user sees other photos with that tag.
   // Remove a user tag from this photo (the × on a tag chip).
@@ -1594,12 +1594,12 @@ function _openDetail(img) {
     });
   });
 
-  // Overflow menu — single ⋮ button on the right that hosts all the action
+  // Overflow menu - single ⋮ button on the right that hosts all the action
   // items. Clicking any item closes the menu (per-item handlers also fire).
   const menuBtn = document.getElementById('gallery-detail-menu-btn');
   const menu = document.getElementById('gallery-detail-menu');
   if (menuBtn && menu) {
-    // `.dropdown { display:none }` isn't tied to [hidden] — set inline display.
+    // `.dropdown { display:none }` isn't tied to [hidden] - set inline display.
     const _setMenu = (show) => { menu.hidden = !show; menu.style.display = show ? 'block' : 'none'; };
     _setMenu(false);
     menuBtn.addEventListener('click', (e) => {
@@ -1637,7 +1637,7 @@ function _openDetail(img) {
     // When the photo already has AI tags this button is "Clear AI tags".
     const clearMode = e.currentTarget.dataset.mode === 'clear';
     // The button lives in the ⋮ menu which closes on click, so its text never
-    // shows — surface a whirlpool overlay on the image instead.
+    // shows - surface a whirlpool overlay on the image instead.
     const stage = document.getElementById('gallery-detail-image-wrap') || document.getElementById('gallery-detail-img')?.parentElement;
     let overlay = null, spinner = null;
     if (stage) {
@@ -1699,7 +1699,7 @@ function _openDetail(img) {
     }
   });
 
-  // Whirlpool while the (newly opened/navigated) image loads — cached images
+  // Whirlpool while the (newly opened/navigated) image loads - cached images
   // report `complete` immediately, so no spinner flash for those.
   const _imgEl = document.getElementById('gallery-detail-img');
   const _frame = detail.querySelector('.gallery-detail-img-frame');
@@ -1730,7 +1730,7 @@ function _openDetail(img) {
     if (curIdx >= 0 && curIdx < _items.length - 1) _openDetail(_items[curIdx + 1]);
   });
 
-  // Mobile swipe — horizontal one-finger swipe across the image wrap moves
+  // Mobile swipe - horizontal one-finger swipe across the image wrap moves
   // between photos. Skips multi-touch (pinch-zoom) and lets the video
   // controls handle their own touches.
   const wrap = document.getElementById('gallery-detail-image-wrap');
@@ -1784,7 +1784,7 @@ function _openDetail(img) {
   document.getElementById('gallery-edit-btn')?.addEventListener('click', _openInEditor);
   document.getElementById('gallery-edit-direct-btn')?.addEventListener('click', _openInEditor);
 
-  // Rotate — server-side image rotation. Forces a fresh URL afterwards
+  // Rotate - server-side image rotation. Forces a fresh URL afterwards
   // so the browser doesn't show the old cached version. Shows a
   // whirlpool over the detail image while the request + reload are in
   // flight so the user sees the action is processing.
@@ -1838,7 +1838,7 @@ function _openDetail(img) {
   document.getElementById('gallery-rotate-btn')?.addEventListener('click', () => _rotate(90));
   document.getElementById('gallery-rotate-ccw-btn')?.addEventListener('click', () => _rotate(-90));
 
-  // Set as album cover — only present if the photo is currently in an album.
+  // Set as album cover - only present if the photo is currently in an album.
   document.getElementById('gallery-set-cover-btn')?.addEventListener('click', async () => {
     if (!img.album_id) return;
     try {
@@ -1874,9 +1874,9 @@ function _openDetail(img) {
     if (uiModule) uiModule.showToast('Photo deleted');
   });
 
-  // Tag input — Enter saves; also strips a leading '#' from each tag so
+  // Tag input - Enter saves; also strips a leading '#' from each tag so
   // typing "#person, #beach" stores as "person, beach".
-  // Rename input — saves to the prompt column on Enter/blur via the
+  // Rename input - saves to the prompt column on Enter/blur via the
   // dedicated rename endpoint.
   const _nameInput = document.getElementById('gallery-detail-name-input');
   if (_nameInput) {
@@ -1990,7 +1990,7 @@ function _makeGalleryDraggable(content) {
 import * as Modals from './modalManager.js';
 
 export function openGallery() {
-  // If already minimized — restore in place, preserve all state
+  // If already minimized - restore in place, preserve all state
   if (Modals.isRegistered('gallery-modal') && Modals.isMinimized('gallery-modal')) {
     Modals.restore('gallery-modal');
     return;
@@ -2005,13 +2005,13 @@ export function openGallery() {
     if (_freshChatUpload) localStorage.removeItem('gallery-fresh-chat-upload');
   } catch (_) {}
   if (_freshChatUpload) _sort = 'recent';
-  // State is preserved across close/reopen — filters, album, sort, items,
-  // albums, people — so reopening the gallery feels instant. Use the search
+  // State is preserved across close/reopen - filters, album, sort, items,
+  // albums, people - so reopening the gallery feels instant. Use the search
   // input or "All" chip to clear the active filter.
   // Exception: when sort is shuffle, regenerate the seed every open so the
   // user gets a fresh order each visit (the whole point of shuffle). Also
   // CLEAR the cached items so the user doesn't see the stale random order
-  // flash up and then swap to the new order when the fetch resolves —
+  // flash up and then swap to the new order when the fetch resolves -
   // skeletons during the brief refetch read as intentional, the swap doesn't.
   if (_sort === 'shuffle') {
     _shuffleSeed = Math.floor(Math.random() * 2 ** 31);
@@ -2119,7 +2119,7 @@ export function openGallery() {
     restoreFn: () => {},
   });
 
-  // Allow dragging the modal by its header — same pattern as Email Library,
+  // Allow dragging the modal by its header - same pattern as Email Library,
   // Sessions, etc. The tileManager (corner/edge snap-tiling) listens on
   // pointer events too; it only shows a ghost on move and snaps on release,
   // so the two coexist.
@@ -2141,7 +2141,7 @@ export function openGallery() {
   // shows up everywhere it's referenced by id (#gallery-editor-tab), so a
   // simple inline contenteditable swap is enough.
   const editorTab = modal.querySelector('.gallery-tab[data-tab="editor"]');
-  // Close × on the Edit tab — appears on hover. Confirms if the editor
+  // Close × on the Edit tab - appears on hover. Confirms if the editor
   // has an open session (any in-progress edit), otherwise just closes.
   const editorTabClose = modal.querySelector('#gallery-editor-tab-close');
   if (editorTabClose) {
@@ -2202,7 +2202,7 @@ export function openGallery() {
       modal.querySelectorAll('.gallery-tab').forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
       const target = tab.dataset.tab;
-      // Always close the photo detail when changing tabs — leaving it open
+      // Always close the photo detail when changing tabs - leaving it open
       // means it pops back the next time the user returns to Photos.
       const _detail = document.getElementById('gallery-detail');
       if (_detail) _detail.style.display = 'none';
@@ -2249,7 +2249,7 @@ export function openGallery() {
     // the heart deactivates and All lights up.
     _favoritesOnly = false;
     _activeAlbum = null;
-    // Filtering by a tag reads best newest-first — switch the sort to Recent.
+    // Filtering by a tag reads best newest-first - switch the sort to Recent.
     if (_sort !== 'recent') {
       _sort = 'recent';
       const sortSel = document.getElementById('gallery-sort');
@@ -2284,7 +2284,7 @@ export function openGallery() {
   // bottom of the gallery's scroll area. The button stays as a manual fallback.
   // Infinite scroll. A capture-phase scroll listener on document catches scroll
   // from WHICHEVER element actually scrolls (desktop modal-body or the mobile
-  // scroll wrapper — IntersectionObserver's root was unreliable across the two).
+  // scroll wrapper - IntersectionObserver's root was unreliable across the two).
   // We just test the Load-more button against the viewport bottom.
   let _loadingMore = false;
   let _scrollTick = false;
@@ -2307,7 +2307,7 @@ export function openGallery() {
   }, true);
 
   // When the window grows (e.g. entering fullscreen), the visible grid
-  // can hold more photos than the last page fetched — top up so there's
+  // can hold more photos than the last page fetched - top up so there's
   // no blank space. Debounced; only fires when the freshly-computed
   // page size exceeds what's loaded and the server has more to give.
   let _resizeTopUpTimer = null;
@@ -2414,12 +2414,12 @@ export function openGallery() {
         } catch (_) { failed++; }
         done++;
         progEl.style.width = `${Math.round((done / total) * 100)}%`;
-        statusEl.textContent = `Tagging ${done}/${total}${failed ? ` — ${failed} failed` : ''}`;
+        statusEl.textContent = `Tagging ${done}/${total}${failed ? ` - ${failed} failed` : ''}`;
       }
 
       statusEl.textContent = _tagCancelRequested
         ? `Cancelled after ${done}/${total}${failed ? ` (${failed} failed)` : ''}`
-        : `Done — tagged ${done - failed}/${total}${failed ? ` (${failed} failed)` : ''}`;
+        : `Done - tagged ${done - failed}/${total}${failed ? ` (${failed} failed)` : ''}`;
       // Restore the Start button.
       _tagging = false;
       tagAllBtn.disabled = false;
@@ -2437,7 +2437,7 @@ export function openGallery() {
   const moreMenu = document.getElementById('gallery-toolbar-more-menu');
   if (moreBtn && moreMenu) {
     // `.dropdown { display:none }` isn't tied to [hidden], so toggling the
-    // attribute alone won't reveal it — set inline display too (inline wins).
+    // attribute alone won't reveal it - set inline display too (inline wins).
     const _setMore = (show) => { moreMenu.hidden = !show; moreMenu.style.display = show ? 'block' : 'none'; };
     _setMore(false);
     moreBtn.addEventListener('click', (e) => {
@@ -2505,7 +2505,7 @@ export function openGallery() {
     selectBtn.textContent = on ? 'Cancel' : 'Select';
     bulkBar.classList.toggle('hidden', !on);
     // Body-level signal so the CSS rule that hides per-thumbnail overlay
-    // buttons (favorite/download) applies to every card — including cards
+    // buttons (favorite/download) applies to every card - including cards
     // rendered after select mode was already on (load-more etc).
     document.body.classList.toggle('gallery-selecting', on);
     document.querySelectorAll('.gallery-select-dot').forEach(d => {
@@ -2797,7 +2797,7 @@ export function openGallery() {
     if (e.key === 'Escape') {
       // While the image editor is visible, Escape is reserved for the
       // editor (cancel transform/lasso/crop, dismiss size prompt, etc.).
-      // Don't close the gallery — users would lose their in-progress edit.
+      // Don't close the gallery - users would lose their in-progress edit.
       // We check the editor container's visibility AND the isEditorOpen()
       // flag so a crop popup, transform handles, etc. all keep Esc.
       const editorContainer = document.getElementById('gallery-editor-container');
@@ -2813,7 +2813,7 @@ export function openGallery() {
       }
       const detail = document.getElementById('gallery-detail');
       if (detail && detail.style.display !== 'none') {
-        // Click Back so Esc and the visible button always do the same thing —
+        // Click Back so Esc and the visible button always do the same thing -
         // future tweaks to Back's teardown automatically apply to Esc too.
         // stopImmediatePropagation blocks app.js's generic dynamic-modal Esc
         // handler that would otherwise close the whole gallery underneath us.

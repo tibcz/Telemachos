@@ -1,5 +1,5 @@
 /**
- * Notes Module — Google Keep-style notes and todos.
+ * Notes Module - Google Keep-style notes and todos.
  * Renders as a sidebar panel (like document editor), not a modal.
  */
 
@@ -33,7 +33,7 @@ let _reminderTimer = null;
 // (previously leaked one per openPanel; on multi-open sessions this
 // stacked dozens of identical handlers).
 let _notesKeydownHandler = null;
-// Capture-phase "Esc cancels select mode" listener on document — tracked so it
+// Capture-phase "Esc cancels select mode" listener on document - tracked so it
 // is removed on close instead of leaking +1 per panel open/close cycle.
 let _notesSelectEscHandler = null;
 const REMINDER_FIRED_KEY = 'telemachos-notes-reminder-fired';
@@ -44,7 +44,7 @@ const REMINDER_GLOWED_KEY = 'telemachos-notes-reminder-glowed';
 // next open of the panel we briefly glow those cards so the user can spot them.
 const REMINDER_PENDING_HIGHLIGHT_KEY = 'telemachos-notes-reminder-pending-highlight';
 const REMINDER_ACTIVE_HIGHLIGHT_KEY = 'telemachos-notes-reminder-active-highlight';
-// Timestamp of the last time the user opened the notes panel — used to gate
+// Timestamp of the last time the user opened the notes panel - used to gate
 // the rail "fired" badge so old reminders don't re-fire on every page reload.
 const REMINDER_DISMISSED_AT_KEY = 'telemachos-notes-reminder-dismissed-at';
 const NOTES_FIRST_OPEN_HINT_KEY = 'telemachos-notes-first-open-hint-v1';
@@ -275,13 +275,13 @@ function _queuePendingHighlight(noteId) {
 }
 function _flushPendingHighlights() {
   // Fresh firings (queued by the background loop while the panel was closed)
-  // glow unconditionally — a notification just told the user something
+  // glow unconditionally - a notification just told the user something
   // happened, so we always point at the note even if it was glowed before.
   const queued = _loadPendingHighlights();
   const glowed = _loadGlowedReminders();
   const toGlow = new Set(queued);
   // For notes that are merely overdue at open time (no fresh firing event),
-  // only glow the ones we haven't already shown — otherwise reopening the
+  // only glow the ones we haven't already shown - otherwise reopening the
   // panel keeps lighting up old reminders forever.
   for (const n of _notes) {
     if (!_hasActiveReminder(n) || !_hasTimeComponent(n.due_date)) continue;
@@ -316,7 +316,7 @@ const COLORS = [
   { name: 'green',   value: 'green' },
   { name: 'blue',    value: 'blue' },
   { name: 'purple',  value: 'purple' },
-  { name: 'custom',  value: 'custom' },  // sentinel — clicking opens native color picker
+  { name: 'custom',  value: 'custom' },  // sentinel - clicking opens native color picker
 ];
 
 const _CUSTOM_GRADIENT = 'conic-gradient(from 0deg, #e06c75, #d19a66, #e5c07b, #98c379, #61afef, #c678dd, #e06c75)';
@@ -377,7 +377,7 @@ function _pickCustomBgImage() {
 
 const COLOR_HEX = {
   '':       'var(--border)',
-  // Pale/pastel palette — matches the calendar event color picker.
+  // Pale/pastel palette - matches the calendar event color picker.
   red:      '#f0b5ba',
   orange:   '#e8ccb2',
   yellow:   '#f2dfbd',
@@ -389,7 +389,7 @@ const COLOR_HEX = {
 // ---- API ----
 
 let _loading = false;
-// Undo stack — most recent action is at the end. We cap it small because the
+// Undo stack - most recent action is at the end. We cap it small because the
 // only entries that survive a panel reload are in-memory anyway.
 const _undoStack = [];
 const _NOTE_UNDO_ICON = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;"><polyline points="9 14 4 9 9 4"/><path d="M4 9h11a5 5 0 0 1 5 5v0a5 5 0 0 1-5 5H9"/></svg>';
@@ -473,7 +473,7 @@ async function _saveNote(note) {
 }
 
 async function _deleteNoteApi(id) {
-  // v2 review — used to swallow 4xx/5xx silently. Throw so callers can
+  // v2 review - used to swallow 4xx/5xx silently. Throw so callers can
   // distinguish success vs failure and toast accordingly.
   const r = await fetch(`${API_BASE}/api/notes/${id}`, { method: 'DELETE', credentials: 'same-origin' });
   if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -500,7 +500,7 @@ function _attrEsc(s) {
     .replace(/>/g, '&gt;')
     .replace(/`/g, '&#96;');
 }
-// Image src guard — reject anything that isn't a relative path, http(s), or
+// Image src guard - reject anything that isn't a relative path, http(s), or
 // raster data URL so an AI-saved note can't slip script-capable media into the
 // rendered <img>.
 function _safeImgSrc(s) {
@@ -634,7 +634,7 @@ function _isNoteFullyDone(note) {
   return false;
 }
 
-// A "checklist note" — todo or goal — has structured items[] that the cards
+// A "checklist note" - todo or goal - has structured items[] that the cards
 // render as checkboxes and that "fully done" / progress logic reads from.
 function _hasItems(note) {
   return note && (note.note_type === 'todo' || note.note_type === 'goal' || note.note_type === 'checklist');
@@ -845,7 +845,7 @@ function _normalizeRepeat(repeat, originalDate) {
   if (!repeat || repeat === 'none') return 'none';
   if (repeat === 'daily' || repeat === 'yearly') return repeat;
   if (/^(weekly|monthly):/.test(repeat)) return repeat;
-  // Legacy bare values — derive params from the original date
+  // Legacy bare values - derive params from the original date
   const wd = originalDate.getDay();
   const n = Math.ceil(originalDate.getDate() / 7);
   if (repeat === 'weekly') return `weekly:${wd}`;
@@ -941,14 +941,14 @@ function _checkReminders() {
         if (next) {
           note.due_date = next;
           _patchNote(note.id, { due_date: next }).catch(() => {});
-          // Don't add to fired — new due_date is in the future
+          // Don't add to fired - new due_date is in the future
           continue;
         }
       }
       fired.add(note.id);
       changed = true;
     } else if (due <= now - 60000) {
-      // Past, never seen — silently advance recurring or mark fired
+      // Past, never seen - silently advance recurring or mark fired
       if (note.repeat && note.repeat !== 'none') {
         const next = _advanceRecurring(note.due_date, note.repeat);
         if (next) {
@@ -962,7 +962,7 @@ function _checkReminders() {
     }
   }
   if (changed) _saveFiredReminders(fired);
-  // Always refresh badge — fired state may have changed visually without note mutation
+  // Always refresh badge - fired state may have changed visually without note mutation
   _updateRailBadge();
 }
 
@@ -1077,7 +1077,7 @@ export function dismissFiredReminderDot() {
 
 function _updateRailBadge() {
   const fired = _countFiredReminders();
-  // Rail (mini sidebar) — only show the count when reminders have ACTUALLY
+  // Rail (mini sidebar) - only show the count when reminders have ACTUALLY
   // fired since the last dismissal (i.e. you haven't opened notes yet).
   // Showing every overdue note forever made the badge feel permanent.
   const railBtn = document.getElementById('rail-notes');
@@ -1109,7 +1109,7 @@ function _updateRailBadge() {
       dot.remove();
     }
   }
-  // Individual note cards — pulse ones with fired reminders
+  // Individual note cards - pulse ones with fired reminders
   document.querySelectorAll('.note-card').forEach(card => {
     const id = card.dataset.noteId;
     const note = _notes.find(n => n.id === id);
@@ -1159,7 +1159,7 @@ export function openPanel() {
 
   document.body.classList.add('notes-view');
 
-  // On mobile the notes panel takes the whole screen — auto-close the
+  // On mobile the notes panel takes the whole screen - auto-close the
   // sidebar so the panel isn't cropped underneath it.
   if (window.innerWidth <= 768) {
     const sb = document.getElementById('sidebar');
@@ -1243,10 +1243,10 @@ export function openPanel() {
   _bringNotesToFront(pane);
 
   // Events
-  // (Close chevron removed — swipe down on mobile, tool-rail toggle on desktop.)
+  // (Close chevron removed - swipe down on mobile, tool-rail toggle on desktop.)
 
   // Mobile: swipe the grab handle / header down to dismiss (minimise to chip).
-  // Mirrors the document sheet gesture — finger-following, velocity-based
+  // Mirrors the document sheet gesture - finger-following, velocity-based
   // dismiss, rubber-band on up-drag, spring snap-back.
   _wireNotesSwipeDismiss(pane.querySelector('.notes-mobile-grabber'), pane);
   _wireNotesSwipeDismiss(pane.querySelector('.notes-pane-header'), pane);
@@ -1289,7 +1289,7 @@ export function openPanel() {
       _showingArchived = !_showingArchived;
       _selectedIds.clear();
       syncArchiveBtn();
-      // Brief fade so the body content swap doesn't snap — the bg-tint
+      // Brief fade so the body content swap doesn't snap - the bg-tint
       // change is already eased by CSS transitions on .notes-pane*.
       const _bodyEl = document.querySelector('#notes-pane .notes-pane-body');
       if (_bodyEl) {
@@ -1309,7 +1309,7 @@ export function openPanel() {
   const viewBtn = document.getElementById('notes-view-toggle');
   if (viewBtn) {
     pane.classList.toggle('notes-view-grid', _viewMode === 'grid');
-    // Label shows what you'll switch TO — "Grid" while in list, "List" while in grid.
+    // Label shows what you'll switch TO - "Grid" while in list, "List" while in grid.
     const _setViewLabel = () => {
       const lbl = viewBtn.querySelector('.notes-header-btn-label');
       if (lbl) lbl.textContent = _viewMode === 'grid' ? 'List' : 'Grid';
@@ -1330,7 +1330,7 @@ export function openPanel() {
   });
   // Esc cancels select mode. Notes uses a toggle "Select" button rather
   // than a *-bulk-cancel button, so the global Esc-cancel handler in
-  // keyboard-shortcuts.js can't reach it — handle it here. Capture phase
+  // keyboard-shortcuts.js can't reach it - handle it here. Capture phase
   // + stopPropagation so Esc cancels select instead of closing the panel.
   if (_notesSelectEscHandler) {
     document.removeEventListener('keydown', _notesSelectEscHandler, true);
@@ -1372,7 +1372,7 @@ export function openPanel() {
     uiModule.showToast(`Deleted ${ids.length}`);
   });
   // Escape: exit select mode first (if active), otherwise close the panel.
-  // Skip when the user is editing a form field — those have their own
+  // Skip when the user is editing a form field - those have their own
   // ESC-to-cancel handlers and we don't want to nuke the whole panel
   // mid-edit.
   // Idempotent: remove any previous handler from a prior openPanel so
@@ -1385,7 +1385,7 @@ export function openPanel() {
     if (!_open) return;
     const t = e.target;
     const inField = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable);
-    // Ctrl/Cmd+Z anywhere in the panel — undo the last note action. Skip when
+    // Ctrl/Cmd+Z anywhere in the panel - undo the last note action. Skip when
     // typing in a field so the browser's normal text-undo still works.
     if ((e.ctrlKey || e.metaKey) && (e.key === 'z' || e.key === 'Z') && !e.shiftKey) {
       if (inField) return;
@@ -1423,7 +1423,7 @@ export function openPanel() {
   };
   document.addEventListener('keydown', _notesKeydownHandler);
 
-  // Load — show skeleton immediately, then fetch
+  // Load - show skeleton immediately, then fetch
   _renderLoadingSkeleton();
   // Defer the highlight flush to the next frame so it runs *after* the cards
   // are committed to the DOM (and any FLIP animations have settled), giving
@@ -1560,7 +1560,7 @@ function _renderLabels(root = document) {
     // bell-off icon
     ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:2px"><path d="M13.73 21a2 2 0 0 1-3.46 0"/><path d="M18.63 13A17.89 17.89 0 0 1 18 8"/><path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14"/><path d="M18 8a6 6 0 0 0-9.33-5"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
     : '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:2px"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>';
-  html += `<button class="${reminderCls}" data-action="reminders" title="${isReminderOn ? 'Showing only reminders — click to show all' : isReminderOff ? 'Hiding reminders — click to show only reminders' : 'Click to filter reminders'}">${reminderIcon}Reminders <span class="notes-label-chip-count">${reminderCount}</span></button>`;
+  html += `<button class="${reminderCls}" data-action="reminders" title="${isReminderOn ? 'Showing only reminders - click to show all' : isReminderOff ? 'Hiding reminders - click to show only reminders' : 'Click to filter reminders'}">${reminderIcon}Reminders <span class="notes-label-chip-count">${reminderCount}</span></button>`;
   const showingReminders = _activeFilter === 'reminders';
   if (showingReminders && pastReminderCount > 0) {
     html += `<button class="notes-label-chip notes-label-clear-past" data-action="clear-past-reminders" title="Delete reminders whose time has passed"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Clear past <span class="notes-label-chip-count">${pastReminderCount}</span></button>`;
@@ -1626,7 +1626,7 @@ function _ensureNotesChipRegistered() {
 }
 
 // `direction === 'down'` (mobile swipe-down) MINIMIZES the panel to a
-// dock chip instead of fully closing — tapping the chip reopens it.
+// dock chip instead of fully closing - tapping the chip reopens it.
 // Any other call (close button, programmatic) is a full close.
 export function closePanel(direction) {
   if (!_open) return;
@@ -1640,7 +1640,7 @@ export function closePanel(direction) {
     Modals.unregister('notes-panel');
   }
 
-  // Drop the document keydown listener and the 30s reminder interval —
+  // Drop the document keydown listener and the 30s reminder interval -
   // both leaked across open/close cycles in the v2 review.
   if (_notesKeydownHandler) {
     document.removeEventListener('keydown', _notesKeydownHandler);
@@ -1699,7 +1699,7 @@ export function isPanelOpen() { return _open; }
 
 // ---- Render ----
 
-// FLIP animation — capture positions before render, animate back after
+// FLIP animation - capture positions before render, animate back after
 function _captureCardPositions() {
   const body = document.querySelector('#notes-pane .notes-pane-body');
   if (!body) return null;
@@ -1801,7 +1801,7 @@ function _renderNotes() {
     _renderLabelsInto(body);
     _renderQuickAdd(body);
     if (sorted.length === 0) {
-      body.insertAdjacentHTML('beforeend', `<div class="notes-empty">All caught up — no pending goal steps right now.</div>`);
+      body.insertAdjacentHTML('beforeend', `<div class="notes-empty">All caught up - no pending goal steps right now.</div>`);
     } else {
       let todayHtml = `<div class="notes-today-wrap">
         <div class="notes-today-header">
@@ -1829,14 +1829,14 @@ function _renderNotes() {
     return;
   }
   for (const note of sorted) {
-    if (_editingId === note.id) continue; // skip — form is shown instead
+    if (_editingId === note.id) continue; // skip - form is shown instead
     const borderColor = COLOR_HEX[note.color || ''] || 'var(--border)';
     const dueFmt = _formatDueDate(note.due_date);
     const overdue = _isDueOverdue(note.due_date);
 
     let contentHtml = '';
     if (_hasItems(note) && Array.isArray(note.items)) {
-      // Goal notes can carry a free-form description above the step list —
+      // Goal notes can carry a free-form description above the step list -
       // todos rarely do, but the same render works for both.
       if (note.note_type === 'goal' && (note.content || '').trim()) {
         const fullText = note.content || '';
@@ -1844,7 +1844,7 @@ function _renderNotes() {
         contentHtml += `<div class="note-goal-desc">${_esc(preview)}</div>`;
       }
       contentHtml += '<div class="note-checklist-preview">';
-      // Show ALL items — the preview container is scrollable (CSS caps
+      // Show ALL items - the preview container is scrollable (CSS caps
       // its max-height + overflow-y:auto), so there's no need to truncate.
       for (let i = 0; i < note.items.length; i++) {
         const item = note.items[i];
@@ -1996,7 +1996,7 @@ function _applyMasonry(body) {
   const pane = body.closest('.notes-pane');
   const isGrid = pane?.classList.contains('notes-view-grid');
   const isMobileGrid = isGrid && window.matchMedia('(max-width: 768px)').matches;
-  // Tear down any prior observer (defensive — _renderNotes wipes body.innerHTML).
+  // Tear down any prior observer (defensive - _renderNotes wipes body.innerHTML).
   if (_masonryObserver) { try { _masonryObserver.disconnect(); } catch {} _masonryObserver = null; }
   if (!isGrid) {
     // Clear any leftover inline spans so list view lays out normally.
@@ -2027,7 +2027,7 @@ function _applyMasonry(body) {
     });
   };
   const recompute = (card) => {
-    // scrollHeight returns the natural content height — card.getBoundingClientRect()
+    // scrollHeight returns the natural content height - card.getBoundingClientRect()
     // would return the grid cell height (collapsed to 4px until the span is set,
     // which is the value we're trying to compute).
     const h = card.scrollHeight + (isMobileGrid ? 6 : 8);
@@ -2036,7 +2036,7 @@ function _applyMasonry(body) {
   };
   recomputeFullRows();
   body.querySelectorAll('.note-card').forEach(recompute);
-  // Watch masonry participants — content can grow (image load, todo edits,
+  // Watch masonry participants - content can grow (image load, todo edits,
   // quick-add/form expansion), and stale spans are what cause visual merging.
   if ('ResizeObserver' in window) {
     _masonryObserver = new ResizeObserver(entries => {
@@ -2098,7 +2098,7 @@ function _wireTodayView(body) {
 function _renderQuickAdd(body) {
   const wrap = document.createElement('div');
   wrap.className = 'notes-quick-add';
-  // 2-pill Note/Todo toggle mirrors the full form's type-seg (minus Draw —
+  // 2-pill Note/Todo toggle mirrors the full form's type-seg (minus Draw -
   // drawing happens in the expanded form). The pill that's active steers
   // both the placeholder and the type the form opens in.
   wrap.innerHTML = `
@@ -2164,8 +2164,8 @@ function _renderQuickAdd(body) {
     }
   };
   // Expand only on real intent: a click directly on the input, or actual
-  // typing. Focus alone — including focus stolen from a missed nearby
-  // click — no longer creates an empty form.
+  // typing. Focus alone - including focus stolen from a missed nearby
+  // click - no longer creates an empty form.
   input.addEventListener('click', () => expandToForm(currentType, input.value));
   input.addEventListener('input', () => expandToForm(currentType, input.value));
   wrap.querySelector('[data-action="photo"]').addEventListener('click', (e) => {
@@ -2202,15 +2202,15 @@ function _bindCardEvents(body) {
   body.querySelectorAll('.note-card.note-card-reminder-fired-sticky').forEach(card => {
     card.addEventListener('click', () => _setReminderCardGlow(card.dataset.noteId, false), true);
   });
-  // Click title — edit, or toggle select in select mode
+  // Click title - edit, or toggle select in select mode
   body.querySelectorAll('.note-card-title[data-action="edit"]').forEach(el => {
     el.addEventListener('click', (e) => { e.stopPropagation(); tapToEditOrSelect(el.closest('.note-card')); });
   });
-  // Click content — edit, or toggle select in select mode
+  // Click content - edit, or toggle select in select mode
   body.querySelectorAll('.note-content-preview').forEach(el => {
     el.addEventListener('click', (e) => { e.stopPropagation(); tapToEditOrSelect(el.closest('.note-card')); });
   });
-  // Click empty area of checklist preview (not on checkbox/X) — edit
+  // Click empty area of checklist preview (not on checkbox/X) - edit
   body.querySelectorAll('.note-checklist-preview').forEach(el => {
     el.addEventListener('click', (e) => {
       if (e.target.closest('.note-checkbox, .note-checkbox-rm, .note-checkbox-agent, .note-cl-quickadd, input')) return;
@@ -2218,10 +2218,10 @@ function _bindCardEvents(body) {
       tapToEditOrSelect(el.closest('.note-card'));
     });
   });
-  // Clicking todo item text now toggles its checkbox — let the click bubble
+  // Clicking todo item text now toggles its checkbox - let the click bubble
   // up to the parent .note-checkbox row handler. To open the editor, the
   // user clicks the pencil corner.
-  // (No-op block kept as a marker — removing the listener entirely means
+  // (No-op block kept as a marker - removing the listener entirely means
   // clicks naturally bubble to the row toggle below.)
   // In select mode, clicking anywhere on the card toggles selection
   if (_selectMode) {
@@ -2234,7 +2234,7 @@ function _bindCardEvents(body) {
     });
   }
   // Mobile, non-select: tapping anywhere on the card body (not on an
-  // interactive child — buttons, pin, checkbox, color dot, reminder pill,
+  // interactive child - buttons, pin, checkbox, color dot, reminder pill,
   // agent tag, links) opens the fullscreen editor. Previously only the
   // title / content preview triggered edit, so padding + empty gutters were
   // dead zones that felt broken on mobile.
@@ -2322,10 +2322,10 @@ function _bindCardEvents(body) {
       if (id) _editNote(id);
     });
   });
-  // Copy corner — bottom-right, just left of the Done check. Shared with
+  // Copy corner - bottom-right, just left of the Done check. Shared with
    // the Ctrl/Cmd+C shortcut wired further down so both code paths run the
    // same serializer + feedback flash.
-  // ⋯ corner menu — Copy + Agent (solve-this-todo).
+  // ⋯ corner menu - Copy + Agent (solve-this-todo).
   body.querySelectorAll('.note-card-corner-menu').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
@@ -2348,7 +2348,7 @@ function _bindCardEvents(body) {
       _renderNotes();
     });
   });
-  // Done (✓) at bottom-right — only visible on hover for active notes.
+  // Done (✓) at bottom-right - only visible on hover for active notes.
   body.querySelectorAll('.note-card-done').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -2356,7 +2356,7 @@ function _bindCardEvents(body) {
       const card = btn.closest('.note-card');
       const idx = _notes.findIndex(n => n.id === id);
       if (idx < 0) return;
-      // Celebrate completion — same confetti shower the bulk-archive uses.
+      // Celebrate completion - same confetti shower the bulk-archive uses.
       if (card) {
         const r = card.getBoundingClientRect();
         spawnConfetti(r.left + r.width / 2, r.top + r.height / 2, 80);
@@ -2386,7 +2386,7 @@ function _bindCardEvents(body) {
       }
     });
   });
-  // Unarchive corner — only visible in archive view.
+  // Unarchive corner - only visible in archive view.
   body.querySelectorAll('.note-card-corner-unarchive').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -2402,7 +2402,7 @@ function _bindCardEvents(body) {
       });
     });
   });
-  // Trash corner — archive view only. Permanent delete, no confirmation.
+  // Trash corner - archive view only. Permanent delete, no confirmation.
   body.querySelectorAll('.note-card-corner-trash').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -2440,7 +2440,7 @@ function _bindCardEvents(body) {
       }
     });
   });
-  // Unarchive (optimistic) — only present in archive view
+  // Unarchive (optimistic) - only present in archive view
   body.querySelectorAll('.note-card-unarchive').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -2607,7 +2607,7 @@ function _bindCardEvents(body) {
   });
 
   // Per-item agent solve (hover button next to the X). Scoped to one todo
-  // item — uses the note title as context if present, but only the single
+  // item - uses the note title as context if present, but only the single
   // item's text as the work. Mirrors the per-note _agentSolveNote pattern.
   body.querySelectorAll('.note-checkbox-agent').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -2648,7 +2648,7 @@ function _bindCardEvents(body) {
     });
   });
 
-  // Checkboxes (dot toggle, optimistic) — disabled in select mode
+  // Checkboxes (dot toggle, optimistic) - disabled in select mode
   body.querySelectorAll('.note-checkbox').forEach(el => {
     el.addEventListener('click', (e) => {
       if (_selectMode) return; // let card-level handler take over
@@ -2712,7 +2712,7 @@ function _bindCardEvents(body) {
     // in grid view (2-col) and when the pinned-section grid-column-start rule
     // shifts, several cards reflow at once. Capture every card's pre-swap rect,
     // do the DOM swap, then animate any that actually moved. The dragging card
-    // is excluded — it's already finger-tracked via translate3d.
+    // is excluded - it's already finger-tracked via translate3d.
     const cards = [...body.querySelectorAll('.note-card')].filter(c => c !== dragging);
     const prevRects = new Map(cards.map(c => [c, c.getBoundingClientRect()]));
     const draggingNext = dragging.nextSibling === target ? dragging : dragging.nextSibling;
@@ -2971,7 +2971,7 @@ function _buildForm(note = null) {
       <div class="note-color-picker">
         ${COLORS.map(c => `<span class="note-color-dot${_dotIsActive(c.value, color) ? ' active' : ''}" data-color="${c.value}" style="background:${_dotBg(c.value, color)}" title="${c.name || 'default'}"></span>`).join('')}
       </div>
-      <input type="text" class="note-form-label" value="${_esc(note?.label || '')}" placeholder="#tag1 #tag2" title="Tag(s) — space-separated" />
+      <input type="text" class="note-form-label" value="${_esc(note?.label || '')}" placeholder="#tag1 #tag2" title="Tag(s) - space-separated" />
       <div class="note-form-actions-group">
         ${isEdit ? `
         <button type="button" class="note-form-text-btn note-form-archive-btn note-form-collapsible" title="Archive">
@@ -3003,7 +3003,7 @@ function _buildForm(note = null) {
   // Goal mode kept its own pair of stashes (description + steps) so a
   // Todo→Goal→Todo round-trip wouldn't lose either side. The Goal pill in
   // the type picker was later removed, so the only entry point now is
-  // *editing* an existing goal-typed note — but the switch handler still
+  // *editing* an existing goal-typed note - but the switch handler still
   // accepts Goal→Todo/Note transitions (downgrading legacy goals), so
   // these stashes still earn their keep.
   let _stashedGoalDesc = (type === 'goal') ? (note?.content || '') : null;
@@ -3021,7 +3021,7 @@ function _buildForm(note = null) {
     });
   };
 
-  // Type segmented control — Note | Todo | Draw
+  // Type segmented control - Note | Todo | Draw
   form.querySelectorAll('.note-form-type-pill').forEach(pill => {
     pill.addEventListener('click', () => {
       const newType = pill.dataset.type;
@@ -3095,7 +3095,7 @@ function _buildForm(note = null) {
       // Hide it in draw mode, restore it when leaving draw mode.
       const imgWrap = form.querySelector('.note-form-image-wrap');
       if (imgWrap) imgWrap.style.display = (newType === 'draw') ? 'none' : '';
-      // The background-color dots set the note card's bg — they make no sense
+      // The background-color dots set the note card's bg - they make no sense
       // for a drawn note (the canvas image IS the card content), so hide them.
       const bgPicker = form.querySelector('.note-color-picker');
       if (bgPicker) bgPicker.style.display = (newType === 'draw') ? 'none' : '';
@@ -3108,7 +3108,7 @@ function _buildForm(note = null) {
   });
 
   // Slide a finger across the Note/Todo/Draw control to switch modes (mobile).
-  // On touchmove we find the pill under the finger and click it — reusing the
+  // On touchmove we find the pill under the finger and click it - reusing the
   // pill click handler above, so the body re-renders + content stashing all
   // work. Only fires when crossing into a *different* pill.
   const _typeSeg = form.querySelector('.note-form-type-seg');
@@ -3126,7 +3126,7 @@ function _buildForm(note = null) {
     _typeSeg.addEventListener('touchcancel', () => { _sliding = false; });
   }
 
-  // Color dots — apply to entire form immediately
+  // Color dots - apply to entire form immediately
   const _applyFormColor = (newColor) => {
     currentColor = newColor || '';
     form.dataset.noteColor = currentColor;
@@ -3155,13 +3155,13 @@ function _buildForm(note = null) {
   if (currentType === 'goal') _wireGoalForm(form, form.querySelector('.note-form-body'));
   if (currentType === 'draw') {
     _wireCanvas(form.querySelector('.note-form-body'), _safeImgSrc(note?.image_url) || null);
-    // Same hides we apply on type-switch — keep them consistent on initial open.
+    // Same hides we apply on type-switch - keep them consistent on initial open.
     const _ip = form.querySelector('.note-form-image-wrap'); if (_ip) _ip.style.display = 'none';
     const _cp = form.querySelector('.note-color-picker'); if (_cp) _cp.style.display = 'none';
   }
 
   // Auto-grow the plain-note textarea so editing longer notes is
-  // comfortable — it expands with the content (up to a cap) instead of
+  // comfortable - it expands with the content (up to a cap) instead of
   // staying a cramped 4-row box. The user can still drag-resize too.
   const _contentTa = form.querySelector('.note-form-content');
   if (_contentTa) {
@@ -3170,20 +3170,20 @@ function _buildForm(note = null) {
       // Inline form: cap at ~50vh so a huge note doesn't push the action
       // buttons off-screen. Fullscreen mobile overlay: the body scrolls and
       // there are no inline buttons crowding, so allow nearly the full height
-      // — capping at 50vh there clipped longer notes ("part disappears").
+      // - capping at 50vh there clipped longer notes ("part disappears").
       const inFullscreen = !!_contentTa.closest('.note-fullscreen-overlay');
       const max = Math.round(window.innerHeight * (inFullscreen ? 0.9 : 0.5));
       _contentTa.style.height = Math.min(_contentTa.scrollHeight, max) + 'px';
     };
     _contentTa.addEventListener('input', _grow);
     // Grow on open so existing content is fully visible. Run again after the
-    // fullscreen overlay's open animation settles — measuring mid-animation
+    // fullscreen overlay's open animation settles - measuring mid-animation
     // (the overlay starts scaled/transitioning) can under-size the box.
     setTimeout(_grow, 0);
     setTimeout(_grow, 360);
   }
 
-  // Reminder bell — opens dropdown menu
+  // Reminder bell - opens dropdown menu
   const remindBtn = form.querySelector('.note-form-remind-btn');
   const dueInput = form.querySelector('.note-form-due');
   const repeatInput = form.querySelector('.note-form-repeat');
@@ -3327,7 +3327,7 @@ function _buildForm(note = null) {
         const dayN = dueDate.getDate();
         html += `<button class="note-reminder-menu-back" data-action="back"><span class="note-reminder-menu-arrow-back">‹</span> Repeat</button>`;
         html += '<div class="note-reminder-menu-title">Monthly on…</div>';
-        // Day N — uses the chosen date's day. Always offered.
+        // Day N - uses the chosen date's day. Always offered.
         const dayVal = `monthly:day:${dayN}`;
         html += `<button class="note-reminder-menu-item${norm === dayVal ? ' active' : ''}" data-action="set" data-val="${dayVal}"><span>Day ${dayN} every month</span>${norm === dayVal ? '<span class="note-reminder-menu-check">✓</span>' : ''}</button>`;
         // Nth weekday →
@@ -3376,7 +3376,7 @@ function _buildForm(note = null) {
             snapAndCommit(el.dataset.val);
           } else if (a === 'sub') {
             subMode = el.dataset.sub;
-            // Seed nth draft from saved value only on first entry — preserve
+            // Seed nth draft from saved value only on first entry - preserve
             // in-progress picks across back-trips (Nth → back → Nth again).
             if (subMode === 'monthly_nth' && nthDraft.n === 0 && nthDraft.w === -1) {
               const norm = getNorm();
@@ -3513,7 +3513,7 @@ function _buildForm(note = null) {
         const fileId = data.files?.[0]?.id;
         if (!fileId) throw new Error('Upload failed');
         currentImageUrl = `${API_BASE}/api/upload/${fileId}`;
-        // Only ever keep the latest attached photo — drop any existing wrap
+        // Only ever keep the latest attached photo - drop any existing wrap
         // before inserting a fresh one. Picking a second photo replaces the
         // first instead of stacking.
         form.querySelector('.note-form-image-wrap')?.remove();
@@ -3521,7 +3521,7 @@ function _buildForm(note = null) {
         wrap.className = 'note-form-image-wrap';
         wrap.innerHTML = `<img class="note-form-image" draggable="false" /><button class="note-form-image-rm" title="Remove">&times;</button>`;
         // Insert AFTER the whole header (a flex-row), not after the
-        // title input itself — otherwise the image lands as a sibling
+        // title input itself - otherwise the image lands as a sibling
         // of the title inside the header and flex puts them side-by-side.
         form.querySelector('.note-form-header').after(wrap);
         wrap.querySelector('.note-form-image-rm').addEventListener('click', () => { wrap.remove(); currentImageUrl = ''; });
@@ -3558,7 +3558,7 @@ function _buildForm(note = null) {
       const m = _hashtagRe.exec(el.value);
       if (!m) return;
       const tag = m[2];
-      // Dedup against the stripped form — labelInput may already hold `#tag`
+      // Dedup against the stripped form - labelInput may already hold `#tag`
       // (after Enter normalised), so includes(tag) on the raw split would
       // miss the duplicate and append a bare `tag` next to `#tag`.
       const existing = labelInput.value.trim().split(/\s+/).filter(Boolean);
@@ -3650,7 +3650,7 @@ function _buildForm(note = null) {
       payload.content = form.querySelector('.note-form-content')?.value || '';
     } else if (currentType === 'draw') {
       // Upload the canvas PNG before saving so image_url points to a
-      // persistent file. We block the save until upload completes — drawings
+      // persistent file. We block the save until upload completes - drawings
       // can't be re-rendered later without the URL.
       const canvas = form.querySelector('.note-form-canvas');
       const url = await _uploadCanvasAsPng(canvas);
@@ -3658,7 +3658,7 @@ function _buildForm(note = null) {
       payload.image_url = url;
     } else if (currentType === 'goal') {
       // Legacy: existing goal-type notes still edit through this branch.
-      // No AI involvement — save as a normal note with description + items.
+      // No AI involvement - save as a normal note with description + items.
       payload.content = form.querySelector('.note-form-goal-desc')?.value || '';
       payload.items = _collectItems(form);
     } else {
@@ -3690,7 +3690,7 @@ function _buildForm(note = null) {
         .reduce((m, n) => Math.min(m, n.sort_order || 0), 0);
       payload.sort_order = minUnpinned - 1;
     }
-    // Optimistic update — update local state first, render, then save in background
+    // Optimistic update - update local state first, render, then save in background
     _editingId = null;
     _clearDraft(isEdit ? note.id : '__new__');  // saved → discard the draft
     if (isEdit) {
@@ -3703,7 +3703,7 @@ function _buildForm(note = null) {
     // Background save
     _saveNote(payload).then(saved => {
       if (!isEdit && saved && saved.id) {
-        // Replace temp ID with real one from server. AND re-render — the
+        // Replace temp ID with real one from server. AND re-render - the
         // existing card's `data-note-id="tmp_xxx"` is stale after Object.assign
         // bumps the in-memory id, so all subsequent clicks (edit, done, copy,
         // archive, delete) silently fail to find the note in `_notes`.
@@ -3747,7 +3747,7 @@ function _buildForm(note = null) {
   // Cancel
   form.querySelector('.note-form-cancel').addEventListener('click', () => { _clearDraft(isEdit ? note.id : '__new__'); _editingId = null; _renderNotes(); });
 
-  // Archive / Delete — edit-mode-only buttons, mirror the (now-hidden) card actions.
+  // Archive / Delete - edit-mode-only buttons, mirror the (now-hidden) card actions.
   form.querySelector('.note-form-archive-btn')?.addEventListener('click', () => {
     if (!isEdit) return;
     _archiveNoteById(note.id);
@@ -3780,7 +3780,7 @@ function _buildForm(note = null) {
 
 // Legacy goal-typed notes still render through this branch so existing
 // data isn't lost. The "Goal" type is no longer exposed in the form picker
-// or quick-add — these notes show with a description + manual checklist
+// or quick-add - these notes show with a description + manual checklist
 // editor, just like a regular todo with a body.
 function _buildGoalHtml(note, items) {
   const desc = (note?.content || '').toString();
@@ -3794,7 +3794,7 @@ function _buildGoalHtml(note, items) {
 
 function _wireGoalForm(form, container) {
   if (!container) return;
-  // _wireHashtag is a closure inside _buildForm — out of scope here. Inline
+  // _wireHashtag is a closure inside _buildForm - out of scope here. Inline
   // the same behavior (type "#foo " in the description → tag added to the
   // form's label input) so editing a goal note doesn't ReferenceError.
   const desc = container.querySelector('.note-form-goal-desc');
@@ -3819,7 +3819,7 @@ function _wireGoalForm(form, container) {
     });
   }
   // Always wire the checklist. The previous gate on a `note-form-goal-fresh`
-  // class was dead code — nothing ever set that class, so the editor never
+  // class was dead code - nothing ever set that class, so the editor never
   // hooked up add/drag/Tab.
   _wireChecklist(container);
 }
@@ -3835,7 +3835,7 @@ function _buildChecklistHtml(items) {
       <button type="button" class="note-cl-rm">&times;</button>
     </div>`;
   }
-  // `type="button"` matters on mobile — without it some browsers treat
+  // `type="button"` matters on mobile - without it some browsers treat
   // bare <button> as form-submit and the click handler never fires inside
   // certain containers. Also bumped tap target so fingers don't miss.
   html += `<button type="button" class="note-cl-add">+ Add</button></div>`;
@@ -3980,12 +3980,12 @@ function _buildDrawHtml() {
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>
           </button>
         </div>
-        <button type="button" class="note-form-draw-text" title="Add text — click to cycle size">T<span class="note-form-draw-text-badge"></span></button>
-        <button type="button" class="note-form-draw-line" title="Line — click to cycle size">
+        <button type="button" class="note-form-draw-text" title="Add text - click to cycle size">T<span class="note-form-draw-text-badge"></span></button>
+        <button type="button" class="note-form-draw-line" title="Line - click to cycle size">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="20" x2="20" y2="4"/></svg>
           <span class="note-form-draw-shape-badge"></span>
         </button>
-        <button type="button" class="note-form-draw-circle" title="Circle — click to cycle size">
+        <button type="button" class="note-form-draw-circle" title="Circle - click to cycle size">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>
           <span class="note-form-draw-shape-badge"></span>
         </button>
@@ -4003,7 +4003,7 @@ function _wireCanvas(container, initialImageUrl) {
   const canvas = container.querySelector('.note-form-canvas');
   if (!canvas) return;
   // Bump the backing-store resolution for retina displays so strokes stay
-  // crisp. Set only style.width — leaving style.height to auto so the canvas
+  // crisp. Set only style.width - leaving style.height to auto so the canvas
   // scales uniformly via its intrinsic aspect ratio. If both CSS dimensions
   // are pinned, max-width:100% shrinks the width only, leaving rasterized
   // glyphs visibly stretched relative to their on-screen input.
@@ -4057,7 +4057,7 @@ function _wireCanvas(container, initialImageUrl) {
   const colorInput = container.querySelector('.note-form-draw-color');
   // Swap the native browser color dialog for the in-house HSV picker
   // (same one used by Themes + the gallery editor). Existing `input` event
-  // listeners + .value reads keep working — see colorPicker.js.
+  // listeners + .value reads keep working - see colorPicker.js.
   if (colorInput) attachColorPicker(colorInput);
   const sizeInput = container.querySelector('.note-form-draw-size');
   const beSeg = container.querySelector('.note-form-draw-be');
@@ -4076,14 +4076,14 @@ function _wireCanvas(container, initialImageUrl) {
   let last = null;
   // The text tool has three preset sizes (CSS px font-size).
   const TEXT_SIZES = { 's': 16, 'm': 26, 'l': 40 };
-  // Line / circle stroke widths in logical pixels — three crisp options.
+  // Line / circle stroke widths in logical pixels - three crisp options.
   const SHAPE_WIDTHS = { 's': 2, 'm': 5, 'l': 10 };
   // Snapshot taken at the start of a shape drag so the preview can repaint
   // cleanly on each move without accumulating intermediate strokes.
   let _shapeSnapshot = null;
 
   // Per-canvas undo stack. We snapshot the bitmap (as ImageData) BEFORE each
-  // operation — stroke, text commit, or future operations — and pop+restore
+  // operation - stroke, text commit, or future operations - and pop+restore
   // on Undo. Cap to 30 to keep memory bounded.
   const _undoStack = [];
   const UNDO_LIMIT = 30;
@@ -4142,7 +4142,7 @@ function _wireCanvas(container, initialImageUrl) {
   // annotations work in our doc editor.
   let _activeTextInput = null;
   const _openTextInput = (e) => {
-    // Commit any prior pending input before starting a new one — otherwise
+    // Commit any prior pending input before starting a new one - otherwise
     // the first click leaves an orphaned input the user thinks "didn't work".
     if (_activeTextInput) { try { _activeTextInput.blur(); } catch {} }
     const r = canvas.getBoundingClientRect();
@@ -4154,7 +4154,7 @@ function _wireCanvas(container, initialImageUrl) {
     const py = t.clientY - r.top;
     const logical = _pos(e);
     // Size is decided by which T variant is active (S/M/L), not the stroke
-    // slider — those are independent dials.
+    // slider - those are independent dials.
     const sizeKey = mode.startsWith('text-') ? mode.slice(-1) : 'm';
     const sizeCss = TEXT_SIZES[sizeKey] || TEXT_SIZES.m;
     const wrap = container.querySelector('.note-form-draw-wrap');
@@ -4262,7 +4262,7 @@ function _wireCanvas(container, initialImageUrl) {
   canvas.addEventListener('mousedown', _begin);
   canvas.addEventListener('mousemove', _move);
   window.addEventListener('mouseup', _end);
-  // Non-passive so text mode can preventDefault — otherwise the synthetic
+  // Non-passive so text mode can preventDefault - otherwise the synthetic
   // mousedown/click that follows a touch can blur the freshly-created text
   // input on iOS Safari, making T look like a no-op.
   canvas.addEventListener('touchstart', (e) => { if (mode.startsWith('text-')) e.preventDefault(); _begin(e); }, { passive: false });
@@ -4270,7 +4270,7 @@ function _wireCanvas(container, initialImageUrl) {
   canvas.addEventListener('touchend', _end);
   canvas.addEventListener('touchcancel', _end);
 
-  // Single mode setter — keeps the toolbar, swatch, and cursor in sync, and
+  // Single mode setter - keeps the toolbar, swatch, and cursor in sync, and
   // makes sure exiting the eraser restores the user's chosen color whether
   // they exit by clicking another tool or by toggling eraser off.
   let _preEraseColor = null;
@@ -4288,7 +4288,7 @@ function _wireCanvas(container, initialImageUrl) {
       colorInput.value = _preEraseColor;
       _preEraseColor = null;
     }
-    // Brush/Eraser segmented pill — slides to the active side. When a non-
+    // Brush/Eraser segmented pill - slides to the active side. When a non-
     // pen/eraser tool (T / line / circle) is active, neither half is
     // highlighted, but the pill still indicates which side the user was on
     // last so they can return with one click.
@@ -4307,7 +4307,7 @@ function _wireCanvas(container, initialImageUrl) {
     if (lBadge) lBadge.textContent = isLine ? next.slice(-1).toUpperCase() : '';
     const cBadge = circleBtn?.querySelector('.note-form-draw-shape-badge');
     if (cBadge) cBadge.textContent = isCircle ? next.slice(-1).toUpperCase() : '';
-    // Reflect the chosen size in the icon itself — thicker line/circle stroke
+    // Reflect the chosen size in the icon itself - thicker line/circle stroke
     // for M+L, larger T glyph for M+L. CSS rules read `.size-s/.size-m/.size-l`.
     const _sz = next.slice(-1);
     [textBtn, lineBtn, circleBtn].forEach(b => b?.classList.remove('size-s', 'size-m', 'size-l'));
@@ -4488,13 +4488,13 @@ async function _agentSolveNote(id) {
   const note = _notes.find(n => n.id === id);
   if (!note) return;
   const prompt = _noteToAgentPrompt(note);
-  if (!prompt) { uiModule.showToast('Nothing to solve — note is empty'); return; }
+  if (!prompt) { uiModule.showToast('Nothing to solve - note is empty'); return; }
   try {
     const dc = await (await fetch(`${API_BASE}/api/default-chat`, { credentials: 'same-origin' })).json();
     if (!dc.endpoint_url || !dc.model) { uiModule.showError('No default chat model configured'); return; }
 
     // 1. Create the session server-side (no UI switch). skip_validation
-    //    avoids re-probing — the default-chat endpoint is already known good.
+    //    avoids re-probing - the default-chat endpoint is already known good.
     const label = (note.title || (Array.isArray(note.items) && note.items[0]?.text) || 'todo').slice(0, 40);
     const csFd = new FormData();
     csFd.append('name', 'Agent: ' + label);
@@ -4515,7 +4515,7 @@ async function _agentSolveNote(id) {
 
     // 3. Kick off the agent run in the background. POST to chat_stream in
     //    agent mode and drain the SSE so the server runs the loop to
-    //    completion + saves — without rendering anything in the chat UI.
+    //    completion + saves - without rendering anything in the chat UI.
     const fd = new FormData();
     fd.append('message', prompt);
     fd.append('session', sid);
@@ -4533,7 +4533,7 @@ async function _agentSolveNote(id) {
       })
       .catch(() => {});
 
-    uiModule.showToast('Agent working in background — tap the Agent tag when ready');
+    uiModule.showToast('Agent working in background - tap the Agent tag when ready');
   } catch (e) {
     uiModule.showError('Agent failed: ' + (e.message || e));
   }
@@ -4543,14 +4543,14 @@ async function _agentSolveNote(id) {
 // the note title (if any) is included as context, but only this one item's
 // text is the work the agent is asked to do. agent_session_id is set on the
 // PARENT note (latest-wins) so the Agent tag still surfaces the most recent
-// run from this note — same UX as a per-note solve.
+// run from this note - same UX as a per-note solve.
 async function _agentSolveTodoItem(noteId, idx) {
   const note = _notes.find(n => n.id === noteId);
   if (!note || !Array.isArray(note.items)) return;
   const item = note.items[idx];
   const itemText = (item && (item.text || '').trim()) || '';
   if (!itemText) {
-    uiModule.showToast('Nothing to solve — item is empty');
+    uiModule.showToast('Nothing to solve - item is empty');
     return;
   }
   const titleCtx = (note.title || '').trim();
@@ -4613,7 +4613,7 @@ async function _agentSolveTodoItem(noteId, idx) {
       })
       .catch(() => {});
 
-    uiModule.showToast('Agent working on this item — tap the Agent tag when ready');
+    uiModule.showToast('Agent working on this item - tap the Agent tag when ready');
   } catch (e) {
     uiModule.showError('Agent failed: ' + (e.message || e));
   }
@@ -4668,7 +4668,7 @@ function _editNote(id) {
   const form = _buildForm(_n);
   card.replaceWith(form);
   if (restored) uiModule.showToast('Restored unsaved changes');
-  // Pinned notes live in the first masonry column — the edit form has
+  // Pinned notes live in the first masonry column - the edit form has
   // column-span:all, which can leave the form rendered above the fold or
   // visually buried under neighboring pinned cards. Bring it into view
   // (and onto a higher stacking context) so editing a pinned note always
@@ -4690,7 +4690,7 @@ function _editNote(id) {
     catch { form.scrollIntoView(); }
   });
   // Pick the most useful field to focus. On phones especially, the user
-  // taps Edit to type — landing in the title when there's already a title
+  // taps Edit to type - landing in the title when there's already a title
   // (and likely a body to extend) loses momentum. Prefer the body textarea
   // for plain notes, the first checklist item for todos, fall back to title.
   const _focusBest = () => {
@@ -4722,7 +4722,7 @@ async function _deleteNote(id) {
 }
 
 // ────────────────────────────────────────────────────────────────────
-// MOBILE NOTES UX — fullscreen tap-to-edit + long-press drag-to-reorder.
+// MOBILE NOTES UX - fullscreen tap-to-edit + long-press drag-to-reorder.
 // On a touch device ≤768px wide, note tiles become read-only previews;
 // a single tap opens the note in a full-bleed overlay (where all real
 // editing happens), and a long-press flips the whole grid into
@@ -4777,7 +4777,7 @@ function _openMobileFullscreenEdit(id, fromCard) {
   overlay.classList.add('opening');
   requestAnimationFrame(() => overlay.classList.add('open'));
 
-  // Wire the back button — saves whatever the form has and closes.
+  // Wire the back button - saves whatever the form has and closes.
   // mousedown preventDefault so it doesn't blur the input on first tap (which
   // would eat the tap and require a second one).
   const _backBtn = overlay.querySelector('.note-fullscreen-back');
@@ -4801,7 +4801,7 @@ function _openMobileFullscreenEdit(id, fromCard) {
     });
   }
   // The built-in Save handler does the API call + refresh, but doesn't
-  // dismiss our overlay. Augment it (do NOT replace — the original is
+  // dismiss our overlay. Augment it (do NOT replace - the original is
   // async and we'd lose the API call) to schedule a close once the
   // save+render has had time to complete.
   const saveBtn = form.querySelector('.note-form-save');
@@ -4837,7 +4837,7 @@ function _openMobileFullscreenEdit(id, fromCard) {
     headerActions.appendChild(deleteBtn);
   }
   // The built-in archive/delete handlers re-render the notes grid but
-  // leave THIS overlay sitting in front of it — looks like nothing
+  // leave THIS overlay sitting in front of it - looks like nothing
   // happened. Add follow-up listeners that close the overlay so the
   // user sees the action take effect.
   if (archiveBtn) {
@@ -4847,7 +4847,7 @@ function _openMobileFullscreenEdit(id, fromCard) {
   }
   if (deleteBtn) {
     deleteBtn.addEventListener('click', () => {
-      // Delete shows a styled confirm — give it room to resolve before
+      // Delete shows a styled confirm - give it room to resolve before
       // we try to dismiss the overlay.
       setTimeout(() => _closeMobileFullscreenEdit({ save: false }), 500);
     });
@@ -4863,7 +4863,7 @@ function _openMobileFullscreenEdit(id, fromCard) {
   }
 
   // For checklist-type notes, move the photo (attach image) button into
-  // the same row as the + Add button (right side) — keeps the meta row
+  // the same row as the + Add button (right side) - keeps the meta row
   // tidy and puts the camera within thumb-reach of the active edit.
   const addBtn   = form.querySelector('.note-cl-add');
   const photoBtn = form.querySelector('.note-form-photo-btn');
@@ -4883,7 +4883,7 @@ function _openMobileFullscreenEdit(id, fromCard) {
     });
     // The form's delegated "+ Add" handler does
     //   inputs.insertBefore(newRow, addBtn)
-    // — but addBtn is no longer a direct child of `.note-checklist-inputs`
+    // - but addBtn is no longer a direct child of `.note-checklist-inputs`
     // now that we wrapped it. Bind a fresh handler that does the same
     // thing but inserts before the WRAPPING row, and stop propagation
     // so the broken delegate never runs.
@@ -4921,7 +4921,7 @@ function _openMobileFullscreenEdit(id, fromCard) {
       if (e.target.closest('a')) return;  // let links open normally
       reader.remove();
       ta.style.display = '';
-      // Let the browser place the cursor naturally — forcing
+      // Let the browser place the cursor naturally - forcing
       // setSelectionRange right after focus() raced with the underlying
       // tap event and produced inconsistent cursor positions on mobile.
       ta.focus({ preventScroll: true });
@@ -5000,7 +5000,7 @@ function _bindLongPressDrag(card) {
 // Lift-and-placeholder drag implementation. The dragged card detaches
 // from the grid (position:fixed, anchored to the finger) while a same-
 // sized placeholder takes its slot. Only the PLACEHOLDER moves between
-// siblings as the finger crosses midpoints — the card never re-parents
+// siblings as the finger crosses midpoints - the card never re-parents
 // during the drag, which eliminates the oscillation/jumping the
 // previous swap-on-every-frame implementation had.
 
@@ -5016,7 +5016,7 @@ function _enterDragMode(initialCard, initialTouch) {
     document.addEventListener('touchcancel', _onDocTouchEnd, { passive: true });
     _docDragHandlersBound = true;
   }
-  // Auto-grab the card the user long-pressed — they're already holding
+  // Auto-grab the card the user long-pressed - they're already holding
   // their finger on it, so begin the drag straight away. Releasing
   // (touchend) commits the reorder AND exits drag mode in one motion.
   if (initialCard && initialTouch) {
@@ -5059,7 +5059,7 @@ function _beginGrab(card, touch) {
   const grid = card.parentNode;
   grid.insertBefore(placeholder, card);
 
-  // Detach the card visually — fixed-position, anchored to the finger.
+  // Detach the card visually - fixed-position, anchored to the finger.
   card.classList.add('note-card-dragging');
   card.style.position = 'fixed';
   card.style.left = rect.left + 'px';
@@ -5102,7 +5102,7 @@ function _onDocTouchMove(e) {
 
   // Move the PLACEHOLDER (not the card) above or below the target depending
   // on which half of the target the finger is in. This is the hysteresis
-  // that stops the oscillation — once the placeholder moves past a card,
+  // that stops the oscillation - once the placeholder moves past a card,
   // the cursor has to cross THAT card's midpoint in the other direction
   // to swap back.
   const tRect = target.getBoundingClientRect();
@@ -5124,7 +5124,7 @@ function _onDocTouchEnd() {
   _dragState = null;
   // Animate the card from its current fixed position to where the
   // placeholder sits, then re-parent and clear inline styles. Drag
-  // mode auto-exits once the snap finishes — release = done.
+  // mode auto-exits once the snap finishes - release = done.
   const phRect = placeholder.getBoundingClientRect();
   card.style.transition = 'left 0.2s ease, top 0.2s ease';
   card.style.left = phRect.left + 'px';
@@ -5140,14 +5140,14 @@ function _onDocTouchEnd() {
     else card.removeAttribute('style');
     _applyMasonry(grid);
     _commitNoteReorder();
-    // One drag, one exit — release ends the rearrange session entirely.
+    // One drag, one exit - release ends the rearrange session entirely.
     if (document.body.classList.contains('notes-drag-mode')) {
       document.body.classList.remove('notes-drag-mode');
     }
   }, 210);
 }
 
-// Per-row read mode for todo items — replaces the plain <input> with
+// Per-row read mode for todo items - replaces the plain <input> with
 // a linkified <span> when the value contains a URL, so tapping a link
 // opens it instead of just placing the caret. Tapping non-link area
 // restores the input for editing.
@@ -5296,7 +5296,7 @@ async function _commitNoteReorder() {
 }
 
 
-// Background reminder loop — runs whether panel is open or not
+// Background reminder loop - runs whether panel is open or not
 async function _initReminders() {
   try {
     const res = await fetch(`${API_BASE}/api/notes`, { credentials: 'same-origin' });

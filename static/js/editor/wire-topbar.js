@@ -1,5 +1,5 @@
 /**
- * Topbar wiring — undo/redo/history, Save dropdown, zoom buttons,
+ * Topbar wiring - undo/redo/history, Save dropdown, zoom buttons,
  * Save/Export/Download/Project, Edge popup, and the cross-dropdown
  * coordination (close-others + global outside-click).
  *
@@ -66,7 +66,7 @@ export function wireTopbar(deps) {
   document.getElementById('ge-redo')?.addEventListener('click', redo);
   document.getElementById('ge-history-btn')?.addEventListener('click', toggleHistoryPanel);
 
-  // Save dropdown — "Save ▾" toggles a small menu (Save / Save-as /
+  // Save dropdown - "Save ▾" toggles a small menu (Save / Save-as /
   // Download / Save project / Load project). Inner items keep their
   // original IDs so the standalone handlers below wire to them
   // unchanged.
@@ -82,7 +82,7 @@ export function wireTopbar(deps) {
       });
       // Reparent the menu to <body>. Without this, the menu inherits
       // the gallery modal's containing block (the modal applies a
-      // `transform: scale(...)` for its enter animation — and any
+      // `transform: scale(...)` for its enter animation - and any
       // non-`none` transform on an ancestor makes that ancestor the
       // containing block for `position: fixed` descendants, even after
       // the animation lands on identity). The JS math below assumes
@@ -129,7 +129,7 @@ export function wireTopbar(deps) {
   document.getElementById('ge-save-project')?.addEventListener('click', saveProject);
   document.getElementById('ge-load-project')?.addEventListener('click', loadProjectPrompt);
 
-  // Global outside-click — closes EVERY editor dropdown when the
+  // Global outside-click - closes EVERY editor dropdown when the
   // user clicks anywhere that isn't a menu or trigger button. Each
   // menu has its own click-away handler too; this is a defence-in-
   // depth net for cross-menu clicks / mobile touches that miss the
@@ -145,7 +145,7 @@ export function wireTopbar(deps) {
     }
   });
 
-  // Edge popup — Width input + Feather / Delete action buttons.
+  // Edge popup - Width input + Feather / Delete action buttons.
   function applyEdgeAction(hardDelete) {
     const layer = activeLayer();
     if (!layer || layer.locked) { uiModule.showToast('Select an unlocked layer'); return; }

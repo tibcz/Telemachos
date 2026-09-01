@@ -33,7 +33,7 @@ def _compare_start_route(session_manager):
 
 class _FakeDB:
     """The endpoint lookup is patched, so only the trailing Comparison insert
-    touches this — swallow add/commit/close so the test never hits a real DB."""
+    touches this - swallow add/commit/close so the test never hits a real DB."""
 
     def add(self, *a, **k):
         pass
@@ -79,7 +79,7 @@ def test_compare_start_rejects_unregistered_endpoint_for_non_admin(monkeypatch):
 def test_compare_start_allows_owned_registered_endpoint_for_non_admin(monkeypatch):
     # Regression: the followup must not blanket-reject non-admins. Compare
     # resolves endpoints by URL (no endpoint_id), so a caller comparing a
-    # registered endpoint they own has to be allowed — only truly raw,
+    # registered endpoint they own has to be allowed - only truly raw,
     # unregistered URLs are rejected.
     import routes.compare_routes as cr
 
@@ -155,7 +155,7 @@ def test_compare_start_rejects_before_creating_any_session_on_mixed_endpoints(mo
     # Mixed request: endpoint A is a registered endpoint the caller owns,
     # endpoint B is a raw/unregistered URL. Both endpoints are resolved and
     # validated up front, so the unregistered B makes the WHOLE request 403 with
-    # nothing created — no half-built [CMP] session for A, and therefore none of
+    # nothing created - no half-built [CMP] session for A, and therefore none of
     # A's Authorization header left behind. Fails on the old interleaved loop
     # that created A's session before reaching (and rejecting) B.
     import routes.compare_routes as cr
@@ -236,8 +236,8 @@ def test_compare_start_binds_session_to_registered_endpoint_url(monkeypatch):
 def test_compare_start_admin_raw_endpoint_carries_no_borrowed_key(monkeypatch):
     # Explicit admin/raw-endpoint behavior: an admin may pass a raw URL that
     # matches no registered endpoint. It is allowed (the reject helper is a
-    # no-op for admins), the session keeps the raw URL, and — because nothing
-    # matched — no key/headers are inherited from any endpoint row.
+    # no-op for admins), the session keeps the raw URL, and - because nothing
+    # matched - no key/headers are inherited from any endpoint row.
     import routes.compare_routes as cr
 
     monkeypatch.setattr(cr, "SessionLocal", lambda: _FakeDB())

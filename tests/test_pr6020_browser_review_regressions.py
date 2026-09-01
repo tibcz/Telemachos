@@ -476,7 +476,7 @@ def test_superseded_stream_cleanup_leaves_replacement_state_alone():
     """A stale send's finally must not clear state the replacement owns.
 
     Ownership is decided by generation, which the replacement bumps at its
-    very first synchronous step — so the guard holds even in the window
+    very first synchronous step - so the guard holds even in the window
     BEFORE the replacement registers its own stream entry (where the old
     finally still sees its own registration and controller identity alone
     would call it the owner).
@@ -488,7 +488,7 @@ def test_superseded_stream_cleanup_leaves_replacement_state_alone():
     finally_cleanup = _extract_source(
         _CHAT,
         "const _ownsStreamState =",
-        "// Streaming done — let screen readers announce",
+        "// Streaming done - let screen readers announce",
     )
     script = f"""
       let currentAbort = null;
@@ -508,7 +508,7 @@ def test_superseded_stream_cleanup_leaves_replacement_state_alone():
       const oldCtrl = {{ signal: {{ aborted: true }}, abort() {{}} }};
       const newCtrl = {{ signal: {{ aborted: false }}, abort() {{}} }};
       // Pre-registration supersession: the replacement bumped the generation
-      // and set the session id, but has NOT registered its stream entry yet —
+      // and set the session id, but has NOT registered its stream entry yet -
       // the old send's own entry is still the one in the map.
       _streamGenerations.set('session-1', 2);
       _streamSessionId = 'session-1';
@@ -584,7 +584,7 @@ def test_real_reservation_supersedes_and_stale_cleanup_keeps_gate_closed():
     finally_cleanup = _extract_source(
         _CHAT,
         "const _ownsStreamState =",
-        "// Streaming done — let screen readers announce",
+        "// Streaming done - let screen readers announce",
     )
     script = f"""
       let currentAbort = null;
@@ -711,7 +711,7 @@ def test_stale_preflight_bails_before_creating_controller():
     assert _run_node(script) == {
         "staleBailed": True,
         "staleControllerNever": True,
-        "staleBubbleNotes": ["[Not sent — superseded by a newer message]"],
+        "staleBubbleNotes": ["[Not sent - superseded by a newer message]"],
         "currentProceeded": True,
         "currentWired": True,
         "currentBubbleNotes": [],
@@ -753,7 +753,7 @@ def test_stop_during_replacement_preflight_never_borrows_old_controller():
       {state_and_stop}
       {abort_current}
       const oldCtrl = {{ signal: {{ aborted: false }}, abort() {{ this.signal.aborted = true; }} }};
-      // Generation 1 is registered, streaming, and its run id is KNOWN — the
+      // Generation 1 is registered, streaming, and its run id is KNOWN - the
       // exact window daybreak probed: a Stop right after the replacement
       // commits must not consume the old run identity.
       _streamGenerations.set('session-1', 1);

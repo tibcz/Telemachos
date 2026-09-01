@@ -1,5 +1,5 @@
 """
-Topic analysis for conversations — deduplicated from app.py.
+Topic analysis for conversations - deduplicated from app.py.
 Used by /api/conversations/topics and /api/memory/extract fallback.
 """
 

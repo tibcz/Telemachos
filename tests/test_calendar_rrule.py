@@ -1,4 +1,4 @@
-"""Issue #1320 — the agent's manage_calendar tool can create a recurring event.
+"""Issue #1320 - the agent's manage_calendar tool can create a recurring event.
 
 The create_event handler already persists `rrule`, but it wasn't documented in the
 tool schema, so the agent took "a roundabout way". This pins the end-to-end path:
@@ -25,7 +25,7 @@ _TS, _ENGINE, _TMPDB = make_temp_sqlite(cdb.Base.metadata)
 @pytest.fixture(autouse=True)
 def _bind_temp_db(monkeypatch):
     # do_manage_calendar does `from core.database import SessionLocal` at call
-    # time, so patch the module attribute to our temp DB — via monkeypatch so it
+    # time, so patch the module attribute to our temp DB - via monkeypatch so it
     # is RESTORED after each test and can't leak into later tests in the process.
     monkeypatch.setitem(sys.modules, "core.database", cdb)
     parent = sys.modules.get("core")

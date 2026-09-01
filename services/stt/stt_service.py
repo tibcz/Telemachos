@@ -1,5 +1,5 @@
 # services/stt/stt_service.py
-"""Multi-provider Speech-to-Text service — dispatches to local Whisper, OpenAI-compatible API, or browser."""
+"""Multi-provider Speech-to-Text service - dispatches to local Whisper, OpenAI-compatible API, or browser."""
 
 import io
 import logging
@@ -16,10 +16,10 @@ class STTService:
 
     Reads provider config from data/settings.json on each call.
     Providers:
-      "disabled"        — no STT
-      "browser"         — client-side Web Speech API (no server transcription)
-      "local"           — faster-whisper on CPU/GPU
-      "endpoint:<id>"   — OpenAI-compatible /audio/transcriptions via ModelEndpoint
+      "disabled"        - no STT
+      "browser"         - client-side Web Speech API (no server transcription)
+      "local"           - faster-whisper on CPU/GPU
+      "endpoint:<id>"   - OpenAI-compatible /audio/transcriptions via ModelEndpoint
     """
 
     def __init__(self):
@@ -66,7 +66,7 @@ class STTService:
                 settings = self._load_settings()
                 model_size = settings.get("stt_model", "base")
                 # faster-whisper runs on CTranslate2, not torch. torch is only
-                # used (optionally) to detect a CUDA device for acceleration —
+                # used (optionally) to detect a CUDA device for acceleration -
                 # if it's missing or unusable we just run on CPU. Keeping this
                 # probe separate (and tolerant of any failure, e.g. a broken
                 # CUDA/torch install that raises OSError on import) means a

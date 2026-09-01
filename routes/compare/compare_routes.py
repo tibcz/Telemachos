@@ -27,7 +27,7 @@ def _owned_endpoint_by_url(db, base_url, owner):
     owner = private, "the model picker only shows the endpoint to that user") and
     holds a decrypted `api_key`. start_comparison copies the matched row's api_key
     into the caller-owned [CMP] session's headers, which then drives that session's
-    /api/chat_stream calls — so an UNSCOPED base_url match would let a user mint a
+    /api/chat_stream calls - so an UNSCOPED base_url match would let a user mint a
     comparison bound to ANOTHER user's private endpoint and spend that owner's
     api_key / reach whatever base_url they configured. Mirrors
     session_routes._owned_endpoint. A null/empty owner is a no-op (single-user /
@@ -125,7 +125,7 @@ def setup_compare_routes(session_manager: SessionManager):
             ]:
                 # Prefer an explicit endpoint id: it pins the EXACT registered
                 # endpoint (and its api_key), even when two endpoints visible to
-                # the caller share a base_url with different keys — a URL-only
+                # the caller share a base_url with different keys - a URL-only
                 # match would copy whichever row sorts first, i.e. possibly the
                 # wrong key. Fall back to URL resolution only for legacy / admin
                 # raw-URL callers that don't send an id.
@@ -135,7 +135,7 @@ def setup_compare_routes(session_manager: SessionManager):
                     if ep is None:
                         # An id the caller can't see (wrong owner / deleted) must
                         # NOT silently fall back to a same-URL row with a different
-                        # key — that's exactly the mix-up ids exist to prevent.
+                        # key - that's exactly the mix-up ids exist to prevent.
                         raise HTTPException(404, "Model endpoint not found")
                     # The id already resolved the endpoint; ignore any raw URL the
                     # caller also sent and dial the stored config instead.
@@ -166,7 +166,7 @@ def setup_compare_routes(session_manager: SessionManager):
                 # base URL (the same value owner scoping + endpoint validation
                 # already vetted) so the session dials exactly where the stored
                 # config points. The raw `endpoint` only survives for callers
-                # allowed to pass one — admins / single-user mode, where
+                # allowed to pass one - admins / single-user mode, where
                 # `_reject_raw_endpoint_url_for_non_admin` is a no-op and `ep`
                 # is None. Mirrors the registered-endpoint path in session_routes.
                 session_endpoint_url = (
@@ -180,7 +180,7 @@ def setup_compare_routes(session_manager: SessionManager):
         finally:
             db.close()
 
-        # Both endpoints validated — only now create the ephemeral [CMP]
+        # Both endpoints validated - only now create the ephemeral [CMP]
         # sessions and copy any resolved headers.
         for sid, model, session_endpoint_url, headers in resolved:
             name = f"[CMP] {slot_name[sid]}" if blind else f"[CMP] {model.split('/')[-1]}"
@@ -247,7 +247,7 @@ def setup_compare_routes(session_manager: SessionManager):
             comp = db.query(Comparison).filter(Comparison.id == comp_id).first()
             if not comp:
                 raise HTTPException(404, "Comparison not found")
-            # SECURITY: strict ownership — null-owner Comparisons were
+            # SECURITY: strict ownership - null-owner Comparisons were
             # accessible to every user.
             if user and comp.owner != user:
                 raise HTTPException(404, "Comparison not found")
@@ -352,7 +352,7 @@ def setup_compare_routes(session_manager: SessionManager):
             comp = db.query(Comparison).filter(Comparison.id == comp_id).first()
             if not comp:
                 raise HTTPException(404, "Comparison not found")
-            # SECURITY: strict ownership — null-owner Comparisons were
+            # SECURITY: strict ownership - null-owner Comparisons were
             # accessible to every user.
             if user and comp.owner != user:
                 raise HTTPException(404, "Comparison not found")

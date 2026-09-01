@@ -1,7 +1,7 @@
 """Saving a skill's markdown must NOT rename it (issue #1333: can't delete skills).
 
 `save_skill_markdown` (POST /api/skills/{id}/markdown) parsed the new markdown
-and set `sk.name = slugify(sk.name or match["name"])` — so editing the frontmatter
+and set `sk.name = slugify(sk.name or match["name"])` - so editing the frontmatter
 `name:` silently renamed the skill, which moves its directory on disk
 (`update_skill`) and orphans the original id. A later DELETE by the id the UI
 still holds then 404s ("can't delete them now"). The audit save path

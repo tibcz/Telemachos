@@ -90,7 +90,7 @@ datas += [
 ]
 
 # The embedding model, when the build pre-fetched it. Optional so that a build
-# without network access still produces a working app — it just downloads the
+# without network access still produces a working app - it just downloads the
 # model on first use instead of shipping it.
 _seed = os.path.join(REPO_ROOT, "build", "fastembed_seed")
 if os.path.isdir(_seed):

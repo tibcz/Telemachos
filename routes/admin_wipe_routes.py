@@ -1,4 +1,4 @@
-"""Backward-compat shim — canonical location is routes/admin_wipe/admin_wipe_routes.py.
+"""Backward-compat shim - canonical location is routes/admin_wipe/admin_wipe_routes.py.
 
 This module is replaced in ``sys.modules`` by the canonical module object so
 that ``import routes.admin_wipe_routes``, ``from routes.admin_wipe_routes

@@ -158,7 +158,7 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
             else:
                 return [TextContent(type="text", text="Error: Unexpected image API response format")]
 
-            # "Direct link:" rather than an "image_url:" label — small models copied the
+            # "Direct link:" rather than an "image_url:" label - small models copied the
             # label token ("image_url") into the link href, producing a broken link.
             result = (
                 f"Generated image for: {prompt[:100]}\n"

@@ -1,4 +1,4 @@
-"""Shell routes — user-facing command execution endpoint."""
+"""Shell routes - user-facing command execution endpoint."""
 
 import asyncio
 import importlib
@@ -25,7 +25,7 @@ from src.optional_deps import prepare_optional_dependency_import
 
 # POSIX-only: `pty`/`fcntl` transitively import `termios`, which does NOT exist
 # on Windows, so importing them unconditionally crashed app startup there
-# (ModuleNotFoundError: termios — issues #140/#92/#63/#149/#150). The PTY code
+# (ModuleNotFoundError: termios - issues #140/#92/#63/#149/#150). The PTY code
 # path is only reachable on POSIX; Windows uses pipe streaming + a detached-job
 # fallback for the tmux feature (see _generate_win_detached).
 try:
@@ -51,11 +51,11 @@ from core.platform_compat import (
 
 
 def _require_admin(request: Request):
-    """Reject non-admin callers. Shell exec is admin-only — never expose to
+    """Reject non-admin callers. Shell exec is admin-only - never expose to
     regular users; that's RCE-after-signup."""
     auth_manager = getattr(request.app.state, "auth_manager", None)
     if not auth_manager:
-        # No auth at all — only safe in fully-trusted localhost dev mode
+        # No auth at all - only safe in fully-trusted localhost dev mode
         return
     user = getattr(request.state, "current_user", None)
     # In-process tool loopback. The AuthMiddleware already validated the
@@ -130,7 +130,7 @@ def _pip_dist_name(pkg: dict) -> str:
     The Cookbook package catalog carries both the import name (``name``, e.g.
     ``llama_cpp``) and the pip spec (``pip``, e.g. ``llama-cpp-python[server]``).
     The distribution is NOT always the import name with underscores swapped for
-    dashes — ``llama_cpp`` ships in the ``llama-cpp-python`` distribution — so
+    dashes - ``llama_cpp`` ships in the ``llama-cpp-python`` distribution - so
     derive it from the pip spec (stripping any ``[extras]`` and version markers)
     and fall back to the munged import name only when no pip spec is declared.
     """
@@ -492,7 +492,7 @@ def _find_line_break(buf):
     return ni, 1
 
 
-EXEC_TIMEOUT = 30  # seconds — shorter than agent's 60s
+EXEC_TIMEOUT = 30  # seconds - shorter than agent's 60s
 STREAM_TIMEOUT = 120  # default for short commands
 MAX_OUTPUT = 200_000  # truncate limit
 TMUX_LOG_DIR = Path(tempfile.gettempdir()) / "telemachos-tmux"
@@ -560,7 +560,7 @@ async def _create_shell(command: str, **kwargs):
     """
     if IS_WINDOWS:
         # PowerShell commands (used by the frontend for Windows log-file polling
-        # and session management) must run directly — passing them through
+        # and session management) must run directly - passing them through
         # bash -c mangles $env:VAR syntax and breaks the command.
         cmd_trim = command.strip()
         if cmd_trim.startswith("powershell") or cmd_trim.startswith("cmd "):
@@ -668,7 +668,7 @@ async def _generate_pty(cmd: str, timeout: int, request: Request):
                 # No data yet, keep waiting
                 continue
             if chunk == b"":
-                # EOF — process closed the PTY
+                # EOF - process closed the PTY
                 break
 
             buf += chunk
@@ -744,7 +744,7 @@ def _pty_read(fd: int) -> bytes | None:
 
 async def _generate_tmux(cmd: str, request: Request):
     """Run command in a tmux session. Streams output via a log file.
-    The tmux session survives browser disconnect — user can reconnect or
+    The tmux session survives browser disconnect - user can reconnect or
     `tmux attach -t <name>` to see it live."""
     TMUX_LOG_DIR.mkdir(parents=True, exist_ok=True)
     session_id = f"cookbook-{uuid.uuid4().hex[:8]}"
@@ -795,7 +795,7 @@ async def _generate_tmux(cmd: str, request: Request):
     while True:
         # Check client disconnect
         if await request.is_disconnected():
-            # tmux keeps running — that's the whole point
+            # tmux keeps running - that's the whole point
             yield f"data: {json.dumps({'stream': 'stdout', 'data': f'Disconnected. tmux session {session_id} continues in background.'})}\n\n"
             return
 
@@ -829,7 +829,7 @@ async def _generate_tmux(cmd: str, request: Request):
         )
         await check.wait()
         if check.returncode != 0:
-            # Session ended — do one final read
+            # Session ended - do one final read
             await asyncio.sleep(0.5)
             if log_path.exists():
                 lines = log_path.read_text(
@@ -862,7 +862,7 @@ async def _generate_win_detached(cmd: str, request: Request):
     """Windows stand-in for the tmux path (issues #84/#162).
 
     tmux doesn't exist on Windows, so we run the command in a *detached* child
-    (DETACHED_PROCESS — survives browser disconnect, same as the tmux session)
+    (DETACHED_PROCESS - survives browser disconnect, same as the tmux session)
     that writes output to a log file, and tail that log over SSE. Prefers bash
     (Git Bash) for command-syntax parity; falls back to cmd.exe. There's no
     `tmux attach` equivalent, but the "keeps running if you disconnect" contract
@@ -1194,7 +1194,7 @@ def setup_shell_routes() -> APIRouter:
 
         Local-target packages are checked in-process. Remote-target packages
         (vllm, sglang, llama_cpp, diffusers, hf_transfer) are checked on the SELECTED
-        server over SSH, inside its venv — otherwise installing on a remote box
+        server over SSH, inside its venv - otherwise installing on a remote box
         never reflected because the check only ever looked at the local host.
         """
         _require_admin(request)
@@ -1221,7 +1221,7 @@ def setup_shell_routes() -> APIRouter:
                 # Use addsitedir(), NOT a bare sys.path.append(). When a package
                 # is `pip install --user`'d at runtime (Cookbook → Install) the
                 # long-lived server process started before the user-site existed,
-                # so site never processed it — including its `.pth` hooks. On
+                # so site never processed it - including its `.pth` hooks. On
                 # Python 3.12+ `distutils` is gone from stdlib and is only
                 # restored by setuptools' `distutils-precedence.pth`, which ships
                 # in user-site. basicsr (a realesrgan dep) does `import distutils`
@@ -1256,7 +1256,7 @@ def setup_shell_routes() -> APIRouter:
                 "kind": "system",
                 "install_hint": "Install Docker on the selected server and allow this user to run docker.",
             },
-            # Note: cmake / gcc / git are not separate dependency rows —
+            # Note: cmake / gcc / git are not separate dependency rows -
             # they're declared as `system_prereqs` on llama_cpp (and any
             # other engine that compiles from source) so they appear as
             # an inline status note on that engine's row instead of
@@ -1456,7 +1456,7 @@ def setup_shell_routes() -> APIRouter:
                 )
                 out, _err = await asyncio.wait_for(proc.communicate(), timeout=12)
                 txt = out.decode("utf-8", errors="replace").strip()
-                # The activate script can emit noise — take the last JSON line.
+                # The activate script can emit noise - take the last JSON line.
                 for line in reversed(txt.splitlines()):
                     line = line.strip()
                     if line.startswith("{"):
@@ -1506,7 +1506,7 @@ def setup_shell_routes() -> APIRouter:
                 prereq_names.add(str(pr))
         all_system_names = list(set(remote_system_names) | prereq_names)
         # Detect the target's OS family + read /etc/os-release in the same
-        # SSH round-trip as the prereq probe — used downstream to render a
+        # SSH round-trip as the prereq probe - used downstream to render a
         # single OS-specific install command per row instead of dumping
         # every distro's syntax onto the user.
         target_os_id: str = ""
@@ -1546,7 +1546,7 @@ def setup_shell_routes() -> APIRouter:
                     remote_probe_error = f"SSH system probe failed: {str(e)[:160]}"
                 pass
         elif not host:
-            # Local target — probe in-process so the inline install command
+            # Local target - probe in-process so the inline install command
             # still appears in the dep panel when the cookbook container
             # itself is the selected server.
             try:
@@ -1630,14 +1630,14 @@ def setup_shell_routes() -> APIRouter:
                 except importlib_metadata.PackageNotFoundError:
                     pkg["installed"] = False
                 except (Exception, SystemExit):
-                    # Installed but crashes on import — e.g. a CUDA build of
+                    # Installed but crashes on import - e.g. a CUDA build of
                     # llama-cpp-python raising FileNotFoundError when the CUDA
                     # toolkit dir is absent, or rembg calling sys.exit(1) when no
                     # onnxruntime backend can be loaded. SystemExit is a
                     # BaseException, not Exception, so without catching it here a
                     # single sys.exit-on-import package escapes and takes down the
                     # whole packages panel / worker (the panel hangs forever). One
-                    # broken optional package must not 500 — or hang — the entire
+                    # broken optional package must not 500 - or hang - the entire
                     # panel; report it as not usable.
                     pkg["installed"] = False
 
@@ -1646,7 +1646,7 @@ def setup_shell_routes() -> APIRouter:
             # hardware, mark the row as partial (yellow/orange) with a
             # one-click upgrade to the CUDA wheel. Without this the row
             # reads "ready" green while inference runs at 3 tok/s on GPU
-            # silicon — actively misleading.
+            # silicon - actively misleading.
             if pkg["name"] == "llama_cpp" and pkg.get("installed"):
                 _native_llama_server = bool(
                     isinstance(probe, dict)
@@ -1665,7 +1665,7 @@ def setup_shell_routes() -> APIRouter:
                         # Activate the configured venv FIRST so the probe
                         # runs against the same python the launch script
                         # would activate. Without this prefix, bare
-                        # `python3` was checked — which can disagree with
+                        # `python3` was checked - which can disagree with
                         # the venv's wheel (e.g. user-site has CUDA wheel
                         # but venv has CPU-only), and the dep panel then
                         # showed "ready" green while every launch fell to
@@ -1700,11 +1700,11 @@ def setup_shell_routes() -> APIRouter:
                     _has_nvidia_target = shutil.which("nvidia-smi") is not None
                 if (not _gpu_capable) and _has_nvidia_target:
                     pkg["partial"] = True
-                    pkg["partial_reason"] = "Installed but CPU-only wheel — GPU detected on this target. Upgrade to a CUDA wheel for ~10× faster inference."
+                    pkg["partial_reason"] = "Installed but CPU-only wheel - GPU detected on this target. Upgrade to a CUDA wheel for ~10× faster inference."
                     pkg["partial_action"] = "reinstall_llama_cpp_cuda"
             # Attach per-package system_prereqs status. We probed each
             # prereq name above; surface "Missing build deps: …" ONLY
-            # when the package itself is not installed — if the package
+            # when the package itself is not installed - if the package
             # works (e.g. llama-cpp-python already imports cleanly), the
             # build toolchain is irrelevant and surfacing it as a red
             # flag confuses users ("ready" + "missing" on the same row).
@@ -1717,7 +1717,7 @@ def setup_shell_routes() -> APIRouter:
                 pkg["system_prereqs_status"] = _pr_present
                 _missing = [n for n, ok in _pr_present.items() if not ok]
                 # Suppress the "missing build deps" hint when the package
-                # itself is installed — build deps are only relevant if
+                # itself is installed - build deps are only relevant if
                 # the user would need to recompile from source.
                 if pkg.get("installed"):
                     _missing = []
@@ -1736,7 +1736,7 @@ def setup_shell_routes() -> APIRouter:
                     else:
                         _hint = "Missing build deps: " + ", ".join(_missing) + ". Install via apt: cmake build-essential git / pacman: cmake base-devel git / dnf: cmake gcc-c++ make git / brew: cmake git."
                     _existing_note = pkg.get("status_note") or ""
-                    pkg["status_note"] = (_existing_note + " — " + _hint) if _existing_note else _hint
+                    pkg["status_note"] = (_existing_note + " - " + _hint) if _existing_note else _hint
                     pkg["build_deps_missing"] = _missing
 
             if pkg.get("installed"):
@@ -1761,7 +1761,7 @@ def setup_shell_routes() -> APIRouter:
 
     @router.post("/api/cookbook/packages/install")
     async def install_package(request: Request):
-        """Install a package via pip. Admin only — pip install is effectively code exec."""
+        """Install a package via pip. Admin only - pip install is effectively code exec."""
         _require_admin(request)
         import sys as _sys
 
@@ -1811,7 +1811,7 @@ def setup_shell_routes() -> APIRouter:
         """Install OS-level system packages (cmake/build-essential/git/tmux)
         on a remote target or in the local container. Admin only.
 
-        Bounded by a per-package allowlist — anything outside the catalog
+        Bounded by a per-package allowlist - anything outside the catalog
         is rejected so the route can't be coerced into installing arbitrary
         OS packages. Uses `sudo -n` (passwordless) so the call returns a
         clear "needs sudo password" error instead of hanging when interactive
@@ -1822,7 +1822,7 @@ def setup_shell_routes() -> APIRouter:
         raw = body.get("packages") or []
         host = (body.get("remote_host") or "").strip()
         ssh_port = body.get("ssh_port")
-        # Names users can request — must match canonical names used in the
+        # Names users can request - must match canonical names used in the
         # deps catalog's `system_prereqs` field and on the System rows.
         ALLOWED = {"cmake", "build-essential", "g++", "gcc", "git", "tmux", "make"}
         pkgs = [str(p).strip() for p in raw if str(p).strip() in ALLOWED]
@@ -1856,7 +1856,7 @@ def setup_shell_routes() -> APIRouter:
         def _brew(names):
             return [n for n in names if n not in ("build-essential", "g++", "gcc", "make")]
         # Build a single shell snippet that detects the package manager and
-        # runs the right install. Non-interactive sudo (-n) only — if sudo
+        # runs the right install. Non-interactive sudo (-n) only - if sudo
         # asks for a password the script reports it instead of hanging.
         apt_pkgs = " ".join(shlex.quote(p) for p in _apt(pkgs))
         pac_pkgs = " ".join(shlex.quote(p) for p in _pacman(pkgs))
@@ -1909,7 +1909,7 @@ def setup_shell_routes() -> APIRouter:
             return {"ok": False, "error": "Install timed out after 180s"}
         ok = (proc.returncode == 0)
         # Combine stderr + (last lines of stdout) into a single error
-        # blob when ok=False — some package managers print useful failure
+        # blob when ok=False - some package managers print useful failure
         # context to stdout, and a script that exits via `echo ...; exit N`
         # without `>&2` would otherwise hand back an empty error string
         # and force the frontend to show a bare "HTTP 200".
@@ -1931,7 +1931,7 @@ def setup_shell_routes() -> APIRouter:
     async def rebuild_engine(request: Request):
         """Clear the cached llama.cpp build so the next serve recompiles.
 
-        Admin only — this removes the Cookbook-managed ``~/bin/llama-server``
+        Admin only - this removes the Cookbook-managed ``~/bin/llama-server``
         symlink and ``~/llama.cpp/build`` directory, locally or on the selected
         remote server. It installs and downloads nothing; the next llama.cpp
         serve rebuilds from source and picks up CUDA/HIP if a toolchain is now

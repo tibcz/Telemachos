@@ -1,4 +1,4 @@
-"""Signature routes — CRUD for the user's saved visual signatures.
+"""Signature routes - CRUD for the user's saved visual signatures.
 
 Signatures are reusable image stamps (drawn once, applied to many things):
 PDF form fields, email composition, document insertion. Each signature is
@@ -90,7 +90,7 @@ def setup_signature_routes() -> APIRouter:
         try:
             q = db.query(Signature)
             if user is not None:
-                # SECURITY: strict ownership — the previous OR predicate
+                # SECURITY: strict ownership - the previous OR predicate
                 # returned every null-owner signature to every user.
                 q = q.filter(Signature.owner == user)
             sigs = q.order_by(Signature.created_at.desc()).all()

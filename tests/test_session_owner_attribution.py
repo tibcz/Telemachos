@@ -22,8 +22,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Stub heavy ORM modules so routes.session_routes can be imported under
 # conftest's MagicMock sqlalchemy shim. preserve_import_state restores both the
-# stubs and the cached route module — including the parent `routes`/`core`
-# package attributes — on exit, preventing poisoning of later tests via
+# stubs and the cached route module - including the parent `routes`/`core`
+# package attributes - on exit, preventing poisoning of later tests via
 # `import routes.session_routes`.
 
 
@@ -32,7 +32,7 @@ def _set_module_and_parent_attr(dotted_name, module):
 
     Setting only sys.modules[...] leaves the parent `core` package attribute
     pointing at the previous (real) module, so a later import resolving through
-    the parent would bypass the stub — and, symmetrically, a stub left on the
+    the parent would bypass the stub - and, symmetrically, a stub left on the
     parent attribute would poison later tests. Controlling both keeps the two
     views consistent so preserve_import_state can fully undo them.
     """

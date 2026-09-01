@@ -27,10 +27,10 @@ from src.task_scheduler import TaskScheduler
 # at module level without teardown (test_model_routes, test_companion_readonly,
 # test_endpoint_probing, test_vault_password_not_in_argv).  When any of those
 # are collected before us, core.database is a stub and Base is a MagicMock.
-# Skip in that case — the test passes correctly in isolation or when collected
+# Skip in that case - the test passes correctly in isolation or when collected
 # before the stubbing files.
 if type(Base).__name__ == "MagicMock":
-    pytest.skip("core.database is stubbed — run this file in isolation", allow_module_level=True)
+    pytest.skip("core.database is stubbed - run this file in isolation", allow_module_level=True)
 
 
 def _make_db():

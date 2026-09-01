@@ -1,4 +1,4 @@
-"""PR #3681 — the surfaces this PR derives from BUILTIN_EMAIL_TOOLS stay in sync.
+"""PR #3681 - the surfaces this PR derives from BUILTIN_EMAIL_TOOLS stay in sync.
 
 The review rounds on #3681 each found a hand-maintained copy of the email tool
 list that had drifted. This PR's scope pins the SECURITY-RELEVANT surfaces to
@@ -11,7 +11,7 @@ seed) lives in a follow-up PR with its own sync tests.
 import re
 from pathlib import Path
 
-import src.agent_tools  # noqa: F401 — resolve the circular-import cluster first
+import src.agent_tools  # noqa: F401 - resolve the circular-import cluster first
 from src.tool_security import (
     BUILTIN_EMAIL_TOOLS,
     NON_ADMIN_BLOCKED_TOOLS,
@@ -45,7 +45,7 @@ def test_non_admin_blocklist_covers_email_tools():
 def test_plan_mode_classifies_every_email_tool():
     """Every fence-taggable email tool must be EXPLICITLY classified for plan
     mode: read-only (allowlisted) or mutating (in the static denylist via the
-    fail-closed backstop). Allowed-by-omission is not a classification — it
+    fail-closed backstop). Allowed-by-omission is not a classification - it
     silently flips when schemas/backstop change, and it leaves bare-alias
     safety depending on the MCP read-only inventory being present."""
     from src.tool_security import plan_mode_disabled_tools
@@ -64,7 +64,7 @@ def test_plan_mode_allows_qualified_readonly_email_discovery():
     """list_email_accounts has a native schema, so plan mode's schema-derived
     bare denylist contains it; with the bidirectional alias gate, the bare
     entry would also block the qualified mcp__email__ call that the MCP
-    read-only filter deliberately allows — unless it's in the read-only
+    read-only filter deliberately allows - unless it's in the read-only
     allowlist (which subtracts it from the denylist)."""
     assert "list_email_accounts" in PLAN_MODE_READONLY_TOOLS
 
@@ -79,7 +79,7 @@ def test_email_policy_name_aliases():
     assert email_tool_policy_names("mcp__email__delete_email") == {
         "delete_email", "mcp__email__delete_email",
     }
-    # Non-email names alias only to themselves — including mcp__email__
+    # Non-email names alias only to themselves - including mcp__email__
     # spellings of tools the email server doesn't expose.
     assert email_tool_policy_names("bash") == {"bash"}
     assert email_tool_policy_names("mcp__email__not_a_tool") == {"mcp__email__not_a_tool"}

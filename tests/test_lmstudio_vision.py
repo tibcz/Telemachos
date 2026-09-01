@@ -15,11 +15,11 @@ class _FakeResponse:
 
 
 # ════════════════════════════════════════════════════════════
-# lmstudio_supports_vision — reads capabilities.vision
+# lmstudio_supports_vision - reads capabilities.vision
 # ════════════════════════════════════════════════════════════
 
 class TestLmStudioSupportsVision:
-    # A vision finetune whose NAME has no vision keyword — the case the
+    # A vision finetune whose NAME has no vision keyword - the case the
     # name-based heuristic gets wrong (the issue this fixes).
     PAYLOAD = {"models": [
         {"key": "qwen3.6-27b-custom-finetune", "architecture": "qwen35",
@@ -79,7 +79,7 @@ class TestLmStudioSupportsVision:
 
 
 # ════════════════════════════════════════════════════════════
-# model_supports_vision — endpoint capability wins, name is fallback
+# model_supports_vision - endpoint capability wins, name is fallback
 # ════════════════════════════════════════════════════════════
 
 class TestModelSupportsVision:

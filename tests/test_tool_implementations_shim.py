@@ -46,7 +46,7 @@ _EXPECTED = [
     "_scan_running_model_processes", "_skill_dump", "_string_arg",
     "_validate_cookbook_ssh_target",
     # active-email facade helpers (no do_* prefix); consumed by
-    # routes/chat_routes.py — listed here because get_active_email has no
+    # routes/chat_routes.py - listed here because get_active_email has no
     # in-repo importer, so the import-site scan below can't see it alone.
     "set_active_email", "get_active_email", "clear_active_email",
 ]
@@ -122,10 +122,10 @@ def test_every_facade_import_in_repo_resolves():
     omitted three underscore helpers in a reviewer's P3 finding and can drift
     again. The import sites are enumerated with ``ast`` rather than checked
     at runtime because the invariant is *which names the rest of the
-    codebase asks the facade for* — no runtime hook enumerates that set,
+    codebase asks the facade for* - no runtime hook enumerates that set,
     only the import statements do (the narrow source-scanning exception to
     the behavioral-first rule). The per-name assertion is runtime
-    (``hasattr``), so any forgotten re-export — helper or ``do_*`` — fails
+    (``hasattr``), so any forgotten re-export - helper or ``do_*`` - fails
     here automatically.
     """
     import ast

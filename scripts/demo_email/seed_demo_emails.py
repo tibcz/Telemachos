@@ -3,9 +3,9 @@
 
 This populates the `demo@telemachos.local` Dovecot account (which has NO mbsync
 channel, so nothing here ever touches a real server) with a curated, obviously
-fake but realistic set of messages — varied senders, read/unread/flagged mix, a
+fake but realistic set of messages - varied senders, read/unread/flagged mix, a
 reply thread, an attachment, a newsletter, a calendar invite, an urgent one, and
-a spammy one — so the email assistant's summarize / reply / tag / spam / calendar
+a spammy one - so the email assistant's summarize / reply / tag / spam / calendar
 features can be shown off without exposing any real mail.
 
 Idempotent: `--reset` wipes every mailbox in the demo account first, so re-running
@@ -36,7 +36,7 @@ PORT = int(os.getenv("DEMO_IMAP_PORT", "31143"))
 USER = os.getenv("DEMO_IMAP_USER", "demo@telemachos.local")
 PASSWORD = os.getenv("DEMO_IMAP_PASSWORD", "demodemo")
 
-# Marker header on every message we create — lets a human (or a future cleanup)
+# Marker header on every message we create - lets a human (or a future cleanup)
 # tell demo mail apart at a glance.
 MARKER = ("X-Telemachos-Demo", "1")
 
@@ -44,7 +44,7 @@ DEMO_OWNER_ADDR = USER  # the demo "you"
 
 # The "could've just been a search" email gets a FIXED Message-ID so we can
 # pre-seed a matching cached AI reply (keyed by Message-ID) in the app's email
-# cache DB — the read path attaches it as cached_ai_reply. This makes the
+# cache DB - the read path attaches it as cached_ai_reply. This makes the
 # "my agent already looked it up and drafted the answer" beat reliable on stage.
 LOOKUP_MSGID = "<demo-lookup-deepseek@telemachos.local>"
 # The app's email cache lives at <repo>/data/scheduled_emails.db (email_summaries,
@@ -139,55 +139,55 @@ def build_dataset() -> list[dict]:
         msg, when = msg_when
         items.append({"mailbox": mailbox, "flags": flags, "msg": msg, "when": when})
 
-    # 1. Recruiter — unread. (Subject has an emoji to also show the mono-emoji render.)
+    # 1. Recruiter - unread. (Subject has an emoji to also show the mono-emoji render.)
     add("INBOX", "", _msg(
         frm="Brogan O'Hara <talent@northstar-labs.example>",
         subject="We want you on the Northstar AI team 🚀",
         days_ago=0, hours_ago=2,
-        text=("Hey,\n\nSaw your work on the Telemachos stack — seriously impressive. "
+        text=("Hey,\n\nSaw your work on the Telemachos stack - seriously impressive. "
               "We're building an agentic AI platform and your name keeps coming up.\n\n"
               "Any chance you're open to a quick chat this week? Comp is competitive and "
               "the team is fully remote.\n\nCheers,\nBrogan\nHead of Talent, Northstar Labs"),
-        html=("<p>Hey,</p><p>Saw your work on the <b>Telemachos</b> stack — seriously "
+        html=("<p>Hey,</p><p>Saw your work on the <b>Telemachos</b> stack - seriously "
               "impressive. We're building an agentic AI platform and your name keeps coming "
               "up.</p><p>Any chance you're open to a quick chat this week? Comp is competitive "
               "and the team is fully remote.</p><p>Cheers,<br>Brogan<br><i>Head of Talent, "
               "Northstar Labs</i></p>")))
 
-    # 1b. The "could've just been a search" email — unread, newest (top of inbox).
+    # 1b. The "could've just been a search" email - unread, newest (top of inbox).
     #     Fixed Message-ID so we can pre-seed the agent's researched reply.
     add("INBOX", "", _msg(
         frm="Greg <greg@telemachos-demo.example>",
-        subject="quick q for the slide — DeepSeek-V3 param count?",
+        subject="quick q for the slide - DeepSeek-V3 param count?",
         msg_id=LOOKUP_MSGID, days_ago=0, hours_ago=0,
-        text=("hey! sorry to bug you — in a meeting and someone asked and i'm "
+        text=("hey! sorry to bug you - in a meeting and someone asked and i'm "
               "blanking: how many parameters does DeepSeek-V3 actually have, total "
               "vs active? need it for the comparison slide. could you look it up real "
               "quick? 🙏\n\nty!\nGreg"),
-        html=("<p>hey! sorry to bug you — in a meeting and someone asked and i'm "
+        html=("<p>hey! sorry to bug you - in a meeting and someone asked and i'm "
               "blanking: <b>how many parameters does DeepSeek-V3 actually have, total "
               "vs active?</b> need it for the comparison slide. could you look it up "
               "real quick? 🙏</p><p>ty!<br>Greg</p>")))
 
-    # 2. Newsletter — unread.
+    # 2. Newsletter - unread.
     add("INBOX", "", _msg(
         frm="Local Models Weekly <news@localmodels.example>",
         subject="This week in local AI: tiny models, big benchmarks",
         days_ago=1,
-        text=("LOCAL MODELS WEEKLY — Issue #142\n\n"
+        text=("LOCAL MODELS WEEKLY - Issue #142\n\n"
               "• Local LLMs that fit in a shoebox GPU\n"
               "• Why your RAG pipeline needs evaluation\n"
               "• Cave of the week: someone ran 8x4090D in a closet\n\n"
               "Unsubscribe any time.")))
 
-    # 3. Reply thread — original is in Sent, the reply lands unread in INBOX.
+    # 3. Reply thread - original is in Sent, the reply lands unread in INBOX.
     orig_id = make_msgid(domain="telemachos.local")
     add("Sent", "(\\Seen)", _msg(
         frm=f"You <{DEMO_OWNER_ADDR}>",
         to="Alex <alex@creator.example>",
         subject="stream setup for Saturday",
         msg_id=orig_id, days_ago=2,
-        text=("Yo — for Saturday's stream, are we doing the dual-PC setup or just the "
+        text=("Yo - for Saturday's stream, are we doing the dual-PC setup or just the "
               "one rig? Need to know before I cable everything.\n\n- You")))
     add("INBOX", "", _msg(
         frm="Alex <alex@creator.example>",
@@ -204,8 +204,8 @@ def build_dataset() -> list[dict]:
         subject="Your invoice #DFX-2042 is ready",
         days_ago=3,
         text=("Hi,\n\nYour CloudCompute invoice #DFX-2042 for $42.00 is attached "
-              "(GPU minutes, May).\n\nNo action needed — auto-charged to your card on "
-              "the 1st.\n\n— CloudCompute"),
+              "(GPU minutes, May).\n\nNo action needed - auto-charged to your card on "
+              "the 1st.\n\n- CloudCompute"),
         pdf=_tiny_pdf("Invoice #DFX-2042 - $42.00"), pdf_name="invoice_DFX-2042.pdf"))
 
     # 5. Calendar invite (ICS attachment + explicit time in body).
@@ -213,7 +213,7 @@ def build_dataset() -> list[dict]:
     nextmon = nextmon.replace(hour=10, minute=0, second=0, microsecond=0)
     add("INBOX", "", _msg(
         frm="Demo Team <calendar@dfx522.example>",
-        subject="Invitation: Demo Team sync — Monday 10:00",
+        subject="Invitation: Demo Team sync - Monday 10:00",
         days_ago=0, hours_ago=20,
         text=("You're invited to the weekly Demo Team sync.\n\n"
               f"When: Monday {nextmon:%b %d} at 10:00 UTC (30 min)\n"
@@ -221,23 +221,23 @@ def build_dataset() -> list[dict]:
               "Agenda: stall-detector rollout, emoji icons, demo prep."),
         ics=_ics("Demo Team sync", nextmon, 30)))
 
-    # 6. Urgent — flagged + unread.
+    # 6. Urgent - flagged + unread.
     add("INBOX", "(\\Flagged)", _msg(
         frm="Ops Bot <ops@telemachos-demo.example>",
-        subject="[URGENT] prod is on fire 🔥 — telemachos-ui 502s",
+        subject="[URGENT] prod is on fire 🔥 - telemachos-ui 502s",
         days_ago=0, hours_ago=1,
         text=("PAGE: telemachos-ui is returning 502s on the /api/chat endpoint.\n"
               "Error rate 38% over the last 5 min. Last deploy was 12 min ago.\n\n"
               "Need eyes ASAP. Reply here or join the incident call.")))
 
-    # 7. Spammy — obvious, for the spam verdict.
+    # 7. Spammy - obvious, for the spam verdict.
     add("INBOX", "", _msg(
         frm="Prize Department <winner@totally-legit-prizes.example>",
         subject="CONGRATULATIONS!!! You have WON 1,000,000 GOLD COINS!!!",
         days_ago=4,
         text=("Dear Lucky Winner,\n\nYou have been SELECTED to receive ONE MILLION "
               "gold coins!!! To claim, simply reply with your bank details and "
-              "a small processing fee of 50 coins.\n\nACT NOW — offer expires in 3 hours!!!\n\n"
+              "a small processing fee of 50 coins.\n\nACT NOW - offer expires in 3 hours!!!\n\n"
               "Totally Legit Prizes Inc.")))
 
     # 8. A normal, already-read personal one.
@@ -259,16 +259,16 @@ def _seed_cache() -> None:
         return
     reply = (
         "Hi Greg,\n\n"
-        "Looked it up — DeepSeek-V3 is a 671B-parameter Mixture-of-Experts model, "
+        "Looked it up - DeepSeek-V3 is a 671B-parameter Mixture-of-Experts model, "
         "with 37B parameters active per token (256 routed experts + 1 shared). It "
         "was trained on ~14.8T tokens and ships with a 128K-token context window.\n\n"
         "Source: DeepSeek-V3 Technical Report (arXiv:2412.19437) and the official "
         "model card on Hugging Face.\n\n"
         "Hope that unblocks the slide!\n\n"
-        "— drafted for you by your Telemachos assistant"
+        "- drafted for you by your Telemachos assistant"
     )
     summary = ("Greg needs the DeepSeek-V3 parameter count (total vs active) for a "
-               "comparison slide. Quick factual lookup — answerable with a search.")
+               "comparison slide. Quick factual lookup - answerable with a search.")
     now = datetime.now(timezone.utc).isoformat()
     con = sqlite3.connect(str(CACHE_DB))
     try:
@@ -286,7 +286,7 @@ def _seed_cache() -> None:
             "INSERT OR REPLACE INTO email_summaries "
             "(message_id, uid, folder, subject, sender, summary, model_used, created_at) "
             "VALUES (?,?,?,?,?,?,?,?)",
-            (LOOKUP_MSGID, "", "INBOX", "quick q for the slide — DeepSeek-V3 param count?",
+            (LOOKUP_MSGID, "", "INBOX", "quick q for the slide - DeepSeek-V3 param count?",
              "greg@telemachos-demo.example", summary, "demo", now))
         con.commit()
         print("  pre-seeded cached AI reply + summary for the lookup email.")
@@ -323,13 +323,13 @@ def _wipe(conn: imaplib.IMAP4) -> int:
 
     Guard: the connection params are env-overridable, so refuse to run the
     destructive expunge unless the target is unmistakably the local demo
-    account — otherwise a misconfigured DEMO_IMAP_USER/HOST could irreversibly
+    account - otherwise a misconfigured DEMO_IMAP_USER/HOST could irreversibly
     wipe a real mailbox. Override only with DEMO_ALLOW_WIPE=1 (you must mean it).
     """
     safe_target = USER.endswith("@telemachos.local") or HOST in ("localhost", "127.0.0.1", "::1")
     if not safe_target and os.getenv("DEMO_ALLOW_WIPE") != "1":
         raise SystemExit(
-            f"refusing to wipe non-demo target {USER}@{HOST}:{PORT} — "
+            f"refusing to wipe non-demo target {USER}@{HOST}:{PORT} - "
             f"set DEMO_ALLOW_WIPE=1 to override")
     typ, boxes = conn.list()
     n = 0
@@ -362,7 +362,7 @@ def main() -> int:
     try:
         conn = _connect()
     except Exception as e:
-        print(f"ERROR: could not connect to {USER}@{HOST}:{PORT} — {e}", file=sys.stderr)
+        print(f"ERROR: could not connect to {USER}@{HOST}:{PORT} - {e}", file=sys.stderr)
         print("Is the Dovecot user created + Dovecot reloaded?", file=sys.stderr)
         return 1
 

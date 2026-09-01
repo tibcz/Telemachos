@@ -6,7 +6,7 @@ of the codebase can stay platform-agnostic. Import from here instead of
 sprinkling ``os.name == "nt"`` checks (and POSIX-only calls) across modules.
 
 Design rules:
-  * Stdlib + ctypes only — no new third-party deps (no psutil/pywinpty).
+  * Stdlib + ctypes only - no new third-party deps (no psutil/pywinpty).
   * POSIX behaviour is unchanged; Windows gets a faithful equivalent or a
     safe, documented no-op.
 """
@@ -40,7 +40,7 @@ IS_APPLE_SILICON = (
 def safe_chmod(path, mode: int) -> bool:
     """``os.chmod`` that is a harmless no-op on Windows.
 
-    On POSIX we apply the mode — used to lock secret/key files down to 0o600.
+    On POSIX we apply the mode - used to lock secret/key files down to 0o600.
     Windows has no POSIX permission bits; files under the user profile are
     already ACL-restricted to that user, so we skip rather than raise. Returns
     True when the mode was actually applied.
@@ -59,8 +59,8 @@ def detached_popen_kwargs() -> dict:
     """Keyword args for :class:`subprocess.Popen` that fully detach a child so
     it outlives the request/stream that launched it.
 
-    POSIX: ``start_new_session=True`` (setsid) — new session + process group.
-    Windows: ``CREATE_NEW_PROCESS_GROUP | DETACHED_PROCESS`` — the child gets
+    POSIX: ``start_new_session=True`` (setsid) - new session + process group.
+    Windows: ``CREATE_NEW_PROCESS_GROUP | DETACHED_PROCESS`` - the child gets
     its own process group (so it isn't killed when the parent's console closes)
     and is detached from any console.
     """
@@ -282,7 +282,7 @@ def run_script_argv(script_path) -> List[str]:
 
     Prefers bash (so existing ``.sh`` wrappers work verbatim, including on
     Windows via Git Bash). On Windows with no bash available, falls back to
-    ``cmd.exe /c`` — simple commands still run, but bash-specific syntax won't.
+    ``cmd.exe /c`` - simple commands still run, but bash-specific syntax won't.
     Callers that need guaranteed bash should check :func:`has_bash` first and
     surface a clear "install Git Bash" message.
     """

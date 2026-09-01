@@ -3,7 +3,7 @@
 ChatMessage.metadata is a dict. add_message() -> _persist_message() stamps
 _db_id (and timestamp) onto that dict in place. The fork handler used to pass
 the source message's metadata dict by reference into the new session, so
-persisting the fork rewrote the SOURCE messages' _db_id — breaking
+persisting the fork rewrote the SOURCE messages' _db_id - breaking
 edit/delete-by-id on the original conversation. The fork must copy the dict.
 """
 import asyncio
@@ -35,7 +35,7 @@ class _FakeSessionManager:
         self.created = None
 
     def get_session(self, session_id):
-        # Fork looks the source up through get_session — the hydration seam —
+        # Fork looks the source up through get_session - the hydration seam -
         # so a session only present in the DB still forks a real transcript.
         return self.sessions[session_id]
 

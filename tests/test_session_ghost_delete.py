@@ -1,11 +1,11 @@
-"""Regression tests for issue #1044 — "ghost" sessions that appear in the list
+"""Regression tests for issue #1044 - "ghost" sessions that appear in the list
 but 404 on every operation and can never be deleted.
 
 A ghost session lives only in the in-memory ``SessionManager`` (it was never
 persisted, or its DB row was removed out-of-band). ``GET /api/sessions`` lists
 sessions from the in-memory manager, so a ghost shows up; but ``_verify_session_owner``
 only consulted the DB, so every per-session op 404'd, and ``SessionManager.delete_session``
-only dropped the in-memory copy when a DB row existed — so the ghost was undeletable.
+only dropped the in-memory copy when a DB row existed - so the ghost was undeletable.
 
 These tests pin both halves of the fix while proving the ownership/security model
 is preserved (a ghost owned by another user still 404s; the DB row stays
@@ -31,7 +31,7 @@ from tests.helpers.import_state import clear_module, preserve_import_state
 # (auto-creating attributes satisfy any `from core.database import X`). Crucially
 # preserve_import_state restores both sys.modules AND the parent `routes`/`core`
 # package attributes after import, so these stubs never leak into sibling modules
-# — the local SM/SR bindings keep their captured stub modules for this file's own
+# - the local SM/SR bindings keep their captured stub modules for this file's own
 # assertions.
 _TEMP_STUBS = ("core.database", "core.models")
 with preserve_import_state(*_TEMP_STUBS, "core.session_manager", "routes.session_routes"):

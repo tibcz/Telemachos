@@ -197,7 +197,7 @@ def _get_or_reset_collection(chroma_client, name: str, metadata: Dict[str, Any],
             chroma_client.delete_collection(name)
             restored = chroma_client.get_or_create_collection(name=name, metadata=current)
             # chromadb returns embeddings as a numpy ndarray, whose truth value
-            # is ambiguous — `preserved.get("embeddings") or []` and a bare
+            # is ambiguous - `preserved.get("embeddings") or []` and a bare
             # `if ... and old_embeddings:` both raise ValueError, which aborts
             # the restore and loses the rows the reset was supposed to keep.
             # Use explicit None/len checks instead.

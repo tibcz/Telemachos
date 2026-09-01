@@ -27,7 +27,7 @@ async def do_manage_notes(content: str, owner: Optional[str] = None) -> Dict:
     except ValueError:
         return {"error": "Invalid JSON arguments", "exit_code": 1}
 
-    # Action aliases — match what models actually emit. `create` is the most
+    # Action aliases - match what models actually emit. `create` is the most
     # common alternative to `add`. Hyphenated forms also accepted.
     raw_action = (args.get("action") or "").replace("-", "_").strip().lower()
     action = raw_action

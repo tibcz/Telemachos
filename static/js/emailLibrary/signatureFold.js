@@ -1,6 +1,6 @@
 // static/js/emailLibrary/signatureFold.js
 //
-// Heuristics that turn raw HTML email bodies into folded structures —
+// Heuristics that turn raw HTML email bodies into folded structures -
 // "Earlier reply" details collapsing the quoted history, and "Signature"
 // details collapsing the trailing corporate disclaimer / boilerplate.
 //
@@ -15,7 +15,7 @@ import {
   _SIG_BLOAT_MIN_CHARS,
 } from './utils.js';
 
-// No leading icon on the signature fold — the user explicitly does not
+// No leading icon on the signature fold - the user explicitly does not
 // want a star/emoji-style glyph in this header.
 export const _SIG_ICON = '';
 export const _QUOTE_ICON = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>';
@@ -94,7 +94,7 @@ export function _extractTurnMetaFromBlockquote(bq) {
   return meta || null;
 }
 
-// "Earlier reply" / "Signature" summary header — caller supplies the
+// "Earlier reply" / "Signature" summary header - caller supplies the
 // label string + icon SVG. `meta`, when present, is split on " · " to
 // promote the sender's name to the headline.
 export function _foldSummary(label, iconSvg, meta) {
@@ -111,7 +111,7 @@ export function _foldSummary(label, iconSvg, meta) {
     }
   }
   // `meta` is derived from _extractQuoteMeta, which strips tags but then
-  // un-escapes entities (to recover `<foo@bar.com>` for bubble alignment) —
+  // un-escapes entities (to recover `<foo@bar.com>` for bubble alignment) -
   // so it can carry attacker-controlled angle brackets from a quoted block.
   // This summary is built into innerHTML, so escape both parts to stop a
   // crafted quote (e.g. `From: <img src=x onerror=...>`) from running script.
@@ -177,8 +177,8 @@ export function _extractQuoteMeta(html) {
 }
 
 // Peel the first non-empty line off the signature tail. That line is
-// usually the signer's name — keep it inline so "Kind regards, / Bob"
-// reads naturally. Returns `{ preBloat, bloat }` — `bloat` is what
+// usually the signer's name - keep it inline so "Kind regards, / Bob"
+// reads naturally. Returns `{ preBloat, bloat }` - `bloat` is what
 // should go into the fold; `preBloat` stays visible above it.
 export function _peelSigNameLine(htmlAfterClosing) {
   if (!htmlAfterClosing) return { preBloat: '', bloat: '' };
@@ -279,7 +279,7 @@ export function _tryFoldHintSig(html, hintSig) {
     + sigSection + '</details>';
 }
 
-// Top-level signature fold — runs through several detection strategies
+// Top-level signature fold - runs through several detection strategies
 // in priority order. Returns the original html unchanged when no
 // strategy fires.
 export function _foldSignature(html, hintSig) {

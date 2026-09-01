@@ -91,7 +91,7 @@ def test_chat_preface_excludes_current_time_for_non_agent_chat():
     timestamp text into it would invalidate local backends' (llama.cpp /
     LM Studio) KV-cache prefix on every single turn (issue #2927). It is
     instead injected as a standalone *user*-role message near the end of the
-    array — see ``current_datetime_context_message`` and its use in
+    array - see ``current_datetime_context_message`` and its use in
     ``routes.chat_helpers.build_chat_context``."""
     clear_user_time_context()
     set_user_tz_offset(600)
@@ -129,7 +129,7 @@ def test_current_datetime_context_message_is_user_role_not_system():
 
 
 def test_agent_system_prompt_includes_shared_current_time(monkeypatch):
-    """The agent system prompt must stay byte-stable turn over turn — the
+    """The agent system prompt must stay byte-stable turn over turn - the
     current-time block is injected as a separate *user*-role message (not
     prepended into the system message), so local OpenAI-compatible backends
     can keep reusing their cached KV prefix across turns (issue #2927).

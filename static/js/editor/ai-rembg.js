@@ -21,7 +21,7 @@
  *   Sharpen: small slider + button; just calls _applyImageTool
  *     against /api/image/sharpen.
  *
- *   buildSelectionHintMask: pure-ish utility — returns a base64 PNG
+ *   buildSelectionHintMask: pure-ish utility - returns a base64 PNG
  *     (no data: prefix) of the active wand or lasso selection, or
  *     null. Returned so other wand-rembg call sites can use it.
  *
@@ -81,7 +81,7 @@ export function wireRembgAndSharpen({
       const newLayer = state.layers[state.layers.length - 1];
       bindRembgLiveTuner(newLayer);
       // Auto-hide underlying layers so the user sees just the
-      // cutout — the eye toggles back on if they re-enable manually.
+      // cutout - the eye toggles back on if they re-enable manually.
       for (const layer of state.layers) {
         if (prevVisible.includes(layer.id) && layer.id !== newLayer.id) {
           layer.visible = false;
@@ -128,7 +128,7 @@ export function wireRembgAndSharpen({
     lctx.clearRect(0, 0, w, h);
     lctx.drawImage(snap, 0, 0);
 
-    // 2) Edge ±N — dilate / erode alpha via blur+threshold:
+    // 2) Edge ±N - dilate / erode alpha via blur+threshold:
     //      grow > 0 → low threshold (32) → halo counts as opaque → grows.
     //      grow < 0 → high threshold (200) → only solid interior → shrinks.
     //    RGB is kept; only alpha is replaced.
@@ -150,7 +150,7 @@ export function wireRembgAndSharpen({
     }
 
     // 3) Feather softens whatever edge we have now. Blur the entire
-    //    layer (alpha + RGB) — alpha gets smooth falloff, RGB gets a
+    //    layer (alpha + RGB) - alpha gets smooth falloff, RGB gets a
     //    faint blur at the edge which actually helps hide residual
     //    colour fringing from the original background.
     if (feather > 0) {
@@ -198,7 +198,7 @@ export function wireRembgAndSharpen({
 
   // ── Selection-hint mask builder (used here + by wand-rembg) ──
   // Full-image white-on-transparent mask PNG (base64, no `data:`
-  // prefix) of whichever selection is active — wand first, lasso
+  // prefix) of whichever selection is active - wand first, lasso
   // second. Returns null if neither has a selection.
   function buildSelectionHintMask() {
     const w = state.imgWidth, h = state.imgHeight;

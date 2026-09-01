@@ -35,7 +35,7 @@ export function drawHistogram(canvas, layer) {
   const hist = new Uint32Array(256);
   for (let i = 0; i < img.length; i += 4) {
     if (img[i + 3] < 8) continue; // skip near-transparent
-    // Rec. 709 luminance — common choice for histograms in photo editors.
+    // Rec. 709 luminance - common choice for histograms in photo editors.
     const Y = (0.2126 * img[i] + 0.7152 * img[i + 1] + 0.0722 * img[i + 2]) | 0;
     hist[Math.min(255, Y)]++;
   }

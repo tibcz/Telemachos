@@ -1,4 +1,4 @@
-"""Ithaca anchor — local-instance readiness / integrity self-check.
+"""Ithaca anchor - local-instance readiness / integrity self-check.
 
 Beyond ``/api/health``'s liveness ping, this confirms the self-hosted instance is
 whole and at home: the database is reachable, the data directory is present and
@@ -16,7 +16,7 @@ def check_readiness() -> Dict[str, object]:
     """Run the readiness checks and return a JSON-serialisable report.
 
     ``ready`` is True only when every critical check (database, data_dir) passes.
-    ``local_first`` is informational — a remote database is a valid deployment, so
+    ``local_first`` is informational - a remote database is a valid deployment, so
     it never fails readiness, it only reports whether storage stays on this host.
     """
     from core.constants import APP_VERSION, DATA_DIR
@@ -25,7 +25,7 @@ def check_readiness() -> Dict[str, object]:
 
     checks: Dict[str, Dict[str, object]] = {}
 
-    # Database reachable — the simplest honest probe that the engine is live.
+    # Database reachable - the simplest honest probe that the engine is live.
     try:
         with engine.connect() as conn:
             conn.execute(sql_text("SELECT 1"))
@@ -33,7 +33,7 @@ def check_readiness() -> Dict[str, object]:
     except Exception as e:
         checks["database"] = {"ok": False, "error": str(e)}
 
-    # Data directory present and writable — home must be able to hold its own data.
+    # Data directory present and writable - home must be able to hold its own data.
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
         probe = os.path.join(DATA_DIR, f".ready_probe_{uuid.uuid4().hex}")

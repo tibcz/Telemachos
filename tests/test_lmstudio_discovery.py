@@ -13,7 +13,7 @@ class _FakeResponse:
 
 
 # ════════════════════════════════════════════════════════════
-# ModelDiscovery — ports list includes 1234
+# ModelDiscovery - ports list includes 1234
 # ════════════════════════════════════════════════════════════
 
 class TestModelDiscoveryPorts:
@@ -55,7 +55,7 @@ class TestModelDiscoveryPorts:
 
 
 # ════════════════════════════════════════════════════════════
-# _fingerprint_provider — native API identification
+# _fingerprint_provider - native API identification
 # ════════════════════════════════════════════════════════════
 
 class TestFingerprintProvider:
@@ -122,7 +122,7 @@ class TestFingerprintProvider:
 
 
 # ════════════════════════════════════════════════════════════
-# _get_hosts — LM_STUDIO_URL env var
+# _get_hosts - LM_STUDIO_URL env var
 # ════════════════════════════════════════════════════════════
 
 class TestGetHostsLmStudioUrl:

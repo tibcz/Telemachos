@@ -1,7 +1,7 @@
 // static/js/calendar/utils.js
 //
 // Pure constants + zero-state helpers for the calendar UI.
-// No DOM, no fetch, no global mutable state — safe to import anywhere.
+// No DOM, no fetch, no global mutable state - safe to import anywhere.
 
 export const WEEKDAYS     = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 export const WEEKDAYS_SUN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -19,7 +19,7 @@ export const CAL_PALETTE = [
 
 export const CAL_COLORS = [
   { name: 'default', hex: '' },
-  // Pale/pastel palette — softer event tints.
+  // Pale/pastel palette - softer event tints.
   { name: 'red',     hex: '#f0b5ba' },
   { name: 'orange',  hex: '#e8ccb2' },
   { name: 'yellow',  hex: '#f2dfbd' },
@@ -28,7 +28,7 @@ export const CAL_COLORS = [
   { name: 'purple',  hex: '#e2bcee' },
   { name: 'teal',    hex: '#abdbe0' },
   { name: 'pink',    hex: '#f0b5cc' },
-  // Custom — mirrors the notes color picker. Clicking opens a file picker
+  // Custom - mirrors the notes color picker. Clicking opens a file picker
   // and the chosen image URL is stored as a `bg:<url>` sentinel.
   { name: 'custom',  hex: 'custom' },
 ];
@@ -38,7 +38,7 @@ export const _CAL_CUSTOM_GRADIENT = 'conic-gradient(from 0deg, #e06c75, #d19a66,
 // Per-event-type accent palette. Used by the colored dots in month/year
 // grids and the chip stripe behind agenda rows.
 export const _TYPE_PALETTE = {
-  '!':      '#e5a33a',  // important — amber, less harsh than red
+  '!':      '#e5a33a',  // important - amber, less harsh than red
   work:     '#5b8abf',
   personal: '#a07ae0',
   health:   '#e06c75',
@@ -157,7 +157,7 @@ export function _tzOffset() {
   return `${sign}${h}:${m}`;
 }
 
-// For naive datetimes (no tz suffix), display the date portion as written —
+// For naive datetimes (no tz suffix), display the date portion as written -
 // TimeTree and many sync tools store "local time" without an offset, so
 // re-interpreting them via the user's tz would shift days.
 //

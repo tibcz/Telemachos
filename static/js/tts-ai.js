@@ -1,5 +1,5 @@
 // static/js/tts-ai.js
-// AI Text-to-Speech Module — supports server TTS and browser Web Speech API
+// AI Text-to-Speech Module - supports server TTS and browser Web Speech API
 
 import { getSettings } from './appConfig.js';
 
@@ -32,7 +32,7 @@ class AITTSManager {
 
     async checkAvailability() {
         try {
-            // Check user setting first — if TTS is disabled in settings, don't show buttons.
+            // Check user setting first - if TTS is disabled in settings, don't show buttons.
             // settings.js re-calls this right after saving TTS settings; it invalidates
             // the shared cache before doing so, so this still sees the new value.
             try {
@@ -117,7 +117,7 @@ class AITTSManager {
             throw new Error('No text to synthesize');
         }
 
-        // Browser TTS doesn't use synthesize — handled directly in play()
+        // Browser TTS doesn't use synthesize - handled directly in play()
         if (this.useBrowserTTS) {
             return '__browser_tts__';
         }
@@ -250,7 +250,7 @@ class AITTSManager {
     }
 
     /**
-     * Enqueue a message for auto-play. Plays sequentially — each message
+     * Enqueue a message for auto-play. Plays sequentially - each message
      * finishes before the next starts. Stopping any message clears the queue.
      */
     enqueue(text, button, resetFn) {

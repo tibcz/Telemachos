@@ -5,7 +5,7 @@
 directly in the coroutine blocks the single event loop for that whole window,
 freezing every other in-flight request (chat streams, polling, ...). Because
 the endpoint is unauthenticated and rate-limited only per-IP, a burst of login
-attempts serializes the whole server — a cheap DoS-amplification vector.
+attempts serializes the whole server - a cheap DoS-amplification vector.
 
 The fix offloads the bcrypt-bearing AuthManager calls via asyncio.to_thread.
 This test asserts those calls run on a worker thread, not the loop thread; it
@@ -26,8 +26,8 @@ from unittest.mock import MagicMock
 # imports `src.llm_core` (hangs at import under the project venv) and the
 # SQLAlchemy declarative models (metaclass blows up on a bare `core.database`
 # import / under the conftest's `sqlalchemy.*` MagicMock stubs). We only need
-# `AuthManager` as a type hint here — the handler is exercised with a MagicMock
-# — so stub the heavy modules out. Same trick as test_auth_regressions.py /
+# `AuthManager` as a type hint here - the handler is exercised with a MagicMock
+# - so stub the heavy modules out. Same trick as test_auth_regressions.py /
 # test_null_owner_gates.py.
 def _ensure_stub(name: str, **attrs):
     """Create or augment a stub module, wiring it onto a stubbed parent package.

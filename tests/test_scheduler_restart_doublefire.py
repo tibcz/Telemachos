@@ -1,4 +1,4 @@
-"""Validator + regression test for FINDING 6.2 — restart double-fires overdue
+"""Validator + regression test for FINDING 6.2 - restart double-fires overdue
 scheduled tasks.
 
 Demonstrates the bug: TaskScheduler.start() aborts stale TaskRun rows but never
@@ -152,7 +152,7 @@ def test_restart_does_not_re_dispatch_overdue_task(monkeypatch):
 
 def test_startup_does_not_advance_fresh_tasks(monkeypatch):
     """Tasks whose next_run is in the future must be untouched by the startup
-    sweep — only overdue ones get pushed forward."""
+    sweep - only overdue ones get pushed forward."""
     future = _test_utcnow() + timedelta(hours=2)
     def _setup(cd, ScheduledTask, TaskRun):
         db = cd.SessionLocal()
@@ -175,7 +175,7 @@ def test_startup_does_not_advance_fresh_tasks(monkeypatch):
 
 
 def test_startup_does_not_advance_paused_tasks(monkeypatch):
-    """A paused task with an old next_run is not overdue for execution —
+    """A paused task with an old next_run is not overdue for execution -
     it should not be advanced by the startup sweep."""
     def _setup(cd, ScheduledTask, TaskRun):
         db = cd.SessionLocal()

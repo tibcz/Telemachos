@@ -1,5 +1,5 @@
 /**
- * Canvas event wiring — mouse, touch (including pinch-zoom on two
+ * Canvas event wiring - mouse, touch (including pinch-zoom on two
  * fingers), and the canvas-area pan handler.
  *
  *   Mouse:
@@ -37,13 +37,13 @@
 import { state } from './state.js';
 
 export function wireCanvasEvents({ canvasArea, beginDraw, continueDraw, endDraw, updateBrushCursor, syncZoomControls }) {
-  // Mouse — mousedown stays on the canvas; mousemove/up are bound to
+  // Mouse - mousedown stays on the canvas; mousemove/up are bound to
   // the WINDOW so a drag can continue (and end) past the canvas edge.
   // Critical for the Resize tool where users overshoot.
   state.mainCanvas.addEventListener('mousedown', beginDraw);
   window.addEventListener('mousemove', continueDraw);
   window.addEventListener('mouseup', endDraw);
-  // Lasso can start OUTSIDE the canvas — fallback mousedown on the
+  // Lasso can start OUTSIDE the canvas - fallback mousedown on the
   // surrounding canvas-area so the user can begin a lasso path in
   // the empty space around the image. Other tools stay canvas-only.
   canvasArea.addEventListener('mousedown', (e) => {
@@ -55,12 +55,12 @@ export function wireCanvasEvents({ canvasArea, beginDraw, continueDraw, endDraw,
     if (['brush', 'eraser', 'inpaint', 'lasso', 'clone'].includes(state.tool)) updateBrushCursor(e);
   });
   state.mainCanvas.addEventListener('mouseleave', () => {
-    // Only hide the brush-cursor overlay on leave — DO NOT end the
+    // Only hide the brush-cursor overlay on leave - DO NOT end the
     // drag, so the user can drag a resize handle past the canvas edge.
     if (state.cursorEl) state.cursorEl.style.display = 'none';
   });
 
-  // Touch — single finger draws; two fingers pan + pinch-zoom.
+  // Touch - single finger draws; two fingers pan + pinch-zoom.
   let multiActive = false;
   let multiStartDist = 0;
   let multiStartZoom = 1;
@@ -160,7 +160,7 @@ export function wireCanvasEvents({ canvasArea, beginDraw, continueDraw, endDraw,
     if (e.target.closest('button, input, .ge-adj-popup, .ge-transform-popup, .ge-fx-popup, .ge-inpaint-popup, .ge-controls, .ge-right-panel, .ge-fx-menu')) return;
     // During an active transform the corner/rotation handles render
     // OUTSIDE the canvas (over the surrounding area), and the overlay is
-    // pointer-events:none — so a grab on an outside handle lands here.
+    // pointer-events:none - so a grab on an outside handle lands here.
     // Route it to the transform tool (getHandleAt works in image space,
     // even for points beyond the canvas) instead of panning the canvas.
     if (state.transformActive) {

@@ -150,7 +150,7 @@ def main():
     # Disable HF progress bars (we provide our own)
     os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "0"
 
-    # Enable Rust-backed parallel downloader if available — big throughput win.
+    # Enable Rust-backed parallel downloader if available - big throughput win.
     # Must be set before importing huggingface_hub.
     try:
         import hf_transfer  # noqa: F401

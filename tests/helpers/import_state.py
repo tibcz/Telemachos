@@ -3,7 +3,7 @@
 Use ``preserve_import_state`` as a context manager around any block that needs
 to mutate ``sys.modules`` or parent-package attributes temporarily. On exit
 (normal or exception), every named module is restored to exactly the state it
-had before the block — present, absent, or carrying a parent-package attribute.
+had before the block - present, absent, or carrying a parent-package attribute.
 
 Use ``clear_module`` to drop a single module from both ``sys.modules`` and its
 parent-package attribute (e.g. before forcing a fresh import inside the block).
@@ -20,13 +20,13 @@ loaded from disk.
 Background: importing ``routes.session_routes`` also sets ``session_routes`` on
 the parent ``routes`` package object. A ``from routes import session_routes``
 or ``import routes.session_routes as X`` statement resolves through that parent
-attribute, so restoring ``sys.modules`` alone is not sufficient — the parent
+attribute, so restoring ``sys.modules`` alone is not sufficient - the parent
 attribute must be restored too. This helper handles both.
 
 Restoration in ``preserve_import_state`` is two-phased: all ``sys.modules``
 entries are written back first, then all parent-package attributes. This means
 parent-attr restoration always resolves the parent through the already-restored
-``sys.modules``, so results are deterministic regardless of argument order —
+``sys.modules``, so results are deterministic regardless of argument order -
 safe for callers that pass both a parent package and a child module.
 """
 
@@ -72,8 +72,8 @@ def clear_module(dotted_name):
 def clear_fake_database_modules():
     """Evict a *stubbed* ``core.database`` (and ``src.database``) from import state.
 
-    Test-only. Some tests install a fake ``core.database`` — a stub module with
-    no on-disk ``__file__`` — into ``sys.modules`` and onto the ``core`` package.
+    Test-only. Some tests install a fake ``core.database`` - a stub module with
+    no on-disk ``__file__`` - into ``sys.modules`` and onto the ``core`` package.
     A later test that needs the real database module must evict that stub first,
     or its ``import core.database`` resolves to the fake.
 
@@ -102,8 +102,8 @@ def clear_fake_endpoint_resolver_modules(*extra_modules):
     """Evict a *stubbed* ``src.endpoint_resolver`` (and dependent route modules).
 
     Test-only. Several route tests need the *real* ``src.endpoint_resolver`` URL
-    helpers, but another test may have installed a fake — a stub module with no
-    on-disk ``__file__`` — into ``sys.modules`` and onto the ``src`` package
+    helpers, but another test may have installed a fake - a stub module with no
+    on-disk ``__file__`` - into ``sys.modules`` and onto the ``src`` package
     during collection. The route modules (``routes.model_routes`` and any extras
     passed in, e.g. ``routes.chat_routes``) get cached against that fake on first
     import, so they must be evicted too.
@@ -112,7 +112,7 @@ def clear_fake_endpoint_resolver_modules(*extra_modules):
     guards it replaces:
 
     * It acts only when ``src.endpoint_resolver`` is a fake/stub, detected by a
-      falsy ``__file__`` (missing, ``None``, or empty string) — exactly the
+      falsy ``__file__`` (missing, ``None``, or empty string) - exactly the
       truthiness check the old inline guards used. A real resolver loaded from
       disk carries a truthy ``__file__`` and is left untouched, as is the case
       where nothing is cached. When the resolver is real, the dependent route
@@ -126,7 +126,7 @@ def clear_fake_endpoint_resolver_modules(*extra_modules):
     modules are dropped via :func:`clear_module`, which also clears the parent
     ``routes`` package attribute (e.g. ``routes.model_routes``), not just the
     ``sys.modules`` entry. This prevents a stale parent attribute from shadowing
-    the fresh import — the same parent-attr handling the rest of this helper
+    the fresh import - the same parent-attr handling the rest of this helper
     family already applies.
     """
     parent = sys.modules.get("src")
@@ -149,10 +149,10 @@ def preserve_import_state(*module_names):
     Restoration is two-phased: sys.modules entries are written back first,
     then parent-package attributes. This ensures parent-attr restoration always
     sees the correctly restored parent in sys.modules, regardless of argument
-    order — safe for callers that pass both a parent and a child module.
+    order - safe for callers that pass both a parent and a child module.
 
     On exit (normal or exception), each named module is restored to its state
-    before the block — whether present, absent, or carrying a parent attribute.
+    before the block - whether present, absent, or carrying a parent attribute.
     """
     saved = {name: _save_one(name) for name in module_names}
     try:

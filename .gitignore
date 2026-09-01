@@ -14,17 +14,17 @@ venv/
 .env
 .env.bak.*
 !.env.example
-# Local uv lockfile (optional, per-platform — see "Faster installs with uv" in README)
+# Local uv lockfile (optional, per-platform - see "Faster installs with uv" in README)
 requirements.lock
 
-# SOPS workflow — encrypted `secrets.env` is intentionally committable,
+# SOPS workflow - encrypted `secrets.env` is intentionally committable,
 # but every variant (plaintext, manual decrypt copy, editor backup)
 # must stay out of git. Mirrored in .dockerignore so the same artifacts
 # also cannot enter image build layers.
 secrets.env.*
 !secrets.env.example
 
-# Data — all user data stays local
+# Data - all user data stays local
 data/
 !services/hwfit/data/
 !services/hwfit/data/hf_models.json
@@ -66,7 +66,7 @@ output.txt.txt
 *.png
 # ...but the app's own icon is source, not media. Without this exception it is
 # silently left out of the repository and the build produces an app with no
-# icon at all — which is exactly what happened to 1.0.3.
+# icon at all - which is exactly what happened to 1.0.3.
 !packaging/macos/icon.png
 *.gif
 *.bmp
@@ -114,7 +114,7 @@ scripts/compound/*.json
 research_data/
 **/search_analytics.json
 
-# Internal dev/review notes — not for public repo
+# Internal dev/review notes - not for public repo
 dev-docs/
 # Windows-port working docs (local only, not for public repo)
 docs/windows-port/

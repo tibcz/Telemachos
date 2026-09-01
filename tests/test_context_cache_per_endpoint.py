@@ -1,4 +1,4 @@
-"""Regression for #2603 — model context-window cache must be keyed per endpoint.
+"""Regression for #2603 - model context-window cache must be keyed per endpoint.
 
 `get_context_length()` cached by model id alone, so two different remote endpoints
 serving the same model id (e.g. a capped proxy at 8k vs. the full provider at 200k)

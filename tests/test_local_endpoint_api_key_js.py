@@ -1,13 +1,13 @@
-"""Behavioral test for issue #353 — Local LLM endpoints behind an API key.
+"""Behavioral test for issue #353 - Local LLM endpoints behind an API key.
 
 The admin "Local" add/test form previously sent only `base_url` (+ model_type),
-so a self-hosted endpoint protected by an API key could never be added — it just
+so a self-hosted endpoint protected by an API key could never be added - it just
 errored out. The backend `POST /api/model-endpoints` and `/model-endpoints/test`
 already accept an `api_key` form field; the fix wires the new `adm-epLocalApiKey`
 input into the local Test and Add handlers.
 
-admin.js can't be imported standalone (browser-only deps), so — same approach as
-tests/test_local_endpoint_js.py — we extract the two click-handler bodies from
+admin.js can't be imported standalone (browser-only deps), so - same approach as
+tests/test_local_endpoint_js.py - we extract the two click-handler bodies from
 source and run them under node with mocked DOM/FormData/fetch, asserting the
 outgoing form data contains `api_key` exactly when the key field is filled.
 """

@@ -3,7 +3,7 @@
 
 The on-disk format is SKILL.md (frontmatter + structured body) under
 `data/skills/<category>/<name>/`. Old shape (`title`, `problem`, `solution`,
-`steps`) still accepted on input — they're translated to the new fields
+`steps`) still accepted on input - they're translated to the new fields
 (`description`, `when_to_use`, `body_extra`, `procedure`).
 """
 
@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 # JSON parsing fails). `["\'\s:]*` already consumes whitespace, so the original
 # trailing `\s*` made two adjacent \s-matching quantifiers that backtrack O(n^2)
 # on a `verdict` + whitespace flood in untrusted model output (CodeQL
-# py/polynomial-redos). Without it a single unbounded quantifier remains — the
+# py/polynomial-redos). Without it a single unbounded quantifier remains - the
 # matched text is identical, and the scan is linear.
 _VERDICT_PROSE_RE = re.compile(
     r'verdict["\'\s:]*["\']?(pass|needs_work|fail|inconclusive)', re.I
@@ -101,7 +101,7 @@ def _skill_test_task(skill: dict) -> str:
     ctx = (skill.get("when_to_use") or skill.get("description") or skill.get("name") or "").strip()
     return (
         "Test this skill end-to-end. FIRST, set up a small realistic scenario it "
-        "applies to — create any sample input it needs (e.g. a short document, a "
+        "applies to - create any sample input it needs (e.g. a short document, a "
         "note, sample data). Do NOT ask the user for input; invent a plausible "
         "example yourself. THEN apply the skill fully to that example and show the "
         "result. Context for when this skill is used: " + (ctx or "(general)")
@@ -130,7 +130,7 @@ async def _eval_skill_run(skill_md: str, task: str, transcript: str,
     """LLM-as-judge: grade a skill test run from its transcript. Advisory only.
 
     Robust against local reasoning models (strips <think>, lenient JSON,
-    generous token budget) — same defensive parsing used elsewhere.
+    generous token budget) - same defensive parsing used elsewhere.
     """
     import json as _json
     import re as _re
@@ -150,11 +150,11 @@ async def _eval_skill_run(skill_md: str, task: str, transcript: str,
         "doesn't describe the real trigger, or a description that oversells or "
         "mismatches the body. List each metadata problem in 'issues' (prefix it "
         "with 'metadata:'). Metadata problems alone do NOT make the verdict 'fail' "
-        "if the procedure works — note them as issues on an otherwise-passing run.\n\n"
-        "IMPORTANT — fairness rule: if the run could NOT proceed because it lacked "
+        "if the procedure works - note them as issues on an otherwise-passing run.\n\n"
+        "IMPORTANT - fairness rule: if the run could NOT proceed because it lacked "
         "an input or target the test never provided (e.g. there was no document/"
         "email/data to act on, so the agent reasonably asked for it), that is NOT "
-        "the skill's fault. Return verdict \"inconclusive\" — do NOT mark it fail "
+        "the skill's fault. Return verdict \"inconclusive\" - do NOT mark it fail "
         "or needs_work. Only judge the skill's PROCEDURE; reserve fail/needs_work "
         "for when the steps themselves are wrong, vague, or reference missing tools.\n\n"
         "If you need to reason, do it inside <think></think> FIRST. Then output "
@@ -164,7 +164,7 @@ async def _eval_skill_run(skill_md: str, task: str, transcript: str,
         '"issues": ["short issue", ...]}'
     )
     # Give the judge plenty of transcript, and when it must trim, keep the TAIL
-    # (the final result lives at the end) plus a bit of the head — truncating to
+    # (the final result lives at the end) plus a bit of the head - truncating to
     # a short prefix made the judge wrongly call complete runs "incomplete /
     # missing sections" because it never saw the end.
     def _clip(t: str, limit: int = 24000) -> str:
@@ -194,7 +194,7 @@ async def _eval_skill_run(skill_md: str, task: str, transcript: str,
 
         data = None
         # Scan every balanced {...} candidate and keep the LAST one that parses
-        # and carries a "verdict" — the transcript is full of JSON API bodies,
+        # and carries a "verdict" - the transcript is full of JSON API bodies,
         # so a naive first-brace/last-brace span almost never parses.
         for m in _re.finditer(r'\{[\s\S]*?\}', text):
             frag = m.group(0)
@@ -264,7 +264,7 @@ async def _eval_skill_run(skill_md: str, task: str, transcript: str,
                 temperature=0.1, max_tokens=32768, headers=headers, timeout=180,
             )
         except Exception as e:
-            # Don't give up on a transient first-attempt error — let the second
+            # Don't give up on a transient first-attempt error - let the second
             # (no-think) attempt run before reporting failure.
             last_err = e
             continue
@@ -283,7 +283,7 @@ async def _eval_skill_necessity(skill_md: str, others: list, url: str, model: st
                                 headers: Optional[dict]) -> Optional[dict]:
     """Advisory judge: is this skill worth keeping, or is it redundant / trivially
     unnecessary? Sees the OTHER skills' names+descriptions so it can spot
-    duplicates. Returns {necessary, redundant_with, reason} or None. Never acts —
+    duplicates. Returns {necessary, redundant_with, reason} or None. Never acts -
     purely a flag the UI surfaces."""
     import json as _json
     import re as _re
@@ -425,7 +425,7 @@ async def _eval_skill_retrieval_precision(skill_md: str, others: list,
 
 # In-memory skill-test jobs, keyed by (owner, skill_name). Runs server-side so
 # the test survives the modal being closed; the UI polls /test-status. (Not
-# persisted across restart — it's a "come back in a bit" convenience.)
+# persisted across restart - it's a "come back in a bit" convenience.)
 _skill_test_jobs: dict = {}
 
 
@@ -524,7 +524,7 @@ async def _run_skill_test_job(
         job["verdict"] = {"verdict": "unknown", "confidence": 0, "summary": f"Eval failed: {e}", "issues": []}
     # Record the result so the card shows a 'verified' check (a manual test
     # never involves the teacher) and nudge the confidence score to match the
-    # verdict — same scale as Audit-all's pass=0.95. inconclusive/unknown leave
+    # verdict - same scale as Audit-all's pass=0.95. inconclusive/unknown leave
     # the score alone (missing-fixture or parse failures shouldn't punish it).
     if skills_manager is not None:
         v = (job["verdict"] or {}).get("verdict") or "unknown"
@@ -718,7 +718,7 @@ def _apply_skill_md(skills_manager, name: str, md: str, owner) -> bool:
         sk = Skill.from_markdown(md)
         # Pin the identity: the audit's fixer is now allowed to edit frontmatter
         # (tags/category/when_to_use/description), but it must NEVER rename the
-        # skill — a changed `name` would move the dir and orphan the usage/audit
+        # skill - a changed `name` would move the dir and orphan the usage/audit
         # sidecar entries that the caller keeps writing under the original name.
         sk.name = name
         return bool(skills_manager.update_skill(name, {
@@ -815,7 +815,7 @@ async def _improve_skill_md(skill_md: str, verdict: dict, transcript: str, url, 
         "make vague steps concrete, correct or remove references to tools that don't exist, "
         "ensure the procedure is reproducible. "
         "Keep the `name` field EXACTLY as-is (it is the skill's identity / filename). You MAY "
-        "correct the OTHER frontmatter — tags, category, when_to_use, description — when the "
+        "correct the OTHER frontmatter - tags, category, when_to_use, description - when the "
         "reviewer flagged them (issues prefixed 'metadata:') or they don't match the body; keep "
         "retrieval metadata narrow: remove broad tags that would over-select the skill, and make "
         "`when_to_use` say when NOT to use the skill if adjacent tasks are easy to confuse. Keep "
@@ -868,10 +868,10 @@ async def _audit_one_skill(skills_manager, skill, url, model, headers,
 
     md = skills_manager.read_skill_md(name, owner=owner)
     if not md:
-        log(f"{name}: no source — skipped")
+        log(f"{name}: no source - skipped")
         return {"skill": name, "result": "skipped"}
 
-    # Advisory necessity/redundancy check — runs once, independent of the test
+    # Advisory necessity/redundancy check - runs once, independent of the test
     # outcome, and only records a flag the UI surfaces (never deletes/demotes).
     others = []
     nec = None
@@ -891,9 +891,9 @@ async def _audit_one_skill(skills_manager, skill, url, model, headers,
                                          nec.get("redundant_with"), nec.get("reason"),
                                          owner=owner)
             if not nec.get("necessary", True):
-                log(f"{name}: possibly unnecessary — {nec.get('reason', '')[:80]}")
+                log(f"{name}: possibly unnecessary - {nec.get('reason', '')[:80]}")
     except Exception as e:
-        log(f"{name}: necessity check skipped — {e}")
+        log(f"{name}: necessity check skipped - {e}")
 
     generic_reason = _audit_generic_blocker(skill, nec, None)
     duplicate_of = _skill_duplicate_blocker(skills_manager, name, owner)
@@ -908,7 +908,7 @@ async def _audit_one_skill(skills_manager, skill, url, model, headers,
                 skills_manager.set_necessity(name, False, [], reason, owner=owner)
         except Exception:
             pass
-        log(f"{name}: draft — skipped functional test ({reason[:100]})")
+        log(f"{name}: draft - skipped functional test ({reason[:100]})")
         return {"skill": name, "result": "skipped", "reason": reason, "confidence": 0.35, "status": "draft"}
 
     # Retrieval precision check: if broad tags/trigger text would make this
@@ -918,7 +918,7 @@ async def _audit_one_skill(skills_manager, skill, url, model, headers,
             rp = await _eval_skill_retrieval_precision(md, others, url, model, headers)
             if rp and not rp.get("ok"):
                 issues = rp.get("issues") or ["metadata: retrieval: narrow tags and when_to_use to the intended trigger"]
-                log(f"{name}: narrowing retrieval metadata — {(rp.get('summary') or issues[0])[:80]}")
+                log(f"{name}: narrowing retrieval metadata - {(rp.get('summary') or issues[0])[:80]}")
                 fixed = await _improve_skill_md(md, {
                     "verdict": "pass",
                     "confidence": 1.0,
@@ -931,7 +931,7 @@ async def _audit_one_skill(skills_manager, skill, url, model, headers,
                     if refreshed:
                         skill = refreshed
     except Exception as e:
-        log(f"{name}: retrieval precision check skipped — {e}")
+        log(f"{name}: retrieval precision check skipped - {e}")
 
     task = _skill_test_task(skill)
     log(f"{name}: testing…")
@@ -951,7 +951,7 @@ async def _audit_one_skill(skills_manager, skill, url, model, headers,
             owner=owner,
         )
         status = skill.get("status") or "draft"
-        log(f"{name}: {status} unchanged — exact action needs manual approval")
+        log(f"{name}: {status} unchanged - exact action needs manual approval")
         return {
             "skill": name,
             "result": "approval_required",
@@ -961,7 +961,7 @@ async def _audit_one_skill(skills_manager, skill, url, model, headers,
     if v == "pass":
         # Procedure works. If the reviewer still flagged metadata (tags/category/
         # when_to_use/description), do ONE fixer pass to correct the frontmatter
-        # without re-testing — a metadata-only fix can't break a passing run.
+        # without re-testing - a metadata-only fix can't break a passing run.
         meta_issues = [i for i in (verdict.get("issues") or []) if str(i).lower().lstrip().startswith("metadata:")]
         if meta_issues:
             log(f"{name}: pass, but fixing {len(meta_issues)} metadata issue(s)…")
@@ -972,12 +972,12 @@ async def _audit_one_skill(skills_manager, skill, url, model, headers,
         skills_manager.set_audit(name, "pass", by_teacher=False, worker_model=model, owner=owner)
         refreshed = next((s for s in skills_manager.load(owner=owner) if s.get("name") == name), None)
         status = _audit_finalize_status(skills_manager, name, owner, "pass", 0.95, (refreshed or {}).get("necessity"), verdict)
-        log(f"{name}: {status} — confidence 95%")
+        log(f"{name}: {status} - confidence 95%")
         return {"skill": name, "result": "pass", "verdict": verdict, "confidence": 0.95, "status": status}
     if v in ("unknown", "inconclusive"):
         skills_manager.set_audit(name, "inconclusive", by_teacher=False, worker_model=model, owner=owner)
         status = _audit_finalize_status(skills_manager, name, owner, "inconclusive", skill.get("confidence") or 0.0, skill.get("necessity"))
-        log(f"{name}: {status} — inconclusive")
+        log(f"{name}: {status} - inconclusive")
         return {"skill": name, "result": "inconclusive", "verdict": verdict, "status": status}
 
     # Self-edit + retry.
@@ -993,11 +993,11 @@ async def _audit_one_skill(skills_manager, skill, url, model, headers,
             skills_manager.set_audit(name, "pass", by_teacher=False, worker_model=model, owner=owner)
             refreshed = next((s for s in skills_manager.load(owner=owner) if s.get("name") == name), None)
             status = _audit_finalize_status(skills_manager, name, owner, "pass", 0.85, (refreshed or {}).get("necessity"), verdict)
-            log(f"{name}: {status} — confidence 85% after self-edit")
+            log(f"{name}: {status} - confidence 85% after self-edit")
             return {"skill": name, "result": "pass_after_self_edit", "verdict": verdict, "confidence": 0.85, "status": status}
 
     # Teacher escalation (if a distinct teacher model is configured). The
-    # teacher only REWRITES the skill — it does NOT run the test. The point is
+    # teacher only REWRITES the skill - it does NOT run the test. The point is
     # to verify the regular (student) model can now succeed with the teacher's
     # improved procedure, so the retry runs on the worker model, not the teacher.
     teacher_ran = False
@@ -1019,7 +1019,7 @@ async def _audit_one_skill(skills_manager, skill, url, model, headers,
             )
             refreshed = next((s for s in skills_manager.load(owner=owner) if s.get("name") == name), None)
             status = _audit_finalize_status(skills_manager, name, owner, "pass", 0.8, (refreshed or {}).get("necessity"), verdict)
-            log(f"{name}: {status} — confidence 80% after teacher rewrite")
+            log(f"{name}: {status} - confidence 80% after teacher rewrite")
             return {"skill": name, "result": "pass_after_teacher", "verdict": verdict, "confidence": 0.8, "status": status}
 
     # Still failing → demote to draft + low confidence + flag (do NOT delete).
@@ -1033,7 +1033,7 @@ async def _audit_one_skill(skills_manager, skill, url, model, headers,
         teacher_model=(teacher[1] if teacher_ran and teacher else ""),
         owner=owner,
     )
-    log(f"{name}: flagged — confidence lowered, kept as draft for manual review")
+    log(f"{name}: flagged - confidence lowered, kept as draft for manual review")
     return {"skill": name, "result": "flagged", "verdict": verdict, "confidence": 0.35}
 
 
@@ -1071,7 +1071,7 @@ async def _run_audit_all_job(key, skills_manager, names, url, model, headers, te
                 log("(cancelled)")
                 raise
             except Exception as e:
-                log(f"{nm}: error — {e}")
+                log(f"{nm}: error - {e}")
                 res = {"skill": nm, "result": "error"}
             try:
                 refreshed = next((s for s in skills_manager.load(owner=owner) if s.get("name") == nm), None)
@@ -1111,7 +1111,7 @@ def _resolve_audit_models(owner=None):
     from src.endpoint_resolver import resolve_endpoint
     url, model, headers = resolve_endpoint("utility", owner=owner)
     if not url or not model:
-        raise ValueError("No model configured — set a Default or Utility model in Settings.")
+        raise ValueError("No model configured - set a Default or Utility model in Settings.")
     try:
         from src.llm_core import list_model_ids
         import os as _os
@@ -1149,13 +1149,13 @@ async def run_scheduled_skill_audit(skills_manager: SkillsManager,
     key = (owner or "",)
     existing = _skill_audit_jobs.get(key)
     if existing and existing.get("status") == "running":
-        logger.info("Scheduled skill audit skipped — a run is already active.")
+        logger.info("Scheduled skill audit skipped - a run is already active.")
         return {"status": "running", "skipped": True}
 
     try:
         url, model, headers, teacher = _resolve_audit_models(owner=owner)
     except ValueError as e:
-        logger.info(f"Scheduled skill audit skipped — {e}")
+        logger.info(f"Scheduled skill audit skipped - {e}")
         return {"status": "skipped", "reason": str(e)}
 
     skills = skills_manager.load(owner=owner)
@@ -1189,7 +1189,7 @@ def setup_skills_routes(skills_manager: SkillsManager) -> APIRouter:
     def _verify_owner(skill: dict, user: Optional[str]):
         if user is None:
             return
-        # SECURITY: strict check — previously `sk_owner and sk_owner != user`
+        # SECURITY: strict check - previously `sk_owner and sk_owner != user`
         # let any user mutate/read a skill that happened to have no owner
         # field (legacy or un-stamped writes), since the truthiness guard
         # short-circuited the comparison. Treat missing owner as not-owned.
@@ -1250,7 +1250,7 @@ def setup_skills_routes(skills_manager: SkillsManager) -> APIRouter:
     @router.get("/builtin")
     async def list_builtin_skills(request: Request):
         """Read-only list of the agent's built-in tool capabilities (research,
-        sessions, tasks, email, etc.) — the things it natively knows how to do.
+        sessions, tasks, email, etc.) - the things it natively knows how to do.
         Surfaced so the Skills tab can show them in a separate "Built-in"
         section alongside the user's learned SKILL.md skills. Sourced from
         agent_loop.TOOL_SECTIONS (the same descriptions the model is given)."""
@@ -1260,7 +1260,10 @@ def setup_skills_routes(skills_manager: SkillsManager) -> APIRouter:
             s = raw or ""
             s = re.sub(r"```.*?```", "", s, flags=re.S)   # drop code fences (incl. inline ```name```)
             s = re.sub(r"\s+", " ", s).strip()
-            s = re.sub(r"^[-–—:\s]+", "", s)              # drop leftover "- — " / ": " bullet prefix
+            # \u2014 is the em dash, written as an escape so the file holds
+            # no literal one. Spelling it literally here previously turned the
+            # class into the invalid range "\u2013-:".
+            s = re.sub(r"^[-\u2013\u2014:\s]+", "", s)   # drop leftover "- - " / ": " bullet prefix
             return s[:240]
 
         try:
@@ -1286,7 +1289,7 @@ def setup_skills_routes(skills_manager: SkillsManager) -> APIRouter:
 
     @router.get("/builtin/{name}")
     async def get_builtin_skill(name: str, request: Request):
-        """Full text of a built-in tool's instruction block — the override
+        """Full text of a built-in tool's instruction block - the override
         if one is set, plus the shipped default (for the revert button)."""
         try:
             from src.agent_loop import TOOL_SECTIONS, get_builtin_overrides
@@ -1311,7 +1314,7 @@ def setup_skills_routes(skills_manager: SkillsManager) -> APIRouter:
     @router.put("/builtin/{name}")
     async def set_builtin_override(name: str, request: Request):
         """Save a user override for a built-in tool's instruction block.
-        WARNING surfaced in the UI — this changes how the assistant is
+        WARNING surfaced in the UI - this changes how the assistant is
         told to use a native tool."""
         require_admin(request)
         from src.agent_loop import TOOL_SECTIONS
@@ -1462,7 +1465,7 @@ def setup_skills_routes(skills_manager: SkillsManager) -> APIRouter:
 
     @router.get("/{skill_id}/markdown")
     async def get_skill_markdown(request: Request, skill_id: str):
-        """Return the raw SKILL.md text — used by the slash-invocation flow
+        """Return the raw SKILL.md text - used by the slash-invocation flow
         and the editor's 'view source' affordance."""
         user = _owner(request)
         skills = skills_manager.load(owner=user)
@@ -1502,7 +1505,7 @@ def setup_skills_routes(skills_manager: SkillsManager) -> APIRouter:
         if not task:
             task = _skill_test_task(match)
 
-        # Prefer the configured DEFAULT (→ Utility) model — not the current chat
+        # Prefer the configured DEFAULT (→ Utility) model - not the current chat
         # session's model. Fall back to the caller's session model only if unset.
         url, model, headers = resolve_endpoint("utility", owner=user)
         if not url or not model:
@@ -1511,7 +1514,7 @@ def setup_skills_routes(skills_manager: SkillsManager) -> APIRouter:
             if headers is None and isinstance(body.get("headers"), dict):
                 headers = body.get("headers")
         if not url or not model:
-            raise HTTPException(400, "No model configured — set a Default or Utility model in Settings.")
+            raise HTTPException(400, "No model configured - set a Default or Utility model in Settings.")
 
         # Normalize against the endpoint's served models (avoids 404 model drift).
         try:
@@ -1724,7 +1727,7 @@ def setup_skills_routes(skills_manager: SkillsManager) -> APIRouter:
                 "done": existing.get("done", 0), "model": existing.get("model"),
             }
 
-        # Worker model (Default, normalized) + optional teacher — shared resolver.
+        # Worker model (Default, normalized) + optional teacher - shared resolver.
         try:
             url, model, headers, teacher = _resolve_audit_models(owner=user)
         except ValueError as e:

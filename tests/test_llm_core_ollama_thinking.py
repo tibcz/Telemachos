@@ -12,7 +12,7 @@ from src import llm_core
 
 
 # ---------------------------------------------------------------------------
-# Fake HTTP client — captures the outgoing payload without network I/O
+# Fake HTTP client - captures the outgoing payload without network I/O
 # ---------------------------------------------------------------------------
 
 class _FakeResp:
@@ -68,13 +68,13 @@ def _capture_payload(monkeypatch, url, model):
 
 
 # ---------------------------------------------------------------------------
-# _is_ollama_openai_compat_url — pure function, no I/O
+# _is_ollama_openai_compat_url - pure function, no I/O
 # ---------------------------------------------------------------------------
 
 class TestIsOllamaOpenAICompatUrl:
     """Unit tests for the URL classifier that gates think-suppression."""
 
-    # Positive cases — should be True
+    # Positive cases - should be True
     def test_default_port_v1_root(self):
         assert llm_core._is_ollama_openai_compat_url("http://127.0.0.1:11434/v1")
 
@@ -101,7 +101,7 @@ class TestIsOllamaOpenAICompatUrl:
     def test_zero_dot_zero_host(self):
         assert llm_core._is_ollama_openai_compat_url("http://0.0.0.0:11434/v1")
 
-    # Negative cases — should be False
+    # Negative cases - should be False
     def test_openai_api_v1(self):
         """Real OpenAI endpoint must never match, even though path is /v1."""
         assert not llm_core._is_ollama_openai_compat_url("https://api.openai.com/v1")
@@ -127,7 +127,7 @@ class TestIsOllamaOpenAICompatUrl:
 
 
 # ---------------------------------------------------------------------------
-# Payload injection — think: false only when both conditions hold
+# Payload injection - think: false only when both conditions hold
 # ---------------------------------------------------------------------------
 
 class TestThinkSuppression:
@@ -149,7 +149,7 @@ class TestThinkSuppression:
 
     def test_no_think_for_openai_endpoint_with_thinking_model_name(self, monkeypatch):
         """think must NOT leak to a real OpenAI endpoint even if the model name
-        matches a thinking pattern — the URL guard is what matters."""
+        matches a thinking pattern - the URL guard is what matters."""
         payload = _capture_payload(
             monkeypatch, "https://api.openai.com/v1/chat/completions", "qwen3:14b"
         )
@@ -157,7 +157,7 @@ class TestThinkSuppression:
 
     def test_think_false_for_non_default_port_thinking_model(self, monkeypatch):
         """Custom-port localhost Ollama (e.g. OLLAMA_HOST=0.0.0.0:11435) must
-        also receive think:false — this is the regression guarded by the
+        also receive think:false - this is the regression guarded by the
         host-set check added in this fix."""
         payload = _capture_payload(
             monkeypatch, "http://127.0.0.1:11435/v1/chat/completions", "qwen3:14b"

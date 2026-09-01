@@ -1,10 +1,10 @@
-"""Issue #2791 — the Notes panel's capture-phase "Esc cancels select mode"
+"""Issue #2791 - the Notes panel's capture-phase "Esc cancels select mode"
 keydown listener must be tracked and removed on close, not leaked anonymously on
 every open/close cycle.
 
 notes.js is a browser ES module with a heavy import chain (can't be node-imported
-in isolation), so — per the repo's convention for DOM-coupled guards (cf. the
-document.js diff-discard and memory.js filter-guard tests) — this asserts the
+in isolation), so - per the repo's convention for DOM-coupled guards (cf. the
+document.js diff-discard and memory.js filter-guard tests) - this asserts the
 tracked-handler pattern in source.
 """
 from pathlib import Path

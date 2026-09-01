@@ -25,7 +25,7 @@ def test_cache_eviction_tolerates_already_removed_key():
     """
     class PhantomKeysCache(dict):
         def keys(self):
-            # First key is absent from the dict — as if another thread evicted
+            # First key is absent from the dict - as if another thread evicted
             # it between the snapshot and the delete.
             return ["__phantom_removed__", *super().keys()]
 

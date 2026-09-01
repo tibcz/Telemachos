@@ -39,7 +39,7 @@ def test_ipv6_addresses_are_redacted():
     for msg in leaky:
         out = sanitize_error(msg)
         # Scrubbed via the v6 rule ([redacted]) or, inside a URL, the URL rule
-        # ([redacted-url]) — either way the address must not survive.
+        # ([redacted-url]) - either way the address must not survive.
         assert "[redacted" in out, out
         assert "::" not in out and "[fd00" not in out, out
 
@@ -67,7 +67,7 @@ def test_ipv4_still_redacted_and_length_capped():
 
 def test_ipv6_zone_id_is_redacted():
     # Link-local addresses often carry a %zone (fe80::1%eth0). The whole token,
-    # zone included, must go — ipaddress validates the address part.
+    # zone included, must go - ipaddress validates the address part.
     out = sanitize_error("bind fe80::1%eth0 unreachable")
     assert "[redacted]" in out
     assert "::" not in out and "%eth0" not in out and "fe80" not in out
@@ -80,13 +80,13 @@ def test_ipv4_mapped_ipv6_is_scrubbed():
 
 
 def test_bracketed_scoped_ipv6_with_port_is_one_redaction():
-    # [fe80::1%eth0]:8080 — the whole bracketed authority (zone + port) goes,
+    # [fe80::1%eth0]:8080 - the whole bracketed authority (zone + port) goes,
     # with no leftover brackets/port and no nested [redacted].
     assert sanitize_error("dial [fe80::1%eth0]:8080 timeout") == "dial [redacted] timeout"
 
 
 def test_bracketed_ipv4_mapped_with_port_is_one_redaction():
-    # [::ffff:192.168.0.1]:8080 — same, for an IPv4-mapped literal in brackets.
+    # [::ffff:192.168.0.1]:8080 - same, for an IPv4-mapped literal in brackets.
     assert sanitize_error("dial [::ffff:192.168.0.1]:8080 timeout") == "dial [redacted] timeout"
 
 

@@ -1,4 +1,4 @@
-"""Regression tests for #4547 — chat-mode web search query sanitization.
+"""Regression tests for #4547 - chat-mode web search query sanitization.
 
 Chat-mode web search (``use_web``) selects a search query via the
 generated-query flow added in #4557: an LLM extracts a concise query, falling
@@ -30,7 +30,7 @@ from src.chat_processor import ChatProcessor, _clean_search_query
 
 def test_clean_search_query_removes_fenced_code_blocks():
     """A fenced code block must be dropped entirely, including the code body
-    and the fences — only the surrounding prose survives."""
+    and the fences - only the surrounding prose survives."""
     message = '```python\nprint("hello")\n```\nWhat is the capital of France?'
 
     result = _clean_search_query(message)
@@ -166,7 +166,7 @@ def test_generated_query_is_used_and_sanitized(monkeypatch):
 
 def test_falls_back_to_sanitized_first_line_when_llm_raises(monkeypatch):
     """Requirement: when the LLM call raises, #4557's fallback (first non-empty
-    line) is used — and that fallback is sanitized before the search call."""
+    line) is used - and that fallback is sanitized before the search call."""
     captured = {}
     _patch_flow(monkeypatch, RuntimeError("LLM endpoint down"), captured)
 
@@ -190,7 +190,7 @@ def test_falls_back_to_sanitized_first_line_when_llm_raises(monkeypatch):
 
 def test_falls_back_to_sanitized_first_line_when_llm_returns_empty(monkeypatch):
     """Requirement: when the LLM returns an empty/whitespace-only query, #4557
-    falls back — and that fallback is sanitized before the search call."""
+    falls back - and that fallback is sanitized before the search call."""
     captured = {}
     _patch_flow(monkeypatch, "   ", captured)
 

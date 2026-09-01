@@ -1,5 +1,5 @@
 // ============================================
-// Section Management — collapse/expand + drag reorder
+// Section Management - collapse/expand + drag reorder
 // ============================================
 
 /**
@@ -14,10 +14,10 @@ export function initSectionCollapse(Storage) {
     const section = header.closest('.section');
     if (!section || !section.id) return;
 
-    // Skip email section — it doesn't collapse (title opens popup instead)
+    // Skip email section - it doesn't collapse (title opens popup instead)
     if (section.id === 'email-section') return;
 
-    // Add chevron (always visible — rotates when collapsed)
+    // Add chevron (always visible - rotates when collapsed)
     header.insertAdjacentHTML('beforeend', _chevronHtml);
 
     // Restore saved state
@@ -44,8 +44,8 @@ export function initSectionCollapse(Storage) {
         // then lock in collapse once the cascade finishes.
         //
         // We wait on the REAL animations (getAnimations) rather than a fixed
-        // timeout. Different sections animate different rows — .list-item in
-        // most, .models-row in #models-section — so any hard-coded duration
+        // timeout. Different sections animate different rows - .list-item in
+        // most, .models-row in #models-section - so any hard-coded duration
         // either stalls with a dead pause (when the selector matches nothing,
         // as it did for #models-section) or guesses the wrong length. Force a
         // reflow first so the keyframes restart from the top.
@@ -58,12 +58,12 @@ export function initSectionCollapse(Storage) {
           section.classList.remove('section-just-collapsing');
           section.classList.add('collapsed');
         };
-        // Only the domino-out keyframes gate the collapse — ignore unrelated
+        // Only the domino-out keyframes gate the collapse - ignore unrelated
         // (and possibly infinite, e.g. spinners) animations in the subtree.
         const dominoOut = section.getAnimations({ subtree: true })
           .filter(a => a.animationName === 'section-domino-out');
         if (dominoOut.length === 0) {
-          lockCollapsed(); // nothing to animate — collapse now, no dead pause
+          lockCollapsed(); // nothing to animate - collapse now, no dead pause
         } else {
           Promise.allSettled(dominoOut.map(a => a.finished)).then(lockCollapsed);
           // Safety net: if an animation never settles (e.g. element removed),
@@ -71,7 +71,7 @@ export function initSectionCollapse(Storage) {
           setTimeout(lockCollapsed, 600);
         }
       } else {
-        // Expand path — remove .collapsed and replay the inbound domino.
+        // Expand path - remove .collapsed and replay the inbound domino.
         section.classList.remove('collapsed');
         // eslint-disable-next-line no-unused-expressions
         section.offsetHeight;

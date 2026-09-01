@@ -1,9 +1,9 @@
 /**
  * Layer merge / flatten buttons in the layer-panel footer:
  *
- *   #ge-flatten     Flatten Copy — merge every visible layer into a
+ *   #ge-flatten     Flatten Copy - merge every visible layer into a
  *                   new "Flattened" layer, keep originals.
- *   #ge-merge-all   Merge All — flatten every VISIBLE layer into the
+ *   #ge-merge-all   Merge All - flatten every VISIBLE layer into the
  *                   lowest visible one. Hidden layers dropped. Base
  *                   = lowest visible (not bottom of stack) so a
  *                   hidden base can't absorb the visible stack into
@@ -90,7 +90,7 @@ export function wireMergeButtons({ saveState, createLayer, renderLayerPanel, com
     uiModule.showToast('Flattened copy created');
   });
 
-  // Merge All — drop hidden layers; base = lowest visible.
+  // Merge All - drop hidden layers; base = lowest visible.
   document.getElementById('ge-merge-all')?.addEventListener('click', () => {
     const visibleLayers = state.layers.filter(l => l.visible);
     if (visibleLayers.length < 2) {

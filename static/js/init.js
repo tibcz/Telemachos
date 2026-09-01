@@ -1,5 +1,5 @@
-// Telemachos UI — Initialization Scripts
-// ES6 module — extracted from index.html inline scripts
+// Telemachos UI - Initialization Scripts
+// ES6 module - extracted from index.html inline scripts
 
 import Storage from './storage.js';
 
@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', markComposerUserEdited, { once: tr
     }
     localStorage.setItem(KEY, liveUser);
     // Apply per-user privilege gates to the UI. The backend enforces these
-    // independently — this is purely cosmetic / "don't dangle controls the
+    // independently - this is purely cosmetic / "don't dangle controls the
     // user can't actually use." Privileges come from /api/auth/status; admins
     // always get the full set so this is a no-op for them.
     try {
@@ -73,25 +73,25 @@ document.addEventListener('DOMContentLoaded', markComposerUserEdited, { once: tr
           el.style.display = 'none';
         });
       };
-      // Document editor — overflow menu button + the docs panel rail/tool button.
+      // Document editor - overflow menu button + the docs panel rail/tool button.
       hideOn('#overflow-doc-btn, #tool-doc-btn', privs.can_use_documents);
-      // Research — sidebar tool + the in-input deep-research toggle.
+      // Research - sidebar tool + the in-input deep-research toggle.
       hideOn('#tool-research-btn, #research-toggle-btn', privs.can_use_research);
-      // Memory & skills (rail/tool button only — UI/API entry).
+      // Memory & skills (rail/tool button only - UI/API entry).
       hideOn('#tool-memory-btn', privs.can_manage_memory);
-      // Agent mode toggle — force chat mode by hiding the Agent toggle button.
+      // Agent mode toggle - force chat mode by hiding the Agent toggle button.
       if (privs.can_use_agent === false) {
         const _agent = document.getElementById('mode-agent-btn');
         const _chat = document.getElementById('mode-chat-btn');
         if (_agent) _agent.style.display = 'none';
         if (_chat) { _chat.classList.add('active'); _chat.click?.(); }
       }
-    } catch (_) { /* DOM not ready or unexpected shape — UI gates are non-fatal */ }
-  } catch (_) { /* anonymous / loopback mode — nothing to do */ }
+    } catch (_) { /* DOM not ready or unexpected shape - UI gates are non-fatal */ }
+  } catch (_) { /* anonymous / loopback mode - nothing to do */ }
 })();
 
 /* Sidebar section default-collapsed setup. The click-to-toggle handlers
-   themselves live in js/section-management.js — attaching them in BOTH
+   themselves live in js/section-management.js - attaching them in BOTH
    places caused two toggles per click, which read as "clicks aren't doing
    anything" (even-count parity). Keep only the initial-state-apply here. */
 {
@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', markComposerUserEdited, { once: tr
 
 /* Publish the icon rail's + wide sidebar's current widths as CSS vars so
    fullscreen panels can reserve space on the left for whichever is
-   currently visible (the two are mutually exclusive — see
+   currently visible (the two are mutually exclusive - see
    sidebar-layout.js:57). Updates live as either resizes; toggles to 0
    when hidden so the fullscreen view reclaims the space. */
 {
@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', markComposerUserEdited, { once: tr
         return;
       }
     }
-    // Sidebar width — `.sidebar.hidden` collapses to width: 0 so the
+    // Sidebar width - `.sidebar.hidden` collapses to width: 0 so the
     // measurement is naturally 0 in the hidden state.
     const sw = _measure(sidebar);
     if (sw === null) {
@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', markComposerUserEdited, { once: tr
   window.addEventListener('resize', _syncComposerClearance);
 }
 
-/* ---- Resizable sidebar — drag edge to resize, collapse if small, drag rail edge to expand ---- */
+/* ---- Resizable sidebar - drag edge to resize, collapse if small, drag rail edge to expand ---- */
 {
   const sidebar = document.getElementById('sidebar');
   const handle = document.getElementById('sidebar-resize-handle');
@@ -336,12 +336,12 @@ document.addEventListener('DOMContentLoaded', markComposerUserEdited, { once: tr
     document.removeEventListener('mouseup', stopExpandDrag);
 
     if (collapsed) {
-      // Didn't drag far enough — snap back to icon rail
+      // Didn't drag far enough - snap back to icon rail
       sidebar.style.width = '';
       sidebar.classList.add('hidden');
       if (typeof syncRailSide === 'function') syncRailSide();
     } else {
-      // Expanded — save width and sync
+      // Expanded - save width and sync
       const finalWidth = parseInt(sidebar.style.width, 10);
       if (finalWidth >= MIN_WIDTH) {
         Storage.set(STORAGE_KEY, String(finalWidth));
@@ -353,7 +353,7 @@ document.addEventListener('DOMContentLoaded', markComposerUserEdited, { once: tr
   } // end if (sidebar && handle)
 }
 
-/* ---- Mobile viewport fix — keep chat visible when virtual keyboard opens ---- */
+/* ---- Mobile viewport fix - keep chat visible when virtual keyboard opens ---- */
 {
   if (window.visualViewport) {
     let _lastVVHeight = window.visualViewport.height;
@@ -417,5 +417,5 @@ document.addEventListener('DOMContentLoaded', markComposerUserEdited, { once: tr
   try { if (document.fonts && document.fonts.ready) document.fonts.ready.then(release); } catch (_) {}
   if (document.readyState === 'complete') release();
   else window.addEventListener('load', release);
-  setTimeout(release, 1200);  // hard fallback — never leave the splash hidden
+  setTimeout(release, 1200);  // hard fallback - never leave the splash hidden
 })();

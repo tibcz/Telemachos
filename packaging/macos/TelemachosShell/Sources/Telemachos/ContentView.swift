@@ -2,7 +2,7 @@ import AppKit
 import SwiftUI
 
 /// The whole window: a start-up screen until the engine is ready, then the
-/// workspace. There is no server field, no setup step and no login — the app
+/// workspace. There is no server field, no setup step and no login - the app
 /// starts what it needs and gets out of the way.
 struct ContentView: View {
     @ObservedObject var engine: EngineController

@@ -142,7 +142,7 @@ def _event_etag(obj) -> str:
 
 def _stable_cal_id(remote_url: str, owner: str = "", account_id: str = "") -> str:
     """Deterministic local id for a remote CalDAV calendar, scoped to owner
-    and account so two users — or one user with two accounts — pointing at
+    and account so two users - or one user with two accounts - pointing at
     the same server URL get distinct local rows (avoids PK collision, #2765).
     The owner and account_id default to "" for the legacy/URL-only path so
     existing callers without those arguments keep working."""
@@ -167,7 +167,7 @@ def _find_existing_event(db, pending, uid_val, calendar_id):
     """Find the event to update for THIS calendar.
 
     CalendarEvent.uid is the global primary key, so an unscoped lookup by uid
-    returns whatever row holds that VEVENT uid — including another owner's.
+    returns whatever row holds that VEVENT uid - including another owner's.
     The old code then reassigned that row's calendar_id, moving (stealing)
     another user's event into the syncing calendar whenever the two share a
     uid (shared/subscribed/public calendars, or two accounts on one server).
@@ -186,12 +186,12 @@ def _google_caldav_events_url(url: str) -> str | None:
     """Map a Google CalDAV *principal* URL to its event-collection URL.
 
     Google serves the principal at ``…/user`` but events live under ``…/events``
-    — the ``/user`` resource holds no VEVENTs. The `caldav` library's
+    - the ``/user`` resource holds no VEVENTs. The `caldav` library's
     principal→home-set discovery does not reliably enumerate calendars from
     Google's ``/user`` endpoint, so the sync falls into the "treat the URL as a
     single calendar" fallback below. Pointed at ``/user`` that fallback issues
     every calendar-query REPORT against the principal, which returns a clean but
-    empty 200 for all date ranges — the calendar shows no events even though
+    empty 200 for all date ranges - the calendar shows no events even though
     auth succeeded (issue #2507).
 
     Both Google CalDAV endpoint forms are handled, since some accounts only
@@ -233,7 +233,7 @@ def _build_dav_client(url: str, username: str, password: str):
 
     ``validate_caldav_url`` resolves and vets the *initial* host, but caldav's
     underlying HTTP session follows 3xx redirects by default. So a URL that
-    passes validation can still be redirected — at request time — to
+    passes validation can still be redirected - at request time - to
     loopback / link-local / private space, re-opening the SSRF the host check
     closes. Pin the session to zero redirects: any 3xx then raises instead of
     silently following an attacker-chosen ``Location``. This mirrors the
@@ -269,9 +269,9 @@ def _should_prune_window(seen_uids: set, parse_failed: bool) -> bool:
 
 
 def _sync_blocking(owner: str, url: str, username: str, password: str, account_id: str = "") -> dict:
-    """The actual sync — synchronous, intended to run in a threadpool.
+    """The actual sync - synchronous, intended to run in a threadpool.
     Returns counts: {calendars, events, deleted, errors}."""
-    # Lazy imports so a missing `caldav` dep doesn't break app startup —
+    # Lazy imports so a missing `caldav` dep doesn't break app startup -
     # the integrations form still works, sync just no-ops with an error.
     from caldav.lib.error import AuthorizationError, NotFoundError
     from core.database import CalendarCal, CalendarEvent, SessionLocal
@@ -455,7 +455,7 @@ def _sync_blocking(owner: str, url: str, username: str, password: str, account_i
                     db.commit()
 
                     # Prune locally-cached CalDAV events that vanished
-                    # upstream (only within our sync window — events outside
+                    # upstream (only within our sync window - events outside
                     # the window aren't in `objs`, so we'd false-delete them).
                     # Only rows we previously pulled from the server (origin=="caldav")
                     # are prunable; locally-created events (agent / email triage / a

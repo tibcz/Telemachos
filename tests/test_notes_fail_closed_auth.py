@@ -2,14 +2,14 @@
 
 The notes CRUD routes resolved the acting user with bare get_current_user().
 A request that reached them carrying no identity (auth-middleware regression,
-SSRF from a sibling service) therefore came through as user=None — and the
+SSRF from a sibling service) therefore came through as user=None - and the
 queries treat None as the single-user mode, i.e. blanket access to every
 account's notes: list everything, read/update/delete/pin/archive any row,
 reorder globally.
 
-require_user() already encodes the correct policy — 401 when auth is
+require_user() already encodes the correct policy - 401 when auth is
 configured, while the documented anonymous modes (AUTH_ENABLED=false,
-LOCALHOST_BYPASS on loopback, unconfigured first-run) still pass — and
+LOCALHOST_BYPASS on loopback, unconfigured first-run) still pass - and
 fire-reminder in the same file already used it. The CRUD routes now resolve
 the owner through it too.
 
@@ -20,7 +20,7 @@ TestClient runs the app inside a background event-loop thread spun up by
 endpoint onto *another* worker thread; on some anyio/httpx/platform
 combinations that two-thread handshake deadlocks and ``TestClient(app).get(...)``
 simply hangs. ASGITransport runs the whole request on the test's own event
-loop — no portal thread, no BaseHTTPMiddleware — so the suite is portable.
+loop - no portal thread, no BaseHTTPMiddleware - so the suite is portable.
 Identity is injected by a pure-ASGI shim that writes the same
 ``request.state`` fields the real auth middleware sets.
 """
@@ -42,14 +42,14 @@ import routes.note_routes as nr
 # A deliberately NON-loopback peer. require_user has loopback fall-throughs
 # (unconfigured first-run, LOCALHOST_BYPASS); pinning a public-looking client
 # keeps every assertion below about the *configured-auth* path and not an
-# accidental loopback bypass — the same reason the old fixture leaned on
+# accidental loopback bypass - the same reason the old fixture leaned on
 # TestClient's non-loopback "testclient" host.
 _PEER = ("203.0.113.7", 54321)
 
 
 class _Identity:
     """Pure-ASGI shim mirroring what the auth middleware writes onto
-    request.state. Pure-ASGI on purpose — it stays off Starlette's
+    request.state. Pure-ASGI on purpose - it stays off Starlette's
     BaseHTTPMiddleware + sync-TestClient path, the source of the
     ``TestClient(app).get(...)`` hang. No x-test-user header => no identity,
     the exact state an auth-middleware regression would produce."""

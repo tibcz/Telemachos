@@ -2,8 +2,8 @@
 """API for the curated local-model picker.
 
 Four models, one per hardware tier, downloaded from HuggingFace. The safety
-rules — GGUF only, allowlisted repositories, HuggingFace-published checksums,
-atomic writes — live in src/model_catalog.py; this module is the HTTP surface
+rules - GGUF only, allowlisted repositories, HuggingFace-published checksums,
+atomic writes - live in src/model_catalog.py; this module is the HTTP surface
 over them and deliberately adds no way around them. In particular there is no
 endpoint that takes a repository or a filename: the only thing a caller can
 name is a tier id, which is matched against the catalog.

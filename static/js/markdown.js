@@ -28,15 +28,15 @@ const MATH_PENDING_CLASS = 'ody-math-pending';
 // errors out on anything that is not a valid column break, so "a &lt; b" comes
 // back as a red .katex-error instead of a formula. mdToHtml escapes the whole
 // string before the math pass, which leaves two spellings of the same
-// character at the delimiters — a typed "<" arrives as "&lt;", while a typed
-// "&lt;" arrives as "&amp;lt;" — and both have to reach KaTeX as "<".
+// character at the delimiters - a typed "<" arrives as "&lt;", while a typed
+// "&lt;" arrives as "&amp;lt;" - and both have to reach KaTeX as "<".
 //
 // One alternation, longest form first, so nothing this writes is scanned
 // again. Chained .replace() calls cannot do it: unescaping "&amp;" first lets
 // the next pass eat the "&lt;" it just produced (the double-unescape CodeQL
 // flags), and unescaping it last leaves the entity spelling intact and breaks
 // the render. The code-block pass upstream keeps its chained order on purpose
-// — Markdown does not decode entities inside code, so "&lt;" there is meant to
+// - Markdown does not decode entities inside code, so "&lt;" there is meant to
 // stay visible.
 const MATH_SOURCE_ENTITY_RE = /&amp;(?:lt|gt|amp|quot|#39);|&lt;|&gt;|&amp;/g;
 const MATH_SOURCE_ENTITIES = {
@@ -178,10 +178,10 @@ function _isModelEndpointUrl(rawUrl) {
 
 /**
  * Sanitize the raw-HTML fragments that mdToHtml deliberately preserves from
- * the source text — <details> blocks (collapsible agent output) and <a> tags
+ * the source text - <details> blocks (collapsible agent output) and <a> tags
  * (emitted by the markdown link pass). Those fragments are later restored
- * verbatim into innerHTML, so without scrubbing them a model — or any content
- * routed through here — could smuggle in an `<img onerror=...>`, an
+ * verbatim into innerHTML, so without scrubbing them a model - or any content
+ * routed through here - could smuggle in an `<img onerror=...>`, an
  * `<a href="javascript:...">`, an `onmouseover=` handler, etc. and execute
  * script in the authenticated page (DOM XSS).
  *
@@ -194,7 +194,7 @@ const _ALLOWED_HTML_BAD_TAGS = new Set([
   'SCRIPT', 'IFRAME', 'OBJECT', 'EMBED', 'LINK', 'META',
   'STYLE', 'BASE', 'FORM', 'NOSCRIPT', 'TEMPLATE',
   // Foreign-content roots. SVG/MathML have their own parser rules and are a
-  // classic mutation-XSS vehicle — e.g. an SVG-namespaced <script>, whose
+  // classic mutation-XSS vehicle - e.g. an SVG-namespaced <script>, whose
   // `tagName` is the lower-case 'script' and would slip a name check that
   // assumed HTML's upper-casing. They aren't needed in the <details>/<a>
   // fragments we preserve, so drop the whole subtree.
@@ -402,12 +402,12 @@ export function extractThinkingBlocks(text) {
   let cleanContent = normalized.replace(thinkRegex, '');
 
   // If there's an unclosed tag, decide between two cases:
-  // (a) Stray opener at the very start with no real reply before it — typical
+  // (a) Stray opener at the very start with no real reply before it - typical
   //     of quantized models (MiniMax-AWQ) that emit a literal `<think>` token
   //     at the start of every reply without ever closing it. Strip just the
   //     opener and keep the body as the reply, otherwise the bubble looks
   //     blank on reload (the body was being treated as collapsed thinking).
-  // (b) Cut-off mid-generation — there's already real reply text before the
+  // (b) Cut-off mid-generation - there's already real reply text before the
   //     opener. Drop from the tag onward as before (it's truncated thinking).
   if (hasUnclosedThinkTag(normalized)) {
     const gemmaThoughtStart = cleanContent.search(/<\|channel>thought/i);
@@ -428,7 +428,7 @@ export function extractThinkingBlocks(text) {
     }
   }
 
-  // Handle orphaned </think> with no opening tag — text before it is leaked thinking
+  // Handle orphaned </think> with no opening tag - text before it is leaked thinking
   const orphanMatch = cleanContent.match(/^([\s\S]+?)<\/think(?:ing)?>/i);
   if (orphanMatch && orphanMatch[1].trim()) {
     thinkingBlocks.push(orphanMatch[1].trim());
@@ -438,7 +438,7 @@ export function extractThinkingBlocks(text) {
   // Strip any remaining orphaned closing tags
   cleanContent = cleanContent.replace(/<\/think(?:ing)?>/gi, '');
 
-  // Merge all thinking blocks into one — no reason to show multiple dropdowns
+  // Merge all thinking blocks into one - no reason to show multiple dropdowns
   const mergedBlocks = thinkingBlocks.length > 1
     ? [thinkingBlocks.join('\n\n')]
     : thinkingBlocks;
@@ -510,7 +510,7 @@ function _emojiImg(emoji) {
   if (!code) return emoji;
   // Monochrome line icon: the OpenMoji black SVG is used as a CSS mask filled
   // with the surrounding text color (currentColor), so emoji render as a single
-  // theme-tinted line glyph — never colorful (project rule). If the proxy can't
+  // theme-tinted line glyph - never colorful (project rule). If the proxy can't
   // supply the glyph it returns a transparent SVG, so the mask shows nothing.
   return `<span class="emoji" role="img" aria-label="${emoji}" style="--em:url('/api/emoji/${code}.svg')"></span>`;
 }
@@ -652,7 +652,7 @@ export function mdToHtml(src, opts) {
   // the fenced-block handling above. A URL inside `inline code` (e.g.
   // `irm http://127.0.0.1:3000/x`) is preceded by a space, so the bare-URL
   // autolink matches it, wraps it in an <a> tag, and swaps that for an
-  // ___ALLOWED_HTML_ placeholder — corrupting the command. The old inline-code
+  // ___ALLOWED_HTML_ placeholder - corrupting the command. The old inline-code
   // pass ran after those passes, too late to protect it.
   s = s.replace(/`([^`]+?)`/g, (match, code) => {
     if (code.startsWith('___CODE_BLOCK_') || code.startsWith('___MERMAID_BLOCK_')) return match;
@@ -667,19 +667,19 @@ export function mdToHtml(src, opts) {
   // These regexes upgrade the broken forms to proper markdown links so
   // the standard `[text](url)` handler below picks them up.
   const ANCHOR_KIND = '(?:session|document|note|image|email|event|task|skill|research)';
-  // Case A: `[Name] [#kind-id]` — agent put the URL in brackets, often
+  // Case A: `[Name] [#kind-id]` - agent put the URL in brackets, often
   // in a table cell next to the label. Pair them.
   s = s.replace(
     new RegExp(`\\[([^\\]\\n]+?)\\]\\s*\\[#(${ANCHOR_KIND}-[A-Za-z0-9_-]+)\\]`, 'g'),
     '[$1](#$2)',
   );
-  // Case B: bare `[#kind-id]` with no preceding label — give it a
+  // Case B: bare `[#kind-id]` with no preceding label - give it a
   // generic "→ open" link text so it still renders as a button.
   s = s.replace(
     new RegExp(`\\[#(${ANCHOR_KIND}-[A-Za-z0-9_-]+)\\]`, 'g'),
     '[→ open](#$1)',
   );
-  // Case C: bare `#kind-id` in plain text — only when it's word-
+  // Case C: bare `#kind-id` in plain text - only when it's word-
   // boundary delimited and NOT already inside a markdown link or
   // anchor syntax. Use a lookbehind for `](` or `[` to skip those.
   s = s.replace(
@@ -768,12 +768,12 @@ export function mdToHtml(src, opts) {
     return placeholder;
   };
 
-  // Display math: \[ ... \]  — GPT-style delimiter (gpt-5.x, Claude, etc.).
+  // Display math: \[ ... \]  - GPT-style delimiter (gpt-5.x, Claude, etc.).
   // Handle before $$/$ so all common delimiters render.
   s = s.replace(/\\\[([\s\S]*?)\\\]/g, (match, math) => {
     try { return pushMath(math, true); } catch (e) { return match; }
   });
-  // Inline math: \( ... \)  — GPT-style inline delimiter. Single-line only
+  // Inline math: \( ... \)  - GPT-style inline delimiter. Single-line only
   // ([^\n]) so a stray escaped paren in prose can't swallow across lines.
   s = s.replace(/\\\(([^\n]*?)\\\)/g, (match, math) => {
     try { return pushMath(math, false); } catch (e) { return match; }
@@ -782,7 +782,7 @@ export function mdToHtml(src, opts) {
   s = s.replace(/\$\$([\s\S]*?)\$\$/g, (match, math) => {
     try { return pushMath(math, true); } catch (e) { return match; }
   });
-  // Inline math: $...$ — single line only, and Pandoc-style delimiter rules so
+  // Inline math: $...$ - single line only, and Pandoc-style delimiter rules so
   // currency doesn't render as math ("$5 to $10"): the opening $ must be
   // immediately followed by a non-space, the closing $ must be immediately
   // preceded by a non-space and not followed by a digit.
@@ -978,7 +978,7 @@ export function renderMath(container) {
         try {
           el.outerHTML = katex.renderToString(el.textContent || '', { displayMode, throwOnError: false });
         } catch (e) {
-          // Leave the source visible — readable, just not typeset.
+          // Leave the source visible - readable, just not typeset.
           el.classList.remove(MATH_PENDING_CLASS);
         }
       });
@@ -1008,7 +1008,7 @@ export default markdownModule;
 
 // Persist which thinking sections were expanded across page refreshes.
 // IDs are render-generated (Date.now-based) so we key by a stable hash of
-// the inner text content instead — same content reproduces the same hash on
+// the inner text content instead - same content reproduces the same hash on
 // reload. LocalStorage holds a Set of expanded hashes; we observe the chat
 // history and re-expand matching sections as they're inserted.
 const THINK_EXPANDED_KEY = 'telemachos-thinking-expanded';
@@ -1019,7 +1019,7 @@ function _loadExpandedSet() {
 function _saveExpandedSet(set) {
   try {
     const arr = [...set];
-    // Bound storage growth — keep the most recent 200 entries.
+    // Bound storage growth - keep the most recent 200 entries.
     if (arr.length > 200) arr.splice(0, arr.length - 200);
     localStorage.setItem(THINK_EXPANDED_KEY, JSON.stringify(arr));
   } catch {}

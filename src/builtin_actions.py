@@ -431,7 +431,7 @@ class TaskDeferred(BaseException):
 
 
 async def action_tidy_sessions(owner: str, **kwargs) -> Tuple[str, bool]:
-    """Delete empty sessions for the owner. Pure heuristic —
+    """Delete empty sessions for the owner. Pure heuristic -
     the LLM folder-sort phase is skipped (user opted to keep this task
     LLM-free; sorting can be triggered manually via the Chats UI)."""
     try:
@@ -809,7 +809,7 @@ async def action_tidy_research(owner: str, **kwargs) -> Tuple[str, bool]:
     """Remove only broken research files (empty or unparseable JSON).
 
     Research history lives entirely in data/deep_research/<id>.json and is NOT
-    backed by chat-session rows — so a file must never be deleted just because
+    backed by chat-session rows - so a file must never be deleted just because
     no chat session matches its id. Only prune files that fail to load.
 
     A broken file has no readable owner stamp, so it cannot be matched against
@@ -902,7 +902,7 @@ async def action_tidy_calendar(owner: str, **kwargs) -> Tuple[str, bool]:
                     if key not in seen:
                         seen[key] = e
                     # If a dup exists in the known-clean region (first run, or imported later
-                    # with the same created_at), still remove it — fall through to candidate check.
+                    # with the same created_at), still remove it - fall through to candidate check.
                     else:
                         candidates.append(e)
                 else:
@@ -1320,7 +1320,7 @@ _HEURISTIC_CRITICAL = ["surgery", "court", "wedding day", "funeral", "delivery d
 
 
 def _classify_event_heuristic(summary: str) -> tuple:
-    """Quick heuristic classification — returns (event_type, importance) or (None, None) if unclear."""
+    """Quick heuristic classification - returns (event_type, importance) or (None, None) if unclear."""
     s = (summary if isinstance(summary, str) else "").lower()
     etype = None
     for t, kws in _HEURISTIC_TYPES.items():
@@ -1567,7 +1567,7 @@ async def action_extract_email_events(owner: str, **kwargs) -> Tuple[str, bool]:
 
 # Sender local-parts (matched exactly or by prefix) whose mail never carries a
 # personal signature worth learning. These compare against the local-part
-# (before "@"), so role names must NOT include a trailing "@" — "support@" etc.
+# (before "@"), so role names must NOT include a trailing "@" - "support@" etc.
 # could never match a local-part of "support" and were silently dead.
 _SIG_SKIP_PREFIXES = (
     "noreply", "no-reply", "donotreply", "do-not-reply",
@@ -1875,7 +1875,7 @@ async def action_daily_brief(owner: str, **kwargs) -> Tuple[str, bool]:
         # Windows / non-glibc Python builds too.
         date_label = today.strftime(f"%A, %B {today.day}, %Y")
 
-        plain = [f"Daily brief — {date_label}", ""]
+        plain = [f"Daily brief - {date_label}", ""]
         if events:
             plain.append("Calendar:")
             for e in events:
@@ -1889,7 +1889,7 @@ async def action_daily_brief(owner: str, **kwargs) -> Tuple[str, bool]:
 
         plain.append(f"Email: {unread_count} unread")
         for sender, subj in recent_subjects:
-            plain.append(f"  · {sender} — {subj}")
+            plain.append(f"  · {sender} - {subj}")
         plain.append("")
 
         if todo_lines:
@@ -1910,19 +1910,19 @@ async def action_daily_brief(owner: str, **kwargs) -> Tuple[str, bool]:
 async def action_test_skills(owner: str, **kwargs) -> Tuple[str, bool]:
     """Run the per-skill Test on every skill: agent runs the procedure in a
     sandbox, LLM judges the transcript, verdict is recorded on the skill.
-    ADVISORY ONLY — only writes set_audit (never rewrites SKILL.md, never
+    ADVISORY ONLY - only writes set_audit (never rewrites SKILL.md, never
     demotes status, never overrides confidence)."""
     try:
         from services.memory.skills import SkillsManager
         from src.constants import DATA_DIR
         from routes.skills_routes import _run_skill_test_once, _skill_test_task
 
-        # #3 SCOPE GUARD: refuse to run on a None/empty owner — otherwise
+        # #3 SCOPE GUARD: refuse to run on a None/empty owner - otherwise
         # `sm.load(owner=None)` returns every user's skills and we'd cross-
         # test (and write audit verdicts to) other users' data in a
         # multi-user deployment.
         if not owner:
-            return "test_skills requires an owner on the task — refusing to run without scope.", False
+            return "test_skills requires an owner on the task - refusing to run without scope.", False
 
         sm = SkillsManager(DATA_DIR)
         skills = sm.load(owner=owner)
@@ -1933,10 +1933,10 @@ async def action_test_skills(owner: str, **kwargs) -> Tuple[str, bool]:
         from src.task_endpoint import resolve_task_candidates
         candidates = resolve_task_candidates(owner=owner)
         if not candidates:
-            return "No Default/Utility model configured — set one in Settings.", False
+            return "No Default/Utility model configured - set one in Settings.", False
 
         # #2 NO SILENT MODEL SWAP: if the configured model isn't served by the
-        # endpoint, try a basename match — but fail loudly instead of grabbing
+        # endpoint, try a basename match - but fail loudly instead of grabbing
         # `avail[0]` which could be an embedding-only model and produce 36
         # garbage transcripts → 36 'unknown' verdicts with no hint why.
         url, model, headers = candidates[0]
@@ -1993,13 +1993,13 @@ async def action_test_skills(owner: str, **kwargs) -> Tuple[str, bool]:
                     bits = []
                     if summary: bits.append(summary[:160])
                     if tlen < 200: bits.append(f"transcript {tlen}b")
-                    if bits: detail = " — " + "; ".join(bits)
+                    if bits: detail = " - " + "; ".join(bits)
                 per_skill_log.append(f"{name}: {v}{detail}")
                 # #4 + #8 + #12: ONLY persist a real verdict (pass / needs_work /
-                # fail / inconclusive). Skip 'unknown' — that's the judge's
+                # fail / inconclusive). Skip 'unknown' - that's the judge's
                 # "couldn't parse" sentinel, not a real result, and persisting
                 # it pollutes the verified-badge UI. Also skip the confidence
-                # rewrite entirely — update_skill() re-serialises SKILL.md
+                # rewrite entirely - update_skill() re-serialises SKILL.md
                 # (contradicts "advisory only" docstring) and overwriting a
                 # user-set value (e.g. 1.0 → 0.95) is destructive.
                 if v in ("pass", "needs_work", "fail", "inconclusive"):
@@ -2008,11 +2008,11 @@ async def action_test_skills(owner: str, **kwargs) -> Tuple[str, bool]:
                     except Exception as _e:
                         logger.warning(f"test_skills set_audit({name}) failed: {_e}")
                 if v == "unknown":
-                    logger.warning(f"test_skills: {name} → unknown — {summary[:200]}; transcript_len={tlen}")
+                    logger.warning(f"test_skills: {name} → unknown - {summary[:200]}; transcript_len={tlen}")
             except Exception as e:
                 logger.exception(f"test_skills: {name} errored")
                 tally["error"] += 1
-                per_skill_log.append(f"{name}: error — {str(e)[:200]}")
+                per_skill_log.append(f"{name}: error - {str(e)[:200]}")
 
         parts = []
         for k in ("pass", "needs_work", "fail", "inconclusive", "unknown", "skipped", "error"):
@@ -2046,7 +2046,7 @@ async def action_audit_skills(owner: str, **kwargs) -> Tuple[str, bool]:
         )
 
         if not owner:
-            return "audit_skills requires an owner — refusing to run without scope.", False
+            return "audit_skills requires an owner - refusing to run without scope.", False
 
         key = (owner or "",)
         existing = _skill_audit_jobs.get(key)
@@ -2123,7 +2123,7 @@ async def action_ping_notes(owner: str, **kwargs) -> Tuple[str, bool]:
         STATE.parent.mkdir(parents=True, exist_ok=True)
         # One-time migration: if legacy global file exists and per-owner file
         # doesn't, seed from global (entries for OTHER owners still get pruned
-        # on their first run — acceptable, prevents silent loss).
+        # on their first run - acceptable, prevents silent loss).
         _legacy = _P(DATA_DIR) / "note_pings.json"
         if _legacy.exists() and not STATE.exists():
             try:
@@ -2305,7 +2305,7 @@ async def action_check_email_urgency(owner: str, **kwargs) -> Tuple[str, bool]:
 
         # ── 1. Enumerate enabled accounts. Match this task's owner AND fall
         # back to the legacy "unowned account whose imap_user / from_address
-        # == this owner" pattern — same rule `_get_email_config` uses, so a
+        # == this owner" pattern - same rule `_get_email_config` uses, so a
         # pre-multi-user account row still gets picked up for the seeded task.
         def _enumerate_enabled_accounts():
             db = _SL()
@@ -2608,7 +2608,7 @@ async def action_check_email_urgency(owner: str, **kwargs) -> Tuple[str, bool]:
                             )
                             is_unread = b"\\Seen" not in flags_blob
                             # Headers + body land in different tuples in the
-                            # response — concatenate the bytes for parsing.
+                            # response - concatenate the bytes for parsing.
                             raw = b""
                             for part in msg_data:
                                 if isinstance(part, tuple) and part[1]:
@@ -2635,7 +2635,7 @@ async def action_check_email_urgency(owner: str, **kwargs) -> Tuple[str, bool]:
                                     or _raw_subj.startswith("reminder (telemachos):")
                                     or _raw_subj.startswith("reminder:")
                                     or _raw_subj.startswith("[task]")):
-                                # Drop this candidate entirely — don't list it
+                                # Drop this candidate entirely - don't list it
                                 # in results so its UID never enters the cache
                                 # nor counts toward `scanned`.
                                 results.pop()
@@ -2864,7 +2864,7 @@ async def action_check_email_urgency(owner: str, **kwargs) -> Tuple[str, bool]:
                         if _tag in VISIBLE_EMAIL_TAGS and _tag not in _new_tags:
                             _new_tags.append(_tag)
                     _spam = 1 if _v.get("spam") else 0
-                    # _key is "<account_id>:<uid>" — extract uid for the row.
+                    # _key is "<account_id>:<uid>" - extract uid for the row.
                     _acc_id, _uid_only = (_key.split(":", 1) + [""])[:2]
                     _owner_key = owner or ""
                     _row = _conn.execute(
@@ -2964,7 +2964,7 @@ async def action_check_email_urgency(owner: str, **kwargs) -> Tuple[str, bool]:
                 open_link = f"{_pub}/{hash_link}" if _pub else hash_link
                 line = f"{i}. {subj}"
                 if frm:
-                    line += f"  —  {frm}"
+                    line += f"  -  {frm}"
                 if why:
                     line += f"  ·  {why}"
                 lines.append(line)
@@ -3058,7 +3058,7 @@ async def action_check_email_urgency(owner: str, **kwargs) -> Tuple[str, bool]:
         except Exception as e:
             logger.warning(f"urgency: state transaction failed: {e}")
 
-        # ── 6. Activity-log summary — counts line on top, then per-tier
+        # ── 6. Activity-log summary - counts line on top, then per-tier
         # bulleted breakdown so the user can see WHICH emails ranked where
         # (subject · sender · reason) and which ones triggered notifications.
         tier_counts = {0: 0, 1: 0, 2: 0, 3: 0}
@@ -3087,8 +3087,8 @@ async def action_check_email_urgency(owner: str, **kwargs) -> Tuple[str, bool]:
             tag_txt = ", ".join(tags) if tags else "cleared managed tags"
             why = v.get("reason") or ""
             op = "updated" if v.get("updated") else "created"
-            line = f"- **{subj}**" + (f" — _{frm}_" if frm else "")
-            line += f" — `{tag_txt}` ({op})"
+            line = f"- **{subj}**" + (f" - _{frm}_" if frm else "")
+            line += f" - `{tag_txt}` ({op})"
             if why:
                 line += f" · {why}"
             return line
@@ -3098,9 +3098,9 @@ async def action_check_email_urgency(owner: str, **kwargs) -> Tuple[str, bool]:
             frm = v.get("from") or ""
             why = v.get("reason") or ""
             tag = " · *notified now*" if key in newly_notified_set else (" · *notify failed*" if key in failed_set else "")
-            line = f"- **{subj}**" + (f" — _{frm}_" if frm else "")
+            line = f"- **{subj}**" + (f" - _{frm}_" if frm else "")
             if why:
-                line += f" — {why}"
+                line += f" - {why}"
             return line + tag
 
         # Sort each tier by reason length (longest reason first → most info).
@@ -3134,9 +3134,9 @@ async def action_check_email_urgency(owner: str, **kwargs) -> Tuple[str, bool]:
                 subj = (v.get("subject") or "(no subject)")[:80]
                 frm = v.get("from") or ""
                 why = v.get("reason") or ""
-                line = f"- **{subj}**" + (f" — _{frm}_" if frm else "")
+                line = f"- **{subj}**" + (f" - _{frm}_" if frm else "")
                 if why:
-                    line += f" — {why}"
+                    line += f" - {why}"
                 lines.append(line)
             if len(failed_classifications) > 8:
                 lines.append(f"…and {len(failed_classifications) - 8} more")
@@ -3320,7 +3320,7 @@ async def action_cookbook_serve(
             logger.warning(f"cookbook_serve: default endpoint update failed: {e}")
     # Register the new task in cookbook_state.json + stamp it with our
     # scheduler-owner markers. /api/model/serve spawns the tmux session
-    # but leaves the state-write to the UI — when a scheduled action
+    # but leaves the state-write to the UI - when a scheduled action
     # launches a serve from server-side, NOBODY writes the task into
     # state, so the Cookbook tab never shows it. We do the write here.
     if sid:
@@ -3342,7 +3342,7 @@ async def action_cookbook_serve(
                 ssh_port = str(srv.get("port") or cfg.get("ssh_port") or "")
                 platform = str(srv.get("platform") or cfg.get("platform") or "linux")
                 placeholder = (
-                    f"Launched by scheduled task {task_name!r} — waiting for tmux output…\n"
+                    f"Launched by scheduled task {task_name!r} - waiting for tmux output…\n"
                     f"  session: {sid}\n"
                     f"  target:  {host or 'local'}\n"
                     f"  cmd:     {cmd[:200]}{'…' if len(cmd) > 200 else ''}"
@@ -3377,7 +3377,7 @@ async def action_cookbook_serve(
             atomic_write_json(state_path, fresh)
         except Exception as e:
             logger.warning(f"cookbook_serve: state register/stamp failed: {e}")
-    # Don't try to render absolute clock time in the message — the
+    # Don't try to render absolute clock time in the message - the
     # server runs in UTC (Docker default), the user reads it as local,
     # and the offset depends on the user's TZ which the action doesn't
     # have a reliable handle on. The Tasks UI already shows the RUN
@@ -3412,7 +3412,7 @@ BUILTIN_ACTIONS = {
     "audit_skills": action_audit_skills,
     "check_email_urgency": action_check_email_urgency,
     "cookbook_serve": action_cookbook_serve,
-    # ping_notes removed from the registry — runs only inside `_note_pings_loop`.
+    # ping_notes removed from the registry - runs only inside `_note_pings_loop`.
 }
 
 # Descriptions for the UI/API
@@ -3430,7 +3430,7 @@ BUILTIN_ACTION_INFO = {
     "learn_sender_signatures": "LLM learns each sender's signature from 3+ of their recent emails; cached per address so future renders fold sigs reliably without heuristics",
     "ssh_command": "Run a shell command on a local or remote host",
     "run_script": "Run a script locally or on TELEMACHOS_SCRIPT_HOST",
-    "test_skills": "Run the per-skill Test on every skill: agent run + LLM judge → records verdict on the skill (pass/needs_work/fail/inconclusive). Advisory only — never rewrites or demotes anything.",
+    "test_skills": "Run the per-skill Test on every skill: agent run + LLM judge → records verdict on the skill (pass/needs_work/fail/inconclusive). Advisory only - never rewrites or demotes anything.",
     "audit_skills": "Audit unaudited skills after enough new skills are added: test, narrow metadata, self-edit/retry, optional teacher rewrite, tag duplicates/trivial skills, and publish/draft using the auto-approve threshold.",
     "check_email_urgency": "Scan unread emails hourly, tag urgent/reply-soon/newsletter/marketing/spam, and send a reminder when a new email needs a fast reply.",
 }

@@ -54,7 +54,7 @@ def test_profiles_never_exceed_vram():
 
 
 def test_small_model_stays_fully_on_gpu():
-    """A model whose weights fit must NOT offload — n_cpu_moe == 0 everywhere."""
+    """A model whose weights fit must NOT offload - n_cpu_moe == 0 everywhere."""
     for p in compute_serve_profiles(_sys(15.9), _DENSE_8B):
         assert p["n_cpu_moe"] == 0
         assert p["offloads"] is False
@@ -80,7 +80,7 @@ def test_flags_are_launchable():
 
 def test_context_capped_at_model_limit():
     """Profiles must never propose more context than the model was trained for
-    — over-asking triggers a training-context overflow and, with a quantized KV
+    - over-asking triggers a training-context overflow and, with a quantized KV
     cache, a GPU OOM/device-lost crash."""
     small_ctx_model = dict(_QWEN_35B_MOE, name="X", context_length=32768)
     for p in compute_serve_profiles(_sys(15.9), small_ctx_model):
@@ -89,7 +89,7 @@ def test_context_capped_at_model_limit():
 
 def test_small_context_model_still_gets_profiles():
     """A model whose trained context is below the 8192 shrink floor must still
-    produce serve profiles, capped at its own limit — the loop floor must not
+    produce serve profiles, capped at its own limit - the loop floor must not
     exclude it entirely (125 of the catalog models have context_length < 8192)."""
     small_ctx_model = dict(_DENSE_8B, name="SmolLM-135M", context_length=2048)
     profs = compute_serve_profiles(_sys(24.0), small_ctx_model)
@@ -114,7 +114,7 @@ def test_vision_model_leaves_encoder_headroom():
 
 def test_serve_mode_keeps_fixed_quant():
     """Serving a specific GGUF file: the quant is fixed (the file's), so every
-    profile must keep it and vary only the serving knobs (KV/ctx/offload) — not
+    profile must keep it and vary only the serving knobs (KV/ctx/offload) - not
     propose a different quant (which makes no sense for an on-disk file)."""
     profs = compute_serve_profiles(_sys(15.9), _QWEN_35B_MOE,
                                    serve_weights_gb=20.6, serve_quant="Q4_K_M")

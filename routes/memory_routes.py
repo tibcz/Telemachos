@@ -1,4 +1,4 @@
-"""Backward-compat shim — canonical location is routes/memory/memory_routes.py.
+"""Backward-compat shim - canonical location is routes/memory/memory_routes.py.
 
 This module is replaced in ``sys.modules`` by the canonical module object so
 that ``import routes.memory_routes``, ``from routes.memory_routes import X``,

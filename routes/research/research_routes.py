@@ -1,4 +1,4 @@
-"""Research background task routes — /api/research/*."""
+"""Research background task routes - /api/research/*."""
 
 import asyncio
 import json
@@ -71,7 +71,7 @@ def _find_owned_research_path(session_id: str, user: str) -> Path | None:
 
 logger = logging.getLogger(__name__)
 
-# Model-name substrings that are NOT chat/generation models — research must
+# Model-name substrings that are NOT chat/generation models - research must
 # never pick these as its model. An OpenAI-style endpoint often lists
 # `text-embedding-ada-002` etc. first in its model list, which is why research
 # was failing with "Cannot reach model 'text-embedding-ada-002'".
@@ -130,7 +130,7 @@ def _research_thumbnail(data: dict) -> str:
 
 
 def _first_chat_model(models) -> str:
-    """First model that isn't an embedding/tts/etc. — falls back to models[0]."""
+    """First model that isn't an embedding/tts/etc. - falls back to models[0]."""
     for m in (models or []):
         if not any(p in str(m).lower() for p in _NON_CHAT_MODEL):
             return m
@@ -159,8 +159,8 @@ def _owned_enabled_endpoint(db, owner, endpoint_id=None):
     owner = private, "the model picker only shows the endpoint to that user") and
     holds a decrypted `api_key`. /api/research/start feeds the resolved row's
     api_key + base_url into research_handler.start_research(llm_endpoint=,
-    llm_headers=), so an UNSCOPED lookup — by the caller-supplied endpoint_id, or
-    via the bare first-enabled fallback — would let a research-privileged user
+    llm_headers=), so an UNSCOPED lookup - by the caller-supplied endpoint_id, or
+    via the bare first-enabled fallback - would let a research-privileged user
     spend ANOTHER user's API key/quota and reach whatever internal base_url they
     configured. Mirrors webhook_routes._first_enabled_endpoint and
     session_routes._owned_endpoint. A null/empty owner is a no-op (single-user /
@@ -227,7 +227,7 @@ def setup_research_routes(research_handler, session_manager=None) -> APIRouter:
         entry = research_handler._active_tasks.get(session_id)
         if entry is not None:
             return entry.get("owner", "") == user
-        # Task no longer in memory — check the persisted JSON.
+        # Task no longer in memory - check the persisted JSON.
         try:
             return _find_owned_research_path(session_id, user) is not None
         except HTTPException:
@@ -379,7 +379,7 @@ def setup_research_routes(research_handler, session_manager=None) -> APIRouter:
             try:
                 d = json.loads(p.read_text(encoding="utf-8"))
                 # SECURITY: only show research belonging to this user. Legacy
-                # JSONs without an `owner` field are hidden — auth was the only
+                # JSONs without an `owner` field are hidden - auth was the only
                 # gate before, so every user saw every other user's reports.
                 if d.get("owner") != user:
                     continue
@@ -420,8 +420,8 @@ def setup_research_routes(research_handler, session_manager=None) -> APIRouter:
 
     @router.get("/api/research/detail/{session_id}")
     async def research_detail(session_id: str, request: Request):
-        """Return the full JSON for a single research result — sources,
-        summary, stats — used by the Library preview panel."""
+        """Return the full JSON for a single research result - sources,
+        summary, stats - used by the Library preview panel."""
         user = _require_user(request)
         _validate_session_id(session_id)
         path = _require_research_path(session_id)
@@ -474,12 +474,12 @@ def setup_research_routes(research_handler, session_manager=None) -> APIRouter:
         return {"deleted": deleted}
 
     # ------------------------------------------------------------------
-    # Panel endpoints — launch research without a chat session
+    # Panel endpoints - launch research without a chat session
     # ------------------------------------------------------------------
 
     class ResearchStartRequest(BaseModel):
         query: str
-        # max_rounds=0 means "Auto" — let the AI decide when to stop, capped at 20.
+        # max_rounds=0 means "Auto" - let the AI decide when to stop, capped at 20.
         max_rounds: int = Field(default=0, ge=0, le=20)
         search_provider: Optional[str] = None
         endpoint_id: Optional[str] = None
@@ -543,7 +543,7 @@ def setup_research_routes(research_handler, session_manager=None) -> APIRouter:
                 db = SessionLocal()
                 try:
                     # Owner-scoped first-enabled fallback: the caller's own rows
-                    # + legacy null-owner shared rows only — never borrow another
+                    # + legacy null-owner shared rows only - never borrow another
                     # user's private endpoint/api_key. Same fix as the
                     # /api/v1/chat fallback (webhook_routes._first_enabled_endpoint).
                     ep = _owned_enabled_endpoint(db, user)
@@ -644,7 +644,7 @@ def setup_research_routes(research_handler, session_manager=None) -> APIRouter:
         """
         user = _require_user(request)
         _validate_session_id(session_id)
-        # SECURITY: gate on ownership before reading the persisted research —
+        # SECURITY: gate on ownership before reading the persisted research -
         # otherwise any authenticated user could spin off (and thereby read)
         # another user's report by guessing its session ID. Mirrors every other
         # endpoint in this file (see result_peek above).
@@ -652,7 +652,7 @@ def setup_research_routes(research_handler, session_manager=None) -> APIRouter:
         if session_manager is None:
             raise HTTPException(500, "session_manager not configured")
 
-        # Load research data — prefer in-memory result, fall back to disk
+        # Load research data - prefer in-memory result, fall back to disk
         result = research_handler.get_result(session_id)
         sources = research_handler.get_sources(session_id) or []
         query = ""
@@ -724,7 +724,7 @@ def setup_research_routes(research_handler, session_manager=None) -> APIRouter:
                 db.close()
 
         if not ep_url or not ep_model:
-            raise HTTPException(400, "No endpoint configured — add one in Settings first")
+            raise HTTPException(400, "No endpoint configured - add one in Settings first")
 
         # Create new session
         new_sid = str(uuid.uuid4())
@@ -751,13 +751,13 @@ def setup_research_routes(research_handler, session_manager=None) -> APIRouter:
         except Exception:
             logger.debug("session_created event dispatch failed", exc_info=True)
 
-        # Build the priming system message — report only, no sources injected.
+        # Build the priming system message - report only, no sources injected.
         # The user can open the visual report for source details; keeping sources
         # out of the chat context saves tokens and avoids the AI fabricating
         # citations.
         date_str = datetime.utcnow().strftime("%Y-%m-%d")
         primer = (
-            f"[Research context — {date_str}]\n\n"
+            f"[Research context - {date_str}]\n\n"
             f"The user previously ran a deep research investigation. Use the "
             f"report below as your primary knowledge base when answering "
             f"follow-up questions. If the user asks something not covered, "

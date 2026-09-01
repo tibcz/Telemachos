@@ -239,7 +239,7 @@ class ChatProcessor:
 
             kw_norm = min(kw_norm * cat_boost, 1.0)
 
-            # Recency — tiebreaker only (max 5% contribution)
+            # Recency - tiebreaker only (max 5% contribution)
             ts = mem.get("timestamp", 0)
             days_old = max((now - ts) / 86400, 0)
             recency = 1.0 / (1.0 + days_old * 0.05)
@@ -285,8 +285,8 @@ class ChatProcessor:
         the very first thing in the payload (see ``llm_core``'s "consolidate
         system messages" step). Local OpenAI-compatible backends (llama.cpp /
         LM Studio) key their KV cache off the byte-identical token prefix, so
-        *anything* that changes turn-to-turn — timestamps, retrieved snippets,
-        per-turn counts — must NOT be folded into a system message here. Such
+        *anything* that changes turn-to-turn - timestamps, retrieved snippets,
+        per-turn counts - must NOT be folded into a system message here. Such
         content belongs in a separate ``user``/context message appended near
         the end of the array (see ``current_datetime_context_message`` and
         ``untrusted_context_message`` callers in ``build_chat_context``),
@@ -355,7 +355,7 @@ class ChatProcessor:
                 except Exception as _e:
                     logger.warning("Failed to increment memory uses: %s", _e)
 
-            # (skills index injection moved out — see below; only fires in
+            # (skills index injection moved out - see below; only fires in
             # agent mode so chat mode and incognito stay clean.)
 
         # RAG: search if enabled and rag_manager available, inject only above threshold
@@ -452,7 +452,7 @@ class ChatProcessor:
                 preface.append({"role": "system", "content": "Web search encountered an error and could not retrieve results."})
 
         # Process non-YouTube URLs in message (YouTube handled by preprocess_message)
-        # Skip auto-fetch for long pastes (the user already pasted the content —
+        # Skip auto-fetch for long pastes (the user already pasted the content -
         # fetching every embedded link buries the actual question under
         # hundreds of KB of duplicate page HTML and confuses the model) or for
         # link-heavy pastes (>3 URLs typically means it's a boilerplate-laden
@@ -496,7 +496,7 @@ class ChatProcessor:
                         f"A linked page was not read: {status}.",
                     ))
 
-        # Skills index — progressive disclosure. Only injected when the
+        # Skills index - progressive disclosure. Only injected when the
         # model has the `manage_skills` tool available (agent_mode), and
         # never in incognito mode (the user has explicitly opted out of
         # context retention this turn). In plain chat mode the model can't
@@ -511,7 +511,7 @@ class ChatProcessor:
                 by_cat: Dict[str, list] = {}
                 for s in idx:
                     by_cat.setdefault(s.get("category") or "general", []).append(s)
-                lines = ["[Available skills — call manage_skills(action='view', name='...') to load one when relevant]"]
+                lines = ["[Available skills - call manage_skills(action='view', name='...') to load one when relevant]"]
                 for cat in sorted(by_cat):
                     lines.append(f"  {cat}:")
                     for s in sorted(by_cat[cat], key=lambda x: x["name"]):

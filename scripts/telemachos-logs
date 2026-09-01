@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""telemachos-logs — unified view of log files across the app.
+"""telemachos-logs - unified view of log files across the app.
 
 Right now logs live in two places:
   - logs/                       app-level (compound.log, future runtime)

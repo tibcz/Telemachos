@@ -51,8 +51,8 @@ struct CreditsView: View {
                     .font(.headline)
 
                 Text("""
-                Everything Telemachos stores — conversations, documents, notes, mail \
-                and the local vector index — lives in a single folder on this Mac. \
+                Everything Telemachos stores - conversations, documents, notes, mail \
+                and the local vector index - lives in a single folder on this Mac. \
                 Nothing is written inside the application itself.
                 """)
                 .fixedSize(horizontal: false, vertical: true)

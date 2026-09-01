@@ -1,4 +1,4 @@
-// Search Chat Module — Ctrl+K command palette for searching conversations
+// Search Chat Module - Ctrl+K command palette for searching conversations
 
 import uiModule from './ui.js';
 import sessionModule from './sessions.js';

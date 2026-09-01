@@ -1,4 +1,4 @@
-// static/js/settings.js — Settings panel module (ES6)
+// static/js/settings.js - Settings panel module (ES6)
 // User-facing preferences: AI models, search, appearance
 
 import uiModule from './ui.js';
@@ -36,7 +36,7 @@ let _authPolicy = { password_min_length: 8 };
  * POST a settings patch, then drop the shared snapshot in appConfig.js.
  *
  * Every write in this file goes through here so no save path can forget the
- * invalidation — a stale settings object served for the rest of the session is
+ * invalidation - a stale settings object served for the rest of the session is
  * a worse bug than the duplicate fetches the cache removes. The invalidation is
  * in a `finally` because a request that throws on the way back may still have
  * been applied server-side.
@@ -199,7 +199,7 @@ function _syncModelLogo(selectEl) {
 }
 
 // Same idea but for endpoint dropdowns where the <option value="…">
-// is an opaque endpoint UUID — fall back to the option's text label
+// is an opaque endpoint UUID - fall back to the option's text label
 // so providerLogo() can pattern-match (Anthropic, OpenAI, Ollama, …).
 function _syncEndpointLogo(selectEl) {
   if (!selectEl) return;
@@ -265,7 +265,7 @@ export async function refreshAiModelEndpoints() {
   return _aiEndpointRefreshInFlight;
 }
 
-/* Shared fallback-chain widget — mirrors the Default Chat Model fallback UI
+/* Shared fallback-chain widget - mirrors the Default Chat Model fallback UI
  * for other model cards (Utility, Vision, …). Pass in the container/button
  * IDs, the endpoints list, the settings key to persist under, and the
  * model-filter (for Vision we exclude non-chat-capable models).
@@ -466,7 +466,7 @@ async function initUtilityModel() {
 
   // Persist whatever's currently selected. Empty endpoint or model → backend
   // transparently falls back to the chat model (mirrors the teacher panel:
-  // no toggle, "—" means "unset, use chat").
+  // no toggle, "-" means "unset, use chat").
   async function saveUtility() {
     try {
       await _postSettings({
@@ -521,7 +521,7 @@ async function initTeacherModel() {
   function syncEnabled() {
     var off = enabledToggle ? !enabledToggle.checked : true;
     // Dim the card when off as a "dormant" cue, but keep the endpoint+model
-    // dropdowns INTERACTIVE — the toggle gates whether escalation runs, not
+    // dropdowns INTERACTIVE - the toggle gates whether escalation runs, not
     // whether you can configure it. (Previously the config was inert when off,
     // so users couldn't pick an endpoint until they'd already enabled it.)
     var card = enabledToggle ? enabledToggle.closest('.admin-card') : null;
@@ -597,7 +597,7 @@ async function initImageSettings() {
   try {
     const modelsRes = await fetch('/api/models', { credentials: 'same-origin' });
     const modelsData = await modelsRes.json();
-    // Inpaint-compat allowlist — image gen here is scoped to inpainting only,
+    // Inpaint-compat allowlist - image gen here is scoped to inpainting only,
     // so DALL-E / GPT-Image-1 (no inpaint API) are excluded. Currently:
     //   - any model with 'inpaint' in the id
     //   - Stable Diffusion 3.5 Medium (inpaint via diffusers pipeline)
@@ -694,7 +694,7 @@ async function initVisionSettings() {
       addBtnId: 'set-visionAddFallback',
       endpoints: function() { return _visionEndpoints; },
       // Vision fallback list filters to vision-capable models (same heuristic
-      // as the primary select above — exclude audio/tts/embedding/etc.).
+      // as the primary select above - exclude audio/tts/embedding/etc.).
       modelsFilter: function(mid) { return _isVisionModel(mid); },
       settingKey: 'vision_model_fallbacks',
       initial: Array.isArray(settings.vision_model_fallbacks)
@@ -897,7 +897,7 @@ async function initSttSettings() {
   var sttMsg = el('set-sttSettingsMsg');
   var sttEnabledToggle = el('set-sttEnabledToggle');
   var sttConfigWrap = el('set-sttConfigWrap');
-  // STT was removed from AI Defaults — bail if the UI isn't present.
+  // STT was removed from AI Defaults - bail if the UI isn't present.
   if (!provSel) return;
 
   function isEndpoint() { return provSel.value.startsWith('endpoint:'); }
@@ -979,7 +979,7 @@ var _LINK = function(href, text) {
 };
 var _searchProviderHints = {
   searxng: 'Private, self-hosted instance. Leave URL empty to use the SEARXNG_INSTANCE env var.',
-  duckduckgo: 'No API key needed, but rate-limited — heavy use can return empty results. Configure a fallback below.',
+  duckduckgo: 'No API key needed, but rate-limited - heavy use can return empty results. Configure a fallback below.',
   brave: 'Get your API key from ' + _LINK('https://brave.com/search/api/', 'brave.com/search/api'),
   google_pse: 'Requires a Google API key and a Programmable Search Engine ID (CX). Create one at ' + _LINK('https://programmablesearchengine.google.com/', 'programmablesearchengine.google.com'),
   tavily: 'AI-optimized search. 1,000 free credits/month at ' + _LINK('https://tavily.com/', 'tavily.com'),
@@ -1589,7 +1589,7 @@ function initAppearance() {
           return;
         }
         if (uiModule && uiModule.showToast) {
-          uiModule.showToast('Settings cog hidden — type /settings to bring it back.', 5000);
+          uiModule.showToast('Settings cog hidden - type /settings to bring it back.', 5000);
         }
       }
 
@@ -1746,7 +1746,7 @@ function _formatKeyCaps(combo) {
 
 function _comboFromEvent(e) {
   // Drop a stray AltGr keystroke (e.g. AltGr+E to type €) so it isn't recorded
-  // as a bogus ctrl+alt+<char> binding — onKey ignores empty combos. See
+  // as a bogus ctrl+alt+<char> binding - onKey ignores empty combos. See
   // platform.js for the macOS carve-out and Windows trade-off.
   if (isAltGrEvent(e)) return '';
   const parts = [];
@@ -2020,7 +2020,7 @@ function initAccount() {
         const res = await fetch('/api/auth/2fa/status', { credentials: 'same-origin' });
         const data = await res.json();
         if (data.enabled) {
-          // 2FA is ON — show disable option
+          // 2FA is ON - show disable option
           tfaContent.innerHTML = `
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
               <span style="color:var(--color-save-green, #4caf50);font-size:12px;font-weight:600;">&#x2713; Enabled</span>
@@ -2046,7 +2046,7 @@ function initAccount() {
             } catch (e) { msg.textContent = e.message; msg.style.color = 'var(--red)'; }
           });
         } else {
-          // 2FA is OFF — show setup button
+          // 2FA is OFF - show setup button
           tfaContent.innerHTML = `
             <div style="font-size:12px;opacity:0.6;margin-bottom:8px;">Add an extra layer of security with an authenticator app (Aegis, Google Authenticator, etc.)</div>
             <div class="settings-row" style="justify-content:flex-end;">
@@ -2279,7 +2279,7 @@ async function initReminderSettings() {
     emailOpt.textContent = 'Email (add an account in Integrations)';
   }
 
-  // Detect whether ntfy integration exists — try admin endpoint, fall back to
+  // Detect whether ntfy integration exists - try admin endpoint, fall back to
   // checking if an ntfy integration was saved in settings (non-admin users).
   let ntfyConfigured = false;
   try {
@@ -2423,7 +2423,7 @@ async function initReminderSettings() {
   }
 
   // Browser notifications fire on EVERY reminder (see
-  // routes/note_routes.py — the in-app notif is always queued
+  // routes/note_routes.py - the in-app notif is always queued
   // regardless of channel). The hint should make that clear so
   // users don't think they have to choose between channels.
   const CHANNEL_HINTS = {
@@ -2441,7 +2441,7 @@ async function initReminderSettings() {
     });
   }
 
-  // Default payload templates for known presets — auto-filled when the user
+  // Default payload templates for known presets - auto-filled when the user
   // picks a matching integration so they don't have to write JSON from scratch.
   // Defined here (before the load block) so both the load path and the change
   // handler can reference it.
@@ -2458,7 +2458,7 @@ async function initReminderSettings() {
     if (savedChannel === 'webhook' && !webhookConfigured) savedChannel = 'browser';
     channelSel.value = savedChannel;
     llmToggle.checked = !!s.reminder_llm_synthesis;
-    // Persona dropdown — populate from built-in PROMPT_TEMPLATES (characters)
+    // Persona dropdown - populate from built-in PROMPT_TEMPLATES (characters)
     // plus any custom character preset. Selected value persists to
     // reminder_llm_persona (backend hook lives in src/notes.py once
     // /api/notes/fire-reminder lands).
@@ -2527,7 +2527,7 @@ async function initReminderSettings() {
     if (hint) hint.textContent = CHANNEL_HINTS[channelSel.value] || '';
     syncChannelRows();
     save({ reminder_channel: channelSel.value });
-    // Email reminder bell visibility tracks this — broadcast so the
+    // Email reminder bell visibility tracks this - broadcast so the
     // email library can re-evaluate without waiting for a re-open.
     try { window.dispatchEvent(new CustomEvent('telemachos-reminder-channel-changed', { detail: { channel: channelSel.value } })); } catch (_) {}
   });
@@ -2637,9 +2637,9 @@ async function initReminderSettings() {
         }
         let status = 'Delivered via ' + channelSel.value;
         if (data.synthesis) status += ' (AI: "' + data.synthesis.slice(0, 60) + '...")';
-        if (data.email_sent) status += ' — email sent';
-        if (data.ntfy_sent) status += ' — ntfy sent';
-        if (data.webhook_sent) status += ' — webhook sent';
+        if (data.email_sent) status += ' - email sent';
+        if (data.ntfy_sent) status += ' - ntfy sent';
+        if (data.webhook_sent) status += ' - webhook sent';
         if (testMsg) { testMsg.textContent = status; testMsg.style.color = 'var(--green, #50fa7b)'; }
         // Also fire a browser notification so user can see it
         if ('Notification' in window && Notification.permission === 'granted') {
@@ -2716,7 +2716,7 @@ async function initEmailAccountsSettings() {
     return `<div class="email-account-row" data-acc-id="${esc(a.id)}" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--border);border-radius:6px">
       <div style="flex:1;min-width:0">
         <div style="font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px">${esc(a.name)} ${badge}</div>
-        <div style="font-size:11px;opacity:0.6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(a.imap_user || a.from_address || '')} — ${esc(imap)}</div>
+        <div style="font-size:11px;opacity:0.6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(a.imap_user || a.from_address || '')} - ${esc(imap)}</div>
       </div>
       ${a.is_default ? '' : `<button class="admin-btn-sm email-acc-default-btn" style="font-size:10px">Make Default</button>`}
       <button class="admin-btn-sm email-acc-edit-btn" style="font-size:10px">Edit</button>
@@ -2763,7 +2763,7 @@ async function initEmailAccountsSettings() {
       + `style="display:inline-block;width:13px;height:13px;border-radius:50%;`
       + `border:1px solid currentColor;font-size:9px;line-height:11px;text-align:center;`
       + `opacity:0.45;margin-left:5px;cursor:help;vertical-align:1px;font-weight:600;">?</span>`;
-    // Provider presets — picking one fills host/port/STARTTLS for both
+    // Provider presets - picking one fills host/port/STARTTLS for both
     // IMAP and SMTP. Dovecot is IMAP-only here; the host is intentionally
     // blank because it may live on another machine (DNS, LAN, Tailscale).
     const PROVIDERS = {
@@ -2785,12 +2785,12 @@ async function initEmailAccountsSettings() {
       <div class="settings-col">
         <div class="settings-row"><label class="settings-label">Provider${_hint('Pick a known provider to auto-fill the IMAP and SMTP host/port. Choose Custom to type your own.')}</label><select id="eaf-provider" class="settings-select"><option value="">Custom…</option>${_providerOptions}</select></div>
         <div id="eaf-provider-note" style="display:none;font-size:11px;line-height:1.5;padding:8px 10px;margin:2px 0 4px;border:1px solid color-mix(in srgb, var(--fg) 15%, transparent);border-left:3px solid var(--accent, var(--red));border-radius:4px;background:color-mix(in srgb, var(--fg) 4%, transparent);"></div>
-        <div class="settings-row"><label class="settings-label">Name${_hint('Optional label for this account (e.g. “Work” or “Personal”). Leave blank to use the email address.')}</label><input id="eaf-name" class="settings-input" placeholder="(optional — leave blank to use email)" value="${esc(a.name || '')}"></div>
+        <div class="settings-row"><label class="settings-label">Name${_hint('Optional label for this account (e.g. “Work” or “Personal”). Leave blank to use the email address.')}</label><input id="eaf-name" class="settings-input" placeholder="(optional - leave blank to use email)" value="${esc(a.name || '')}"></div>
         <div class="settings-row"><label class="settings-label">Email${_hint('Your email address. Used as the From: header on outgoing mail and as the display label when Name is blank.')}</label><input id="eaf-from" class="settings-input" placeholder="you@example.com" value="${esc(a.from_address || '')}"></div>
         <div class="settings-row"><label class="settings-label">Display Name${_hint('Your name as it appears in the From: field of emails you send, e.g. Jane Smith. Auto-filled from Google during OAuth.')}</label><input id="eaf-display-name" class="settings-input" placeholder="Your Name" value="${esc(a.display_name || '')}"></div>
         <div id="eaf-oauth-section" style="display:none;margin:8px 0;padding:10px;border:1px solid var(--border);border-radius:6px;background:color-mix(in srgb,var(--accent,#50fa7b) 6%,transparent)">
-          <div style="font-size:11px;font-weight:600;margin-bottom:6px">Google OAuth2 — required for Workspace / .edu accounts</div>
-          <div id="eaf-oauth-status" style="font-size:11px;opacity:0.7;margin-bottom:6px">${a.oauth_provider === 'google' ? '✓ Connected via Google OAuth' : 'Not connected — click below to authorize'}</div>
+          <div style="font-size:11px;font-weight:600;margin-bottom:6px">Google OAuth2 - required for Workspace / .edu accounts</div>
+          <div id="eaf-oauth-status" style="font-size:11px;opacity:0.7;margin-bottom:6px">${a.oauth_provider === 'google' ? '✓ Connected via Google OAuth' : 'Not connected - click below to authorize'}</div>
           <button type="button" id="eaf-oauth-btn" class="admin-btn-add" style="font-size:11px">${a.oauth_provider === 'google' ? 'Reconnect with Google' : 'Connect with Google'}</button>
         </div>
         <div style="font-size:11px;font-weight:600;opacity:0.6;margin:6px 0 2px">IMAP (Receiving)</div>
@@ -2798,14 +2798,14 @@ async function initEmailAccountsSettings() {
         <div class="settings-row"><label class="settings-label">Port${_hint('993 for IMAPS (most providers), 143 for plain or STARTTLS. Local servers often use a custom port like 31143.')}</label><input id="eaf-imap-port" class="settings-input" type="number" value="${esc(a.imap_port || 993)}" style="max-width:100px"></div>
         <div class="settings-row"><label class="settings-label">Username${_hint('Usually your full email address.')}</label><input id="eaf-imap-user" class="settings-input" value="${esc(a.imap_user || '')}"></div>
         <div class="eaf-password-section"><div class="settings-row"><label class="settings-label">Password${_hint('Your IMAP login password. Use an app-specific password if your provider requires 2FA. Outlook / Office 365 generally requires OAuth and will not work with a normal password here.')}</label><input id="eaf-imap-pass" class="settings-input" type="password" placeholder="${isEdit && a.has_imap_password ? '(unchanged)' : ''}"></div></div>
-        <div class="settings-row"><label class="settings-label">STARTTLS${_hint('Turn ON for port 143/587 to upgrade plain to TLS. Turn OFF for port 993 (IMAPS — already encrypted) or a local server with no TLS configured.')}</label><label class="admin-switch"><input type="checkbox" id="eaf-imap-starttls" ${a.imap_starttls !== false ? 'checked' : ''}><span class="admin-slider"></span></label></div>
-        <div style="font-size:11px;font-weight:600;opacity:0.6;margin:8px 0 2px">SMTP (Sending) <span style="font-weight:normal;opacity:0.7">— optional, leave blank for read-only</span></div>
+        <div class="settings-row"><label class="settings-label">STARTTLS${_hint('Turn ON for port 143/587 to upgrade plain to TLS. Turn OFF for port 993 (IMAPS - already encrypted) or a local server with no TLS configured.')}</label><label class="admin-switch"><input type="checkbox" id="eaf-imap-starttls" ${a.imap_starttls !== false ? 'checked' : ''}><span class="admin-slider"></span></label></div>
+        <div style="font-size:11px;font-weight:600;opacity:0.6;margin:8px 0 2px">SMTP (Sending) <span style="font-weight:normal;opacity:0.7">- optional, leave blank for read-only</span></div>
         <div class="settings-row"><label class="settings-label">Host${_hint('Your outgoing-mail server, e.g. smtp.gmail.com, smtp.migadu.com. Leave blank to make this account read-only.')}</label><input id="eaf-smtp-host" class="settings-input" value="${esc(a.smtp_host || '')}"></div>
         <div class="settings-row"><label class="settings-label">Port${_hint('465 for SSL/SMTPS, 587 for STARTTLS. 25 is usually blocked by ISPs.')}</label><input id="eaf-smtp-port" class="settings-input" type="number" value="${esc(a.smtp_port || 465)}" style="max-width:100px"></div>
         <div class="settings-row"><label class="settings-label">Security${_hint('SSL for port 465, STARTTLS for port 587, or None for local SMTP bridges such as Proton Mail Bridge.')}</label><select id="eaf-smtp-security" class="settings-select"><option value="ssl">SSL</option><option value="starttls">STARTTLS</option><option value="none">None</option></select></div>
         <div class="settings-row"><label class="settings-label">Same as IMAP${_hint('Use the IMAP username and password for SMTP too (this is right for almost every provider). Turn off to enter separate SMTP credentials.')}</label><label class="admin-switch"><input type="checkbox" id="eaf-smtp-same" ${(!isEdit || (a.smtp_user && a.imap_user && a.smtp_user === a.imap_user)) ? 'checked' : ''}><span class="admin-slider"></span></label></div>
         <div class="settings-row eaf-smtp-creds"><label class="settings-label">Username${_hint('Usually the same as your IMAP username (your email address).')}</label><input id="eaf-smtp-user" class="settings-input" value="${esc(a.smtp_user || '')}"></div>
-        <div class="settings-row eaf-smtp-creds"><label class="settings-label">Password${_hint('Your SMTP password — often the same as your IMAP password. Outlook / Office 365 generally requires OAuth and will not work with a normal password here.')}</label><input id="eaf-smtp-pass" class="settings-input" type="password" placeholder="${isEdit && a.has_smtp_password ? '(unchanged)' : ''}"></div>
+        <div class="settings-row eaf-smtp-creds"><label class="settings-label">Password${_hint('Your SMTP password - often the same as your IMAP password. Outlook / Office 365 generally requires OAuth and will not work with a normal password here.')}</label><input id="eaf-smtp-pass" class="settings-input" type="password" placeholder="${isEdit && a.has_smtp_password ? '(unchanged)' : ''}"></div>
         <div class="settings-row" style="margin-top:10px;align-items:center;">
           <button class="admin-btn-add" id="eaf-save" style="background:var(--red);border-color:var(--red);color:#fff;display:inline-flex;align-items:center;gap:5px;font-weight:600;">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
@@ -2867,7 +2867,7 @@ async function initEmailAccountsSettings() {
     // Init OAuth UI for accounts already connected via OAuth.
     if (a.oauth_provider === 'google') _syncOauthUI('google_workspace');
 
-    // "Connect with Google" button — save the account first, then redirect to OAuth.
+    // "Connect with Google" button - save the account first, then redirect to OAuth.
     el('eaf-oauth-btn').addEventListener('click', async () => {
       // Must save the account first to get an account_id to pass to the OAuth flow.
       const body = {
@@ -2894,7 +2894,7 @@ async function initEmailAccountsSettings() {
     });
     el('eaf-smtp-security').value = _smtpSecurity(a);
 
-    // "Same as IMAP" toggle — hide the SMTP creds rows when on. The save
+    // "Same as IMAP" toggle - hide the SMTP creds rows when on. The save
     // handler copies the IMAP user/password into SMTP at submit time.
     const _syncSmtpSame = () => {
       const same = el('eaf-smtp-same').checked;
@@ -2922,7 +2922,7 @@ async function initEmailAccountsSettings() {
       };
       if (el('eaf-imap-pass').value) body.imap_password = el('eaf-imap-pass').value;
       if (el('eaf-smtp-pass').value) body.smtp_password = el('eaf-smtp-pass').value;
-      // "Same as IMAP" toggle — copy IMAP username/password into SMTP at
+      // "Same as IMAP" toggle - copy IMAP username/password into SMTP at
       // save time, so the hidden SMTP-creds rows don't matter. We only
       // mirror the password if the user actually typed an IMAP one
       // (otherwise SMTP keeps whatever it already had on the server).
@@ -2930,7 +2930,7 @@ async function initEmailAccountsSettings() {
         body.smtp_user = body.imap_user;
         if (body.imap_password) body.smtp_password = body.imap_password;
       }
-      // Name is optional — fall back to the From address so the list view
+      // Name is optional - fall back to the From address so the list view
       // still has a label to render. Only refuse if both are blank.
       if (!body.name) body.name = body.from_address;
       if (!body.name) { el('eaf-msg').textContent = 'Need at least a Name or Email'; el('eaf-msg').style.color = 'var(--red)'; return; }
@@ -3171,7 +3171,7 @@ async function initIntegrations() {
   let editingId = null;
   let presets = {};
 
-  // Presets where the secret is embedded in the URL — no separate key or
+  // Presets where the secret is embedded in the URL - no separate key or
   // auth header is used, so hiding those fields avoids confusion.
   const URL_AUTH_PRESETS = ['discord_webhook'];
 
@@ -3246,7 +3246,7 @@ async function initIntegrations() {
   async function startEdit(id) {
     editingId = id;
     formTitle.textContent = 'Edit Integration';
-    // Fetch full data (with unmasked key from a dedicated edit fetch — we'll just load what we have)
+    // Fetch full data (with unmasked key from a dedicated edit fetch - we'll just load what we have)
     try {
       const res = await fetch('/api/auth/integrations', { credentials: 'same-origin' });
       const data = await res.json();
@@ -3257,7 +3257,7 @@ async function initIntegrations() {
       urlIn.value = item.base_url || '';
       authTypeSel.value = item.auth_type || 'none';
       authHeaderIn.value = item.auth_header || '';
-      keyIn.value = ''; // masked — user re-enters if changing
+      keyIn.value = ''; // masked - user re-enters if changing
       keyIn.placeholder = item.api_key ? 'Leave blank to keep current' : 'API key or token';
       descIn.value = item.description || '';
       syncAuthRow();
@@ -3473,7 +3473,7 @@ async function initUnifiedIntegrations() {
     for (const intg of (apiRes.integrations || [])) {
       items.push({ type: 'api', id: intg.id, name: intg.name || 'Unnamed', detail: intg.base_url || '', enabled: intg.enabled !== false, data: intg });
     }
-    // CalDAV — one card per account
+    // CalDAV - one card per account
     for (const acc of (calRes.accounts || [])) {
       items.push({ type: 'caldav', id: acc.id, name: acc.label || 'Calendar (CalDAV)', detail: acc.url, enabled: true, data: acc });
     }
@@ -3499,10 +3499,10 @@ async function initUnifiedIntegrations() {
         data: cardRes,
       });
     }
-    // Email — one entry per EmailAccount row
+    // Email - one entry per EmailAccount row
     for (const acc of (emailAccountsRes.accounts || [])) {
       const label = acc.name + (acc.is_default ? ' (default)' : '');
-      const detail = [acc.from_address || acc.imap_user, acc.imap_host].filter(Boolean).join(' — ');
+      const detail = [acc.from_address || acc.imap_user, acc.imap_host].filter(Boolean).join(' - ');
       items.push({ type: 'email', id: acc.id, name: label, detail, enabled: acc.enabled !== false, data: acc });
     }
     // MCP servers
@@ -3531,7 +3531,7 @@ async function initUnifiedIntegrations() {
 
   function renderCard(item) {
     const t = INTG_TYPES[item.type] || INTG_TYPES.api;
-    // Static enabled/disabled indicator — same dot every integration
+    // Static enabled/disabled indicator - same dot every integration
     // type gets. (The clickable glow-on-test variant for email was
     // removed earlier; this matches the API/CalDAV/MCP pattern.)
     const statusDot = item.enabled
@@ -3572,7 +3572,7 @@ async function initUnifiedIntegrations() {
         if (e.target.closest('.intg-del-btn')) return;
         const type = card.dataset.intgType;
         const id = card.dataset.intgId;
-        // Toggle a class instead of mutating inline borderColor — the
+        // Toggle a class instead of mutating inline borderColor - the
         // inline border shorthand made the reset unreliable, leaving
         // stale accent borders on previously-clicked cards.
         listEl.querySelectorAll('.intg-card.intg-card-active').forEach(c => c.classList.remove('intg-card-active'));
@@ -3756,7 +3756,7 @@ async function initUnifiedIntegrations() {
     const _applyPreset = () => {
       const p = presets[preset.value];
       const isNtfy = preset.value === 'ntfy' || (p && (p.name || '').toLowerCase() === 'ntfy');
-      const isUrlAuth = preset.value === 'discord_webhook'; // secret embedded in URL — no key/auth fields needed
+      const isUrlAuth = preset.value === 'discord_webhook'; // secret embedded in URL - no key/auth fields needed
       if (ntfyHint) {
         ntfyHint.style.display = isNtfy ? 'block' : 'none';
         if (isNtfy) {
@@ -3798,7 +3798,7 @@ async function initUnifiedIntegrations() {
         const saved = await r.json().catch(() => null);
         // If this was a create, capture the new ID so Test works
         // immediately without needing a form reopen. The POST response
-        // shape is {ok, integration: {id, ...}} — saved.id at the top
+        // shape is {ok, integration: {id, ...}} - saved.id at the top
         // level would silently miss, leaving Test perpetually stuck on
         // "Save first" until the form was reopened.
         if (!_editId && saved) _editId = saved.integration?.id || saved.id;
@@ -3889,7 +3889,7 @@ async function initUnifiedIntegrations() {
       el('uf-caldav-msg').style.color = '';
       const d = await _runCalDavTest();
       if (!d.ok) {
-        _setCalDavMsg(d.error || 'Connection failed — not saved', false);
+        _setCalDavMsg(d.error || 'Connection failed - not saved', false);
         return;
       }
       try {
@@ -4054,7 +4054,7 @@ async function initUnifiedIntegrations() {
     el('cm-export-vcf-btn')?.addEventListener('click', () => _downloadContacts('vcf'));
     el('cm-export-csv-btn')?.addEventListener('click', () => _downloadContacts('csv'));
 
-    // Import .vcf/.csv — read each selected file as text, concatenate by type,
+    // Import .vcf/.csv - read each selected file as text, concatenate by type,
     // then POST. Imported CardDAV contacts immediately feed email autocomplete
     // because compose searches /api/contacts/search.
     el('cm-import-btn')?.addEventListener('click', () => el('cm-import-file')?.click());
@@ -4125,7 +4125,7 @@ async function initUnifiedIntegrations() {
     // Sort by name for a stable list.
     contacts.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 
-    // Live filter — search across name/emails/phones/address.
+    // Live filter - search across name/emails/phones/address.
     const searchInput = el('cm-search');
     const q = (searchInput?.value || '').trim().toLowerCase();
     const filtered = !q ? contacts : contacts.filter(c => {
@@ -4173,7 +4173,7 @@ async function initUnifiedIntegrations() {
       }).join('');
     }
 
-    // Wire the search input — debounced so we don't refetch on every key.
+    // Wire the search input - debounced so we don't refetch on every key.
     if (searchInput && !searchInput._wired) {
       searchInput._wired = true;
       let _t;
@@ -4243,7 +4243,7 @@ async function initUnifiedIntegrations() {
       + `style="display:inline-block;width:13px;height:13px;border-radius:50%;`
       + `border:1px solid currentColor;font-size:9px;line-height:11px;text-align:center;`
       + `opacity:0.45;margin-left:5px;cursor:help;vertical-align:1px;font-weight:600;">?</span>`;
-    // Provider presets — picking one auto-fills IMAP + SMTP host/port.
+    // Provider presets - picking one auto-fills IMAP + SMTP host/port.
     // Dovecot is IMAP-only here; the host is intentionally blank because
     // it may be remote (DNS, LAN, Tailscale), not localhost.
     const PROVIDERS = {
@@ -4258,7 +4258,7 @@ async function initUnifiedIntegrations() {
     };
     const _providerOptions = Object.entries(PROVIDERS)
       .map(([k, v]) => `<option value="${k}">${esc(v.label)}</option>`).join('');
-    // Provider logos — small SVGs the custom dropdown renders next to each
+    // Provider logos - small SVGs the custom dropdown renders next to each
     // option. Letter-in-brand-color circle for known providers; outline
     // envelope for "Custom…". Inline SVG (no external assets, no emoji).
     const _letterLogo = (letter, bg) => `<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="flex-shrink:0"><circle cx="12" cy="12" r="11" fill="${bg}"/><text x="12" y="16.5" font-size="13" font-weight="700" text-anchor="middle" fill="#fff" font-family="system-ui,sans-serif">${letter}</text></svg>`;
@@ -4293,27 +4293,27 @@ async function initUnifiedIntegrations() {
             </div>
           </div>
           <div id="uf-email-provider-note" style="display:none;font-size:11px;line-height:1.5;padding:8px 10px;margin:2px 0 4px;border:1px solid color-mix(in srgb, var(--fg) 15%, transparent);border-left:3px solid var(--accent, var(--red));border-radius:4px;background:color-mix(in srgb, var(--fg) 4%, transparent);"></div>
-          <div class="settings-row"><label class="settings-label">Name${_hint('Optional label for this account (e.g. “Work” or “Personal”). Leave blank to use the email address.')}</label><input id="uf-email-name" class="settings-input" placeholder="(optional — leave blank to use email)"></div>
+          <div class="settings-row"><label class="settings-label">Name${_hint('Optional label for this account (e.g. “Work” or “Personal”). Leave blank to use the email address.')}</label><input id="uf-email-name" class="settings-input" placeholder="(optional - leave blank to use email)"></div>
           <div class="settings-row"><label class="settings-label">Email${_hint('Your email address. Used as the From: header on outgoing mail and as the display label when Name is blank.')}</label><input id="uf-email-from" class="settings-input" placeholder="you@example.com"></div>
           <div class="settings-row"><label class="settings-label">Display Name${_hint('Your name as it appears in the From: field of emails you send, e.g. Jane Smith. Auto-filled from Google during OAuth.')}</label><input id="uf-display-name" class="settings-input" placeholder="Your Name"></div>
           <div id="uf-oauth-section" style="display:none;margin:8px 0;padding:10px;border:1px solid var(--border);border-radius:6px;background:color-mix(in srgb,var(--accent,#50fa7b) 6%,transparent)">
-            <div style="font-size:11px;font-weight:600;margin-bottom:6px">Google OAuth2 — required for Workspace / .edu accounts</div>
-            <div id="uf-oauth-status" style="font-size:11px;opacity:0.7;margin-bottom:6px">${existing && existing.oauth_provider === 'google' ? '✓ Connected via Google OAuth' : 'Not connected — click below to authorize'}</div>
+            <div style="font-size:11px;font-weight:600;margin-bottom:6px">Google OAuth2 - required for Workspace / .edu accounts</div>
+            <div id="uf-oauth-status" style="font-size:11px;opacity:0.7;margin-bottom:6px">${existing && existing.oauth_provider === 'google' ? '✓ Connected via Google OAuth' : 'Not connected - click below to authorize'}</div>
             <button type="button" id="uf-oauth-btn" class="admin-btn-add" style="font-size:11px">${existing && existing.oauth_provider === 'google' ? 'Reconnect with Google' : 'Connect with Google'}</button>
           </div>
           <div style="font-size:11px;font-weight:600;opacity:0.6;margin:4px 0 2px;display:flex;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent, var(--red));flex-shrink:0;" aria-hidden="true"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>IMAP (Receiving)</div>
           <div class="settings-row"><label class="settings-label">Host${_hint('Your IMAP server, e.g. imap.gmail.com, imap.migadu.com, a LAN host, or a Tailscale IP for Dovecot.')}</label><input id="uf-imap-host" class="settings-input" placeholder="imap.example.com"></div>
           <div class="settings-row"><label class="settings-label">Port${_hint('993 for IMAPS (most providers), 143 for plain or STARTTLS. Local servers often use a custom port like 31143.')}</label><input id="uf-imap-port" class="settings-input" type="number" placeholder="993" style="max-width:100px"></div>
-          <div class="settings-row"><label class="settings-label">Username${_hint('Yes — your full email address goes here too (e.g. you@gmail.com). Same as the Email field above for almost every provider.')}</label><input id="uf-imap-user" class="settings-input" placeholder="you@example.com"></div>
+          <div class="settings-row"><label class="settings-label">Username${_hint('Yes - your full email address goes here too (e.g. you@gmail.com). Same as the Email field above for almost every provider.')}</label><input id="uf-imap-user" class="settings-input" placeholder="you@example.com"></div>
           <div class="uf-password-section"><div class="settings-row"><label class="settings-label">Password${_hint('For Gmail, iCloud, and Yahoo: paste your App Password (NOT your normal account password). For Migadu and Fastmail, your mailbox password usually works. Outlook / Office 365 generally requires OAuth and will not work with this password form.')}</label><input id="uf-imap-pass" class="settings-input" type="password" placeholder="${placeholderPass}"></div></div>
-          <div class="settings-row"><label class="settings-label">STARTTLS${_hint('Turn ON for port 143/587 to upgrade plain to TLS. Turn OFF for port 993 (IMAPS — already encrypted) or a local server with no TLS configured.')}</label><label class="admin-switch" style="margin-left:0"><input type="checkbox" id="uf-imap-starttls" checked><span class="admin-slider"></span></label></div>
-          <div style="font-size:11px;font-weight:600;opacity:0.6;margin:8px 0 2px;display:flex;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent, var(--red));flex-shrink:0;" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>SMTP (Sending) <span style="font-weight:normal;opacity:0.7">— optional, leave blank for read-only</span></div>
+          <div class="settings-row"><label class="settings-label">STARTTLS${_hint('Turn ON for port 143/587 to upgrade plain to TLS. Turn OFF for port 993 (IMAPS - already encrypted) or a local server with no TLS configured.')}</label><label class="admin-switch" style="margin-left:0"><input type="checkbox" id="uf-imap-starttls" checked><span class="admin-slider"></span></label></div>
+          <div style="font-size:11px;font-weight:600;opacity:0.6;margin:8px 0 2px;display:flex;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent, var(--red));flex-shrink:0;" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>SMTP (Sending) <span style="font-weight:normal;opacity:0.7">- optional, leave blank for read-only</span></div>
           <div class="settings-row"><label class="settings-label">Host${_hint('Your outgoing-mail server, e.g. smtp.gmail.com. Leave blank to make this account read-only.')}</label><input id="uf-smtp-host" class="settings-input" placeholder="smtp.example.com"></div>
           <div class="settings-row"><label class="settings-label">Port${_hint('465 for SSL/SMTPS, 587 for STARTTLS. 25 is usually blocked by ISPs.')}</label><input id="uf-smtp-port" class="settings-input" type="number" placeholder="465" style="max-width:100px"></div>
           <div class="settings-row"><label class="settings-label">Security${_hint('SSL for port 465, STARTTLS for port 587, or None for local SMTP bridges such as Proton Mail Bridge.')}</label><select id="uf-smtp-security" class="settings-select"><option value="ssl">SSL</option><option value="starttls">STARTTLS</option><option value="none">None</option></select></div>
           <div class="settings-row"><label class="settings-label">Same as IMAP${_hint('Use the IMAP username and password for SMTP too (right for almost every provider). Turn off to enter separate SMTP credentials.')}</label><label class="admin-switch" style="margin-left:0"><input type="checkbox" id="uf-smtp-same" checked><span class="admin-slider"></span></label></div>
           <div class="settings-row uf-smtp-creds"><label class="settings-label">Username${_hint('Usually the same as your IMAP username (your email address).')}</label><input id="uf-smtp-user" class="settings-input"></div>
-          <div class="settings-row uf-smtp-creds"><label class="settings-label">Password${_hint('Your SMTP password — often the same as your IMAP password. Outlook / Office 365 generally requires OAuth and will not work with this password form.')}</label><input id="uf-smtp-pass" class="settings-input" type="password" placeholder="${placeholderPass}"></div>
+          <div class="settings-row uf-smtp-creds"><label class="settings-label">Password${_hint('Your SMTP password - often the same as your IMAP password. Outlook / Office 365 generally requires OAuth and will not work with this password form.')}</label><input id="uf-smtp-pass" class="settings-input" type="password" placeholder="${placeholderPass}"></div>
           <div class="settings-row" style="margin-top:4px"><label class="settings-label">Default${_hint('Use this account whenever no specific account is chosen.')}</label><label class="admin-switch" style="margin-left:0"><input type="checkbox" id="uf-email-default"><span class="admin-slider"></span></label><span style="font-size:10px;opacity:0.5;margin-left:6px">Used when nothing else is selected</span></div>
           <div class="settings-row" style="margin-top:10px;align-items:center;justify-content:flex-end;gap:6px;">
             <span id="uf-email-msg" style="font-size:11px;flex:1;margin-right:8px"></span>
@@ -4337,7 +4337,7 @@ async function initUnifiedIntegrations() {
         </div>
       </div>`;
 
-    // Provider-specific helper notes — surfaces for providers that
+    // Provider-specific helper notes - surfaces for providers that
     // require an app-specific password (Gmail killed basic IMAP auth
     // in 2022; iCloud + Yahoo follow the same model). The Generate
     // button opens the right page in a new tab and copies the URL for
@@ -4440,7 +4440,7 @@ async function initUnifiedIntegrations() {
       });
     }
 
-    // Custom dropdown wire-up — the native <select> stays in the DOM as the
+    // Custom dropdown wire-up - the native <select> stays in the DOM as the
     // data source and accessibility target, but the visible UI is a button +
     // popup so each provider row can render with its SVG logo. Selecting an
     // option updates select.value and dispatches a `change` event so the
@@ -4517,7 +4517,7 @@ async function initUnifiedIntegrations() {
     // Init OAuth UI for accounts already connected via OAuth.
     if (existing && existing.oauth_provider === 'google') _syncOauthUI('google_workspace');
 
-    // "Connect with Google" — save the account first, then redirect to OAuth.
+    // "Connect with Google" - save the account first, then redirect to OAuth.
     el('uf-oauth-btn').addEventListener('click', async () => {
       const body = _collectBody();
       if (!body.name) body.name = body.from_address;
@@ -4531,7 +4531,7 @@ async function initUnifiedIntegrations() {
       window.location.href = `/api/email/oauth/google/authorize?account_id=${encodeURIComponent(accId)}`;
     });
 
-    // "Same as IMAP" toggle — hide the SMTP creds rows when on.
+    // "Same as IMAP" toggle - hide the SMTP creds rows when on.
     const _syncSmtpSame = () => {
       const same = el('uf-smtp-same').checked;
       formEl.querySelectorAll('.uf-smtp-creds').forEach(r => {
@@ -4567,7 +4567,7 @@ async function initUnifiedIntegrations() {
     el('uf-email-cancel').addEventListener('click', () => { formEl.style.display = 'none'; });
 
     // Reset the Test button to neutral when the user edits any field
-    // after a test — stale green/red would imply the new values were
+    // after a test - stale green/red would imply the new values were
     // tested too.
     const _resetTestBtn = () => {
       const btn = el('uf-email-test');
@@ -4586,7 +4586,7 @@ async function initUnifiedIntegrations() {
       inp.addEventListener('change', _resetTestBtn);
     });
 
-    // Collect the current form values + apply the "Same as IMAP" mirror —
+    // Collect the current form values + apply the "Same as IMAP" mirror -
     // shared by both Save and Test so they agree on what's being sent.
     const _collectBody = () => {
       const body = {
@@ -4653,7 +4653,7 @@ async function initUnifiedIntegrations() {
         });
         const d = await r.json();
         if (d.ok) {
-          // Button becomes the indicator — green checkmark with the
+          // Button becomes the indicator - green checkmark with the
           // cookbook-style halo + breathing animation. No status text;
           // the glow is the signal.
           btn.style.background = 'var(--green, #50fa7b)';
@@ -4665,7 +4665,7 @@ async function initUnifiedIntegrations() {
           btn.style.animation = 'cookbook-srv-glow-ok 2.4s ease-in-out infinite';
           ico.innerHTML = _checkIcon;
         } else {
-          // Failure — red glow, original icon, error detail in status
+          // Failure - red glow, original icon, error detail in status
           // text so we can say WHICH half failed (IMAP vs SMTP).
           btn.style.background = 'var(--red)';
           btn.style.borderColor = 'var(--red)';
@@ -4693,7 +4693,7 @@ async function initUnifiedIntegrations() {
 
     el('uf-email-save').addEventListener('click', async () => {
       const body = _collectBody();
-      // Name is optional — fall back to Email so the list still has a label.
+      // Name is optional - fall back to Email so the list still has a label.
       if (!body.name) body.name = body.from_address;
       if (!body.name) { el('uf-email-msg').textContent = 'Need at least a Name or Email'; el('uf-email-msg').style.color = 'var(--red)'; return; }
       const saveBtn = el('uf-email-save');
@@ -4756,7 +4756,7 @@ async function initUnifiedIntegrations() {
           </div>
           <div style="font-size:10px;opacity:0.5;margin-top:6px;line-height:1.4">
             <strong>Login</strong> registers this device with your Vaultwarden account (once per account).<br>
-            <strong>Unlock</strong> decrypts the vault — required after restart or Lock. Session is saved so the assistant can read passwords.
+            <strong>Unlock</strong> decrypts the vault - required after restart or Lock. Session is saved so the assistant can read passwords.
           </div>
         </div>
       </div>`;
@@ -4779,7 +4779,7 @@ async function initUnifiedIntegrations() {
         parts.push(d.unlocked ? 'Status: UNLOCKED' : 'Status: locked');
         if (d.unlocked_at) parts.push(`Last unlock: ${d.unlocked_at.replace('T',' ').slice(0,19)}`);
         const statusEl = el('uf-vault-status');
-        statusEl.textContent = parts.join(' — ');
+        statusEl.textContent = parts.join(' - ');
         statusEl.style.color = !installed ? 'var(--red)' : d.unlocked ? 'var(--green,#50fa7b)' : '';
       } catch (_) {
         el('uf-vault-status').textContent = 'Failed to load vault status';
@@ -4816,7 +4816,7 @@ async function initUnifiedIntegrations() {
         });
         const d = await r.json();
         if (d.ok) {
-          msg(d.already ? 'Already logged in — use Unlock' : 'Logged in', 'var(--green,#50fa7b)');
+          msg(d.already ? 'Already logged in - use Unlock' : 'Logged in', 'var(--green,#50fa7b)');
           el('uf-vault-pass').value = '';
           await refreshStatus(); await renderList();
         } else msg(d.error || 'Login failed', 'var(--red)');
@@ -4862,7 +4862,7 @@ async function initUnifiedIntegrations() {
     });
   }
 
-  // ── MCP form — full management view ──
+  // ── MCP form - full management view ──
   async function showMcpForm(editId) {
     // Toggle an in-flight loading state on a button (disabled + dimmed + label).
     function _setBtnLoading(btn, loading, label) {
@@ -4921,7 +4921,7 @@ async function initUnifiedIntegrations() {
         } catch (e) {
           // Tolerate a single blip, but surface persistent failures instead of
           // silently polling until timeout.
-          if (++fails >= 5 && msg) msg.textContent = `Status check failing (${e.message || 'network error'}) — still retrying…`;
+          if (++fails >= 5 && msg) msg.textContent = `Status check failing (${e.message || 'network error'}) - still retrying…`;
         }
       }
       if (msg) msg.textContent = 'Authorization timed out. Reconnect from the server list to retry.';
@@ -4981,7 +4981,7 @@ async function initUnifiedIntegrations() {
             const tools = await tr.json();
             if (tools.length) {
               const disabled = new Set(tools.filter(t => t.is_disabled).map(t => t.name));
-              panel.innerHTML = `<div class="mcp-tools-header"><span>Tools</span><span style="display:flex;gap:8px;align-items:center"><span class="mcp-tools-count">${tools.length - disabled.size}/${tools.length} enabled</span><a href="#" id="uf-mcp-all">All</a> <a href="#" id="uf-mcp-none">None</a></span></div><div class="mcp-tools-list">${tools.map(t => `<label title="${esc(t.description)}"><input type="checkbox" data-mcp-tool-name="${esc(t.name)}" ${!t.is_disabled ? 'checked' : ''}><span><strong>${esc(t.name)}</strong> <span style="opacity:0.5">— ${esc((t.description||'').slice(0,80))}</span></span></label>`).join('')}</div>`;
+              panel.innerHTML = `<div class="mcp-tools-header"><span>Tools</span><span style="display:flex;gap:8px;align-items:center"><span class="mcp-tools-count">${tools.length - disabled.size}/${tools.length} enabled</span><a href="#" id="uf-mcp-all">All</a> <a href="#" id="uf-mcp-none">None</a></span></div><div class="mcp-tools-list">${tools.map(t => `<label title="${esc(t.description)}"><input type="checkbox" data-mcp-tool-name="${esc(t.name)}" ${!t.is_disabled ? 'checked' : ''}><span><strong>${esc(t.name)}</strong> <span style="opacity:0.5">- ${esc((t.description||'').slice(0,80))}</span></span></label>`).join('')}</div>`;
               const saveFn = async () => {
                 const dis = [];
                 panel.querySelectorAll('input[type=checkbox]').forEach(cb => { if (!cb.checked) dis.push(cb.dataset.mcpToolName); });
@@ -5030,7 +5030,7 @@ async function initUnifiedIntegrations() {
       el('uf-mcp-cancel').addEventListener('click', () => { formEl.style.display = 'none'; });
       el('uf-mcp-save').addEventListener('click', async () => {
         const transport = el('uf-mcp-transport').value;
-        // routes/mcp_routes.py uses FastAPI Form(...) — send multipart, not JSON.
+        // routes/mcp_routes.py uses FastAPI Form(...) - send multipart, not JSON.
         const fd = new FormData();
         fd.append('name', el('uf-mcp-name').value);
         fd.append('transport', transport);
@@ -5148,7 +5148,7 @@ async function initUnifiedIntegrations() {
         <div class="settings-col">
           ${editExistingHtml}
           <div id="uf-codex-prompt" style="display:${current ? 'none' : 'block'};padding:6px 0;">
-            <div style="font-size:11px;opacity:0.7;margin-bottom:6px;">Name this ${esc(cfg.word)} agent so you can tell it apart from other ones (e.g. "${esc(cfg.defaultName)} — laptop").</div>
+            <div style="font-size:11px;opacity:0.7;margin-bottom:6px;">Name this ${esc(cfg.word)} agent so you can tell it apart from other ones (e.g. "${esc(cfg.defaultName)} - laptop").</div>
             <input type="text" id="uf-codex-name-input" class="settings-select" placeholder="${esc(cfg.defaultName)}" style="width:100%;font-size:12px;padding:6px 8px;">
           </div>
           <div id="uf-codex-pending" style="display:none;align-items:center;gap:8px;padding:6px 0;font-size:11px;opacity:0.7;"></div>
@@ -5163,7 +5163,7 @@ async function initUnifiedIntegrations() {
               </button>
             </div>
 
-            <div style="margin-top:14px;font-weight:600;font-size:11px;margin-bottom:4px;">Quickstart &mdash; simply paste directly in your terminal.</div>
+            <div style="margin-top:14px;font-weight:600;font-size:11px;margin-bottom:4px;">Quickstart - simply paste directly in your terminal.</div>
             <div style="font-size:11px;opacity:0.62;margin-bottom:6px;">${cfg.setupDescription}</div>
             <pre style="margin:0;white-space:pre;overflow-x:auto;max-height:220px;overflow-y:auto;font-size:10px;line-height:1.45;padding:8px 10px;background:rgba(0,0,0,0.08);border-radius:4px;width:100%;box-sizing:border-box;"><code id="uf-codex-setup-code"></code></pre>
 
@@ -5258,7 +5258,7 @@ async function initUnifiedIntegrations() {
 
     el('uf-codex-cancel')?.addEventListener('click', () => { formEl.style.display = 'none'; });
 
-    // Configure access — collapsed by default so the reveal panel doesn't
+    // Configure access - collapsed by default so the reveal panel doesn't
     // dump 13 toggles at once. Click reveals + rotates the caret.
     el('uf-codex-toggle-config')?.addEventListener('click', () => {
       const body = el('uf-codex-config-body');
@@ -5368,7 +5368,7 @@ async function initUnifiedIntegrations() {
         const setupCode = el('uf-codex-setup-code');
         if (setupCode) setupCode.textContent = setupForToken(d.token || '');
         // Populate inline scope toggles for the just-created token with
-        // ALL scopes pre-checked as a UI preview — the underlying token
+        // ALL scopes pre-checked as a UI preview - the underlying token
         // still only has 'chat' until the user clicks Save below.
         const uiToken = { id: d.id, scopes: ['chat'].concat(toolScopes.map(s => s.key)) };
         const inlineEl = el('uf-codex-inline-scopes');
@@ -5614,7 +5614,7 @@ export function close() {
   hideSettingsModal(modalEl);
 }
 
-// Handle redirect back from Google OAuth2 — open settings to integrations and show status.
+// Handle redirect back from Google OAuth2 - open settings to integrations and show status.
 (function _handleOauthRedirect() {
   const sp = new URLSearchParams(window.location.search);
   if (!sp.has('email_oauth_success') && !sp.has('email_oauth_error')) return;
@@ -5630,7 +5630,7 @@ export function close() {
     // Brief toast-style banner.
     const banner = document.createElement('div');
     banner.textContent = success
-      ? 'Google account connected — email is ready'
+      ? 'Google account connected - email is ready'
       : `Google OAuth failed: ${errMsg || 'unknown error'}`;
     Object.assign(banner.style, {
       position: 'fixed', bottom: '24px', left: '50%', transform: 'translateX(-50%)',

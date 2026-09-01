@@ -36,8 +36,8 @@ def _extract_entities(query: str) -> Dict[str, List[str]]:
         cleaned = re.sub(rf"^{qtype}\b", "", cleaned, flags=re.I).strip()
     # Unicode-aware capitalized-word (name) detection. The old [A-Z][a-zA-Z]+
     # class missed non-ASCII names like "İstanbul"/"Zürich" (dropped) and
-    # "São" (shredded). Keep the ASCII behaviour — the word boundary already
-    # excludes camelCase mid-word capitals — by requiring an all-alphabetic
+    # "São" (shredded). Keep the ASCII behaviour - the word boundary already
+    # excludes camelCase mid-word capitals - by requiring an all-alphabetic
     # token of length > 1 whose first character is uppercase.
     for token in re.findall(r"\b\w+\b", cleaned):
         if len(token) > 1 and token[0].isupper() and token.isalpha():

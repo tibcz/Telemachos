@@ -3,7 +3,7 @@
 markitdown (MIT, Microsoft) converts Office/EPUB documents to Markdown, which is
 more token-efficient and model-legible than a raw text dump. It is **optional**:
 install with `pip install -r requirements-optional.txt`. When absent, callers
-degrade gracefully (chat shows a hint; the RAG indexer skips the file) — the MIT
+degrade gracefully (chat shows a hint; the RAG indexer skips the file) - the MIT
 core never hard-depends on it. Mirrors the optional-dependency pattern in
 `src/pdf_runtime.py`.
 """
@@ -41,13 +41,13 @@ def load_markitdown():
 
 
 def _extract_docx_native(path: str) -> str | None:
-    """Pure-Python .docx text extractor — no external deps.
+    """Pure-Python .docx text extractor - no external deps.
 
     A .docx file is just a zip of XML. The body prose lives in <w:t> runs
     inside <w:p> paragraphs. Iterating with ElementTree (rather than
     re.findall) keeps paragraph breaks intact and lets the XML parser handle
     namespaces + entity unescaping. Loses tables, footnotes, images and
-    list bullets — keeps ~95% of "summarize this doc" content, which is the
+    list bullets - keeps ~95% of "summarize this doc" content, which is the
     case people hit when markitdown isn't installed.
     """
     import zipfile
@@ -76,7 +76,7 @@ def convert_to_markdown(path: str) -> str | None:
     """Convert a document to Markdown text via markitdown.
 
     Returns the extracted Markdown, or ``None`` if markitdown is unavailable or
-    the conversion fails — callers degrade gracefully rather than erroring.
+    the conversion fails - callers degrade gracefully rather than erroring.
 
     Fallback: when markitdown isn't installed and the file is a .docx, run
     the bundled pure-Python extractor so the most common case (Word docs)
@@ -89,7 +89,7 @@ def convert_to_markdown(path: str) -> str | None:
             text = _extract_docx_native(path)
             if text:
                 logger.info(
-                    "markitdown not installed — used native .docx extractor for %s",
+                    "markitdown not installed - used native .docx extractor for %s",
                     path,
                 )
                 return text

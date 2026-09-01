@@ -16,7 +16,7 @@ class MemoryStoreUnreadable(RuntimeError):
 
     "The contents are unknown" is categorically different from "there are no
     memories". A read-modify-write caller that conflates the two appends to an
-    empty view and then persists it, destroying the whole store — the writes
+    empty view and then persists it, destroying the whole store - the writes
     are atomic, so the loss is durable. Raised by
     :meth:`MemoryManager.load_all_for_update` so those callers fail closed.
     """
@@ -74,7 +74,7 @@ class MemoryManager:
                     # Look for bullet points or numbered lists that might contain memories
                     if re.match(r'^[-*•]|\d+\.', line):
                         # Extract the text after the bullet/number. Group both
-                        # markers so the capture applies to either — the previous
+                        # markers so the capture applies to either - the previous
                         # `^[-*•]|\d+\.\s*(.*)` put the group on the numbered branch
                         # only, so a bullet line matched with group(1)=None and
                         # crashed on .strip().
@@ -169,7 +169,7 @@ class MemoryManager:
         Lenient by design: this feeds display, search, and context-injection
         paths, so an unreadable store degrades to an empty list rather than
         breaking chat. Never build a value from this that you intend to save
-        back — use :meth:`load_all_for_update` for that.
+        back - use :meth:`load_all_for_update` for that.
         """
         try:
             return self._read_entries()

@@ -1,5 +1,5 @@
 /**
- * Editor keyboard shortcuts — bound to `document` so shortcuts work
+ * Editor keyboard shortcuts - bound to `document` so shortcuts work
  * without first clicking into the canvas. Gated by `state.editorOpen`
  * so they don't leak into chat input when the editor is closed.
  *
@@ -68,7 +68,7 @@ export function wireKeyboardShortcuts(deps) {
   document.addEventListener('keydown', (e) => {
     if (!state.editorOpen) return;
     // `?` toggles the cheatsheet. Don't fire while typing in a text
-    // field — the user might be typing a prompt with a `?`.
+    // field - the user might be typing a prompt with a `?`.
     if (e.key === '?' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
       e.preventDefault();
       toggleShortcuts();
@@ -82,7 +82,7 @@ export function wireKeyboardShortcuts(deps) {
     if (e.key === 'Escape') return;
     // Skip the Ctrl+Alt editor chords for an AltGr keystroke (see platform.js);
     // only the chord block is skipped, so the layout-character handlers below
-    // still act — AltGr+5 / AltGr+8 stay as the [ ] brush-size shortcut on
+    // still act - AltGr+5 / AltGr+8 stay as the [ ] brush-size shortcut on
     // AZERTY / QWERTZ.
     if ((e.ctrlKey || e.metaKey) && !isAltGrEvent(e)) {
       if (e.key === 'z') { e.preventDefault(); if (e.shiftKey) redo(); else undo(); }
@@ -104,14 +104,14 @@ export function wireKeyboardShortcuts(deps) {
           composite();
         }
       }
-      // Save shortcuts — match the hints shown in the Save dropdown.
+      // Save shortcuts - match the hints shown in the Save dropdown.
       if ((e.key === 's' || e.key === 'S') && !e.altKey) {
         e.preventDefault();
         document.getElementById(e.shiftKey ? 'ge-export-gallery' : 'ge-save')?.click();
       }
       if (e.shiftKey && e.key === 'T') { e.preventDefault(); resizeCustomPrompt(); }
       if (e.altKey && e.key === 't') { e.preventDefault(); startTransform(); }
-      // Ctrl+Alt+I — invert current selection. Uses e.code so
+      // Ctrl+Alt+I - invert current selection. Uses e.code so
       // Alt-modified key values (e.g. `ˆ` on Mac with Option+I)
       // don't break the match.
       if (e.altKey && e.code === 'KeyI') {
@@ -120,7 +120,7 @@ export function wireKeyboardShortcuts(deps) {
           e.stopPropagation();
         }
       }
-      // Ctrl+Alt+J — new empty layer.
+      // Ctrl+Alt+J - new empty layer.
       if (e.altKey && e.code === 'KeyJ') {
         e.preventDefault();
         e.stopPropagation();
@@ -129,7 +129,7 @@ export function wireKeyboardShortcuts(deps) {
       // Wand selection: Delete = erase pixels. Ctrl+X = cut to
       // clipboard + new layer + erase. Ctrl+C = copy.
       // (Legacy `&& !_wandActive` clause referenced an undeclared
-      // variable — removed; the wand is selection-only and has no
+      // variable - removed; the wand is selection-only and has no
       // "active drag" state.)
       if (state.wandMask) {
         if (e.key === 'Delete' || e.key === 'Backspace') {
@@ -239,7 +239,7 @@ export function wireKeyboardShortcuts(deps) {
         state.lassoActive = false;
         composite();
         drawLassoOverlay();
-        uiModule.showToast('All selected — Ctrl+C to copy, Del to delete');
+        uiModule.showToast('All selected - Ctrl+C to copy, Del to delete');
       }
       // Ctrl+V handled by the paste event listener.
       if (e.key === 'v') { /* no-op here */ }
@@ -252,7 +252,7 @@ export function wireKeyboardShortcuts(deps) {
       const toolBtn = toolbar.querySelector(`[data-tool="${toolId}"]`);
       if (toolBtn) toolBtn.click();
     }
-    // Bracket keys for brush size — ±10% multiplier mirrors the
+    // Bracket keys for brush size - ±10% multiplier mirrors the
     // exponential slider curve so each press feels the same at any
     // size.
     if (e.key === '[' || e.key === ']') {

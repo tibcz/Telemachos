@@ -39,7 +39,7 @@ def test_truncate_keep_count_exceeds_total_does_not_inflate_count():
     for i in range(3):
         sm.add_message(sid, ChatMessage("user", f"msg{i}"))
 
-    # AI default keep_count is 10 — larger than the 3 real messages.
+    # AI default keep_count is 10 - larger than the 3 real messages.
     assert sm.truncate_messages(sid, 10) is True
 
     db = database.SessionLocal()

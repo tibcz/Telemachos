@@ -2,7 +2,7 @@
  * Build the editor's top bar (undo/redo/history, zoom group, Image
  * menu, Filter menu, Selection-edge menu, Shortcuts, Import, Save).
  *
- * Pure DOM — no module state, no event listeners. All wiring is done
+ * Pure DOM - no module state, no event listeners. All wiring is done
  * by the caller via `document.getElementById(...)` against the IDs
  * baked into the markup.
  *
@@ -13,7 +13,7 @@ export function buildTopbar() {
   topBar.className = 'ge-topbar';
   topBar.innerHTML = `
     <div class="ge-topbar-left">
-      <span class="ge-alpha-badge" title="This editor is in active development — expect rough edges">ALPHA</span>
+      <span class="ge-alpha-badge" title="This editor is in active development - expect rough edges">ALPHA</span>
       <button class="ge-btn ge-btn-sm ge-stacked-btn" id="ge-undo" title="Undo">
         <span class="ge-stacked-glyph">↩</span>
         <span class="ge-stacked-label">UNDO</span>
@@ -22,7 +22,7 @@ export function buildTopbar() {
         <span class="ge-stacked-glyph">↪</span>
         <span class="ge-stacked-label">REDO</span>
       </button>
-      <button class="ge-btn ge-btn-sm ge-stacked-btn" id="ge-history-btn" title="History — click an entry to jump to that state" aria-label="History">
+      <button class="ge-btn ge-btn-sm ge-stacked-btn" id="ge-history-btn" title="History - click an entry to jump to that state" aria-label="History">
         <span class="ge-stacked-glyph"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/><polyline points="12 7 12 12 16 14"/></svg></span>
         <span class="ge-stacked-label">HISTORY</span>
       </button>
@@ -115,7 +115,7 @@ export function buildTopbar() {
           </button>
           <div class="dropdown-section-divider"></div>
           <div class="dropdown-section-label">Project</div>
-          <button class="dropdown-item-compact" id="ge-save-project" title="Save layered project (.json) — keeps every layer editable for later">
+          <button class="dropdown-item-compact" id="ge-save-project" title="Save layered project (.json) - keeps every layer editable for later">
             <span class="dropdown-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="13" height="13" rx="1"/><rect x="8" y="8" width="13" height="13" rx="1"/></svg></span>
             <span>Save project (.json)</span>
           </button>

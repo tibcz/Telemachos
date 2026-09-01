@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""telemachos-docs — shell wrapper for the living-document store.
+"""telemachos-docs - shell wrapper for the living-document store.
 
 Documents are the AI-editable text/markdown/code files the assistant
 creates in-place (think: a scratchpad it can revise). Each document

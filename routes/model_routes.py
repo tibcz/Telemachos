@@ -382,7 +382,7 @@ _PROVIDER_CURATED = {
 
 # Map hostnames → curated-list keys for providers whose _detect_provider()
 # returns a generic value (e.g. "openai") but deserve their own curated list.
-# "openrouter" is a sentinel meaning "no curation — show all models as curated".
+# "openrouter" is a sentinel meaning "no curation - show all models as curated".
 # Entries are matched by hostname equality or subdomain suffix (via _host_match),
 # so e.g. "deepseek.com" covers api.deepseek.com without matching the substring
 # inside an unrelated URL.
@@ -1539,7 +1539,7 @@ def setup_model_routes(model_discovery):
     def _fetch_models(owner: str = "", is_admin: bool = False):
         """Return model list from cached data (instant). Background refresh keeps caches fresh.
 
-        SECURITY: filters endpoints by `owner` — without this the picker
+        SECURITY: filters endpoints by `owner` - without this the picker
         leaked every admin-added endpoint (and the model list behind each
         one) to every authenticated user. NULL-owner rows are treated as
         legacy/shared so existing configs still appear after migration.
@@ -1575,7 +1575,7 @@ def setup_model_routes(model_discovery):
             if model_ids:
                 curated_key = _match_provider_curated(base, None)
                 curated, extra = _curate_models(model_ids, curated_key)
-                # Pinned models are admin-selected — they always belong in the
+                # Pinned models are admin-selected - they always belong in the
                 # primary curated list, not buried in extras.
                 for m in pinned:
                     if m not in curated:
@@ -1617,7 +1617,7 @@ def setup_model_routes(model_discovery):
 
     @router.get("/models")
     def api_models(request: Request, refresh: bool = False, background: bool = False):
-        """Get available models — per-user (caller sees only their endpoints +
+        """Get available models - per-user (caller sees only their endpoints +
         legacy/shared null-owner rows). Cached per-user for 30s."""
         # Require auth; "" is the unconfigured single-user mode, treated as
         # "see everything" by _fetch_models.
@@ -1630,7 +1630,7 @@ def setup_model_routes(model_discovery):
                     raise HTTPException(403, "API token has no owner")
             owner = effective_user(request) or ""
 
-            # Reject anonymous in configured deployments — no leaking the model
+            # Reject anonymous in configured deployments - no leaking the model
             # list to unauthenticated callers.
             auth_mgr = getattr(request.app.state, "auth_manager", None)
             if not owner and not _auth_disabled() and auth_mgr is not None and getattr(auth_mgr, "is_configured", False):
@@ -1666,7 +1666,7 @@ def setup_model_routes(model_discovery):
         return result
 
     # Brief cache for local-probe results so picker-open doesn't hammer
-    # endpoint health checks every time. 8s TTL — long enough to amortize cost,
+    # endpoint health checks every time. 8s TTL - long enough to amortize cost,
     # short enough that a freshly-killed local server shows as offline
     # within ~8s of the user noticing.
     _LOCAL_PROBE_TTL = 8.0
@@ -2174,7 +2174,7 @@ def setup_model_routes(model_discovery):
             )
             db.add(ep)
             db.commit()
-            # Auto-set as default chat endpoint when none is usable yet — either
+            # Auto-set as default chat endpoint when none is usable yet - either
             # nothing is configured, or the configured default points at an
             # endpoint that is now missing/disabled (#3586). Seed the first CHAT
             # model (not raw model_ids[0]) so we don't pin the global default to
@@ -2207,7 +2207,7 @@ def setup_model_routes(model_discovery):
         finally:
             db.close()
 
-        # Return immediately — probing happens via the separate /probe SSE endpoint
+        # Return immediately - probing happens via the separate /probe SSE endpoint
         return {
             "id": ep_id,
             "name": name.strip(),
@@ -2414,7 +2414,7 @@ def setup_model_routes(model_discovery):
         # SECURITY: resolve the default endpoint + model from the CALLER's
         # per-user prefs ONLY. We deliberately do NOT fall back to the
         # global `default_model` / `default_endpoint_id` in settings.json
-        # for authenticated users — that's what was leaking the previous
+        # for authenticated users - that's what was leaking the previous
         # admin's pick into every new account's composer. If the user has
         # no per-user default yet, we resolve via the owner-scoped endpoint
         # lookup below (last-resort: first enabled endpoint THIS user owns).
@@ -2427,7 +2427,7 @@ def setup_model_routes(model_discovery):
         # Admins resolve via the global defaults (they own them, and the
         # scoped resolution was making the picker disappear for them).
         # Regular users get per-user prefs with NO global fallback for the
-        # model/endpoint values — that's what was leaking the previous
+        # model/endpoint values - that's what was leaking the previous
         # admin's pick into every new account's composer.
         settings = _load_settings()
         _is_admin = False
@@ -2460,7 +2460,7 @@ def setup_model_routes(model_discovery):
                 ep_q = db.query(ModelEndpoint).filter(
                     ModelEndpoint.id == ep_id, ModelEndpoint.is_enabled == True
                 )
-                # Honor the same owner-scope rule as /api/models — a per-user
+                # Honor the same owner-scope rule as /api/models - a per-user
                 # default that points at an endpoint owned by a different user
                 # mustn't silently resolve. Admins are exempt (they manage the
                 # global pool).

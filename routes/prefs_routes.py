@@ -1,4 +1,4 @@
-"""User preferences API — per-user key/value store backed by a JSON file."""
+"""User preferences API - per-user key/value store backed by a JSON file."""
 import json
 from typing import Optional
 from fastapi import APIRouter, Request
@@ -33,7 +33,7 @@ def _load_for_user(user: Optional[str] = None) -> dict:
     users = all_prefs.get("_users")
     if isinstance(users, dict):
         if user is None:
-            # Auth disabled — return first user's prefs for backward compat
+            # Auth disabled - return first user's prefs for backward compat
             prefs = dict(next(iter(users.values()), {}))
             # Foreground fallback consent is never borrowed from a named
             # owner. Auth-disabled operation has a separate flat/root opt-in

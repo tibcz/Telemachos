@@ -38,15 +38,15 @@
 const FENCE_RE = /^ {0,3}(`{3,}|~{3,})(.*)$/;
 
 /**
- * Scan `text` starting at `fromOffset` — which MUST be at top level (callers only
- * ever advance to a finalized boundary, never into a fence) — and collect the
+ * Scan `text` starting at `fromOffset` - which MUST be at top level (callers only
+ * ever advance to a finalized boundary, never into a fence) - and collect the
  * candidate cut points.
  *
  * @returns {{ boundaries: Array<{offset:number, afterClosedFence:boolean}>, inFence:boolean }}
  *   - A blank-line run at top level yields a boundary at the start of the next
  *     non-blank line (`afterClosedFence: false`).
  *   - A fence close yields a boundary just past the closing fence line
- *     (`afterClosedFence: true`) — such a cut is unconditionally safe, since
+ *     (`afterClosedFence: true`) - such a cut is unconditionally safe, since
  *     nothing can ever merge into a completed code block.
  */
 function findBoundaries(text, fromOffset) {
@@ -111,7 +111,7 @@ function findBoundaries(text, fromOffset) {
  * with no hand-coded grammar rules.
  *
  * Renderer non-determinism (e.g. mermaid ids seeded with Date.now()) can only make
- * this return a false negative, never a false positive — so the bias is always
+ * this return a false negative, never a false positive - so the bias is always
  * toward under-finalizing, which is the safe direction.
  */
 function cutIsRenderSafe(before, after, render) {
@@ -140,7 +140,7 @@ export function splitFinalized(text, render, committedLen = 0) {
     const { offset, afterClosedFence } = boundaries[k];
 
     if (afterClosedFence) {
-      // A completed code block — always safe to freeze through here.
+      // A completed code block - always safe to freeze through here.
       best = offset;
     } else {
       // A prose/list/table boundary. We need a following block to compare
@@ -179,7 +179,7 @@ export function describeOpenFence(text) {
     const line = text.slice(i, nl === -1 ? text.length : nl);
     const close = line.match(/^ {0,3}(`{3,}|~{3,})\s*$/);
     if (close && close[1][0] === marker[0] && close[1].length >= marker.length) {
-      return null; // the fence closes — let the normal finalize path handle it
+      return null; // the fence closes - let the normal finalize path handle it
     }
     if (nl === -1) break;
     i = nl + 1;

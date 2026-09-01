@@ -29,7 +29,7 @@ class TestCompactionSummaryFailure:
     On failure it must degrade gracefully and hand back the original messages
     list unchanged, so the next turn (or trim_for_context) can handle length.
     Before the fix the except branch returned `system_msgs + recent`, silently
-    discarding the older half while reporting was_compacted=False — the caller
+    discarding the older half while reporting was_compacted=False - the caller
     then treated a materially shorter list as a no-op."""
 
     def _run(self, messages, *, context_length=100):
@@ -84,7 +84,7 @@ class TestCompactionSummaryFailure:
 
         # Nothing was actually compacted.
         assert was_compacted is False
-        # The full original list comes back unchanged — including the older half.
+        # The full original list comes back unchanged - including the older half.
         assert out == messages
 
     def test_older_messages_not_dropped_on_failure(self):

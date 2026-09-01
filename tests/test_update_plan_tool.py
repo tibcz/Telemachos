@@ -1,4 +1,4 @@
-"""`update_plan` — the agent writes back to the active plan (tick done / revise).
+"""`update_plan` - the agent writes back to the active plan (tick done / revise).
 
 Pure UI-control marker: `execute_tool_block` returns a `plan_update` payload the
 agent loop turns into a `plan_update` SSE event; the frontend replaces the stored
@@ -45,5 +45,5 @@ def test_registered_everywhere():
     assert "update_plan" in BUILTIN_TOOL_DESCRIPTIONS
     from src.tool_schemas import FUNCTION_TOOL_SCHEMAS
     assert "update_plan" in {s["function"]["name"] for s in FUNCTION_TOOL_SCHEMAS}
-    # Not admin/public-gated — any user can drive their own plan.
+    # Not admin/public-gated - any user can drive their own plan.
     assert is_public_blocked_tool("update_plan") is False

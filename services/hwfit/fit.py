@@ -20,7 +20,7 @@ GPU_BANDWIDTH = {
     "mi300x": 5300, "mi300": 5300, "mi250x": 3277, "mi250": 3277, "mi210": 1638, "mi100": 1229,
     "9070 xt": 624, "9070": 488, "9060 xt": 322, "9060": 322,
     # NVIDIA GB10 Grace-Blackwell superchip (DGX Spark). Unified LPDDR5X memory,
-    # not Apple Silicon, so it lives in the generic GPU table — the Apple-only
+    # not Apple Silicon, so it lives in the generic GPU table - the Apple-only
     # lookup never matches it (its name carries no "apple").
     "gb10": 273,
 }
@@ -48,7 +48,7 @@ _APPLE_FIXED_KEYS_SORTED = sorted(APPLE_BANDWIDTH_FIXED.keys(), key=len, reverse
 _APPLE_VARIANT_KEYS_SORTED = sorted(APPLE_BANDWIDTH_BY_CORES.keys(), key=len, reverse=True)
 
 # metal: backstop for Apple Silicon chips not in the explicit tables above
-# (e.g. a future M6) — use a conservative generic estimate when unknown.
+# (e.g. a future M6) - use a conservative generic estimate when unknown.
 FALLBACK_K = {"cuda": 220, "rocm": 180, "metal": 150, "cpu_x86": 70, "cpu_arm": 90}
 
 USE_CASE_WEIGHTS = {
@@ -188,7 +188,7 @@ def _estimate_speed(model, quant, run_mode, system, offload_frac=0.0):
     (CPU) because they don't fit VRAM. Generation reads every active weight per
     token, so when part lives in CPU RAM the per-token time is dominated by the
     slow path. We model effective bandwidth as a blend of GPU VRAM bandwidth and
-    system-RAM bandwidth weighted by what's where — far more accurate than a flat
+    system-RAM bandwidth weighted by what's where - far more accurate than a flat
     "halve it" for partial offload, which under/over-shoots depending on amount.
     Calibrated against a measured RX 9060 XT: DeepSeek-Coder-V2-Lite Q4_K_M with
     light offload → ~59 t/s est vs 59.8 measured.
@@ -441,7 +441,7 @@ def analyze_model(model, system, target_quant=None, scoring_use_case=None, targe
     single_gpu_vram = gpu_vram / gpu_count if gpu_count > 1 else gpu_vram
     available_ram = system.get("available_ram_gb", 0)
     # When the user has explicitly picked a GPU config (not RAM mode), they want
-    # to see what runs ON the GPU(s) — not big models that only "fit" by spilling
+    # to see what runs ON the GPU(s) - not big models that only "fit" by spilling
     # most layers to system RAM. Zeroing the offload budget makes _try_quant_at
     # take only its GPU branches (fit on VRAM, shrinking context if needed),
     # otherwise return None. Fixes "96 GB GPU still lists a 175 GB model".
@@ -458,13 +458,13 @@ def analyze_model(model, system, target_quant=None, scoring_use_case=None, targe
     native_quant = _native_quant(model)
     preq = is_prequantized(model)
 
-    # GGUF models can't be sharded across GPUs — use single GPU VRAM
+    # GGUF models can't be sharded across GPUs - use single GPU VRAM
     is_gguf = bool(model.get("gguf_sources"))
     quant_upper = (native_quant or "").upper()
     is_gguf_quant = any(quant_upper.startswith(p) for p in ("Q2", "Q3", "Q4", "Q5", "Q6", "Q8", "IQ", "F16", "F32"))
     # Single-GPU VRAM only applies to GGUF/dense builds (llama.cpp can't shard
     # across GPUs). Prequantized formats (AWQ/GPTQ/FP8) are served sharded by
-    # vLLM across all GPUs, so they get the FULL multi-GPU VRAM — even when the
+    # vLLM across all GPUs, so they get the FULL multi-GPU VRAM - even when the
     # model also lists a GGUF alternate download (gguf_sources).
     if (is_gguf or is_gguf_quant) and not preq:
         effective_vram = single_gpu_vram
@@ -498,16 +498,16 @@ def analyze_model(model, system, target_quant=None, scoring_use_case=None, targe
         # Multi-GPU box: vLLM/SGLang can't serve GGUF Q* quants (those are
         # llama.cpp-only). Default non-prequantized models to BF16 so the row
         # is meaningful on a multi-GPU rig. If BF16 doesn't fit, the model
-        # surfaces as too_tight — better than showing a Q4 row the user
+        # surfaces as too_tight - better than showing a Q4 row the user
         # can't actually serve with vLLM on >1 GPU.
         quant_to_try = "BF16"
     else:
-        # Default: Q4_K_M (user's stated preference) — kept for single-GPU
+        # Default: Q4_K_M (user's stated preference) - kept for single-GPU
         # and RAM modes where llama.cpp serving is the natural path.
         quant_to_try = "Q4_K_M"
 
     # Multi-GPU filter: skip the row if the resolved quant is a GGUF tier
-    # (Q*/IQ-prefixed) — vLLM/SGLang can't serve those, so showing them on
+    # (Q*/IQ-prefixed) - vLLM/SGLang can't serve those, so showing them on
     # a 2+ GPU rig just clutters the list with unservable candidates.
     if gpu_count >= 2 and quant_to_try and not target_quant and quant_to_try.upper().startswith(("Q2", "Q3", "Q4", "Q5", "Q6", "Q8", "IQ")):
         return None
@@ -517,7 +517,7 @@ def analyze_model(model, system, target_quant=None, scoring_use_case=None, targe
     if result is None:
         # Model doesn't fit on the user's current hardware. Surface it
         # anyway with a "too_tight" badge instead of silently dropping
-        # it — without this, editing the hardware config to try LARGER
+        # it - without this, editing the hardware config to try LARGER
         # tiers never revealed the bigger models, because they were
         # filtered out before the user could see what would fit. The
         # client already knows how to render too_tight (red row).
@@ -639,7 +639,7 @@ def _version_key(name):
     for m in _re.finditer(r"[A-Za-z](\d+(?:\.\d+)?)(?![A-Za-z])", name):
         val = m.group(1)
         # Skip param-count tokens (e.g. "235B" gives "235" but the next
-        # char would be "B" — already excluded by the negative lookahead).
+        # char would be "B" - already excluded by the negative lookahead).
         try:
             f = float(val)
         except ValueError:
@@ -653,7 +653,7 @@ def _version_key(name):
 
 
 SORT_KEYS = {
-    # Score sort with version-aware tiebreaker — when two rows tie on
+    # Score sort with version-aware tiebreaker - when two rows tie on
     # composite score (a common case for the SAME base model in different
     # versions, e.g. MiniMax-M2.5 vs M2.7 both at the same FP8 budget),
     # prefer the newer version. Without this, ties resolved to whatever
@@ -710,7 +710,7 @@ def rank_models(system, use_case=None, limit=50, search=None, sort="score", quan
 
     fit_only: when True, drop rows whose fit_level is "too_tight" (model doesn't
     actually fit on the chosen budget). When False (default), every model is
-    shown — sorting by Param means highest-param PERIOD, even ones that won't
+    shown - sorting by Param means highest-param PERIOD, even ones that won't
     run, so the user can see the truth.
     """
     models = get_models()
@@ -767,7 +767,7 @@ def rank_models(system, use_case=None, limit=50, search=None, sort="score", quan
 
     # Consumer AMD Radeon (RDNA, gfx10/11/12): the practical local serving path
     # is GGUF via llama.cpp. vLLM/SGLang on ROCm are validated for datacenter
-    # Instinct (CDNA, gfx9xx) but are unreliable on consumer RDNA — AWQ kernels
+    # Instinct (CDNA, gfx9xx) but are unreliable on consumer RDNA - AWQ kernels
     # are largely unsupported there and FP8 needs out-of-tree patches. So treat
     # consumer RDNA like Apple Silicon (GGUF-only) and leave CDNA untouched.
     # Unknown family (no rocminfo) is left untouched to avoid hiding models from
@@ -795,7 +795,7 @@ def rank_models(system, use_case=None, limit=50, search=None, sort="score", quan
         # On Apple Silicon the only serving engines are llama.cpp and Ollama,
         # both GGUF-only (vLLM/SGLang are CUDA/ROCm and don't run on macOS). So
         # a model is Metal-servable ONLY if it ships a real GGUF. Drop everything
-        # else — raw safetensors repos (which the catalog still tags with a
+        # else - raw safetensors repos (which the catalog still tags with a
         # default GGUF quant) and vLLM-only AWQ/GPTQ/FP8 builds alike. Without
         # this the Cookbook recommends models the Mac can't run; on CUDA these
         # stay visible because vLLM serves safetensors directly.
@@ -863,7 +863,7 @@ def rank_models(system, use_case=None, limit=50, search=None, sort="score", quan
     # see the truth instead of a quietly-truncated view. Score sort is unchanged
     # (it's the default ranking and naturally pushes non-fits to the bottom).
     if fit_only:
-        # Hide rows that definitely don't fit (the "too_tight" badge) — user
+        # Hide rows that definitely don't fit (the "too_tight" badge) - user
         # explicitly asked for a Fit-only view.
         results = [r for r in results if r.get("fit_level") != "too_tight"]
     sort_fn = SORT_KEYS.get(sort, SORT_KEYS["score"])

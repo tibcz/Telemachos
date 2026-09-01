@@ -2,7 +2,7 @@
 
 DELETE /api/personal/remove_directory took a raw ``directory`` query parameter
 and passed it straight to ``personal_docs_manager.remove_directory`` /
-``rag.remove_directory`` with no containment check — unlike add_directory_to_rag,
+``rag.remove_directory`` with no containment check - unlike add_directory_to_rag,
 which resolves the path via ``_resolve_allowed_personal_dir`` first. This pins
 the parity fix.
 
@@ -39,5 +39,5 @@ def test_confinement_runs_before_removal_sinks():
     for sink in ("personal_docs_manager.remove_directory(", "rag.remove_directory("):
         assert sink in body, f"expected sink {sink} in remove_directory_from_rag"
         assert body.index(sink) > resolve_idx, (
-            f"{sink} runs before _resolve_allowed_personal_dir — path not confined"
+            f"{sink} runs before _resolve_allowed_personal_dir - path not confined"
         )

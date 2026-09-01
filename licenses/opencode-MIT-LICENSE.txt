@@ -1,4 +1,4 @@
-opencode — https://github.com/anomalyco/opencode
+opencode - https://github.com/anomalyco/opencode
 (originally https://github.com/opencode-ai/opencode, archived Sep 2025)
 Adapted for: agent-loop / tool-execution patterns and UI concepts
 

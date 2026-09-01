@@ -1,4 +1,4 @@
-"""Issue #1160 — a closed document must not stay 'active' and leak into new chats.
+"""Issue #1160 - a closed document must not stay 'active' and leak into new chats.
 
 Closing a document tab detaches it (session_id -> NULL) or deletes it, but the
 in-memory active-document pointer was never cleared, so the last-resort doc

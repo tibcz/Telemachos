@@ -1,4 +1,4 @@
-"""Regression guard for issue #1428 — the "x" on a chat output did nothing when
+"""Regression guard for issue #1428 - the "x" on a chat output did nothing when
 no model/API was selected.
 
 deleteMessage() bailed at `if (!sessionId) return;`. An output shown before a

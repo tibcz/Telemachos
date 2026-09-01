@@ -1,7 +1,7 @@
-// tourHints.js — secret continuation of /tour. The first time the user opens
+// tourHints.js - secret continuation of /tour. The first time the user opens
 // a tool modal (after the welcome experience), surface a single "pro tip"
 // hint pointing out that modals can be snapped to the screen edge or
-// fullscreened by dragging the title bar. Shown once globally — once the
+// fullscreened by dragging the title bar. Shown once globally - once the
 // user has dismissed it (or it auto-hides), it never returns.
 
 const HINT_SEEN_KEY = 'telemachos-hint-drag-to-snap-seen';
@@ -11,7 +11,7 @@ const HINT_SEEN_KEY = 'telemachos-hint-drag-to-snap-seen';
 // reposition or fullscreen the pane (email, calendar, cookbook, gallery,
 // library, brain memories, tasks, theme, compare). Transient modals
 // like settings, prompts, rename dialogs, custom-preset picker, etc.
-// are excluded — opening those is task-focused and the snap tip would
+// are excluded - opening those is task-focused and the snap tip would
 // be noise.
 const SHOW_MODALS = new Set([
   'email-lib-modal',
@@ -57,7 +57,7 @@ function _onModalOpened(modal) {
   // Don't interrupt the welcome / tour itself
   if (document.body.classList.contains('tour-active')) return;
   if (document.getElementById('tour-tooltip')) return;
-  // Mobile: skip — snapping isn't a desktop-only feature there
+  // Mobile: skip - snapping isn't a desktop-only feature there
   if (window.innerWidth <= 768) return;
 
   _shown = true;

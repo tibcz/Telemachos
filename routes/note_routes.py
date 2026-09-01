@@ -1,4 +1,4 @@
-"""Backward-compat shim — canonical location is routes/note/note_routes.py.
+"""Backward-compat shim - canonical location is routes/note/note_routes.py.
 
 This module is replaced in ``sys.modules`` by the canonical module object so
 that ``import routes.note_routes``, ``from routes.note_routes import X``,

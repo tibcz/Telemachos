@@ -1,7 +1,7 @@
 /**
  * Build the editor's left-side tool palette.
  *
- * Pure DOM construction — no module state. The big tool-switch logic
+ * Pure DOM construction - no module state. The big tool-switch logic
  * (cursor swap, control-section toggle, transform entry, inpaint
  * mask plumbing, etc.) stays in the caller and arrives here as the
  * `onSelectTool` callback.
@@ -47,12 +47,12 @@ export function buildToolbar({ currentTool, onSelectTool, onClearSelection }) {
     btn.className = 'ge-tool-btn' + (t.id === currentTool ? ' active' : '');
     btn.dataset.tool = t.id;
     btn.title = t.label + (t.key ? ` (${t.key})` : '');
-    // Heavy 4-point AI star marker for AI-backed tools — sits just to
+    // Heavy 4-point AI star marker for AI-backed tools - sits just to
     // the left of the icon so the user can spot AI vs local tools at a
     // glance now that the "AI Tools" separator is gone.
     const aiStar = t.ai ? '<span class="ge-tool-ai" title="AI">✦</span>' : '';
     btn.classList.toggle('is-ai', !!t.ai);
-    // Selection-clear badge — rendered only for tools that can hold a
+    // Selection-clear badge - rendered only for tools that can hold a
     // selection (lasso, wand). Inpaint masks are first-class sub-layers
     // now so they get their own delete-X in the layer panel.
     const clearTitle = t.id === 'sam' ? 'Open SAM prompt' : 'Clear selection';

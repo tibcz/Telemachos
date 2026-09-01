@@ -1,4 +1,4 @@
-"""History routes — session history, truncation, fork, conversation topics."""
+"""History routes - session history, truncation, fork, conversation topics."""
 
 import json
 import uuid
@@ -85,7 +85,7 @@ def _merge_continue_rows_to_delete(db_messages, db1, db2):
 
     Always the second assistant message (db2), plus ONLY the single
     intervening "continue" user message (the one carrying "previous response
-    was interrupted") — matching the in-memory merge. The previous code
+    was interrupted") - matching the in-memory merge. The previous code
     deleted the whole index range between the two assistant rows, destroying
     any tool/system/user messages in between and desyncing the DB from the
     in-memory history.
@@ -214,9 +214,9 @@ def setup_history_routes(session_manager, upload_handler=None) -> APIRouter:
                     entry["metadata"] = msg["metadata"]
                 history_dict.append(entry)
 
-        # Fallback: load from DB if in-memory renders empty. Display only —
+        # Fallback: load from DB if in-memory renders empty. Display only -
         # get_session above is the hydration seam, so nothing here writes back
-        # into session.history — rebuilding it from raw rows would overwrite
+        # into session.history - rebuilding it from raw rows would overwrite
         # parsed multimodal content and the _db_id edit/delete keys it just set.
         if not history_dict:
             db = SessionLocal()
@@ -598,7 +598,7 @@ def setup_history_routes(session_manager, upload_handler=None) -> APIRouter:
             keep_count = body.get("keep_count", 0)
 
             # Get the source session. keep_count indexes into source.history,
-            # so this must go through get_session — reading the cache directly
+            # so this must go through get_session - reading the cache directly
             # forks an empty transcript out of a metadata-only session after a
             # restart (display pagination no longer hydrates it).
             try:
@@ -768,13 +768,13 @@ def setup_history_routes(session_manager, upload_handler=None) -> APIRouter:
             # System message holds the full summary for AI context
             system_summary = ChatMessage(
                 role="system",
-                content=f"[Conversation summary — {len(older)} earlier messages were compacted]\n\n{summary}",
+                content=f"[Conversation summary - {len(older)} earlier messages were compacted]\n\n{summary}",
                 metadata={"compacted": True, "hidden": True},
             )
             # Visible assistant message just shows stats
             summary_msg = ChatMessage(
                 role="assistant",
-                content=f"**Conversation compacted** — {len(older)} messages summarized, {len(recent)} kept.",
+                content=f"**Conversation compacted** - {len(older)} messages summarized, {len(recent)} kept.",
                 metadata={"compacted": True, "messages_removed": len(older)},
             )
             new_history = [system_summary, summary_msg] + list(recent)

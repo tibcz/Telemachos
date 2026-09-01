@@ -425,14 +425,14 @@ def get_tldr(text: str, max_sentences: int = 3) -> str:
 
 def extract_quotes(text: str) -> List[str]:
     """Return quoted excerpts that are at least 15 characters long."""
-    # Backreference the opening quote so the closing quote must match it —
+    # Backreference the opening quote so the closing quote must match it -
     # otherwise `"text'` (open double, close single) is treated as a quote.
     return [m.group(2).strip() for m in re.finditer(r'(["\'])([^"\']{15,}?)\1', text)]
 
 
 def extract_statistics(text: str) -> List[str]:
     """Find numbers, percentages, dates and simple measurements."""
-    # Match a comma-grouped number (1,000,000) OR a plain digit run (50000) —
+    # Match a comma-grouped number (1,000,000) OR a plain digit run (50000) -
     # the old `\d{1,3}(?:,\d{3})*` matched only the first 3 digits of a
     # comma-less number, and the trailing `\b` dropped a closing `%`.
     pattern = re.compile(

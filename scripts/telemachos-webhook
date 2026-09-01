@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""telemachos-webhook — shell wrapper for scheduled-task webhook tokens.
+"""telemachos-webhook - shell wrapper for scheduled-task webhook tokens.
 
 Tasks in the scheduled-task system can carry a `webhook_token`. Any
 HTTP POST to `/api/tasks/<task-id>/webhook/<token>` fires the task. This CLI lists,

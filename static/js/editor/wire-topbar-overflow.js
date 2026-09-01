@@ -1,5 +1,5 @@
 /**
- * Topbar overflow handler — keeps lightweight labels updated and hides
+ * Topbar overflow handler - keeps lightweight labels updated and hides
  * only low-priority AI model controls when the editor window gets narrow.
  *
  * Plus the small canvas-size display label updater (since it sits in
@@ -16,7 +16,7 @@
 import { state } from './state.js';
 
 export function wireTopbarOverflow({ container }) {
-  // Canvas-size badge updater (kept simple — it lives in the topbar).
+  // Canvas-size badge updater (kept simple - it lives in the topbar).
   const sizeLabel = document.getElementById('ge-canvas-size');
   function updateSizeLabel() {
     if (sizeLabel) sizeLabel.textContent = `${state.imgWidth}×${state.imgHeight}`;
@@ -24,7 +24,7 @@ export function wireTopbarOverflow({ container }) {
   updateSizeLabel();
 
   const topbar = container.querySelector('.ge-topbar');
-  // The Gen control + its "Gen" label span — collapse as a group when
+  // The Gen control + its "Gen" label span - collapse as a group when
   // narrow. The Inpaint model selector moved into the side panel.
   const aiGroup = [
     container.querySelector('#ge-ai-model'),
@@ -35,7 +35,7 @@ export function wireTopbarOverflow({ container }) {
     if (!topbar) return;
     aiGroup.forEach(el => { el.style.display = ''; });
     if (topbar.scrollWidth > topbar.clientWidth) {
-      // Hide AI group first — bulky and least essential at narrow widths.
+      // Hide AI group first - bulky and least essential at narrow widths.
       aiGroup.forEach(el => { el.style.display = 'none'; });
     }
   }

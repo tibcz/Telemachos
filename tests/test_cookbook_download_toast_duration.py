@@ -1,4 +1,4 @@
-"""Regression guard for issue #1355 — the Cookbook *download* error toast used
+"""Regression guard for issue #1355 - the Cookbook *download* error toast used
 the default ~1.2s duration, so an actionable message like "tmux is required …"
 vanished before it could be read. The serve path already used multi-second
 durations; the download-failure toasts now match.

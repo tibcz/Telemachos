@@ -3,8 +3,8 @@
 # Two deliberate differences from the server-oriented requirements.txt:
 #
 #   1. `chromadb` (the full engine) replaces `chromadb-client` (the thin HTTP
-#      client). The app runs its vector store in-process — see
-#      src/chroma_client.py — because a desktop app cannot ask its user to
+#      client). The app runs its vector store in-process - see
+#      src/chroma_client.py - because a desktop app cannot ask its user to
 #      start a separate ChromaDB service first. The two packages share the
 #      `chromadb` import name and must never both be installed.
 #   2. The test-only packages (pytest, pytest-asyncio, httpx2) are dropped.
@@ -29,7 +29,7 @@ charset-normalizer
 numpy
 
 # Vector store + local embeddings for RAG, semantic memory, and tool
-# selection. Full engine, not the HTTP client — see the note above.
+# selection. Full engine, not the HTTP client - see the note above.
 chromadb
 fastembed
 

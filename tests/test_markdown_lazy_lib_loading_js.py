@@ -45,7 +45,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 
 // The vendored KaTeX build itself, not a stand-in. A fake renderer that echoes
-// its input cannot tell "a < b" from "a &lt; b" — real KaTeX reads the "&" as
+// its input cannot tell "a < b" from "a &lt; b" - real KaTeX reads the "&" as
 // an alignment marker and returns a .katex-error span, which is the whole
 // point of the entity tests below. renderToString needs no DOM, so a bare vm
 // context is enough and keeps the library off the harness globals until a test
@@ -284,7 +284,7 @@ def test_md_to_html_defers_math_when_katex_is_not_loaded_yet(node_available):
     html = out["html"]
     assert 'class="ody-math-pending" data-display="false"' in html
     assert 'class="ody-math-pending" data-display="true"' in html
-    # The raw source survives the escaping passes — `y_1` must not become <em>.
+    # The raw source survives the escaping passes - `y_1` must not become <em>.
     assert "x^2 + y_1" in html
     assert "<em>" not in html
     # Nothing is fetched during the synchronous render itself.
@@ -295,7 +295,7 @@ def test_deferred_math_schedules_a_katex_load(node_available):
     """Deferring is only safe if the follow-up actually fires.
 
     An earlier version scheduled this on requestAnimationFrame, which never runs
-    in a headless browser and is throttled to a stop in a background tab — math
+    in a headless browser and is throttled to a stop in a background tab - math
     then sat as plain source text until the tab was focused.
     """
     out = _run_node(
@@ -318,7 +318,7 @@ def test_entity_math_reaches_katex_as_characters_not_entities(node_available):
     has no entity syntax and treats the "&" as an alignment marker, so anything
     still spelled as an entity comes back as a red .katex-error instead of a
     formula. Both spellings have to be decoded to the character itself, in one
-    pass — decoding "&amp;" first and "&lt;" after would let the second pass eat
+    pass - decoding "&amp;" first and "&lt;" after would let the second pass eat
     what the first produced, which is the double-unescape CodeQL flags.
     """
     out = _run_node(
@@ -345,7 +345,7 @@ def test_deferred_entity_math_banks_the_decoded_source(node_available):
     """The placeholder has to hold the same source the inline path would use.
 
     renderMath() feeds the span's textContent straight to KaTeX, so an entity
-    left in the bank is a .katex-error that only appears on a cold page — the
+    left in the bank is a .katex-error that only appears on a cold page - the
     exact case the lazy load made common.
     """
     out = _run_node(
@@ -499,7 +499,7 @@ def test_vendored_assets_exist_and_index_html_has_no_cdn_reference():
     assert precached >= set(wanted), f"not precached: {sorted(set(wanted) - precached)}"
 
     # The shell must fetch no resource from a third party. Scoped to the tags
-    # that actually load something — an <a href> to an external page is fine,
+    # that actually load something - an <a href> to an external page is fine,
     # and the comment explaining the move can keep naming the CDN it left.
     index = (_REPO / "static/index.html").read_text(encoding="utf-8")
     remote_loads = re.findall(r"<(?:script|link)\b[^>]*\b(?:src|href)=\"https?://[^\"]+", index)

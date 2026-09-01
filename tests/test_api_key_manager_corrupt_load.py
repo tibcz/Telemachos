@@ -3,7 +3,7 @@
 load() is called during startup (app_initializer). It had no try/except around
 `json.load` and called `encrypted_keys.items()` directly, so a corrupt/truncated
 api_keys.json raised JSONDecodeError and a legacy list-shaped file raised
-AttributeError — both crashing app startup. It now returns {} instead.
+AttributeError - both crashing app startup. It now returns {} instead.
 """
 from src.api_key_manager import APIKeyManager
 

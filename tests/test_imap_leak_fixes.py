@@ -58,7 +58,7 @@ def test_fetch_sender_thread_context_logs_out_on_select_failure(monkeypatch):
 
 
 def test_fetch_sender_thread_context_logs_out_on_connect_failure(monkeypatch):
-    """If _imap_connect itself raises, conn is None — no logout, no crash."""
+    """If _imap_connect itself raises, conn is None - no logout, no crash."""
     import routes.email_helpers as helpers
 
     def _fail(*a, **kw):

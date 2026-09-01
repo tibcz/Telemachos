@@ -5,7 +5,7 @@ replacement so the legacy import path and the canonical ``routes.memory.*``
 path resolve to the *same* module object. This is required because
 ``test_memory_routes_session_owner.py`` and ``test_memory_owner_isolation.py``
 do ``import routes.memory_routes as mr`` followed by
-``monkeypatch.setattr(mr, "get_current_user", ...)`` — for those patches to
+``monkeypatch.setattr(mr, "get_current_user", ...)`` - for those patches to
 take effect at runtime, the legacy module object and the canonical one must
 be identical. This test pins that contract.
 """

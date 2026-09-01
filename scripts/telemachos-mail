@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""telemachos-mail — Unix-style command-line wrapper around the email
+"""telemachos-mail - Unix-style command-line wrapper around the email
 backend that powers the web UI.
 
 Calls the same helpers `routes/email_helpers.py` exports, so a request

@@ -12,7 +12,7 @@ from .cache import cache_metrics
 
 logger = logging.getLogger(__name__)
 
-# Dedicated error logger — write to the data logs directory (writable on both
+# Dedicated error logger - write to the data logs directory (writable on both
 # native runs and Docker, where DATA_DIR resolves to the bind-mounted volume).
 _log_dir = Path(DATA_DIR) / "logs"
 _error_log_path = _log_dir / "search_engine_error.log"
@@ -27,7 +27,7 @@ try:
 except Exception as _e:
     logging.getLogger(__name__).warning("search_engine_error log handler unavailable: %s", _e)
 
-# Analytics file — also in the writable logs volume.
+# Analytics file - also in the writable logs volume.
 ANALYTICS_FILE = _log_dir / "search_analytics.json"
 
 
@@ -74,7 +74,7 @@ def _load_analytics() -> Dict[str, Any]:
         with open(ANALYTICS_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
         # Merge over defaults so a file written by an older schema (or a
-        # partial write) still has every counter — _record_query indexes
+        # partial write) still has every counter - _record_query indexes
         # these keys directly and would otherwise raise KeyError.
         merged = _default_analytics()
         if isinstance(data, dict):

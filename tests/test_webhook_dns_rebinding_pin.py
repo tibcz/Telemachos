@@ -1,7 +1,7 @@
 """Regression: webhook delivery must pin the TCP connect to the SSRF-approved IP.
 
 validate_webhook_url resolves the host to accept/reject, but the delivery
-connect previously re-resolved independently — a DNS record flipping between
+connect previously re-resolved independently - a DNS record flipping between
 the two lookups (rebinding) could slip an internal IP past the check. _deliver
 now resolves+validates once via _validated_public_ips and pins the connect to
 that IP through _PinnedAsyncTransport. These tests drive the real transport
@@ -70,7 +70,7 @@ def _serve(handler):
 
 def test_pinned_transport_connects_to_pinned_ip():
     """A request whose URL host is a throwaway hostname is still delivered to
-    the pinned loopback IP — proving the socket destination comes from the pin,
+    the pinned loopback IP - proving the socket destination comes from the pin,
     not from resolving the URL host."""
     hits = []
 
@@ -136,7 +136,7 @@ def test_deliver_pins_to_validated_ip_end_to_end(monkeypatch):
         def close(self): pass
 
     # Make both the validation resolve and the pin target loopback, and treat
-    # loopback as allowed for this test (production blocks it — here we only
+    # loopback as allowed for this test (production blocks it - here we only
     # want to prove the pin routes to the validated IP).
     monkeypatch.setattr(wm, "SessionLocal", lambda: _Db())
     monkeypatch.setattr(wm, "_is_private_url", lambda url: False)

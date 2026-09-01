@@ -2,10 +2,10 @@
 
 Regression for Gemini's OpenAI-compat layer, which (a) attaches an opaque
 thought_signature in `extra_content` on the function-call delta and (b) omits
-`index` on PARALLEL tool calls — every parallel delta arrives as index=None.
+`index` on PARALLEL tool calls - every parallel delta arrives as index=None.
 The accumulator must give each parallel call its own slot (otherwise they
-collide into slot 0, overwriting the first call's name and concatenating —
-corrupting — its arguments) and must preserve extra_content per call.
+collide into slot 0, overwriting the first call's name and concatenating -
+corrupting - its arguments) and must preserve extra_content per call.
 """
 import json
 import asyncio
@@ -154,7 +154,7 @@ def test_sparse_integer_indices_then_null_do_not_collide(monkeypatch):
 def test_null_arguments_delta_does_not_drop_sibling_calls(monkeypatch):
     # A gateway can emit a tool_call delta whose `arguments` is JSON null. The
     # accumulator did `"" += None`, raising TypeError caught by the broad except
-    # that wraps the whole chunk — so it abandoned the rest of the tool_calls
+    # that wraps the whole chunk - so it abandoned the rest of the tool_calls
     # loop, silently dropping every LATER call in the same delta. Here the first
     # call has arguments: null; the second (same delta) must still survive.
     lines = [

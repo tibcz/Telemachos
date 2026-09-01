@@ -6,7 +6,7 @@ The backward-compat shim at ``routes/admin_wipe_routes.py`` uses
 required because ``test_admin_wipe_gallery.py`` does
 ``import routes.admin_wipe_routes`` followed by
 ``monkeypatch.setattr(routes.admin_wipe_routes, "SessionLocal", ...)`` and
-``"require_admin"`` — for those patches to take effect at runtime, the legacy
+``"require_admin"`` - for those patches to take effect at runtime, the legacy
 module object and the canonical one must be identical.
 """
 

@@ -1,5 +1,5 @@
 /**
- * ModalManager — unified open/minimize/close behavior for tool modals.
+ * ModalManager - unified open/minimize/close behavior for tool modals.
  *
  * Goals:
  *  - Tab-down (swipe) and the `_` button MINIMIZE: modal hidden, JS state preserved.
@@ -15,12 +15,12 @@
  *   Modals.register('gallery-modal', {
  *     railBtnId: 'tool-gallery-btn',
  *     restoreFn: () => { ...whatever the tool needs to do when un-hiding... },
- *     closeFn:   () => { ...full teardown — remove modal element etc... },
+ *     closeFn:   () => { ...full teardown - remove modal element etc... },
  *   });
  *
  *   // From the sidebar/rail button click handler:
  *   if (!Modals.toggle('gallery-modal')) {
- *     // No registered modal — build and open it fresh.
+ *     // No registered modal - build and open it fresh.
  *     openGallery();
  *   }
  */
@@ -124,7 +124,7 @@ function _setBadge(btnIds, on) {
   }
 }
 
-// ── Bottom dock — visible chip per minimized modal ──
+// ── Bottom dock - visible chip per minimized modal ──
 
 const _LABELS = {
   'cookbook-modal':    { label: 'Cookbook',  icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>' },
@@ -132,7 +132,7 @@ const _LABELS = {
   'gallery-modal':     { label: 'Gallery',   icon: 'M3 3h18v18H3zM8.5 8.5l3 3M21 15l-5-5L5 21' },
   'tasks-modal':       { label: 'Tasks',     icon: 'M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11' },
   'doclib-modal':      { label: 'Library',   icon: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2zM9 7h6M9 11h4' },
-  // Full SVG markup (not a single path-d) — the rounded-lobe brain needs
+  // Full SVG markup (not a single path-d) - the rounded-lobe brain needs
   // three sub-paths, which the dock renderer supports when the icon string
   // contains '<'.
   'memory-modal':      { label: 'Brain',     icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/></svg>' },
@@ -143,10 +143,11 @@ const _LABELS = {
   'custom-preset-modal': { label: 'Prompt',  icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 2 4 4"/><path d="m17 7 3-3"/><path d="M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5"/><path d="m9 11 4 4"/><path d="m5 19-3 3"/><path d="m14 4 6 6"/></svg>' },
   'research-overlay':  { label: 'Research',  icon: 'M3 11a8 8 0 1 0 16 0a8 8 0 1 0-16 0M21 21l-4.35-4.35M11 8L11 14M8 11L14 11' },
   'theme-modal':       { label: 'Theme',     icon: 'M12 2a10 10 0 1 0 10 10c0-1-1-2-2-2h-2a2 2 0 0 1 0-4h1a2 2 0 0 0 0-4 10 10 0 0 0-7-2zM7.5 12a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM12 7.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM16.5 12a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z' },
+  'local-models-modal':{ label: 'Models',    icon: 'M12 3v11M8 11l4 4 4-4M4 20h16' },
   'compare-model-overlay': { label: 'Compare',  icon: 'M4.5 4h5A1.5 1.5 0 0 1 11 5.5v13A1.5 1.5 0 0 1 9.5 20h-5A1.5 1.5 0 0 1 3 18.5v-13A1.5 1.5 0 0 1 4.5 4ZM15.5 4h5A1.5 1.5 0 0 1 22 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-5a1.5 1.5 0 0 1-1.5-1.5v-13A1.5 1.5 0 0 1 15.5 4ZM10 8h4M10 16h4' },
   'settings-modal':    { label: 'Settings',  icon: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.4.4.62.94.6 1.51V11a2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z' },
   'ge-shortcuts-modal':{ label: 'Shortcuts', icon: 'M2 6h20v12H2zM6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10' },
-  // Virtual id — the doc editor pane isn't a modal, but it minimizes to a
+  // Virtual id - the doc editor pane isn't a modal, but it minimizes to a
   // chip via the same dock infrastructure.
   'doc-panel':         { label: 'Document', icon: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8' },
 };
@@ -183,7 +184,7 @@ let _dockStateLoaded = false;
 function _saveDockState() {
   // The dock-pad position is remembered on every platform. The per-chip
   // free-float positions are still a mobile-only gesture, so we only have
-  // entries to persist there on touch layouts — but writing the (empty)
+  // entries to persist there on touch layouts - but writing the (empty)
   // map on desktop is harmless.
   try {
     const state = {
@@ -211,7 +212,7 @@ function _loadDockState() {
         }
       }
     }
-    // Dock position — accept the new {left,top} shape, and fall back to the
+    // Dock position - accept the new {left,top} shape, and fall back to the
     // legacy dockLeft/dockTop strings written by older builds.
     let dp = state.dockPos;
     if (!dp && state.dockLeft && state.dockTop) {
@@ -244,7 +245,7 @@ function _applyDockPos(dock) {
 // dropping a free-dragged chip there should re-attach it to the chain.
 function _nearDock(chipRect, dock) {
   const dr = dock.getBoundingClientRect();
-  // Dock may be empty (all chips detached) — fall back to its style position
+  // Dock may be empty (all chips detached) - fall back to its style position
   // so the user can still aim at "where the chain lives".
   let cx, cy;
   if (dr.width > 0 && dr.height > 0) {
@@ -266,14 +267,14 @@ function _renderDock() {
   if (!dock) return;
   const minimizedIds = [..._state.entries()].filter(([_, s]) => s.isMinimized).map(([id]) => id);
   // On mobile we ALSO keep chips around for any modal that's been
-  // free-positioned on screen — even while it's open — so the chip acts as
+  // free-positioned on screen - even while it's open - so the chip acts as
   // a persistent toggle (tap to minimize, tap again to restore).
   const isMobile = window.innerWidth <= 768;
   const persistentIds = isMobile
     ? [..._state.entries()].filter(([id, _]) => _chipPositions.has(id)).map(([id]) => id)
     : [];
   const allIds = Array.from(new Set([...minimizedIds, ...persistentIds]));
-  // Keep _dockOrder for every modal still alive in _state — even when it's
+  // Keep _dockOrder for every modal still alive in _state - even when it's
   // currently restored (not in allIds). That way re-minimizing a chip lands
   // back in its original slot instead of being pushed to the right edge.
   // Ids only fall out of _dockOrder once the modal is fully closed
@@ -287,7 +288,7 @@ function _renderDock() {
   // remove old chips, so they can be restored on the rebuilt chips.
   // Without this, external systems that stamp attributes on chips
   // (like emailLibrary's slot-number badge) see the attribute wiped on
-  // every re-render — most visibly after a chain drag, when chips are
+  // every re-render - most visibly after a chain drag, when chips are
   // at body level and get swept by the next render.
   const oldData = new Map();
   document.querySelectorAll('.minimized-dock-chip').forEach(c => {
@@ -302,7 +303,7 @@ function _renderDock() {
     if (Object.keys(data).length) oldData.set(id, data);
   });
 
-  // Sweep any free-positioned chips currently on <body> first — they'll be
+  // Sweep any free-positioned chips currently on <body> first - they'll be
   // recreated below if still alive, but if _dockOrder ended up empty (e.g.
   // the chain close-all just finished) we need to clear them here too.
   // Previously this sweep only ran in the non-empty branch, leaving the
@@ -316,7 +317,7 @@ function _renderDock() {
 
   // If a brand-new chip is joining and the existing chips are already
   // free-positioned at body level (e.g. previously chain-dropped), the
-  // new chip would land in the dock by itself — visually unlinking the
+  // new chip would land in the dock by itself - visually unlinking the
   // group. Collapse everyone back into the dock so the chain stays
   // together as a single group at the new size.
   const newIds = renderIds.filter(id => !_renderedChipIds.has(id));
@@ -340,7 +341,7 @@ function _renderDock() {
   });
 
   dock.style.display = '';
-  // Re-assert the remembered position — the empty-dock branch clears inline
+  // Re-assert the remembered position - the empty-dock branch clears inline
   // styles, so without this the dock would snap back to its CSS default the
   // first time it re-populates after every chip was restored.
   _applyDockPos(dock);
@@ -518,7 +519,7 @@ function _initChainPhysics(grabbedChip, dock, startX, startY) {
   });
   // Build a single-line chain ordered outward from the head, alternating
   // sides so chips closer to the grabbed one come first. Each link's
-  // predecessor is the chip immediately before it in chain order — that
+  // predecessor is the chip immediately before it in chain order - that
   // makes the whole chain a single tail rather than a Y where two strands
   // dangle from the head.
   const order = [grabbedIdx];
@@ -546,7 +547,7 @@ function _initChainPhysics(grabbedChip, dock, startX, startY) {
   dock.style.opacity = '0';
 
   const head = links[grabbedIdx];
-  // Use a uniform link spacing — slightly tighter than a chip-width so the
+  // Use a uniform link spacing - slightly tighter than a chip-width so the
   // chain looks like a connected strand rather than a sparse row.
   const linkSpacing = head.width + 2;
   return {
@@ -565,7 +566,7 @@ function _initChainPhysics(grabbedChip, dock, startX, startY) {
 function _stepChain(state, trashZone, captureRadius) {
   const HEAD_EASE = 0.85;
   // Followers use critically-damped easing (direct lerp, no velocity) rather
-  // than spring + damp — springs oscillate when chasing a moving target, and
+  // than spring + damp - springs oscillate when chasing a moving target, and
   // with a chain of 3+ each link amplifies the wobble.
   const FOLLOWER_EASE = 0.32;
   // Trail direction tracks the head's RECENT movement (smoothed). Reversing
@@ -576,7 +577,7 @@ function _stepChain(state, trashZone, captureRadius) {
   const hVx = (state.targetX - head.x) * HEAD_EASE;
   const hVy = (state.targetY - head.y) * HEAD_EASE;
   const vMag = Math.hypot(hVx, hVy);
-  // Dead zone — micro-velocities from finger drift don't reorient the trail.
+  // Dead zone - micro-velocities from finger drift don't reorient the trail.
   // Only intentional, sustained motion updates direction.
   if (vMag > 2.0) {
     const nx = -hVx / vMag;
@@ -678,7 +679,7 @@ function _wireChipDrag(chip, dock) {
       if (totalChips >= 2) {
         dragMode = 'chain';
         _positionTrashZoneOpposite(trashZone, chipStartTop, chip.offsetHeight);
-        // Long-press a chained chip to peel it off as a single free puck —
+        // Long-press a chained chip to peel it off as a single free puck -
         // movement before the timer fires cancels and starts chain physics.
         // Defer the visual pulse so quick taps don't see a scale-up bounce.
         longPressVisual = setTimeout(() => {
@@ -698,11 +699,11 @@ function _wireChipDrag(chip, dock) {
           if (navigator.vibrate) { try { navigator.vibrate(15); } catch {} }
         }, LONG_PRESS_MS);
       } else if (isFree) {
-        // Lone free chip — single-puck drag.
+        // Lone free chip - single-puck drag.
         dragMode = 'free';
         _positionTrashZoneOpposite(trashZone, chipStartTop, chip.offsetHeight);
       } else {
-        // Lone dock chip — keep move-dock so the user can reposition the
+        // Lone dock chip - keep move-dock so the user can reposition the
         // dock pad (long-press still promotes to free-drag).
         dragMode = 'move-dock';
         const dr = dock.getBoundingClientRect();
@@ -737,7 +738,7 @@ function _wireChipDrag(chip, dock) {
       return;
     }
 
-    // Desktop — reorder vs move-dock
+    // Desktop - reorder vs move-dock
     const chips = [...dock.querySelectorAll('.minimized-dock-chip')];
     const idx = chips.indexOf(chip);
     const isEdge = idx === 0 || idx === chips.length - 1;
@@ -758,7 +759,7 @@ function _wireChipDrag(chip, dock) {
     const dx = e.clientX - startX;
     const dy = e.clientY - startY;
     // Touch fingers drift a few pixels even on a "still" tap, so the touch
-    // threshold is generous — otherwise a tap-to-restore reads as a drag
+    // threshold is generous - otherwise a tap-to-restore reads as a drag
     // and the click gets eaten when the chain settles.
     const DRAG_THRESHOLD = (e.pointerType === 'touch' || window.innerWidth <= 768) ? 14 : 5;
     if (!dragging && Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
@@ -784,7 +785,7 @@ function _wireChipDrag(chip, dock) {
           };
           chainState.raf = requestAnimationFrame(stepLoop);
         } else {
-          // Init failed for some reason — fall back to move-dock so the
+          // Init failed for some reason - fall back to move-dock so the
           // user's gesture isn't dropped on the floor.
           dragMode = 'move-dock';
           dock.classList.add('dock-dragging');
@@ -799,19 +800,19 @@ function _wireChipDrag(chip, dock) {
     // dock). Releasing in the zone commits it (see onPointerUp).
     if (e.pointerType !== 'touch' && window.innerWidth > 768) {
       const z = previewZoneAt(e.clientX, e.clientY, modal);
-      // Ignore the bottom zone — the dock lives at the bottom, so horizontal
+      // Ignore the bottom zone - the dock lives at the bottom, so horizontal
       // chip reordering must not get hijacked into a bottom-half snap.
       chipSnapZone = (z && z.name !== 'bottom-half') ? z : null;
       if (z && !chipSnapZone) clearPreview();
       if (chipSnapZone) {
         chip.style.opacity = '0.35';
-        return;  // aiming at a snap zone — suppress reorder/move-dock
+        return;  // aiming at a snap zone - suppress reorder/move-dock
       }
       chip.style.opacity = '';
     }
 
     if (dragMode === 'chain' && chainState) {
-      // Pointermove just updates the head's target — the RAF loop drives the
+      // Pointermove just updates the head's target - the RAF loop drives the
       // actual position update for both head and followers.
       chainState.targetX = e.clientX - chainState.fingerOffsetX;
       chainState.targetY = e.clientY - chainState.fingerOffsetY;
@@ -877,7 +878,7 @@ function _wireChipDrag(chip, dock) {
       }
     } else {
       // Move-dock: reposition the entire dock element. On touch, the whole
-      // chain also interacts with the trash zone — drop on X to close every
+      // chain also interacts with the trash zone - drop on X to close every
       // chip in the dock.
       let newLeft = Math.max(8, Math.min(window.innerWidth  - dock.offsetWidth  - 8, dockStartLeft + dx));
       let newTop  = Math.max(8, Math.min(window.innerHeight - dock.offsetHeight - 8, dockStartTop  + dy));
@@ -890,7 +891,7 @@ function _wireChipDrag(chip, dock) {
         const dockCy = newTop + dock.offsetHeight / 2;
         const dist = Math.hypot(dockCx - tzcx, dockCy - tzcy);
         const inZone = dist < CAPTURE_RADIUS;
-        // Trash X stays visible for the entire drag — only .engaged
+        // Trash X stays visible for the entire drag - only .engaged
         // tracks proximity to the capture point.
         if (inZone) {
           const pull = 1 - (dist / CAPTURE_RADIUS);
@@ -995,7 +996,7 @@ function _wireChipDrag(chip, dock) {
       return;
     }
     if (dragMode === 'free') {
-      // If the user never actually dragged (just tapped), do nothing here —
+      // If the user never actually dragged (just tapped), do nothing here -
       // let the click handler restore the modal as normal. Skipping past
       // the drop logic also avoids saving the chip's position and re-
       // rendering, which was destroying the click target before it fired.
@@ -1006,7 +1007,7 @@ function _wireChipDrag(chip, dock) {
         return;
       }
       if (overTrash) {
-        // Animate into the X — the inline transforms set during drag have
+        // Animate into the X - the inline transforms set during drag have
         // `!important`, so the close animation needs setProperty(...important)
         // too or the styles don't apply and the chip just snaps.
         const cur = chip.style.transform || 'translate(0,0)';
@@ -1019,14 +1020,14 @@ function _wireChipDrag(chip, dock) {
         const id = chip.dataset.modalId;
         setTimeout(() => close(id), 320);
       } else {
-        // Drop wherever the finger let go — capture the current viewport
+        // Drop wherever the finger let go - capture the current viewport
         // position. If we land within snap-distance of another floating chip
         // OR within REDOCK_RADIUS of the chain, magnetically align so chips
         // collect into a tidy cluster instead of scattering.
         const r = chip.getBoundingClientRect();
         let dropLeft = r.left;
         let dropTop = r.top;
-        const SNAP = 50;       // px — distance under which we snap together
+        const SNAP = 50;       // px - distance under which we snap together
         const myW = r.width, myH = r.height;
         const myId = chip.dataset.modalId;
 
@@ -1042,7 +1043,7 @@ function _wireChipDrag(chip, dock) {
         });
 
         if (nearest && nearestDist < myW + SNAP) {
-          // Snap adjacent to the nearest chip — pick the side closest to
+          // Snap adjacent to the nearest chip - pick the side closest to
           // where the finger let go so it feels like a natural collision.
           const dx2 = (r.left + myW / 2) - (nearest.left + nearest.width / 2);
           const dy2 = (r.top + myH / 2) - (nearest.top + nearest.height / 2);
@@ -1057,7 +1058,7 @@ function _wireChipDrag(chip, dock) {
             dropLeft = nearest.left;
           }
         } else if (_nearDock(r, dock)) {
-          // Dropped near the dock chain — re-dock.
+          // Dropped near the dock chain - re-dock.
           _chipPositions.delete(myId);
           chip.style.removeProperty('transform');
           chip.style.removeProperty('z-index');
@@ -1089,7 +1090,7 @@ function _wireChipDrag(chip, dock) {
       if (trashZone) trashZone.classList.remove('visible', 'engaged');
       overTrash = false;
     } else if (dragMode === 'move-dock' && dragging && overTrash) {
-      // Dropped the whole chain onto the X — close every chipped modal.
+      // Dropped the whole chain onto the X - close every chipped modal.
       // Only the ids that actually have a rendered chip (i.e. currently
       // minimized or free-positioned); restored open modals are skipped.
       const ids = [...dock.querySelectorAll('.minimized-dock-chip')]
@@ -1140,7 +1141,7 @@ function _wireChipDrag(chip, dock) {
 
 // Tracks which _LABELS entries were created by `register(..., {label, icon})`
 // (vs. the built-in static ones). Only these should be removed in
-// `unregister` — built-in labels stay for the lifetime of the page.
+// `unregister` - built-in labels stay for the lifetime of the page.
 const _customLabelIds = new Set();
 
 export function register(id, { restoreFn, closeFn, railBtnId, sidebarBtnId, label, icon } = {}) {
@@ -1157,7 +1158,7 @@ export function register(id, { restoreFn, closeFn, railBtnId, sidebarBtnId, labe
   });
   // Auto-stack: whichever modal becomes visible last sits on top of any
   // already-open modals. The various tool open() functions (gallery,
-  // memory/brain, tasks, etc.) all just toggle `.hidden` or `display` —
+  // memory/brain, tasks, etc.) all just toggle `.hidden` or `display` -
   // observe both and bump the z-index on the visible→hidden→visible
   // transition. Idempotent on re-register.
   const _modalEl = document.getElementById(id);
@@ -1229,7 +1230,7 @@ export function minimize(id) {
   const s = _state.get(id);
   if (!s) return false;
   // The id may refer to a virtual tool (e.g. the document panel) that has no
-  // actual modal element — in that case we just track the minimized state
+  // actual modal element - in that case we just track the minimized state
   // and let the chip drive restore/close via the registered functions.
   const modal = document.getElementById(id);
   if (modal) {
@@ -1267,7 +1268,7 @@ export function restore(id) {
     modal.classList.remove('hidden', 'modal-minimized');
     modal.style.display = '';
     _applyRestoreHeight(modal, s);
-    // Surface above any already-open tool window — restoring from the dock
+    // Surface above any already-open tool window - restoring from the dock
     // should bring this tool to the front, not leave it stuck behind one with
     // a higher static z-index.
     _bringToFront(modal);
@@ -1291,7 +1292,7 @@ export function restore(id) {
 /**
  * If the modal is currently MINIMIZED, restore it and return true.
  * Otherwise return false so the caller falls through to its own
- * open/close handling. We deliberately do NOT minimize on toggle —
+ * open/close handling. We deliberately do NOT minimize on toggle -
  * that's the `_` button's job, not the rail/sidebar button's job.
  */
 export function toggle(id) {
@@ -1303,7 +1304,7 @@ export function toggle(id) {
   return false;
 }
 
-/** Full close — calls closeFn (which should tear down DOM + state) and unregisters. */
+/** Full close - calls closeFn (which should tear down DOM + state) and unregisters. */
 export function close(id) {
   const s = _state.get(id);
   if (!s) return;
@@ -1320,7 +1321,7 @@ export function close(id) {
   // Some tools (cookbook) animate their close over ~250ms before adding
   // .hidden. If the user re-opens the tool before that finishes, open()
   // sees the modal as "still visible" and takes its no-op early-return
-  // path — making the tool feel unresponsive. Force the modal into a
+  // path - making the tool feel unresponsive. Force the modal into a
   // fully-closed state synchronously so subsequent open() calls always
   // hit the real open path.
   const modal = document.getElementById(id);
@@ -1355,7 +1356,7 @@ export function injectMinimizeButton(modal, modalId) {
   const header = modal.querySelector('.modal-header');
   if (!header) return;
   if (header.querySelector('.modal-minimize-btn, .minimize-btn, [data-minimize]')) {
-    // An existing minimize button is present — wire it to the manager instead
+    // An existing minimize button is present - wire it to the manager instead
     const existing = header.querySelector('.minimize-btn, [data-minimize]');
     if (existing && !existing.dataset._modalsBound) {
       existing.dataset._modalsBound = '1';
@@ -1383,7 +1384,7 @@ export function injectMinimizeButton(modal, modalId) {
     // The close button may carry its own left margin (e.g. compare's inline
     // "margin-left:8px") meant to separate it from the title when it stood
     // alone. Now that `_` sits to its left, that margin becomes a stray gap
-    // between the two buttons — zero it. The minimize button's own
+    // between the two buttons - zero it. The minimize button's own
     // margin-right (2px, from .modal-minimize-btn) provides the gap.
     closeBtn.style.marginLeft = '0';
     closeBtn.style.flexShrink = '0';
@@ -1409,11 +1410,12 @@ const _AUTO_WIRE = {
   'doclib-modal':         { rail: 'rail-archive',   sidebar: 'tool-library-btn' },
   'memory-modal':         { rail: null,             sidebar: 'tool-memory-btn' },
   'notes-panel':          { rail: 'rail-notes',     sidebar: 'tool-notes-btn' },
-  // Email already has its own #email-unread-dot inline next to the title —
+  // Email already has its own #email-unread-dot inline next to the title -
   // don't add a second modalManager badge that lands at the right edge.
   'email-lib-modal':      { rail: null,             sidebar: null },
   'research-overlay':     { rail: 'rail-research',  sidebar: 'tool-research-btn' },
   'theme-modal':          { rail: null,             sidebar: 'tool-theme-btn' },
+  'local-models-modal':   { rail: null,             sidebar: 'tool-models-btn' },
   'settings-modal':       { rail: null,             sidebar: 'tool-settings-btn' },
   'compare-model-overlay':{ rail: 'rail-compare',   sidebar: 'tool-compare-btn' },
   'ge-shortcuts-modal':   { rail: null,             sidebar: null },
@@ -1449,7 +1451,7 @@ function _autoRegister(id) {
 }
 
 // Watch the document for tool modals being added/shown and inject the `_`
-// button next to the close button. We do NOT pre-register here — only inject
+// button next to the close button. We do NOT pre-register here - only inject
 // the button. Registration happens when the modal is actually minimized,
 // either via the `_` button click or via swipe-dismiss.
 function _scanAndWire() {
@@ -1474,7 +1476,7 @@ const _SWIPE_DOWN_MINIMIZES = new Set([
   'calendar-modal',
   'email-lib-modal',
 ]);
-// Same idea but matched by id prefix — so dynamically-created modals
+// Same idea but matched by id prefix - so dynamically-created modals
 // (per-email reader tabs) survive swipe-down too.
 const _SWIPE_DOWN_MINIMIZES_PREFIX = ['email-reader-'];
 
@@ -1496,7 +1498,7 @@ function _clearEmailSplitAfterMinimize() {
   setTimeout(() => window.dispatchEvent(new Event('resize')), 80);
 }
 
-// Re-route swipe-dismiss to minimize-rather-than-close — but only for the
+// Re-route swipe-dismiss to minimize-rather-than-close - but only for the
 // allowlisted tools above. For every other modal, return early so the
 // default close handler runs and the modal goes away.
 // Close any open body-mounted popups (kebab dropdowns, split-button menus,

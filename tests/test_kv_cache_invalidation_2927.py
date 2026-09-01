@@ -1,4 +1,4 @@
-"""Regression tests for issue #2927 — KV-cache invalidation on local backends.
+"""Regression tests for issue #2927 - KV-cache invalidation on local backends.
 
 As diagnosed in the issue, three things in Telemachos's request pattern actively
 destroy llama.cpp / LM Studio's KV-cache continuity on every chat turn:
@@ -52,7 +52,7 @@ def _install_chat_helpers_stubs(monkeypatch):
 def _build_context_harness(monkeypatch, chat_helpers, history):
     """Wire up build_chat_context with a fake session/processor that mimics
     the real preface (static system prompt + policy) and returns whatever
-    history is currently on the fake session — so two consecutive calls can
+    history is currently on the fake session - so two consecutive calls can
     be compared for prefix stability."""
 
     async def fake_preprocess(chat_handler, message, att_ids, sess, **kwargs):
@@ -93,7 +93,7 @@ def _build_context_harness(monkeypatch, chat_helpers, history):
     )
 
     # Static preface: preset system prompt + the (also static) untrusted-context
-    # policy message — exactly what ChatProcessor.build_context_preface returns
+    # policy message - exactly what ChatProcessor.build_context_preface returns
     # in real life, minus any per-turn dynamic content (RAG/memory/web), which
     # we hold constant here on purpose: this test isolates the "did we
     # reintroduce per-turn drift into the system prefix" question.
@@ -120,7 +120,7 @@ def _consolidated_system_text(messages):
 async def test_static_system_prefix_is_byte_identical_across_turns(monkeypatch):
     """Two consecutive turns of the same session, with no change to the
     underlying instructions/project context, must produce a byte-identical
-    consolidated system message — the cached-prefix guarantee local backends
+    consolidated system message - the cached-prefix guarantee local backends
     need to reuse their KV cache (issue #2927, root cause #1)."""
     chat_helpers = _install_chat_helpers_stubs(monkeypatch)
 
@@ -132,7 +132,7 @@ async def test_static_system_prefix_is_byte_identical_across_turns(monkeypatch):
     sess, request, chat_handler, chat_processor = _build_context_harness(monkeypatch, chat_helpers, history=[])
     monkeypatch.setattr(
         user_time, "current_datetime_context_message",
-        lambda now_utc=None: {"role": "user", "content": "[Context — current date/time]\nToday is 2026-06-07, 09:16 UTC."},
+        lambda now_utc=None: {"role": "user", "content": "[Context - current date/time]\nToday is 2026-06-07, 09:16 UTC."},
         raising=False,
     )
 
@@ -142,10 +142,10 @@ async def test_static_system_prefix_is_byte_identical_across_turns(monkeypatch):
     )
     sess.messages.append({"role": "assistant", "content": "It's sunny."})
 
-    # Turn 2: clock has moved on to 09:17 — a real per-turn drift source.
+    # Turn 2: clock has moved on to 09:17 - a real per-turn drift source.
     monkeypatch.setattr(
         user_time, "current_datetime_context_message",
-        lambda now_utc=None: {"role": "user", "content": "[Context — current date/time]\nToday is 2026-06-07, 09:17 UTC."},
+        lambda now_utc=None: {"role": "user", "content": "[Context - current date/time]\nToday is 2026-06-07, 09:17 UTC."},
         raising=False,
     )
     ctx2 = await chat_helpers.build_chat_context(
@@ -176,7 +176,7 @@ async def test_changed_instructions_do_change_the_system_prefix(monkeypatch):
     """Regression guard: prove we didn't just hardcode/freeze the system
     prompt. When the underlying instructions genuinely change between turns
     (e.g. the user edits project instructions mid-session), the resulting
-    system prefix MUST differ — the cache *should* invalidate then."""
+    system prefix MUST differ - the cache *should* invalidate then."""
     chat_helpers = _install_chat_helpers_stubs(monkeypatch)
     import src.user_time as user_time
     user_time.clear_user_time_context()
@@ -184,7 +184,7 @@ async def test_changed_instructions_do_change_the_system_prefix(monkeypatch):
     sess, request, chat_handler, chat_processor = _build_context_harness(monkeypatch, chat_helpers, history=[])
     monkeypatch.setattr(
         user_time, "current_datetime_context_message",
-        lambda now_utc=None: {"role": "user", "content": "[Context — current date/time]\nToday is 2026-06-07."},
+        lambda now_utc=None: {"role": "user", "content": "[Context - current date/time]\nToday is 2026-06-07."},
         raising=False,
     )
 
@@ -240,7 +240,7 @@ def test_current_datetime_is_user_role_message_not_system():
 async def test_extraction_jobs_wait_for_active_stream_before_running(monkeypatch):
     """While a chat completion is actively streaming for a session, queued
     background-extraction jobs must not start. Once the stream goes idle they
-    run — strictly one at a time, never overlapping each other or a
+    run - strictly one at a time, never overlapping each other or a
     newly-started stream (issue #2927, root cause #2)."""
     chat_helpers = _install_chat_helpers_stubs(monkeypatch)
 
@@ -333,8 +333,8 @@ async def test_run_post_response_tasks_does_not_fire_extraction_concurrently(mon
     # Let the scheduled background task run.
     await asyncio.sleep(0.05)
 
-    # Both extractors were queued through the sequential gate — not fired
-    # directly via asyncio.create_task — and both ultimately ran exactly once.
+    # Both extractors were queued through the sequential gate - not fired
+    # directly via asyncio.create_task - and both ultimately ran exactly once.
     assert captured_jobs.get("session_id") == "sess-Y"
     assert captured_jobs.get("names") == ["memory", "skill"]
     assert calls == {"memory": 1, "skill": 1}
@@ -389,9 +389,9 @@ def _drain(agen):
 
 def test_payload_includes_stable_session_id_for_local_backend(monkeypatch):
     """The outgoing payload to a local/self-hosted OpenAI-compatible endpoint
-    (llama.cpp / LM Studio) must carry a stable session identifier — the same
+    (llama.cpp / LM Studio) must carry a stable session identifier - the same
     one across turns of the same session, and a different one for a different
-    session — plus cache_prompt, so the backend can maintain slot affinity
+    session - plus cache_prompt, so the backend can maintain slot affinity
     (issue #2927, root cause #3: 'session_id=<empty> server-selected (LCP/LRU)')."""
     from src import llm_core
 
@@ -422,7 +422,7 @@ def test_payload_includes_stable_session_id_for_local_backend(monkeypatch):
 
 def test_payload_omits_session_id_for_official_openai_api(monkeypatch):
     """api.openai.com (and other recognized cloud providers) must NOT receive
-    the llama.cpp-specific session_id/cache_prompt extras — OpenAI's API
+    the llama.cpp-specific session_id/cache_prompt extras - OpenAI's API
     rejects unrecognized top-level request fields with a 400."""
     from src import llm_core
 

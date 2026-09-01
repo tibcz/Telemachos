@@ -6,7 +6,7 @@ find a way to run it is not a feature. Telemachos ships llama.cpp's
 user downloaded.
 
 The server binds loopback on llama.cpp's default port, which is already one of
-the ports src/model_discovery.py probes — so once it is up the model appears in
+the ports src/model_discovery.py probes - so once it is up the model appears in
 the normal model list with no extra wiring.
 
 Everything here degrades rather than fails: if the bundled binary is absent
@@ -98,7 +98,7 @@ def start(tier_id, context=None):
     """Serve a downloaded model. Replaces whatever was running before.
 
     Returns the status dict once the server answers, and raises with a usable
-    reason when it cannot start — a silent failure here would show up much
+    reason when it cannot start - a silent failure here would show up much
     later as "the model just isn't in the list".
     """
     global _process, _current

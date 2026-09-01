@@ -1,8 +1,8 @@
 """Windows support for Cookbook hardware-fit.
 
 Telemachos only supports llama.cpp on Windows (vLLM/SGLang are explicitly
-blocked). llama.cpp requires GGUF, so non-GGUF models — including AWQ/GPTQ/
-FP8 safetensors repos — must be filtered out on Windows so the Cookbook does
+blocked). llama.cpp requires GGUF, so non-GGUF models - including AWQ/GPTQ/
+FP8 safetensors repos - must be filtered out on Windows so the Cookbook does
 not recommend models the user cannot actually serve.
 """
 
@@ -37,7 +37,7 @@ def _cuda_system():
 
 def test_only_gguf_models_recommended_on_windows():
     """llama.cpp (GGUF) is the only servable path on Windows, so every model
-    recommended there must ship a real GGUF — no vLLM-only AWQ/GPTQ/FP8."""
+    recommended there must ship a real GGUF - no vLLM-only AWQ/GPTQ/FP8."""
     catalog = {m["name"]: m for m in get_models()}
     unservable = [
         r["name"] for r in rank_models(_windows_system(), limit=900)

@@ -63,12 +63,12 @@ _AGENT_WORKDIR = DATA_DIR
 # the admin noticing.
 #
 # Policy:
-#   1. Sensitive-subpath deny list — checked FIRST. Blocks .ssh,
+#   1. Sensitive-subpath deny list - checked FIRST. Blocks .ssh,
 #      .gnupg, shell rc files, token/env files even if the root above
 #      them is on the allowlist.
-#   2. Allowlist — only the directories the agent legitimately needs
+#   2. Allowlist - only the directories the agent legitimately needs
 #      (project data/, system tmp). $HOME is NOT on the default list.
-#   3. Opt-in extra roots — admin can add broader roots via the
+#   3. Opt-in extra roots - admin can add broader roots via the
 #      "tool_path_extra_roots" setting (list of path strings).
 # ---------------------------------------------------------------------------
 
@@ -88,7 +88,7 @@ _SENSITIVE_FILE_PATTERNS: tuple[str, ...] = (
 # Case-folded views used for matching. On a case-insensitive filesystem
 # (Windows, default macOS) ".SSH/AUTHORIZED_KEYS" and ".env" resolve to the
 # same protected files as their lowercase forms, so the deny-list has to fold
-# case before comparing — the sibling resolver already normcases paths for the
+# case before comparing - the sibling resolver already normcases paths for the
 # same reason. casefold (not os.path.normcase) because normcase is a no-op on
 # POSIX, which is exactly where the macOS read-exfil path lives.
 _SENSITIVE_BASENAMES_CF: frozenset[str] = frozenset(b.casefold() for b in _SENSITIVE_BASENAMES)
@@ -97,7 +97,7 @@ _SENSITIVE_FILE_PATTERNS_CF: frozenset[str] = frozenset(p.casefold() for p in _S
 
 def _is_sensitive_path(resolved: str) -> bool:
     """Return True if *resolved* falls under a sensitive directory or
-    matches a sensitive filename — regardless of what root it sits under.
+    matches a sensitive filename - regardless of what root it sits under.
 
     Matching is case-insensitive: on Windows / default macOS a case-variant
     name (``.SSH``, ``AUTHORIZED_KEYS``, ``Id_Rsa``) points at the same file as
@@ -123,7 +123,7 @@ def _tool_path_roots() -> list[str]:
     """
     roots: list[str] = []
 
-    # Project data directory — the agent's primary workspace.
+    # Project data directory - the agent's primary workspace.
     from src.constants import DATA_DIR
     roots.append(DATA_DIR)
 
@@ -136,7 +136,7 @@ def _tool_path_roots() -> list[str]:
     except OSError:
         pass
 
-    # $TMPDIR — per-user temp root on macOS (e.g. /var/folders/.../T/).
+    # $TMPDIR - per-user temp root on macOS (e.g. /var/folders/.../T/).
     tmpdir = os.environ.get("TMPDIR")
     if tmpdir:
         roots.append(tmpdir)
@@ -232,7 +232,7 @@ def _resolve_tool_path_in_workspace(workspace: str, raw_path: str) -> str:
         # normcase so containment holds on case-insensitive filesystems
         # (Windows, default macOS): it lowercases on Windows and is a no-op on
         # POSIX. commonpath raises ValueError across Windows drives (C: vs D:)
-        # or mixed abs/rel — both mean "outside", so the except rejects them.
+        # or mixed abs/rel - both mean "outside", so the except rejects them.
         nbase = os.path.normcase(base)
         try:
             if os.path.commonpath([os.path.normcase(resolved), nbase]) != nbase:
@@ -421,13 +421,13 @@ _MCP_ARG_PARSERS: Dict[str, Callable[[str], Dict[str, str]]] = {
 
 # Primary argument key(s) for the legacy line-parsed tools. When a fenced
 # block's content is a JSON object carrying one of these keys, it's structured
-# inline args (the relaxed parser's ```web_search {"query": "..."}``` shape) —
+# inline args (the relaxed parser's ```web_search {"query": "..."}``` shape) -
 # use the object directly instead of letting the line-based parsers wrap the
 # whole JSON string as the query/url/path/prompt. Keyed off membership only
 # (the primary key never changes), so this can't drift; an unrecognized object
 # safely falls through to the line-based parser, i.e. the previous behavior.
 #
-# IMPORTANT — this only covers the MCP path. _build_mcp_args is reached via
+# IMPORTANT - this only covers the MCP path. _build_mcp_args is reached via
 # _call_mcp_tool only for _MCP_TOOL_MAP tools (so an entry outside that map is
 # dead, as manage_memory was). And of these, only generate_image has a live MCP
 # server today; web_search/web_fetch/read_file/write_file have none, so they run
@@ -483,7 +483,7 @@ async def _call_mcp_tool(
     # generate_image runs as a text-only MCP tool, so the saved image URL never
     # reaches the agent loop's structured forwarding (which renders the image via
     # buildImageBubble on result["image_url"]). Lift it out of the tool's stdout so
-    # the image renders deterministically — no dependence on the model echoing the
+    # the image renders deterministically - no dependence on the model echoing the
     # URL into its prose (which it mangles/hallucinates).
     if tool == "generate_image":
         _promote_image_fields(result)
@@ -798,7 +798,7 @@ async def _execute_tool_block_impl(
 
     # The block/disable gates below must match every policy-equivalent
     # spelling of the tool name (bare email names alias their mcp__email__
-    # form — see email_tool_policy_names), not just the spelling the model
+    # form - see email_tool_policy_names), not just the spelling the model
     # happened to emit.
     policy_names = email_tool_policy_names(tool)
 
@@ -864,7 +864,7 @@ async def _execute_tool_block_impl(
 
 
     # Background execution: a `bash` block whose first line is the `#!bg`
-    # marker runs DETACHED — returns a job id immediately so the chat stream
+    # marker runs DETACHED - returns a job id immediately so the chat stream
     # isn't held open for a multi-minute install/ffmpeg/download. The always-on
     # monitor re-invokes the agent with the full output when the job finishes.
     if tool == "bash" and session_id:
@@ -898,7 +898,7 @@ async def _execute_tool_block_impl(
         desc = f"{tool}: {first_line}"
         result = await _call_mcp_tool(tool, content, progress_cb=progress_cb)
     elif tool in ("grep", "glob", "ls", "get_workspace"):
-        # Code-navigation tools — no MCP server; run the direct implementation.
+        # Code-navigation tools - no MCP server; run the direct implementation.
         first_line = content.split(chr(10))[0][:80]
         desc = f"{tool}: {first_line}"
         result = await _direct_fallback(tool, content, progress_cb=progress_cb) \
@@ -1043,7 +1043,7 @@ async def _execute_tool_block_impl(
         desc = "vault_unlock"
         result = await do_vault_unlock(content, owner=owner)
     elif tool in BUILTIN_EMAIL_TOOLS:
-        # Bare email tool name from fenced-block models (e.g. Ollama) — route to MCP email server.
+        # Bare email tool name from fenced-block models (e.g. Ollama) - route to MCP email server.
         # Non-admin owners never reach here: BUILTIN_EMAIL_TOOLS ⊆ NON_ADMIN_BLOCKED_TOOLS,
         # so is_public_blocked_tool() above already rejected them.
         mcp = get_mcp_manager()
@@ -1056,7 +1056,7 @@ async def _execute_tool_block_impl(
             if _raw:
                 # A non-empty body is always meant to be the call's arguments,
                 # and every email tool takes a JSON object. Anything that
-                # isn't one is a correctable error — NOT a silent empty-args
+                # isn't one is a correctable error - NOT a silent empty-args
                 # call, which would read the DEFAULT mailbox/folder instead of
                 # the one the model meant (#3966 class). Only an EMPTY body
                 # keeps the no-arg path (e.g. ```list_email_accounts```).
@@ -1067,7 +1067,7 @@ async def _execute_tool_block_impl(
                     # and `account: work` (not JSON at all).
                     _args_error = (
                         f"'{tool}' arguments are not valid JSON ({_je}). "
-                        'Send a JSON object, e.g. {"account": "work"} — '
+                        'Send a JSON object, e.g. {"account": "work"} - '
                         "keys and string values need double quotes."
                     )
                 else:
@@ -1076,7 +1076,7 @@ async def _execute_tool_block_impl(
                     else:
                         _args_error = (
                             f"'{tool}' arguments must be a JSON object, "
-                            'e.g. {"uid": "..."} — got a JSON array/value instead.'
+                            'e.g. {"uid": "..."} - got a JSON array/value instead.'
                         )
             if _args_error is not None:
                 result = {"error": _args_error, "exit_code": 1}
@@ -1130,7 +1130,7 @@ async def _execute_tool_block_impl(
 # Result formatting
 # ---------------------------------------------------------------------------
 
-# Keys handled by the dedicated branches below — never echo them as raw JSON.
+# Keys handled by the dedicated branches below - never echo them as raw JSON.
 _FORMATTER_HANDLED_KEYS = {
     "stdout", "stderr", "exit_code", "content", "size",
     "response", "results", "session_id", "name", "model", "session_name",

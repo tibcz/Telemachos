@@ -1,7 +1,7 @@
-# Optional dependencies — install only if you use the corresponding feature.
+# Optional dependencies - install only if you use the corresponding feature.
 # The app handles their absence gracefully (clear error message on first use).
 #
-# Note: chromadb-client + fastembed moved to requirements.txt — RAG, semantic
+# Note: chromadb-client + fastembed moved to requirements.txt - RAG, semantic
 # memory, and tool selection are core paths, so they ship by default now.
 
 # Local speech-to-text (microphone -> text) via faster-whisper, for the
@@ -9,7 +9,7 @@
 # torch needed). Install if you want to dictate/transcribe with the mic
 # without sending audio to an external endpoint.
 # Optional extra: install `torch` too if you have a CUDA GPU and want
-# GPU-accelerated transcription — it's auto-detected, CPU is used otherwise.
+# GPU-accelerated transcription - it's auto-detected, CPU is used otherwise.
 faster-whisper
 
 # Local text-to-speech via Kokoro-82M for the "local" TTS provider.
@@ -30,13 +30,13 @@ ddgs
 # PDF form-filling feature (fillable AcroForm detection, field extraction,
 # value/annotation/signature stamping, page rendering for the form overlay).
 # NOTE: PyMuPDF is AGPL-3.0. Installing it brings AGPL obligations for a
-# network-served app — see ACKNOWLEDGMENTS.md. The MIT core (PDF *text*
+# network-served app - see ACKNOWLEDGMENTS.md. The MIT core (PDF *text*
 # extraction via pypdf) works without it; this only unlocks form-filling.
 PyMuPDF
 
 # Office / EPUB document text extraction (chat attachments + the personal-docs
 # RAG index). markitdown (MIT, Microsoft) converts .docx/.xlsx/.pptx/.xls/.epub
-# to Markdown — more token-efficient and model-legible than a raw dump. Optional
+# to Markdown - more token-efficient and model-legible than a raw dump. Optional
 # and lazy-imported via src/markitdown_runtime.py; without it those formats fall
 # back to a friendly "install to extract" banner and the core stays pure-MIT.
 # Extras pull mammoth/lxml/python-pptx/pandas/openpyxl/xlrd; the base also pulls

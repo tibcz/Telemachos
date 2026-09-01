@@ -492,7 +492,7 @@ class GlobTool:
                 # Keep the literal lookup inside the search root. os.path.join
                 # lets an absolute pattern (or one containing ../) escape `base`,
                 # which would turn glob into an existence/path oracle for
-                # arbitrary host files — bypassing the workspace/allowlist
+                # arbitrary host files - bypassing the workspace/allowlist
                 # confinement that _resolve_search_root applies to the root.
                 # An escaping literal falls through to the walk, which only ever
                 # yields paths under base.
@@ -504,12 +504,12 @@ class GlobTool:
                 except ValueError:
                     inside = False
                 # A literal that names a deny-listed sensitive file (.env,
-                # .ssh/id_rsa, …) falls through to the walk, which skips it —
+                # .ssh/id_rsa, …) falls through to the walk, which skips it -
                 # otherwise glob would surface secret paths that read_file /
                 # grep already refuse to touch.
                 if inside and os.path.exists(cand) and not _is_sensitive_path(cand):
                     return [cand], None
-                # Literal not at exact path — fall through to walk so
+                # Literal not at exact path - fall through to walk so
                 # e.g. "foo.py" still matches at any depth (like rglob).
             # Compile glob to regex: * stays within one segment, **/ spans dirs.
             regex = _glob_to_regex(norm_pat)
@@ -518,7 +518,7 @@ class GlobTool:
             try:
                 for dp, dns, fns in os.walk(base):
                     # Prune skipped dirs before descending (unlike rglob which
-                    # descends first then filters — fatal on large node_modules).
+                    # descends first then filters - fatal on large node_modules).
                     # Sensitive dirs (.ssh, .gnupg, …) are pruned too so glob
                     # never enumerates the keys/tokens inside them.
                     dns[:] = [

@@ -1,5 +1,5 @@
 /**
- * Layer panel renderer — rebuilds the right-side layer list from
+ * Layer panel renderer - rebuilds the right-side layer list from
  * `state.layers` every time it's called. The full row tree per layer:
  *
  *   parent row
@@ -65,12 +65,12 @@ export function createLayerPanelRenderer(deps) {
   }
 
   function render() {
-    // FX panel mirrors the active layer's adjustments — re-sync on
+    // FX panel mirrors the active layer's adjustments - re-sync on
     // every layer event (activation, add, delete, etc).
     try { syncFxPanelToActiveLayerIfPresent(); } catch {}
     const list = document.getElementById('ge-layers-list');
     if (!list) return;
-    // Mobile bottom-sheet peek height — header + N rows, capped so a
+    // Mobile bottom-sheet peek height - header + N rows, capped so a
     // 20-layer document doesn't get a peek that eats the canvas.
     const panel = document.querySelector('.ge-right-panel');
     if (panel) {
@@ -92,7 +92,7 @@ export function createLayerPanelRenderer(deps) {
       const layer = state.layers[i];
       const item = document.createElement('div');
       // Parent row is highlighted ONLY when it's actually the paint
-      // target — activated AND no mask sub-layer is currently active.
+      // target - activated AND no mask sub-layer is currently active.
       const parentIsPaintTarget = layer.id === state.activeLayerId &&
         !(layer.masks && layer.activeMaskId && layer.masks.some(m => m.id === layer.activeMaskId));
       item.className = 'ge-layer-item' +
@@ -118,14 +118,14 @@ export function createLayerPanelRenderer(deps) {
         state.activeLayerId = layer.id;
         // Toggle the active class inline (avoid full re-render so the
         // dblclick listener on the name element stays alive between
-        // clicks — a re-render destroys the element after the first
+        // clicks - a re-render destroys the element after the first
         // click and the second lands on a different node).
         document.querySelectorAll('.ge-layers-list .ge-layer-item').forEach(el => {
           el.classList.toggle('active', el.dataset.layerId === state.activeLayerId);
         });
       });
 
-      // Drag handle — grip dots; dragSortModule.enable() below scopes
+      // Drag handle - grip dots; dragSortModule.enable() below scopes
       // drag-init to this handle so row body clicks still activate.
       const handle = document.createElement('span');
       handle.className = 'ge-layer-drag';
@@ -187,7 +187,7 @@ export function createLayerPanelRenderer(deps) {
       const controls = document.createElement('div');
       controls.className = 'ge-layer-controls';
 
-      // FX (adjustments) — opens a floating popup bound to this layer.
+      // FX (adjustments) - opens a floating popup bound to this layer.
       const fxBtn = document.createElement('button');
       fxBtn.className = 'ge-layer-btn ge-layer-fx-btn' + (layerHasAdjustments(layer) ? ' active' : '');
       fxBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18Z" fill="currentColor"/></svg>';
@@ -223,7 +223,7 @@ export function createLayerPanelRenderer(deps) {
       });
       controls.appendChild(fxBtn);
 
-      // Duplicate — clones pixels + offset + opacity + masks + adjLayers
+      // Duplicate - clones pixels + offset + opacity + masks + adjLayers
       // + visibility; inserts above the original; new copy becomes
       // active.
       const dupBtn = document.createElement('button');
@@ -273,7 +273,7 @@ export function createLayerPanelRenderer(deps) {
       });
       controls.appendChild(dupBtn);
 
-      // Add-mask — if a lasso/wand selection is active, bake it into a
+      // Add-mask - if a lasso/wand selection is active, bake it into a
       // mask sub-layer on this layer; otherwise create an empty mask
       // for the user to paint with the Brush tool.
       const hasLassoSelInitial = state.lassoPoints.length >= 3 && !state.lassoActive;
@@ -289,7 +289,7 @@ export function createLayerPanelRenderer(deps) {
         e.stopPropagation();
         // Activate this layer first so the new mask attaches here.
         state.activeLayerId = layer.id;
-        // Re-check selection state AT CLICK TIME — captured vars may
+        // Re-check selection state AT CLICK TIME - captured vars may
         // be stale if a selection was drawn after the panel paint.
         const hasLassoSel = state.lassoPoints.length >= 3 && !state.lassoActive;
         const hasWandSel = !!state.wandMask;
@@ -327,7 +327,7 @@ export function createLayerPanelRenderer(deps) {
       });
       controls.appendChild(maskBtn);
 
-      // Per-row Merge Down — bakes this layer into the one beneath.
+      // Per-row Merge Down - bakes this layer into the one beneath.
       // Hidden on the bottom layer in the visual stack (idx 0 forward).
       if (i > 0) {
         const mergeDownBtn = document.createElement('button');
@@ -345,7 +345,7 @@ export function createLayerPanelRenderer(deps) {
         controls.appendChild(mergeDownBtn);
       }
 
-      // Delete — shown for every layer except when this is the last
+      // Delete - shown for every layer except when this is the last
       // remaining one. Base photo is deletable too; Ctrl+Z brings it
       // back from history. Extra confirm for the base layer.
       if (state.layers.length > 1) {
@@ -506,7 +506,7 @@ export function createLayerPanelRenderer(deps) {
           sName.innerHTML = `<span class="ge-adj-sub-icon">${maskIcon}</span><span>${mkName}${mkEmpty}</span>`;
           const sControls = document.createElement('div');
           sControls.className = 'ge-layer-controls';
-          // Merge-up — combine this mask into the one above (lower mi).
+          // Merge-up - combine this mask into the one above (lower mi).
           if (mi > 0) {
             const mergeBtn = document.createElement('button');
             mergeBtn.className = 'ge-layer-btn';
@@ -517,7 +517,7 @@ export function createLayerPanelRenderer(deps) {
               const above = layer.masks[mi - 1];
               if (!above) return;
               saveState(`Merge mask "${mk.name}" into "${above.name}"`);
-              // Union of alpha — `source-over` already does max for
+              // Union of alpha - `source-over` already does max for
               // fully opaque white masks; this also handles partial alpha.
               above.ctx.save();
               above.ctx.globalCompositeOperation = 'source-over';
@@ -571,7 +571,7 @@ export function createLayerPanelRenderer(deps) {
       }
     }
 
-    // Wire the shared dragSort module — limit drag-init to the grip
+    // Wire the shared dragSort module - limit drag-init to the grip
     // handle so row body clicks still activate. Called every render
     // because `enable()` cleans up the previous instance keyed on
     // instanceKey.

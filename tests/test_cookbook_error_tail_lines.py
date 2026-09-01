@@ -2,7 +2,7 @@
 
 When a task reaches status "error" the status endpoint previously returned
 only the last 12 lines of the subprocess log. The "Copy last 50 lines"
-context-menu action was therefore copying the same 12 lines — useless for
+context-menu action was therefore copying the same 12 lines - useless for
 diagnosing failures that emit long stack traces or build output.
 
 `error_aware_output_tail` now returns the last 50 lines on error and keeps
@@ -34,7 +34,7 @@ def test_non_error_status_returns_last_12_lines():
 
 
 def test_short_snapshot_returns_all_lines():
-    # Fewer lines than the cap — return everything, no padding.
+    # Fewer lines than the cap - return everything, no padding.
     snap = _snapshot(5)
     assert error_aware_output_tail(snap, "error").splitlines() == [
         "line 0", "line 1", "line 2", "line 3", "line 4",

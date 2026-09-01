@@ -128,7 +128,7 @@ def test_paginated_history_reads_only_count_and_requested_page(monkeypatch):
     assert payload["has_more_before"] is True
     assert payload["has_more_after"] is False
 
-    # One COUNT for the total plus one page read — never a full-transcript
+    # One COUNT for the total plus one page read - never a full-transcript
     # select. The page bounds are asserted through the response above rather
     # than by matching SQL text.
     chat_selects = _chat_message_selects(statements)
@@ -436,7 +436,7 @@ def _route_endpoint(router, path):
 @pytest.mark.asyncio
 @pytest.mark.parametrize("path", ["/api/chat", "/api/chat_stream"])
 async def test_model_send_routes_hydrate_before_context_build(monkeypatch, path):
-    # A real SessionManager over a real (temp) DB — a stub here would only
+    # A real SessionManager over a real (temp) DB - a stub here would only
     # assert that the stub hydrates, not that SessionManager does.
     engine, db_factory = _database()
     _seed_session(db_factory, message_count=6, stored_count=8)

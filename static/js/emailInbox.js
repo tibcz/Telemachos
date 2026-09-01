@@ -1,5 +1,5 @@
 /**
- * emailInbox.js — Email inbox list in sidebar.
+ * emailInbox.js - Email inbox list in sidebar.
  * Follows the session list pattern: list items, click to open as document, archive, etc.
  */
 
@@ -138,7 +138,7 @@ window.addEventListener('email-answered', (e) => {
     item.querySelectorAll('.email-tag-urgent, .email-tag-reply-soon, .email-tag-action-needed').forEach(n => n.remove());
     const check = item.querySelector('.email-done-check');
     if (check) check.classList.add('active');
-    // Auto-mark from sending a reply — flash the row so the user sees the
+    // Auto-mark from sending a reply - flash the row so the user sees the
     // state change without staring at it. Class self-removes after the
     // animation so it doesn't replay on re-renders.
     item.classList.add('email-auto-done-flash');
@@ -167,11 +167,11 @@ export function init(documentModule) {
     onEmailClick: async (opts) => {
       // Reply / AI Reply / Compose open a draft in the doc editor.
       //  - Desktop: dock the email to the LEFT so it stays visible beside the
-      //    reply draft (which opens on the right) — read-while-you-reply.
+      //    reply draft (which opens on the right) - read-while-you-reply.
       //  - Mobile: there's no room for a split, so minimize the email modal;
       //    the draft comes to the front and the inbox stays a tap away as a
       //    minimized chip.
-      // Never call closeEmailLibrary() here — that destroys state.
+      // Never call closeEmailLibrary() here - that destroys state.
       try {
         if (Modals.isRegistered('email-lib-modal')) {
           const emailModal = document.getElementById('email-lib-modal');
@@ -181,7 +181,7 @@ export function init(documentModule) {
           // Mobile: do NOT pre-mount the pane here. The load path (open/inject)
           // mounts it exactly once when the doc is ready; the doc-view z-index
           // rule slides it up OVER the email (which stays behind). Pre-mounting
-          // here caused a double-mount — the early pane was torn down by the
+          // here caused a double-mount - the early pane was torn down by the
           // compose session-switch, then remounted, which looked like a doc
           // flashing before the smooth slide.
         }
@@ -225,8 +225,8 @@ function _bringEmailReplyDraftToFrontOnMobile() {
 }
 
 // When the document editor pane opens (body.doc-view turns on), make sure the
-// email modal is on the LEFT — even if it was previously docked RIGHT or
-// floating — so the email and the doc always end up side-by-side. The actual
+// email modal is on the LEFT - even if it was previously docked RIGHT or
+// floating - so the email and the doc always end up side-by-side. The actual
 // width math lives in modalSnap.js (`_anchorLeftDock` shrinks the email when
 // the doc is rendered to the right).
 let _docOpenObs = null;
@@ -246,7 +246,7 @@ function _watchDocOpenToReDockEmail() {
           }
         }
         // Same treatment for an open email-reader modal (one specific email
-        // open standalone — typical "click email, click doc" flow).
+        // open standalone - typical "click email, click doc" flow).
         document.querySelectorAll('.modal[id^="email-reader-"]').forEach(m => {
           if (m.classList.contains('hidden')) return;
           if (m.classList.contains('modal-left-docked')) return;
@@ -304,16 +304,16 @@ function _maybeOpenFromHash() {
   try { history.replaceState(null, '', window.location.pathname + window.location.search); } catch (_) {}
 }
 
-// Tint helper — turns the urgent-email-scanner's max_score into a dot color.
+// Tint helper - turns the urgent-email-scanner's max_score into a dot color.
 // Falls back to the default (blue / unset) when scanner is off or no urgent.
 function _urgencyColor(score) {
-  if (score >= 3) return 'var(--color-error, #e06c75)';   // red — urgent now
-  if (score === 2) return '#f0ad4e';                       // orange — reply soon
+  if (score >= 3) return 'var(--color-error, #e06c75)';   // red - urgent now
+  if (score === 2) return '#f0ad4e';                       // orange - reply soon
   return '';                                                // default (blue / theme)
 }
 
 async function _refreshUnreadCount() {
-  // Default the dot to hidden — only the verified "new mail above threshold"
+  // Default the dot to hidden - only the verified "new mail above threshold"
   // path below should turn it on. Without this, a fetch error or a backend
   // returning malformed data left a stale dot from a previous account/session.
   const dot = document.getElementById('email-unread-dot');
@@ -359,13 +359,13 @@ async function _refreshUnreadCount() {
       dot.style.backgroundColor = '';
     }
   } catch (e) {
-    // Network/parse error — keep the dot hidden (default at the top).
+    // Network/parse error - keep the dot hidden (default at the top).
     if (dot) dot.style.display = 'none';
   }
 }
 
 export function markInboxAsSeen() {
-  // Called when the user opens the inbox popup — clears the notif dot
+  // Called when the user opens the inbox popup - clears the notif dot
   try {
     // Find current max UID so subsequent arrivals trigger the dot
     fetch(emailApiUrl('/api/email/unread-state', { folder: 'INBOX' }))
@@ -600,8 +600,8 @@ function _createEmailItem(em) {
         if (k.endsWith(suffix)) {
           const v = us.per_uid[k] || {};
           const score = v.score || 0;
-          if (score >= 3) { _unreadColor = 'var(--color-error, #e06c75)'; _unreadTitle = 'Urgent — ' + (v.reason || 'needs reply now'); }
-          else if (score === 2) { _unreadColor = '#f0ad4e'; _unreadTitle = 'Reply soon — ' + (v.reason || ''); }
+          if (score >= 3) { _unreadColor = 'var(--color-error, #e06c75)'; _unreadTitle = 'Urgent - ' + (v.reason || 'needs reply now'); }
+          else if (score === 2) { _unreadColor = '#f0ad4e'; _unreadTitle = 'Reply soon - ' + (v.reason || ''); }
           break;
         }
       }
@@ -615,7 +615,7 @@ function _createEmailItem(em) {
   const tagPills = _emailTagGroupHtml(tags, em);
 
   const spamTag = _showEmailTags && em.is_spam_verdict
-    ? `<span class="email-tag email-tag-spam" title="AI flagged as spam — click ✓ to unflag">spam <button class="email-spam-unflag" data-uid="${em.uid}" title="Not spam">\u2713</button></span>`
+    ? `<span class="email-tag email-tag-spam" title="AI flagged as spam - click ✓ to unflag">spam <button class="email-spam-unflag" data-uid="${em.uid}" title="Not spam">\u2713</button></span>`
     : '';
 
   const senderAddr = (em.from_address || '').toLowerCase();
@@ -682,7 +682,7 @@ function _createEmailItem(em) {
     });
   }
 
-  // Click to open — do NOT close sidebar
+  // Click to open - do NOT close sidebar
   item.addEventListener('click', (e) => {
     if (item.dataset.swipeBlock === '1') return;
     _openEmail(em, item);
@@ -707,7 +707,7 @@ function _createEmailItem(em) {
       dx = t.clientX - startX;
       dy = t.clientY - startY;
       if (Math.abs(dy) > VERT_CANCEL) {
-        // Vertical scroll — cancel swipe
+        // Vertical scroll - cancel swipe
         swiping = false;
         item.style.transform = '';
         return;
@@ -725,7 +725,7 @@ function _createEmailItem(em) {
       swiping = false;
       item.style.transition = 'transform 0.2s ease, opacity 0.2s ease';
       if (dx <= -HORIZ_THRESHOLD) {
-        // Trigger archive — animate off-screen, suppress next click
+        // Trigger archive - animate off-screen, suppress next click
         swiped = true;
         item.dataset.swipeBlock = '1';
         item.style.transform = 'translateX(-100%)';
@@ -770,7 +770,7 @@ async function _openEmail(em, itemEl, preloadedData = null, mode = 'reply', note
   const aiReplyMode = mode === 'ai-reply-fast' ? 'fast' : '';
   const wantsAiReply = mode === 'ai-reply' || !!aiReplyMode;
   // Body pre-fill from the agent's open_email_reply tool call takes the
-  // same insertion slot as an AI-suggested body — both land just before
+  // same insertion slot as an AI-suggested body - both land just before
   // the quoted-original block.
   let aiSuggestedBody = (typeof prefilledBody === 'string' && prefilledBody.trim()) ? prefilledBody.trim() : null;
   if (wantsAiReply) {
@@ -984,7 +984,7 @@ async function _openEmail(em, itemEl, preloadedData = null, mode = 'reply', note
       content += `\n${_origBody}`;
     } else {
       const quotedBody = _origBody.split('\n').map(l => '> ' + l).join('\n');
-      // Inject AI-suggested body if present. No leading newline — the header
+      // Inject AI-suggested body if present. No leading newline - the header
       // block already ends with "---\n", so the reply must start on the very
       // first body line, not one row down.
       if (aiSuggestedBody) {
@@ -1055,7 +1055,7 @@ async function _openEmail(em, itemEl, preloadedData = null, mode = 'reply', note
           const errText = await docRes.text();
           if (!isCurrentOpen()) return;
           console.error('[reply-debug] POST /api/document failed', docRes.status, errText);
-          // uiModule isn't statically imported here — use the dynamic
+          // uiModule isn't statically imported here - use the dynamic
           // import pattern the rest of this file uses. (Previously this
           // referenced a bare `uiModule`, throwing a ReferenceError that
           // the outer catch swallowed → reply silently did nothing.)
@@ -1069,7 +1069,7 @@ async function _openEmail(em, itemEl, preloadedData = null, mode = 'reply', note
           if (!wasOpen) _docModule.openPanel();
           await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
           if (!isCurrentOpen()) return;
-          // Use the doc dict from the POST directly — avoids a 404 race
+          // Use the doc dict from the POST directly - avoids a 404 race
           // when the GET fires before the new row is visible to the read
           // connection (or when caching is interfering). loadDocument's
           // GET path can still be used as a fallback.
@@ -1087,7 +1087,7 @@ async function _openEmail(em, itemEl, preloadedData = null, mode = 'reply', note
     if (!isCurrentOpen()) return;
     console.error('Failed to open email:', e);
     // Surface the failure so a silent throw in the reply flow doesn't
-    // look like "nothing happened". Dynamic import — uiModule isn't a
+    // look like "nothing happened". Dynamic import - uiModule isn't a
     // static import in this file.
     const msg = e && e.message ? e.message : String(e);
     import('./ui.js').then(m => m.showError && m.showError('Reply failed: ' + msg)).catch(() => {});
@@ -1187,7 +1187,7 @@ function _showRemindSubmenu(em, parentDropdown) {
     document.body.appendChild(tmp);
     tmp.focus();
     if (typeof tmp.showPicker === 'function') { try { tmp.showPicker(); } catch {} }
-    // Cleanup helper — also unwires the global listeners so they don't
+    // Cleanup helper - also unwires the global listeners so they don't
     // linger after dismiss.
     const _cleanup = () => {
       tmp.remove();
@@ -1195,12 +1195,12 @@ function _showRemindSubmenu(em, parentDropdown) {
       document.removeEventListener('mousedown', _onDocClick, true);
     };
     const _onKey = (ev) => { if (ev.key === 'Escape') _cleanup(); };
-    // Click-outside dismiss. Replaces the old blur-based auto-remove —
+    // Click-outside dismiss. Replaces the old blur-based auto-remove -
     // blur fires whenever the native datetime popup steals focus, so
     // the input vanished before the user could click any date. Now we
     // only dismiss when the user clicks something that is NOT the
     // input itself (the native picker popup is a browser-owned overlay
-    // OUTSIDE the document, so its clicks don't fire here at all — no
+    // OUTSIDE the document, so its clicks don't fire here at all - no
     // false dismissals).
     const _onDocClick = (ev) => { if (ev.target !== tmp) _cleanup(); };
     tmp.addEventListener('change', async () => {
@@ -1390,7 +1390,7 @@ async function _createEmailChat(emailData, opts = {}) {
 async function _composeNew() {
   if (!_docModule) return;
   // NOTE: don't open the panel here. Creating the email-scoped chat below can
-  // switch sessions, which tears the panel down — so an early open would mount
+  // switch sessions, which tears the panel down - so an early open would mount
   // the pane, get closed, then injectFreshDoc remounts it: a visible flash
   // (doc shows for a frame, then slides up again). Mount once, at injectFreshDoc,
   // after the session + doc exist.

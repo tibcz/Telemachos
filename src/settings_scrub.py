@@ -4,10 +4,10 @@ Deliberately dependency-light (stdlib only) and separate from
 ``routes/auth_routes.py`` so it can be imported and unit-tested without dragging
 in the FastAPI app / auth / database import chain.
 
-``/api/auth/settings`` is auth-exempt — the frontend (and the pre-login page)
+``/api/auth/settings`` is auth-exempt - the frontend (and the pre-login page)
 read it for keybinds + TTS prefs, so non-admin and unauthenticated callers get a
 *scrubbed* copy. Secrets (provider API keys, IMAP/SMTP passwords, OAuth tokens)
-must NOT leak to them — load-bearing when the app is reachable over a Cloudflare
+must NOT leak to them - load-bearing when the app is reachable over a Cloudflare
 tunnel / reverse proxy. Scrubbing is deep (recurses nested dicts/lists) and keyed
 on secret-shaped names.
 """

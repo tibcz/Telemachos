@@ -1,4 +1,4 @@
-// compare/state.js — shared mutable state for compare modules
+// compare/state.js - shared mutable state for compare modules
 const state = {
   API_BASE: '',
   isActive: false,
@@ -35,7 +35,7 @@ const state = {
                                    // stream.js reads this and stamps ✓/✗ per pane
 };
 
-/** Reset transient state to defaults — useful for clean restarts. */
+/** Reset transient state to defaults - useful for clean restarts. */
 export function reset() {
   state._openingSelector = false;
   state._streaming = false;

@@ -1,11 +1,11 @@
 """Regression: a present-but-unhealthy MemoryVectorStore must survive initialization.
 
 When MemoryVectorStore._initialize() fails (ChromaDB unavailable / embeddings not
-installed) it swallows the exception and leaves `.healthy == False` — the object
+installed) it swallows the exception and leaves `.healthy == False` - the object
 exists but is unhealthy. app_initializer.initialize_managers() previously reset that
 object to ``None`` in the ``else`` branch, so service_health.chromadb_health() saw
 ``memory_vector is None`` and reported the vector memory as DISABLED ("not
-configured") instead of DEGRADED/DOWN ("initialization failed") — losing the
+configured") instead of DEGRADED/DOWN ("initialization failed") - losing the
 diagnostic distinction the /api/diagnostics/services probe is built to surface.
 
 This test fails before the fix (memory_vector is None) and passes after it.

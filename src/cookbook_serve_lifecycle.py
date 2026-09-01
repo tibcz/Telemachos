@@ -1,7 +1,7 @@
 """Cookbook serve lifecycle: kills scheduler-owned serves whose end-of-
 window has passed.
 
-Pairs with action_cookbook_serve in builtin_actions.py — that action
+Pairs with action_cookbook_serve in builtin_actions.py - that action
 stamps the task it launches with `_scheduledStopAtMs`, this loop ticks
 every 60s and kills any serve whose stamp is in the past.
 
@@ -93,7 +93,7 @@ async def _delete_endpoint_for_task(task: dict) -> None:
 async def _stop_serve(session_id: str, remote_host: str = "", ssh_port: str = "") -> bool:
     """Kill the tmux session that hosts the serve.
 
-    There's no `/api/model/stop` route — the cookbook UI and the chat
+    There's no `/api/model/stop` route - the cookbook UI and the chat
     agent both kill via `/api/shell/exec` running a `tmux kill-session`
     (wrapped in ssh for remote hosts). Mirror that here so the
     lifecycle loop can actually stop scheduler-launched serves at
@@ -124,7 +124,7 @@ async def _stop_serve(session_id: str, remote_host: str = "", ssh_port: str = ""
             ec = data.get("exit_code")
             # tmux returns non-zero when the session is already gone
             # ("can't find session: ..."). That's still "stop succeeded"
-            # from our POV — the goal is no live session at the end.
+            # from our POV - the goal is no live session at the end.
             if ec in (None, 0):
                 return True
             stderr = (data.get("stderr") or "").lower()

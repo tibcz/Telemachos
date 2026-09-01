@@ -7,9 +7,9 @@
 // are not announced as buttons, so keyboard and screen-reader users cannot
 // reach or operate them.
 //
-// This module enhances those rows in place — making them focusable
+// This module enhances those rows in place - making them focusable
 // (tabindex=0), announcing them as buttons when it's safe to do so, and
-// activating them with Enter / Space — without changing how they look or
+// activating them with Enter / Space - without changing how they look or
 // how they behave for mouse users. The visible focus ring already exists in
 // style.css (`.list-item:focus-visible`); it simply never fired because the
 // rows were never focusable.
@@ -21,7 +21,7 @@
   var ROW_SELECTOR = ['#sidebar .list-item', '#user-bar-profile'].join(',');
 
   // Native interactive descendants. If a row contains one of these we must
-  // NOT give the row role="button" — a button inside a button is invalid
+  // NOT give the row role="button" - a button inside a button is invalid
   // (axe "nested-interactive") and confuses screen readers. Such rows still
   // become focusable + Enter/Space-activatable, just without the role.
   var NESTED_INTERACTIVE =

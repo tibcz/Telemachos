@@ -1,4 +1,4 @@
-"""Regression tests for issue #1551 — deep research reported "No information
+"""Regression tests for issue #1551 - deep research reported "No information
 could be gathered" and showed nothing, even though the search rounds had already
 extracted findings.
 

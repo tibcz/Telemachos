@@ -170,7 +170,7 @@ def test_find_owned_returns_none_for_other_owner(tmp_path, monkeypatch):
 
 
 # ---------------------------------------------------------------------------
-# Route-level tests — valid paths work
+# Route-level tests - valid paths work
 # ---------------------------------------------------------------------------
 
 def test_detail_returns_data_for_owner(tmp_path):
@@ -201,7 +201,7 @@ def test_detail_hides_other_owners_research_with_404(tmp_path):
 
 
 # ---------------------------------------------------------------------------
-# Route-level tests — traversal and injection rejected
+# Route-level tests - traversal and injection rejected
 # ---------------------------------------------------------------------------
 
 _TRAVERSAL_IDS = [
@@ -242,7 +242,7 @@ def test_delete_rejects_traversal(bad_id):
 
 
 # ---------------------------------------------------------------------------
-# Route-level tests — traversal does not touch files outside DEEP_RESEARCH_DIR
+# Route-level tests - traversal does not touch files outside DEEP_RESEARCH_DIR
 # ---------------------------------------------------------------------------
 
 def test_delete_traversal_does_not_delete_outside_file(tmp_path, monkeypatch):

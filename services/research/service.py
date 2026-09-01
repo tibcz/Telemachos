@@ -1,5 +1,5 @@
 # services/research/service.py
-"""Research service — deep research with LLM-in-the-loop."""
+"""Research service - deep research with LLM-in-the-loop."""
 
 import re
 from dataclasses import dataclass, field

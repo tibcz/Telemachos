@@ -24,8 +24,8 @@ environment.
 
 ## What's in the bundle
 
-- `skills/telemachos/SKILL.md` — the skill definition Claude Code reads.
-- `skills/telemachos/scripts/telemachos_api.py` — small helper that calls the scoped
+- `skills/telemachos/SKILL.md` - the skill definition Claude Code reads.
+- `skills/telemachos/scripts/telemachos_api.py` - small helper that calls the scoped
   `/api/codex/*` endpoints (these are the canonical scope-gated agent API; the
   `codex` path is historic and shared by all agent integrations).
 

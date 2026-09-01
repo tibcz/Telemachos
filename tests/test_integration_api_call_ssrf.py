@@ -81,7 +81,7 @@ async def test_hostname_resolving_to_metadata_ip_is_rejected(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_public_ip_base_url_still_requests():
-    # Public literal — no DNS involved.
+    # Public literal - no DNS involved.
     result, client = await _call("http://93.184.216.34")
 
     assert result.get("exit_code") == 0
@@ -139,7 +139,7 @@ async def test_connection_is_pinned_to_the_validated_ip(monkeypatch):
     public IP, and the request must be pinned to *that* IP so a host that
     rebinds to the metadata range at connect time can't be reached with the
     integration's auth headers. Static resolution passing the guard is not
-    enough — a plain client would re-resolve at connect."""
+    enough - a plain client would re-resolve at connect."""
     monkeypatch.setattr("src.url_safety._default_resolver",
                         lambda host: ["93.184.216.34"])
     result, transport, client = await _call_capturing_transport(
@@ -203,7 +203,7 @@ async def test_connect_falls_back_from_dead_first_to_live_second():
     stream = await backend.connect_tcp("original.hostname.example", 443, timeout=5.0)
 
     assert isinstance(stream, _FakeStream)
-    # Tried the dead address first, then the live one — never the hostname.
+    # Tried the dead address first, then the live one - never the hostname.
     assert [host for host, _ in backend._real.attempts] == ["203.0.113.10", "198.51.100.7"]
     # Fallback shared one budget: the second attempt got the time left, not a fresh 5s.
     assert backend._real.attempts[1][1] <= 5.0
@@ -223,7 +223,7 @@ async def test_connect_raises_when_every_validated_address_is_dead():
 async def test_pinned_transport_reuses_httpx_ca_trust(monkeypatch):
     """TLS trust must come from the same builder the default httpx client uses
     (certifi + SSL_CERT_FILE / SSL_CERT_DIR via trust_env), not from
-    ssl.create_default_context()'s system roots — otherwise chains that verified
+    ssl.create_default_context()'s system roots - otherwise chains that verified
     under the old default client can silently stop verifying."""
     sentinel = ssl.create_default_context()
     calls = []
@@ -245,7 +245,7 @@ async def test_pinned_transport_reuses_httpx_ca_trust(monkeypatch):
 async def test_real_socket_falls_back_from_dead_first_to_live_second():
     """End-to-end over real loopback sockets: pin [127.0.0.2 (nothing
     listening), 127.0.0.1 (live)], and the request must succeed by falling back
-    to the second address while the Host header stays the original hostname —
+    to the second address while the Host header stays the original hostname -
     i.e. only the socket destination moved, vhost/SNI routing did not."""
     captured = {}
 
@@ -283,7 +283,7 @@ async def test_ip_literal_base_url_still_pins_and_is_not_rejected():
 
     check_outbound_url resolves even a literal (getaddrinfo returns the address
     itself), so the captured list is populated and the pin is a no-op rather
-    than a rejection. Uses the real resolver on purpose — no monkeypatch — so
+    than a rejection. Uses the real resolver on purpose - no monkeypatch - so
     this would catch the fail-closed branch firing on a literal.
     """
     result, transport, client = await _call_capturing_transport(

@@ -1,4 +1,4 @@
-"""Preset routes — /api/presets GET, /api/presets/custom POST, user templates CRUD."""
+"""Preset routes - /api/presets GET, /api/presets/custom POST, user templates CRUD."""
 
 import asyncio
 import logging
@@ -95,7 +95,7 @@ def setup_preset_routes(preset_manager) -> APIRouter:
                 "The user will give you a character name and/or rough notes. "
                 "Write a concise, effective system prompt (3-6 sentences) that captures the character's personality, "
                 "speaking style, knowledge areas, and behavioral guidelines. "
-                "Output ONLY the system prompt text — no quotes, no preamble, no explanation."
+                "Output ONLY the system prompt text - no quotes, no preamble, no explanation."
             )},
             {"role": "user", "content": user_input},
         ]

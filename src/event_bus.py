@@ -31,7 +31,7 @@ def get_task_scheduler():
 
 
 def fire_event(event_name: str, owner: Optional[str] = None):
-    """Fire an event — increments counters and triggers tasks that hit threshold.
+    """Fire an event - increments counters and triggers tasks that hit threshold.
 
     Safe to call from both sync and async contexts.
     """
@@ -39,7 +39,7 @@ def fire_event(event_name: str, owner: Optional[str] = None):
         loop = asyncio.get_running_loop()
         loop.create_task(_handle_event(event_name, owner))
     except RuntimeError:
-        # No running loop — run in a new one (shouldn't happen in FastAPI)
+        # No running loop - run in a new one (shouldn't happen in FastAPI)
         asyncio.run(_handle_event(event_name, owner))
 
 

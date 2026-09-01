@@ -1,15 +1,15 @@
 """Regression: api_call reaches the model for API-integration intent (#3794).
 
-The repro prompt — "Use the api_call tool to call Home Assistant GET
-/api/states" — matched no domain in ``_classify_agent_request``, so it was
+The repro prompt - "Use the api_call tool to call Home Assistant GET
+/api/states" - matched no domain in ``_classify_agent_request``, so it was
 treated as low-signal. The agent loop then skipped retrieval and the function
 schema filter sent only the always-available tools (manage_memory / ask_user /
 update_plan); ``api_call`` was never advertised to the model even though the
 ToolIndex description existed. Adding the registry description alone did not fix
 runtime selection.
 
-These tests drive the real path the agent uses — classifier -> domain tool map
-(relevant tools) -> FUNCTION_TOOL_SCHEMAS filter — using the actual functions and
+These tests drive the real path the agent uses - classifier -> domain tool map
+(relevant tools) -> FUNCTION_TOOL_SCHEMAS filter - using the actual functions and
 constants, so they would fail on the pre-fix code (empty domains -> low-signal ->
 no api_call). They skip locally when the agent's heavy deps (httpx/embeddings)
 are absent, and run in CI where they are installed.

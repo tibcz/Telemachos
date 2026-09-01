@@ -74,7 +74,7 @@ def test_portal_z_sits_above_a_modal_whose_counter_has_climbed_past_10001():
 
 def test_portal_z_uses_chip_floor_when_the_open_modal_sits_below_it():
     # A modal raised to 5000 is still below the dock-chip floor, so the floor
-    # (10030) wins and the dropdown lands at 10031 — never below a pinned chip.
+    # (10030) wins and the dropdown lands at 10031 - never below a pinned chip.
     values = _node_eval(
         textwrap.dedent(
             f"""

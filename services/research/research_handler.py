@@ -39,14 +39,14 @@ class ResearchHandler:
             self._legacy_engine = ResearchOrchestrator(config)
             logger.info("Legacy ResearchOrchestrator initialized (fallback)")
         except ImportError:
-            logger.info("Legacy research_engine.py not found — DeepResearcher only")
+            logger.info("Legacy research_engine.py not found - DeepResearcher only")
             self._legacy_engine = None
         except Exception as e:
             logger.warning(f"Legacy research engine init failed: {e}")
             self._legacy_engine = None
 
     # ------------------------------------------------------------------
-    # Task registry — background research with persistence
+    # Task registry - background research with persistence
     # ------------------------------------------------------------------
 
     def start_research(

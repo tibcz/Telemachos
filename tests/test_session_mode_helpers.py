@@ -3,7 +3,7 @@
 chat_routes.py persists a session's "mode" in three best-effort spots (read
 current mode, persist the effective mode, set research_pending). Those spots
 previously hand-rolled `SessionLocal()` with `.close()` as the LAST statement
-inside a try/except — so any error before close() (e.g. a SQLite "database is
+inside a try/except - so any error before close() (e.g. a SQLite "database is
 locked" under concurrent streams) leaked the connection. With the default
 QueuePool for file SQLite (5 + 10 overflow), accumulated leaks exhaust the
 pool and the app can no longer obtain a DB session until restart.

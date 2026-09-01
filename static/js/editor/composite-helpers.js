@@ -1,5 +1,5 @@
 /**
- * Pure composite helpers — flatten a layer list into a single canvas
+ * Pure composite helpers - flatten a layer list into a single canvas
  * for thumbnails / merged-mask use.
  *
  * Both helpers are stateless: the caller passes everything they need
@@ -51,7 +51,7 @@ export function buildThumbnail(layers, imgW, imgH, offsets, maxDim, quality = 0.
  * Union of every visible mask sub-layer across `layers`, rendered as a
  * binary white canvas the size of the document.
  *
- * `lighter` composite = additive — overlapping pixels stay clamped at
+ * `lighter` composite = additive - overlapping pixels stay clamped at
  * 255, so wherever any mask painted, the result is solid white.
  * Returns null when no mask layer contributed any pixels (so the caller
  * can early-out cleanly).

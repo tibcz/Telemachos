@@ -1,4 +1,4 @@
-"""Gallery routes — browsable library for photos and AI-generated images."""
+"""Gallery routes - browsable library for photos and AI-generated images."""
 
 import os
 import base64
@@ -371,7 +371,7 @@ def setup_gallery_routes() -> APIRouter:
             if album_id and user is not None:
                 _get_or_404_album(db, album_id, user)
 
-            # SECURITY: scope the dup-detect to THIS user — otherwise a
+            # SECURITY: scope the dup-detect to THIS user - otherwise a
             # caller can probe whether someone else uploaded the same
             # file (the response leaks the existing row's id+filename).
             _dup_q = db.query(GalleryImage).filter(
@@ -398,7 +398,7 @@ def setup_gallery_routes() -> APIRouter:
             img_path = img_dir / filename
             img_path.write_bytes(content)
 
-            # Extract EXIF for images only — PIL can't parse video containers
+            # Extract EXIF for images only - PIL can't parse video containers
             # and the failure path logs a noisy WARNING. We'll add ffprobe-based
             # video metadata extraction in a follow-up.
             exif = {} if is_video else _extract_exif(content)
@@ -594,7 +594,7 @@ def setup_gallery_routes() -> APIRouter:
                 if resp.status_code == 200:
                     data = resp.json()
                     return {"image": data.get("data", [{}])[0].get("b64_json", "")}
-                # Fallback: no upscale endpoint — return error
+                # Fallback: no upscale endpoint - return error
                 return {"error": f"Upscale endpoint not available ({resp.status_code})"}
         except Exception:
             logger.exception("ai_upscale: request failed")
@@ -726,7 +726,7 @@ def setup_gallery_routes() -> APIRouter:
                 ))
 
             # Tag filter. The UI stacks multiple tag pills by passing them
-            # comma-separated — each tag adds a separate AND-filter so the
+            # comma-separated - each tag adds a separate AND-filter so the
             # result set narrows as the user piles tags on. A single tag
             # (no commas) is the original behaviour.
             if tag:
@@ -753,7 +753,7 @@ def setup_gallery_routes() -> APIRouter:
 
             # Total before pagination
             total = q.count()
-            # How many of those have AI tags — surfaced as "X/Y photos tagged"
+            # How many of those have AI tags - surfaced as "X/Y photos tagged"
             # in the AI-tagging settings header.
             total_tagged = q.filter(
                 GalleryImage.ai_tags.isnot(None), GalleryImage.ai_tags != ""
@@ -950,7 +950,7 @@ def setup_gallery_routes() -> APIRouter:
                 raise HTTPException(404, "Image not found")
             if req.tags is not None:
                 # Drop any tag from the user-tags field that already lives in
-                # ai_tags — earlier flows wrote AI suggestions to both fields
+                # ai_tags - earlier flows wrote AI suggestions to both fields
                 # and the UI showed every photo with the same chips twice.
                 ai_set = {t.strip().lower() for t in (img.ai_tags or '').split(',') if t.strip()}
                 cleaned = []
@@ -968,7 +968,7 @@ def setup_gallery_routes() -> APIRouter:
             if req.album_id is not None:
                 if req.album_id:
                     # Validate the target album belongs to the caller before
-                    # moving the image into it — mirrors add_to_album, so you
+                    # moving the image into it - mirrors add_to_album, so you
                     # cannot file your image into another user's album.
                     _get_or_404_album(db, req.album_id, user)
                     img.album_id = req.album_id
@@ -1172,7 +1172,7 @@ def setup_gallery_routes() -> APIRouter:
                 from core.database import ChatMessage as _ChatMessage
                 from sqlalchemy import or_ as _or
                 import json as _json
-                # Match by image_id OR by filename — older messages
+                # Match by image_id OR by filename - older messages
                 # (saved before we threaded image_id through the SSE)
                 # only carry image_url containing the filename.
                 msgs = db.query(_ChatMessage).filter(
@@ -1240,7 +1240,7 @@ def setup_gallery_routes() -> APIRouter:
                 if msgs:
                     db.commit()
             except Exception as _e:
-                # Cleanup is best-effort — never block the delete itself.
+                # Cleanup is best-effort - never block the delete itself.
                 logger.warning(f"chat-history cleanup after image delete failed: {_e}")
 
             return {"status": "deleted", "id": image_id}
@@ -1253,7 +1253,7 @@ def setup_gallery_routes() -> APIRouter:
         finally:
             db.close()
 
-    # ---- POST /api/image/inpaint — proxy to diffusion server OR OpenAI ----
+    # ---- POST /api/image/inpaint - proxy to diffusion server OR OpenAI ----
     @router.post("/api/image/inpaint")
     async def inpaint_proxy(request: Request):
         """Forward inpaint request. If the selected endpoint is OpenAI, re-shape
@@ -1289,7 +1289,7 @@ def setup_gallery_routes() -> APIRouter:
                 db.close()
         else:
             # Resolve the client-supplied base to a registered visible endpoint.
-            # Admins are not exempted — gallery proxy routes must use a DB row
+            # Admins are not exempted - gallery proxy routes must use a DB row
             # so the outbound URL never depends directly on request-body input.
             db = SessionLocal()
             try:
@@ -1313,7 +1313,7 @@ def setup_gallery_routes() -> APIRouter:
             #   OpenAI: transparent alpha = regenerate, opaque = keep
             # So we convert the incoming PNG mask into an alpha-channel PNG.
             if not api_key:
-                raise HTTPException(400, "OpenAI endpoint has no api_key stored — edit it in Endpoints settings.")
+                raise HTTPException(400, "OpenAI endpoint has no api_key stored - edit it in Endpoints settings.")
             import base64, io
             try:
                 from PIL import Image
@@ -1361,10 +1361,10 @@ def setup_gallery_routes() -> APIRouter:
                 "mask": ("mask.png", mask_buf.getvalue(), "image/png"),
             }
             # Honor explicit model selection from the editor; fall back to gpt-image-1.
-            # dall-e-3 has no edit endpoint — refuse it loudly so the user picks again.
+            # dall-e-3 has no edit endpoint - refuse it loudly so the user picks again.
             oa_model = chosen_model or "gpt-image-1"
             if "dall-e-3" in oa_model:
-                raise HTTPException(400, "dall-e-3 doesn't support image edits — pick gpt-image-1 or dall-e-2")
+                raise HTTPException(400, "dall-e-3 doesn't support image edits - pick gpt-image-1 or dall-e-2")
             data = {
                 "model": oa_model,
                 "prompt": body.get("prompt", ""),
@@ -1391,7 +1391,7 @@ def setup_gallery_routes() -> APIRouter:
                         raise HTTPException(502, "OpenAI returned no image")
 
                     # OpenAI's edits API doesn't truly preserve unmasked
-                    # pixels — gpt-image-1 regenerates the whole image,
+                    # pixels - gpt-image-1 regenerates the whole image,
                     # so even areas the user didn't mask come back
                     # slightly different. Composite the model output onto
                     # the ORIGINAL source using the user's mask, so only
@@ -1506,7 +1506,7 @@ def setup_gallery_routes() -> APIRouter:
             logger.exception("inpaint_proxy: request failed")
             raise HTTPException(502, "Inpaint request failed")
 
-    # ---- POST /api/image/harmonize — proper img2img call ----
+    # ---- POST /api/image/harmonize - proper img2img call ----
     # Earlier version routed through inpaint with a full-white mask, but
     # most backends interpret "100% mask coverage" as "regenerate from
     # scratch using the prompt", ignoring the source. Real img2img sends
@@ -1554,7 +1554,7 @@ def setup_gallery_routes() -> APIRouter:
                 db.close()
         else:
             # Resolve the client-supplied base to a registered visible endpoint.
-            # Admins are not exempted — gallery proxy routes must use a DB row
+            # Admins are not exempted - gallery proxy routes must use a DB row
             # so the outbound URL never depends directly on request-body input.
             db = SessionLocal()
             try:
@@ -1592,7 +1592,7 @@ def setup_gallery_routes() -> APIRouter:
         body_mask_b64 = body.get("body_mask") or body.get("mask")
         seam_mask_b64 = body.get("seam_mask")
 
-        # OpenAI's image API has no img2img mode — its edits endpoint
+        # OpenAI's image API has no img2img mode - its edits endpoint
         # regenerates pixels from the prompt rather than preserving the
         # source. Earlier hack (alpha-blend the regen back at `strength`)
         # produced visibly broken results, so we refuse and tell the
@@ -1606,7 +1606,7 @@ def setup_gallery_routes() -> APIRouter:
 
         # Try img2img-shaped routes in order. Most self-hosted servers
         # expose at least one of these. Whatever returns 200 wins.
-        # /images/harmonize is our own diffusion_server.py's native endpoint —
+        # /images/harmonize is our own diffusion_server.py's native endpoint -
         # try it first since it's purpose-built for this and tolerates models
         # that only ship an inpaint pipeline.
         harmonize_payload = {
@@ -1676,7 +1676,7 @@ def setup_gallery_routes() -> APIRouter:
                     data = r.json()
                     # Normalise return shape.
                     if isinstance(data, dict):
-                        # Server returned 200 with an explicit error field —
+                        # Server returned 200 with an explicit error field -
                         # surface it now instead of trying the other routes
                         # (otherwise the real error gets buried under 404s).
                         if data.get("error") and not data.get("image"):
@@ -1705,7 +1705,7 @@ def setup_gallery_routes() -> APIRouter:
                     logger.warning("harmonize: can't reach diffusion server at %s", base)
                     raise HTTPException(502, "Can't reach diffusion server")
                 except httpx.TimeoutException:
-                    raise HTTPException(504, "Harmonize timed out (240s) — restart the diffusion server or lower Color match / disable Seam fix")
+                    raise HTTPException(504, "Harmonize timed out (240s) - restart the diffusion server or lower Color match / disable Seam fix")
         raise HTTPException(502,
             "No supported img2img route responded. "
             "Your diffusion server needs to expose one of: "
@@ -1786,7 +1786,7 @@ def setup_gallery_routes() -> APIRouter:
             return {"error": "Denoise failed"}
 
     # ---- POST /api/image/upscale-local ----
-    # Local Real-ESRGAN upscale (2× or 4×). Self-contained — no diffusion
+    # Local Real-ESRGAN upscale (2× or 4×). Self-contained - no diffusion
     # server required. Used by the editor's AI Upscale button.
     @router.post("/api/image/upscale-local")
     async def upscale_image_local(request: Request):
@@ -2039,7 +2039,7 @@ def setup_gallery_routes() -> APIRouter:
         # the user's hint is forced transparent.
         if hint is not None:
             r, g, b, a = result.split()
-            # Multiply alphas — use ImageChops to stay in PIL-pure code.
+            # Multiply alphas - use ImageChops to stay in PIL-pure code.
             from PIL import ImageChops
             a = ImageChops.multiply(a, hint)
             result = Image.merge("RGBA", (r, g, b, a))
@@ -2103,8 +2103,8 @@ def setup_gallery_routes() -> APIRouter:
             return {"image": base64.b64encode(buf.getvalue()).decode()}
 
         except ImportError:
-            # GFPGAN not available — use PIL-based enhancement (no AI, but works everywhere)
-            logger.info("GFPGAN not available — using PIL enhancement fallback")
+            # GFPGAN not available - use PIL-based enhancement (no AI, but works everywhere)
+            logger.info("GFPGAN not available - using PIL enhancement fallback")
             # Multi-step enhancement: denoise → sharpen → contrast → color boost
             enhanced = img.filter(ImageFilter.MedianFilter(size=3))  # light denoise
             enhanced = enhanced.filter(ImageFilter.UnsharpMask(radius=2, percent=150, threshold=3))  # sharpen
@@ -2253,21 +2253,21 @@ def setup_gallery_routes() -> APIRouter:
             from src.document_processor import _load_vl_settings, _resolve_vl_model
             vl_settings = _load_vl_settings()
             if not vl_settings.get("vision_enabled", True):
-                return {"error": "Vision is disabled — enable it in Settings → Vision"}
+                return {"error": "Vision is disabled - enable it in Settings → Vision"}
             configured = vl_settings.get("vision_model", "")
             try:
                 chat_url, model_name, headers = _resolve_vl_model(configured, owner=user)
             except ValueError:
-                return {"error": "No vision model configured — set one in Settings → Vision"}
+                return {"error": "No vision model configured - set one in Settings → Vision"}
             if not chat_url:
                 return {"error": "No vision-capable endpoint configured"}
 
-            # Call vision model — format differs between Anthropic and OpenAI
+            # Call vision model - format differs between Anthropic and OpenAI
             from src.llm_core import _detect_provider, _restricts_temperature, _uses_max_completion_tokens
             provider = _detect_provider(chat_url)
             tag_prompt = (
                 "Analyze this photo. Return ONLY a comma-separated list of tags. "
-                "Include: objects, people (describe by appearance — age range, gender), "
+                "Include: objects, people (describe by appearance - age range, gender), "
                 "scene/setting, activities, mood/atmosphere, colors, location type, "
                 "time of day, weather if visible, any text/signs visible. "
                 "Be specific but concise. 10-25 tags. No explanation, just tags."

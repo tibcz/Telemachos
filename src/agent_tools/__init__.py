@@ -1,5 +1,5 @@
 """
-agent_tools.py — Facade module.
+agent_tools.py - Facade module.
 
 Re-exports tool parsing, schemas, execution, and implementations
 for backward compatibility. All importers continue to work unchanged.
@@ -68,7 +68,7 @@ TOOL_HANDLERS = {
 TOOL_HANDLERS.update(ADMIN_TOOL_HANDLERS)
 
 # ---------------------------------------------------------------------------
-# Constants (re-exported for backward compatibility — single source of truth
+# Constants (re-exported for backward compatibility - single source of truth
 # is src.constants; always prefer importing from there for new code)
 # ---------------------------------------------------------------------------
 MAX_AGENT_ROUNDS = 50
@@ -98,7 +98,7 @@ TOOL_TAGS = {"bash", "python", "web_search", "web_fetch", "read_file", "write_fi
              # Cookbook tools (LLM serving + downloads). Without these
              # entries, native function calls to e.g. list_served_models
              # are rejected as "Unknown function call" before reaching
-             # the dispatcher — silent failure for the whole cookbook
+             # the dispatcher - silent failure for the whole cookbook
              # surface.
              "download_model", "serve_model",
              "list_served_models", "stop_served_model",
@@ -109,7 +109,7 @@ TOOL_TAGS = {"bash", "python", "web_search", "web_fetch", "read_file", "write_fi
              # Other tools the agent reaches for that were also missing.
              "edit_image", "trigger_research", "manage_research",
              # Generic loopback to any UI-button endpoint (cookbook,
-             # gallery, email folders, etc.) — agent uses this when
+             # gallery, email folders, etc.) - agent uses this when
              # there's no named tool wrapper for the action.
              "app_api"} | BUILTIN_EMAIL_TOOLS
 

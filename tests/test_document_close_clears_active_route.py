@@ -1,9 +1,9 @@
-"""Issue #1160 — route-level regression for clearing the active-document pointer.
+"""Issue #1160 - route-level regression for clearing the active-document pointer.
 
 Exercises the REAL ``PATCH /api/document/{id}`` (session_id="") and
 ``DELETE /api/document/{id}`` handlers, proving that closing a document's tab
 (detach or delete) clears the in-memory active-document pointer under the actual
-owner/session routing — not just the helper in isolation.
+owner/session routing - not just the helper in isolation.
 
 Calls the route handler callables DIRECTLY (extracted from the router) instead of
 through Starlette's TestClient. The TestClient path spun up a middleware app +

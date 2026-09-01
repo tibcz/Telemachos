@@ -164,7 +164,7 @@ class _FakeMgr:
 def test_send_to_session_blocks_null_owner_for_authenticated_caller(monkeypatch):
     # An authenticated caller must not reach a null-owner (legacy / auth-was-off)
     # session: list_sessions and manage_session already hide those, so this path
-    # was the inconsistency — it let an agent read/write a session the other
+    # was the inconsistency - it let an agent read/write a session the other
     # tools exclude. Mirrors the calendar owner=None hardening.
     null_sess = _FakeSession(None, "Secret", [{"role": "user", "content": "PIN 4321"}])
     bob_sess = _FakeSession("bob", "Bob", [{"role": "user", "content": "bob secret"}])

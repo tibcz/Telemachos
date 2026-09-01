@@ -1,6 +1,6 @@
 // static/js/documentLibrary.js
 /**
- * Document Library — modal with Chats / Documents / Research / Archive tabs.
+ * Document Library - modal with Chats / Documents / Research / Archive tabs.
  * Extracted from document.js to reduce file size.
  */
 
@@ -17,7 +17,7 @@ import { registerMenuDismiss, dismissOrRemove } from './escMenuStack.js';
 let API_BASE = '';
 let _esc;          // HTML-escape function
 let _getDocs;      // () => Map of open docs
-let _isOpenFn;     // () => boolean — is doc panel open
+let _isOpenFn;     // () => boolean - is doc panel open
 let _createDocument;
 let _newDocument;
 let _loadDocument;
@@ -43,7 +43,7 @@ export function initLibrary(config) {
 // ── Library state ──
 let _libraryOpen = false;
 // Track which tabs have already played their domino-in cascade so we only
-// animate the *first* time content loads per page session — tab swaps and
+// animate the *first* time content loads per page session - tab swaps and
 // re-renders after that are instant.
 const _libraryCascadedTabs = new Set();
 function _maybeCascadeGrid(grid, tabKey) {
@@ -126,7 +126,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
 
   // Fetch a chat's full history and serialize as plain-text transcript,
   // then write to the clipboard. Same User: / Assistant: format the chat
-  // header's "Copy Chat" button uses, but works for any session ID — the
+  // header's "Copy Chat" button uses, but works for any session ID - the
   // library doesn't need the chat to be loaded in the UI first.
   async function _copyChatById(sessionId) {
     try {
@@ -251,7 +251,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
     _unreg = registerMenuDismiss(teardown);
     dd._dismiss = teardown;   // let bulk removers (reopen sweep) tear down cleanly
 
-    // Swipe-down-to-dismiss (mobile). Mirrors the bottom-sheet feel — drag the
+    // Swipe-down-to-dismiss (mobile). Mirrors the bottom-sheet feel - drag the
     // popup down and release past the threshold to close. Below threshold,
     // snap back. Vertical-only; horizontal flicks fall through to scrolling.
     let _swipeStart = null;
@@ -316,7 +316,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
   async function libraryFetch(append) {
     if (!append) _libraryOffset = 0;
     // Bump page size to the backend max (50) so fullscreen doesn't leave
-    // empty space below the loaded rows — same idea as emailLibrary's
+    // empty space below the loaded rows - same idea as emailLibrary's
     // limit=100, but documents_library validates `le=50` so we have to
     // cap at that. Auto-fill loop below picks up any remaining gap.
     const params = new URLSearchParams({
@@ -432,7 +432,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
     // Escape-stack entry go too.
     document.querySelectorAll('.doclib-card-dropdown').forEach(dismissOrRemove);
     grid.innerHTML = '';
-    // Drop any previous inline load-more — regenerated below alongside the list.
+    // Drop any previous inline load-more - regenerated below alongside the list.
     if (grid.parentElement) grid.parentElement.querySelectorAll(':scope > .doclib-inline-load-more').forEach(b => b.remove());
 
     if (_libraryDocs.length === 0) {
@@ -486,11 +486,11 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
     }
   }
 
-  // Infinite scroll for the library (mobile + desktop), covering EVERY tab —
+  // Infinite scroll for the library (mobile + desktop), covering EVERY tab -
   // Documents, Chats, Research, Archive all render a `.doclib-inline-load-more`
   // button (regenerated fresh each render). A capture-phase scroll listener
   // catches whichever element actually scrolls and, when the visible button
-  // nears the viewport bottom, clicks it — reusing each tab's own load logic.
+  // nears the viewport bottom, clicks it - reusing each tab's own load logic.
   // We mark a button once clicked so the SAME instance can't double-fire (the
   // next render makes a fresh, unmarked one), which is safe for both the sync
   // reveal tabs (Chats/Research) and the async fetch tabs (Documents/Archive).
@@ -563,7 +563,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
     verBadge.style.cssText = 'font-size:9px;padding:1px 6px;border-radius:8px;background:color-mix(in srgb, var(--red) 15%, transparent);border:1px solid color-mix(in srgb, var(--red) 40%, transparent);color:var(--red);flex-shrink:0;';
     verBadge.textContent = 'v' + (doc.version_count || 1);
     titleRow.appendChild(verBadge);
-    // Chevron pushed to the right end of the title row — collapsed
+    // Chevron pushed to the right end of the title row - collapsed
     // shows nothing, expanded reveals a downward chevron so the user
     // sees the card is open and can tap to close it.
     const chevron = document.createElement('span');
@@ -595,7 +595,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
     header.className = 'doclib-card-header';
     header.style.display = 'none';
 
-    // Action buttons — "..." menu
+    // Action buttons - "..." menu
     const actionsWrap = document.createElement('div');
     actionsWrap.className = 'memory-item-actions';
     const menuWrap = document.createElement('span');
@@ -607,7 +607,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
     menuBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>';
     menuBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      // Mobile: the custom 5-item dropdown is too crowded — route through the
+      // Mobile: the custom 5-item dropdown is too crowded - route through the
       // shared _showLibDropdown with a small set (Open, Clone) plus Select +
       // Cancel. Heavier actions (Archive, Delete, Export) live in bulk mode.
       if (window.innerWidth <= 768) {
@@ -662,7 +662,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
     // button, the outside-click listener, every menu item, and the Escape
     // arbiter (via registerMenuDismiss). Hides the menu, returns it to its
     // wrapper, drops the outside-click listener, and unregisters from the
-    // Escape stack. Idempotent — safe to call from whichever path fires first.
+    // Escape stack. Idempotent - safe to call from whichever path fires first.
     let _cardUnreg = () => {};
     let _cardDocClick = null;
     function hideCardDropdown() {
@@ -685,7 +685,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
       openItem.addEventListener('click', (e) => { e.stopPropagation(); hideCardDropdown(); libraryOpenInSession(doc); });
     } else {
       // Orphaned doc (closed / session detached) is still openable in the editor
-      // by id — libraryOpenDocument handles the no-session case (#1602).
+      // by id - libraryOpenDocument handles the no-session case (#1602).
       openItem.title = 'Open in the editor';
       openItem.addEventListener('click', (e) => { e.stopPropagation(); hideCardDropdown(); libraryOpenDocument(doc); });
     }
@@ -726,7 +726,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
     });
     dropdown.appendChild(exportItem);
 
-    // Archive / Restore — soft-archive a doc out of the main list, or bring it back.
+    // Archive / Restore - soft-archive a doc out of the main list, or bring it back.
     const _archiveIco = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>';
     const archiveItem = document.createElement('button');
     archiveItem.className = 'dropdown-item-compact';
@@ -772,7 +772,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
       document.head.appendChild(s);
     }
 
-    // Preview — hidden by default, shown on expand
+    // Preview - hidden by default, shown on expand
     const preview = document.createElement('div');
     preview.className = 'doclib-card-preview';
     const pre = document.createElement('pre');
@@ -782,7 +782,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
         code.innerHTML = window.hljs.highlight(doc.preview || '', { language: doc.language }).value;
       } else if (_librarySearch) {
         // While searching, highlight matched terms in the preview (plain
-        // text) rather than syntax-highlighting — the match is what matters.
+        // text) rather than syntax-highlighting - the match is what matters.
         code.innerHTML = _hlSearch(doc.preview || '');
       } else {
         code.textContent = doc.preview || '';
@@ -793,7 +793,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
     pre.appendChild(code);
     preview.appendChild(pre);
 
-    // Expanded-only action bar — inside preview
+    // Expanded-only action bar - inside preview
     const expandedActions = document.createElement('div');
     expandedActions.className = 'doclib-card-expanded-actions';
 
@@ -805,7 +805,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
       openBtn.addEventListener('click', (e) => { e.stopPropagation(); libraryOpenInSession(doc); });
     } else {
       // Orphaned doc (closed / session detached) is still openable in the editor
-      // by id — libraryOpenDocument handles the no-session case (#1602).
+      // by id - libraryOpenDocument handles the no-session case (#1602).
       openBtn.title = 'Open in the editor';
       openBtn.addEventListener('click', (e) => { e.stopPropagation(); libraryOpenDocument(doc); });
     }
@@ -813,7 +813,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
     const cloneBtn = document.createElement('button');
     cloneBtn.className = 'doclib-card-text-btn doclib-card-action-btn';
     cloneBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:3px;"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Clone';
-    cloneBtn.title = 'Clone — copy to active session';
+    cloneBtn.title = 'Clone - copy to active session';
     cloneBtn.addEventListener('click', (e) => { e.stopPropagation(); libraryImportDocument(doc); });
 
     const deleteBtn = document.createElement('button');
@@ -821,7 +821,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
     deleteBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:3px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>Delete';
     deleteBtn.addEventListener('click', (e) => { e.stopPropagation(); libraryDeleteSingle(doc.id, card); });
 
-    // Archive sits next to Delete on the LEFT — same lineup as the chat
+    // Archive sits next to Delete on the LEFT - same lineup as the chat
     // and research footers. Label flips to Restore inside the Archive view.
     const archiveBtn = document.createElement('button');
     archiveBtn.className = 'doclib-card-text-btn doclib-card-action-btn';
@@ -843,7 +843,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
     leftGroup.className = 'doclib-action-group';
     const btnRow = document.createElement('div');
     btnRow.className = 'doclib-action-btn-row';
-    // Export lives in the ⋮ menu — keep the footer uncrowded with Clone + Open.
+    // Export lives in the ⋮ menu - keep the footer uncrowded with Clone + Open.
     btnRow.appendChild(cloneBtn);
     btnRow.appendChild(openBtn);
     leftGroup.appendChild(btnRow);
@@ -875,7 +875,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
     const grid = card.closest('.doclib-grid');
     const instant = card?.dataset?.spaceToggle === '1';
 
-    // Already expanded — collapse
+    // Already expanded - collapse
     if (card.classList.contains('doclib-card-expanded')) {
       _collapseExpandedCard(card);
       return;
@@ -898,7 +898,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
 
     // Capture the full grid + toolbar height so the modal stays the same
     // size on desktop. On mobile the modal is full-height and we want the
-    // grid to claim all available space — skip the lock there.
+    // grid to claim all available space - skip the lock there.
     const isMobile = window.innerWidth <= 768;
     const toolbar = grid ? grid.closest('.admin-card')?.querySelector('.memory-toolbar') : null;
     const toolbarH = toolbar ? toolbar.offsetHeight : 0;
@@ -930,7 +930,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
       const content = full.current_content || '';
       const lang = full.language || doc.language || 'text';
 
-      // PDF-backed docs have a marker comment in their markdown — show the
+      // PDF-backed docs have a marker comment in their markdown - show the
       // rendered PDF in an iframe instead of dumping markdown source.
       const isPdfDoc = /<!--\s*pdf_(?:form_)?source\s+upload_id="[^"]+"/.test(content);
       const existingFrame = preview.querySelector('.doclib-card-pdf-frame');
@@ -950,7 +950,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
 
       const pre = document.createElement('pre');
       const code = document.createElement('code');
-      // Syntax highlighting is synchronous and O(n) — running it over a whole
+      // Syntax highlighting is synchronous and O(n) - running it over a whole
       // large document froze the main thread on click (the "lag"). Only
       // highlight up to a cap; bigger docs render as plain text (still fully
       // shown) so the preview opens instantly. Markdown gains little from
@@ -967,7 +967,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
       }
       pre.appendChild(code);
 
-      // Swap content — fade in the full version
+      // Swap content - fade in the full version
       if (existingPre) existingPre.remove();
       if (existingFrame) existingFrame.remove();
       pre.style.opacity = '0';
@@ -997,7 +997,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
 
   async function libraryOpenDocument(doc) {
     closeLibrary();
-    // Orphaned doc (session deleted) — just open in editor without switching session
+    // Orphaned doc (session deleted) - just open in editor without switching session
     if (!doc.session_id) {
       _loadDocument(doc.id);
       return;
@@ -1049,7 +1049,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
         if (ok) sessionId = sessionModule.getCurrentSessionId();
       }
       if (!sessionId) {
-        // No pending chat either — trigger new session, preserving the current model
+        // No pending chat either - trigger new session, preserving the current model
         const curModel = sessionModule.getCurrentModel ? sessionModule.getCurrentModel() : null;
         const sessions = sessionModule ? sessionModule.getSessions() : [];
         // Prefer the session matching the current model, otherwise fall back to first with a model
@@ -1072,7 +1072,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
       if (!srcRes.ok) throw new Error('Failed to fetch document');
       const src = await srcRes.json();
 
-      // Deduplicate title — append (2), (3), etc. if name already exists in session
+      // Deduplicate title - append (2), (3), etc. if name already exists in session
       let baseTitle = src.title || doc.title || 'Untitled';
       const existingTitles = new Set();
       const docs = _getDocs();
@@ -1166,7 +1166,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
     const actionsBtn = document.getElementById('doclib-bulk-actions');
     if (countEl) countEl.textContent = `${_librarySelectedIds.size} Selected`;
     if (actionsBtn) actionsBtn.style.color = _librarySelectedIds.size > 0 ? 'var(--fg)' : '';
-    // Legacy per-action buttons no longer rendered — guard so the rest of the
+    // Legacy per-action buttons no longer rendered - guard so the rest of the
     // function (if anything still references them) doesn't crash.
     const deleteBtn = document.getElementById('doclib-bulk-delete');
     const exportBtn = document.getElementById('doclib-bulk-export');
@@ -1272,7 +1272,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
     }
   }
 
-  // Bulk "Clone" — reuse libraryImportDocument for each selected doc.
+  // Bulk "Clone" - reuse libraryImportDocument for each selected doc.
   // It handles session resolution + a possible new-session creation once
   // (subsequent calls in the loop see the now-resolved session).
   async function libraryBulkClone() {
@@ -1416,7 +1416,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
       }
       else if (tag === 'table') { md += '\n'; convertTable(node); md += '\n'; }
       else if (tag === 'img') {
-        // Skip embedded base64 images — they produce huge unreadable blobs
+        // Skip embedded base64 images - they produce huge unreadable blobs
         const src = node.src || '';
         if (!src.startsWith('data:')) {
           md += `![${node.alt || ''}](${src})`;
@@ -1439,7 +1439,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
     return md.replace(/\n{3,}/g, '\n\n').trim();
   }
 
-  /** Read file contents — handles text, spreadsheet, and DOCX formats */
+  /** Read file contents - handles text, spreadsheet, and DOCX formats */
   async function readFileContent(file) {
     const name = file.name.toLowerCase();
     const isSpreadsheet = name.endsWith('.xlsx') || name.endsWith('.xls') || name.endsWith('.ods');
@@ -1496,7 +1496,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
     let failed = 0;
     let _firstErr = '';
 
-    // Library imports aren't tied to a chat — the backend now accepts a
+    // Library imports aren't tied to a chat - the backend now accepts a
     // session-less "library" document, so no session_id is sent.
     for (const file of fileList) {
       try {
@@ -1510,7 +1510,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
         const isPdf = ext === '.pdf';
 
         if (isPdf) {
-          // Backend handles save + AcroForm detection in one shot — picks the
+          // Backend handles save + AcroForm detection in one shot - picks the
           // right doc kind so fillable forms get clickable inputs in the PDF
           // view, and plain PDFs get the static page-image viewer.
           const fd = new FormData();
@@ -1564,7 +1564,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
     }
 
     const msg = `Imported ${imported} file${imported !== 1 ? 's' : ''}` +
-      (failed ? `, ${failed} failed${_firstErr ? ' — ' + _firstErr : ''}` : '');
+      (failed ? `, ${failed} failed${_firstErr ? ' - ' + _firstErr : ''}` : '');
     if (failed && uiModule) uiModule.showError(msg);
     else if (uiModule) uiModule.showToast(msg);
     await libraryFetch(false);
@@ -1811,7 +1811,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
     // Wire events
     document.getElementById('doclib-close').addEventListener('click', closeLibrary);
 
-    // Tab switching — Chats / Documents / Archive / Research
+    // Tab switching - Chats / Documents / Archive / Research
     let _activeLibTab = (opts && opts.tab) || 'documents';
     const _tabBtns = modal.querySelectorAll('[data-doclib-tab]');
     const _tabPanels = modal.querySelectorAll('[data-doclib-panel]');
@@ -1826,7 +1826,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
 
     function _appendInlineLoadMore(grid, totalCount, currentLimit, onClick) {
       if (!grid || !grid.parentElement) return;
-      // Drop the previous instance (if any) — we re-render the list from
+      // Drop the previous instance (if any) - we re-render the list from
       // scratch each pass, so the button is regenerated alongside it.
       grid.parentElement.querySelectorAll(':scope > .doclib-inline-load-more').forEach(b => b.remove());
       if (totalCount <= currentLimit) return;
@@ -1837,7 +1837,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
       grid.parentElement.appendChild(btn);
     }
 
-    // SVG markup + label for each tab — used to keep the modal header
+    // SVG markup + label for each tab - used to keep the modal header
     // in sync with whichever sub-tab the user is on.
     const _TAB_HEADERS = {
       chats: {
@@ -1982,7 +1982,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
               'Archive' +
             '</button>';
         // Copy sits next to Archive on the left side of the action row.
-        // Uses the same border-only secondary-action style — distinct from
+        // Uses the same border-only secondary-action style - distinct from
         // the danger Delete (red) and the primary Open (right-aligned).
         // Copy is hidden in the Archive (keep the footer to Delete + Restore +
         // Open there). It still shows for active chats.
@@ -2011,7 +2011,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
           if (window.sessionModule) window.sessionModule.selectSession(session.id);
           closeLibrary();
           // Also collapse the wide sidebar so the picked chat sits
-          // fullscreen — same gesture as picking a session in the
+          // fullscreen - same gesture as picking a session in the
           // sidebar itself on mobile. Skip on desktop where the user
           // expects the sidebar to stay where they left it.
           if (window.innerWidth <= 768) {
@@ -2270,7 +2270,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
       _renderLibChats();
     });
 
-    // Tidy button — AI cleanup + organize into folders
+    // Tidy button - AI cleanup + organize into folders
     document.getElementById('doclib-chats-tidy-btn').addEventListener('click', async () => {
       const tidyBtn = document.getElementById('doclib-chats-tidy-btn');
       const origHTML = tidyBtn.innerHTML;
@@ -2323,14 +2323,14 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
       if (!grid) return;
       grid.innerHTML = '';
       grid.appendChild(spinnerModule.createLoadingRow('Loading…'));
-      // Archive tab is the home for ALL archived items — chats, documents, and
-      // research — each rendered with its own icon. Load the three in parallel.
+      // Archive tab is the home for ALL archived items - chats, documents, and
+      // research - each rendered with its own icon. Load the three in parallel.
       Promise.all([
         fetch(API_BASE + '/api/sessions/archived?limit=100&sort=recent', { credentials: 'same-origin' }).then(r => r.json()).catch(() => ({})),
         fetch(API_BASE + '/api/documents/library?archived=true&limit=50', { credentials: 'same-origin' }).then(r => r.json()).catch(() => ({})),
         fetch('/api/research/library?archived=true', { credentials: 'same-origin' }).then(r => r.json()).catch(() => ({})),
       ]).then(([s, d, r]) => {
-        // These are all archived by definition — flag them so the expanded
+        // These are all archived by definition - flag them so the expanded
         // chat preview hides its (redundant) "Archive" button.
         _arcSessions = (s.sessions || []).map(x => ({ ...x, archived: true }));
         _arcDocs = d.documents || [];
@@ -2375,7 +2375,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
         preview.innerHTML = '';
         preview.appendChild(pre);
 
-        // Footer — uses the same visible .doclib-chat-preview-actions style as
+        // Footer - uses the same visible .doclib-chat-preview-actions style as
         // the chat/research previews (the .doclib-card-expanded-actions class is
         // display:none unless inside a .doclib-card, which these archive rows
         // are not). Delete + Restore, matching the others.
@@ -2423,7 +2423,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
       else if (_arcSort === 'alpha') filtered.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
       else filtered.sort((a, b) => (b.updated_at || '') > (a.updated_at || '') ? 1 : -1);
 
-      // Archived documents + research also live here — filter them by the same search.
+      // Archived documents + research also live here - filter them by the same search.
       const _aq = (_arcSearch || '').toLowerCase();
       let filtDocs = _aq ? _arcDocs.filter(d => (d.title || '').toLowerCase().includes(_aq)) : _arcDocs;
       let filtResearch = _aq ? _arcResearch.filter(r => (r.query || '').toLowerCase().includes(_aq)) : _arcResearch;
@@ -2495,7 +2495,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
         _attachLongPressMenu(card, '._arc-menu');
         grid.appendChild(card);
       }
-      // Archived DOCUMENTS — document icon, Restore / Delete.
+      // Archived DOCUMENTS - document icon, Restore / Delete.
       const _arcDocIco = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:0.5;flex-shrink:0;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>';
       for (const d of filtDocs) {
         const card = document.createElement('div');
@@ -2532,7 +2532,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
         _attachLongPressMenu(card, '._arc-doc-menu');
         grid.appendChild(card);
       }
-      // Archived RESEARCH — magnifier icon, Open / Restore / Delete.
+      // Archived RESEARCH - magnifier icon, Open / Restore / Delete.
       const _arcResIco = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:0.5;flex-shrink:0;"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>';
       for (const r of filtResearch) {
         const card = document.createElement('div');
@@ -2744,7 +2744,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
         ? `<div class="doclib-research-sources"><div class="doclib-research-section-label">Sources (${sources.length})</div><ol>${sourcesList}${sources.length > 12 ? `<li style="opacity:0.5;">…and ${sources.length - 12} more</li>` : ''}</ol></div>`
         : '';
       // The stored research JSON keeps the report under `result` (clean) /
-      // `raw_report` — there's no `summary` field, so the preview was empty.
+      // `raw_report` - there's no `summary` field, so the preview was empty.
       const summary = (detail.summary || detail.report_summary || detail.result || detail.raw_report || '').toString().trim();
       const summaryHtml = summary
         ? `<div class="doclib-research-summary"><div class="doclib-research-section-label">Report</div><div>${markdownModule.mdToHtml ? markdownModule.mdToHtml(summary) : _esc(summary)}</div></div>`
@@ -2940,7 +2940,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
       });
 
       // The action button on each research row opens the actions menu
-      // (Open report, Delete) — chat-style ••• menu.
+      // (Open report, Delete) - chat-style ••• menu.
       grid.querySelectorAll('.doclib-research-delete').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -3018,7 +3018,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
       _renderResearchGrid();
     });
 
-    // Research tidy — delete reports that came back empty (no sources, or
+    // Research tidy - delete reports that came back empty (no sources, or
     // empty report body). Matches the Chats tidy whirlpool/borderless pattern
     // and skips confirmation per user request.
     document.getElementById('doclib-research-tidy-btn')?.addEventListener('click', async (e) => {
@@ -3140,9 +3140,9 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
       if (uiModule) uiModule.showToast(toArchived ? 'Archived' : 'Restored');
     });
 
-    // Shared dropdown for chats/archive menus — defined at module scope below
+    // Shared dropdown for chats/archive menus - defined at module scope below
     // (was here originally; hoisted so libraryCreateCard's mobile kebab
-    // handler — which lives outside openLibrary's closure — can call it).
+    // handler - which lives outside openLibrary's closure - can call it).
 
     function _relTime(iso) {
       if (!iso) return '';
@@ -3156,8 +3156,8 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
       return new Date(iso).toLocaleDateString();
     }
 
-    // Switch to the initial tab. Always call this — even when the
-    // default ('documents') matches — so the modal header's icon + label
+    // Switch to the initial tab. Always call this - even when the
+    // default ('documents') matches - so the modal header's icon + label
     // sync from "Library" to the active sub-tab on first open.
     _switchLibTab(_activeLibTab);
 
@@ -3222,7 +3222,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
       });
     }
 
-    // Create button — new blank document
+    // Create button - new blank document
     const createBtn = document.getElementById('doclib-create-btn');
     if (createBtn) {
       createBtn.addEventListener('click', async () => {
@@ -3243,7 +3243,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
       });
     }
 
-    // Archived toggle — flip the Documents list between active and archived.
+    // Archived toggle - flip the Documents list between active and archived.
     const archivedBtn = document.getElementById('doclib-archived-btn');
     if (archivedBtn) archivedBtn.addEventListener('click', () => {
       _libraryArchivedView = !_libraryArchivedView;
@@ -3253,7 +3253,7 @@ let _libraryArchivedView = false;   // Documents tab showing archived docs?
       libraryFetch(false);
     });
 
-    // Tidy button — remove empty/broken documents
+    // Tidy button - remove empty/broken documents
     const tidyBtn = document.getElementById('doclib-tidy-btn');
     if (tidyBtn) tidyBtn.addEventListener('click', async () => {
       tidyBtn.disabled = true;

@@ -1,7 +1,7 @@
 """Regression: the YouTube handler must live in a single module.
 
-Telemachos carried two independent copies of the handler — ``src.youtube_handler``
-and ``services.youtube.youtube_handler`` — that silently drifted:
+Telemachos carried two independent copies of the handler - ``src.youtube_handler``
+and ``services.youtube.youtube_handler`` - that silently drifted:
 
 * ``app.py`` calls ``services.youtube.init_youtube()`` at startup, but the chat
   flow imported ``extract_transcript_async`` from ``src.youtube_handler``. Those
@@ -72,7 +72,7 @@ def test_init_youtube_visible_through_chat_import_path(monkeypatch):
         ("https://www.youtube.com/embed/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
         ("https://www.youtube.com/embed/dQw4w9WgXcQ/", "dQw4w9WgXcQ"),
         ("https://www.youtube.com/v/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
-        # Shorts and live — previously unrecognized, so the chat pipeline
+        # Shorts and live - previously unrecognized, so the chat pipeline
         # dropped them entirely (excluded from web-fetch as a YouTube URL, but
         # no id meant no transcript fetch either).
         ("https://www.youtube.com/shorts/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
@@ -96,7 +96,7 @@ def test_extract_youtube_id(url, expected):
 def test_shorts_url_is_recognized_and_extractable():
     """A Shorts URL is treated as a YouTube link (so the chat pipeline excludes
     it from generic web-fetch). It must therefore yield an id, or the video is
-    silently dropped — fetched by neither path."""
+    silently dropped - fetched by neither path."""
     from src.youtube_handler import is_youtube_url, extract_youtube_id
 
     url = "https://www.youtube.com/shorts/dQw4w9WgXcQ"

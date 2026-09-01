@@ -1,11 +1,11 @@
 /**
- * AI model dropdown loader — fetches available model endpoints from
+ * AI model dropdown loader - fetches available model endpoints from
  * the backend and populates the editor's three model-select surfaces:
  *
- *   #ge-ai-model     — global Gen picker
- *   #ge-ai-inpaint   — inpaint picker
+ *   #ge-ai-model     - global Gen picker
+ *   #ge-ai-inpaint   - inpaint picker
  *   select.ge-tool-model[data-ge-tool-model="…"]
- *                    — per-tool pickers (harmonize / upscale / style /
+ *                    - per-tool pickers (harmonize / upscale / style /
  *                      sharpen / etc.)
  *
  * Each model is filtered through a small capability classifier so the
@@ -13,7 +13,7 @@
  * only sees image+mask edit models, and the per-tool dropdowns get
  * everything img2img-capable.
  *
- * Every picker ends with a "+ Serve a model in Cookbook…" sentinel —
+ * Every picker ends with a "+ Serve a model in Cookbook…" sentinel -
  * choosing it opens Cookbook → Serve filtered to image models, then
  * reverts the picker to its prior value (so it's an action, not a
  * selectable model).
@@ -42,7 +42,7 @@ function modelCaps(modelId, endpointName, endpointType) {
   if (/dall-e-3/.test(id))    return { gen: true,  inpaint: false };
   if (/dall-e-2/.test(id))    return { gen: true,  inpaint: true  };
   if (/gpt-image/.test(id))   return { gen: true,  inpaint: true  };
-  // Diffusion families — most generic SD/SDXL/Flux base models
+  // Diffusion families - most generic SD/SDXL/Flux base models
   // support both via diffusers.
   if (/(?:^|[/\-_])(?:sd-?xl|sdxl|sd3|sd-|stable[\s-]*diffusion|flux|playground|pixart|kandinsky)/i.test(id)) {
     const isInpaintModel = /inpaint|edit|fill/i.test(id) || /inpaint|edit|fill/i.test(name);
@@ -63,7 +63,7 @@ function modelCaps(modelId, endpointName, endpointType) {
 
 export function wireAIModelSelectors({ container, apiBase, openCookbookForImg2img }) {
   // Delegated handler for the "+ Serve a model in Cookbook…" sentinel
-  // option — catches clicks regardless of whether loadAIModels has
+  // option - catches clicks regardless of whether loadAIModels has
   // rewired the individual select yet and survives any innerHTML
   // reset later.
   container.addEventListener('change', (e) => {
@@ -218,7 +218,7 @@ export function wireAIModelSelectors({ container, apiBase, openCookbookForImg2im
         });
       }
     } catch (e) {
-      // Fetch failed — still give the user the affordance to set up
+      // Fetch failed - still give the user the affordance to set up
       // a model. Otherwise the dropdown shows only "Auto" with no
       // hint about what to do next.
       const fallback = '<option value="">Auto</option><option value="" disabled>──────────</option><option value="__serve_cookbook__">+ Serve a model in Cookbook…</option>';

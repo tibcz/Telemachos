@@ -120,7 +120,7 @@ class MemoryVectorStore:
                 logger.warning("memory add failed in %s lane for %s: %s", lane.name, memory_id, e)
 
     def remove(self, memory_id: str):
-        """Remove a memory entry. O(1) — no rebuild needed."""
+        """Remove a memory entry. O(1) - no rebuild needed."""
         if not self._healthy:
             return
         for collection in self._collections_for_delete():

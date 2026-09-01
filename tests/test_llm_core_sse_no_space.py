@@ -4,7 +4,7 @@ The SSE spec makes the space after the colon optional ("data:value" is
 valid), and several gateways / local inference servers emit it that way.
 stream_llm gated on line.startswith("data: ") (trailing space) in both the
 OpenAI-compatible and Anthropic branches, so those providers\' ENTIRE
-stream — content and usage — was silently dropped.
+stream - content and usage - was silently dropped.
 """
 import asyncio
 import json

@@ -18,14 +18,14 @@ _ENDPOINT_FILE = EMBEDDING_ENDPOINT_FILE
 # Track in-progress downloads
 _downloading: dict = {}
 
-# Curated recommendations — good coverage of size/quality tiers
+# Curated recommendations - good coverage of size/quality tiers
 RECOMMENDED_MODELS = {
-    "sentence-transformers/all-MiniLM-L6-v2",     # 384d, 90MB  — fast & tiny, good default
-    "BAAI/bge-small-en-v1.5",                      # 384d, 67MB  — smallest, solid quality
-    "nomic-ai/nomic-embed-text-v1.5-Q",            # 768d, 130MB — quantized, great bang/buck
-    "BAAI/bge-base-en-v1.5",                       # 768d, 210MB — balanced mid-range
-    "snowflake/snowflake-arctic-embed-m",          # 768d, 430MB — strong performer
-    "BAAI/bge-large-en-v1.5",                      # 1024d, 1.2GB — highest quality
+    "sentence-transformers/all-MiniLM-L6-v2",     # 384d, 90MB  - fast & tiny, good default
+    "BAAI/bge-small-en-v1.5",                      # 384d, 67MB  - smallest, solid quality
+    "nomic-ai/nomic-embed-text-v1.5-Q",            # 768d, 130MB - quantized, great bang/buck
+    "BAAI/bge-base-en-v1.5",                       # 768d, 210MB - balanced mid-range
+    "snowflake/snowflake-arctic-embed-m",          # 768d, 430MB - strong performer
+    "BAAI/bge-large-en-v1.5",                      # 1024d, 1.2GB - highest quality
 }
 
 
@@ -33,7 +33,7 @@ def _cache_dir() -> str:
     """Get the fastembed cache directory.
 
     Defaults to a persistent path under the repo's data/ dir. The old
-    default lived in /tmp, which many systems wipe on reboot — forcing a
+    default lived in /tmp, which many systems wipe on reboot - forcing a
     full re-download of the embedding model after every restart.
     """
     return FASTEMBED_CACHE_DIR

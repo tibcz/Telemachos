@@ -516,8 +516,8 @@ def setup_codex_routes(
     # Lets the agent run the same launch / monitor / kill loop the user
     # would do by hand in the Cookbook UI: read the current task list +
     # tmux output, launch a serve task, stop one.  Two scopes:
-    #   cookbook:read   — list tasks + tail output + list servers
-    #   cookbook:launch — also start/stop serves (host shell exec)
+    #   cookbook:read   - list tasks + tail output + list servers
+    #   cookbook:launch - also start/stop serves (host shell exec)
     # `cookbook:launch` is genuinely powerful: /api/model/serve runs SSH'd
     # commands on the user's hosts. The existing _validate_serve_cmd
     # allowlist (vllm/python3/sglang/llama-server/etc., no shell metachars)
@@ -643,7 +643,7 @@ def setup_codex_routes(
         from routes.cookbook_helpers import ServeRequest
         # Accept friendly aliases agents naturally reach for. Without these,
         # passing `host` silently maps to nothing and the serve runs LOCAL
-        # instead of on the intended remote — exactly the bug an agent
+        # instead of on the intended remote - exactly the bug an agent
         # would never debug on its own.
         norm = dict(body or {})
         if "host" in norm and "remote_host" not in norm:
@@ -654,7 +654,7 @@ def setup_codex_routes(
             # Heuristic: if `port` looks like an SSH port (≥1000) and there's
             # no explicit ssh_port, treat it as such. UI ports (8000, 8001,
             # 30000) belong inside the cmd string, not here.
-            pass  # leave as-is — user's `port` here is ambiguous; skip remap.
+            pass  # leave as-is - user's `port` here is ambiguous; skip remap.
         try:
             req = ServeRequest(**norm)
         except Exception as exc:
@@ -755,7 +755,7 @@ def setup_codex_routes(
     async def codex_cookbook_presets(request: Request):
         """List saved serve presets (model + host + port + launch cmd).
         Counterpart to `list_serve_presets`. Use BEFORE composing a `serve`
-        body — the user's saved preset usually has the working cmd already."""
+        body - the user's saved preset usually has the working cmd already."""
         _require_cookbook_scope(request, COOKBOOK_READ_SCOPES)
         state = _read_cookbook_state()
         presets = state.get("presets") or []
@@ -826,7 +826,7 @@ def setup_codex_routes(
     async def codex_cookbook_adopt(request: Request, body: dict[str, Any] = Body(default_factory=dict)):
         """Adopt an existing tmux session (one started via raw ssh+tmux) into
         cookbook tracking. Needed when serve_model rejects a cmd and the
-        agent falls back to direct ssh — without adoption the session is
+        agent falls back to direct ssh - without adoption the session is
         invisible to the UI. Body: {tmux_session, model, host?, port?}."""
         _require_cookbook_scope(request, COOKBOOK_LAUNCH_SCOPES)
         norm = dict(body or {})
@@ -866,7 +866,7 @@ def setup_codex_routes(
             "type": "serve", "status": "running",
             "output": f"Adopted externally-launched session {sess!r} on {host or 'local'}.",
             "ts": int(_t.time() * 1000),
-            "payload": {"repo_id": model, "remote_host": host, "_cmd": "(adopted — launched outside cookbook)", "port": int(port)},
+            "payload": {"repo_id": model, "remote_host": host, "_cmd": "(adopted - launched outside cookbook)", "port": int(port)},
             "remoteHost": host, "sshPort": "", "platform": "linux",
             "_serveReady": False, "_endpointAdded": False, "_adoptedExternally": True,
         })

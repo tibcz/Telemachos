@@ -4,7 +4,7 @@ Source-text assertions here are the narrow exception allowed by
 TESTING_STANDARD.md: the invariant is pure CSS geometry, and driving it at
 runtime would need a real layout engine, which the suite has no runner for.
 The test parses the declared pixel values and recomputes the centres rather
-than pinning literals, so retuning the spacing keeps it green — but moving a
+than pinning literals, so retuning the spacing keeps it green - but moving a
 breakpoint's padding without moving both dot offsets turns it red.
 
 The thread's padding is restated once per breakpoint, and each breakpoint's

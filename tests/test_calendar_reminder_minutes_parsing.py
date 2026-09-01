@@ -4,7 +4,7 @@
 `(?:m|min|minute|minutes)\b` / `(?:h|hr|hour|hours)\b`. The trailing `\b`
 made the very common plural abbreviations "mins" and "hrs" fail to match
 (after "min" the next char "s" is a word char, so no boundary), so a request
-like ``reminder_minutes: "5 mins"`` silently produced no reminder at all —
+like ``reminder_minutes: "5 mins"`` silently produced no reminder at all -
 even though the sibling duration parser (no `\b`) already accepted them.
 """
 

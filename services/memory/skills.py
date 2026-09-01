@@ -13,7 +13,7 @@ Ownership: skills declare `owner: <username>` in frontmatter. Single-user
 deployments can leave that blank.
 
 This module also retains a JSON fallback for any legacy `data/skills.json`
-entries — they're surfaced as read-only `Skill` objects so old data still
+entries - they're surfaced as read-only `Skill` objects so old data still
 loads while a user migrates them to disk.
 """
 
@@ -46,7 +46,7 @@ def _jaccard(a: set, b: set) -> float:
 
 def _to_float(x, default: float = 0.0) -> float:
     """Coerce a possibly hand-edited frontmatter value to float without
-    raising — a blank or non-numeric `confidence:` in a SKILL.md must not
+    raising - a blank or non-numeric `confidence:` in a SKILL.md must not
     blow up retrieval or eviction."""
     try:
         return float(x)
@@ -211,7 +211,7 @@ class SkillsManager:
         return changed
 
     # ----------------------------------------------------------------------
-    # Public API — keeps the old method names so callers don't break
+    # Public API - keeps the old method names so callers don't break
     # ----------------------------------------------------------------------
 
     def load_all(self) -> List[Dict]:
@@ -235,7 +235,7 @@ class SkillsManager:
             d["necessity"] = u.get("necessity")
             out.append(d)
             seen_names.add(sk.name)
-        # Legacy JSON entries — surfaced as draft, not editable from new flow
+        # Legacy JSON entries - surfaced as draft, not editable from new flow
         if os.path.exists(self.legacy_file):
             try:
                 with open(self.legacy_file, encoding="utf-8") as f:
@@ -287,7 +287,7 @@ class SkillsManager:
         return [s for s in entries if s.get("owner") == owner]
 
     # ----------------------------------------------------------------------
-    # CRUD — disk-backed
+    # CRUD - disk-backed
     # ----------------------------------------------------------------------
 
     def add_skill(
@@ -322,7 +322,7 @@ class SkillsManager:
         # Free dedup-at-creation (always, no API): for LLM-authored skills,
         # skip if a near-identical skill already exists (Jaccard over
         # name+description+when_to_use+procedure). User-authored skills are
-        # never auto-skipped — a human asked for it. The every-X AI audit
+        # never auto-skipped - a human asked for it. The every-X AI audit
         # handles the fuzzier near-duplicates this cheap check won't catch.
         _all = self.load_all()
         _dedup_pool = _all if owner is None else [s for s in _all if s.get("owner") == owner]
@@ -340,7 +340,7 @@ class SkillsManager:
                         " ".join(s.get("procedure", []) or []),
                     ]))
                     if _jaccard(cand, ex) >= 0.82:
-                        # Near-identical — don't grow the library; bump the
+                        # Near-identical - don't grow the library; bump the
                         # existing skill's usage and return it so the caller
                         # knows it already exists.
                         try:
@@ -436,12 +436,12 @@ class SkillsManager:
         The call is owner-scoped: it matches a skill on disk only if
         `skill.owner == owner` (string compare; both empty-string and
         None mean "ownerless"). When `owner is None` (the default), the
-        call only matches skills whose own `owner` field is empty —
+        call only matches skills whose own `owner` field is empty -
         callers that want to edit an owned skill must pass the matching
         owner explicitly. This prevents a caller with one owner from
         mutating a file owned by another user that happens to share
         the same slug across category directories. The `owner` key in
-        `updates` is also ignored — ownership is not an editable field
+        `updates` is also ignored - ownership is not an editable field
         via this path; rename or admin tooling is required for that.
         """
         for path in self._iter_skill_files():
@@ -578,7 +578,7 @@ class SkillsManager:
         return None
 
     # ----------------------------------------------------------------------
-    # Index — the lightweight summary injected into the system prompt
+    # Index - the lightweight summary injected into the system prompt
     # ----------------------------------------------------------------------
 
     def index_for(
@@ -596,11 +596,11 @@ class SkillsManager:
           - Drafts written by the teacher-escalation loop
             (`source == "teacher-escalation"`). The whole point of
             the teacher loop is for the student to find the new
-            procedure on the very next turn — waiting for a manual
+            procedure on the very next turn - waiting for a manual
             publish click defeats the loop.
 
         Excludes user-created drafts (status=draft, source != teacher-
-        escalation) — those are work-in-progress and pollute the
+        escalation) - those are work-in-progress and pollute the
         prompt with half-finished procedures.
         """
         out = []
@@ -618,7 +618,7 @@ class SkillsManager:
                 continue
             # requires_toolsets: hide unless every required toolset is active.
             # active_toolsets=None means the caller doesn't know the active
-            # set (API listings, chat preface) — don't gate in that case;
+            # set (API listings, chat preface) - don't gate in that case;
             # only an explicit list filters.
             req = s.get("requires_toolsets") or []
             if req and active_toolsets is not None and not all(t in active_toolsets for t in req):
@@ -672,7 +672,7 @@ class SkillsManager:
                 # Teacher-escalation drafts are auto-written from a (possibly
                 # untrusted) trace and injected as authoritative guidance, so they
                 # must EARN injection with an explicit, parseable confidence that
-                # clears the bar — fail closed on a missing/garbage value instead
+                # clears the bar - fail closed on a missing/garbage value instead
                 # of treating it as 1.0. Hand-authored legacy drafts keep the
                 # lenient "unset → keep" behavior so they don't silently vanish.
                 if s.get("source") == "teacher-escalation":

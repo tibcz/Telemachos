@@ -1,15 +1,15 @@
 """Regression test: non-native tool-call results must be wrapped as untrusted.
 
 THREAT_MODEL.md requires that tool output (shell/python stdout, file reads,
-fetched pages, email bodies, MCP results — anything sourced outside the
+fetched pages, email bodies, MCP results - anything sourced outside the
 server) reach the model via ``untrusted_context_message`` so it is treated as
 data, not instructions.
 
 The native tool-call path returns results as ``tool``-role messages (keyed to
-the call id — a protocol the provider enforces), and the system-level
+the call id - a protocol the provider enforces), and the system-level
 ``UNTRUSTED_CONTEXT_POLICY`` already states tool output is data. But the
-NON-native (prompted) path in ``_append_tool_results`` — the one smaller local
-models without native tool-calling fall back to — concatenated results into a
+NON-native (prompted) path in ``_append_tool_results`` - the one smaller local
+models without native tool-calling fall back to - concatenated results into a
 plain ``user`` message prefixed ``[Tool execution results]`` with no untrusted
 framing. A prompt-injection payload returned by a tool (e.g. a fetched page or
 file) could then be read as instructions.
@@ -72,7 +72,7 @@ def test_non_native_tool_results_are_wrapped_untrusted():
 def test_wrapped_tool_envelope_excluded_from_retrieval_query():
     """Coordinated change: _recent_context_for_retrieval must still skip the
     tool-result envelope (now metadata.trusted=False) so tool output does not
-    pollute the RAG/tool retrieval query — while real human turns are kept."""
+    pollute the RAG/tool retrieval query - while real human turns are kept."""
     from src.agent_loop import _append_tool_results, _recent_context_for_retrieval
 
     messages = [{"role": "user", "content": "find the biggest files in /var/log"}]
@@ -89,7 +89,7 @@ def test_wrapped_tool_envelope_excluded_from_retrieval_query():
     query = _recent_context_for_retrieval(messages)
     assert "find the biggest files in /var/log" in query, "human intent must survive"
     assert MALICIOUS_TOOL_OUTPUT not in query, (
-        "tool-result envelope leaked into the retrieval query — the sentinel "
+        "tool-result envelope leaked into the retrieval query - the sentinel "
         "in _recent_context_for_retrieval must skip metadata.trusted=False "
         "envelopes after the wrapping change."
     )

@@ -131,7 +131,7 @@ def test_xml_stale_closer_before_opener_flood_is_fast():
     # A lone leading </tool_call> makes a whole-string closer check true, but no
     # opener after it has a reachable closer. (strip exercises the CodeQL-flagged
     # _XML_TOOL_CALL_RE path; parse additionally reaches _XML_DIRECT_TOOL_RE, the
-    # separate backreference pattern tracked as a follow-up — see
+    # separate backreference pattern tracked as a follow-up - see
     # test_xml_tool_call_opener_flood_is_fast.)
     evil = "</tool_call>" + ("<tool_call>" + "a" * 10) * 6000
     _, dt = _timed(strip_tool_blocks, evil)

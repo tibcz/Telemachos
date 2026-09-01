@@ -1,5 +1,5 @@
 /**
- * Clone tool — Alt-click (desktop) or double-tap (mobile) sets the
+ * Clone tool - Alt-click (desktop) or double-tap (mobile) sets the
  * sample source; a regular click+drag stamps from that source onto the
  * active layer. The source point moves WITH the brush so the offset
  * stays constant across the stroke.

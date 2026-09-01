@@ -3,7 +3,7 @@
 `generate_image` is a text-only MCP tool, so the saved image URL never reaches
 the agent loop's structured forwarding (which renders the image via
 `buildImageBubble` on `result["image_url"]`). `_promote_image_fields` lifts the
-URL — plus prompt/model/size — out of the tool's stdout into structured fields so
+URL - plus prompt/model/size - out of the tool's stdout into structured fields so
 the image renders deterministically, without relying on the model echoing the URL
 into prose. These cases cover the absolute-URL, relative-URL, no-URL, and
 non-success-exit paths.

@@ -301,7 +301,7 @@ def test_pip_install_fallback_chain_prefers_venv_safe_install():
     assert "python3 -m pip install --user --break-system-packages -q -U huggingface_hub" in chain
     # No bare `| tail` (which would mask pip's exit code)
     assert "| tail" not in chain
-    # Negated venv check with && — so failure in a venv propagates instead of
+    # Negated venv check with && - so failure in a venv propagates instead of
     # being masked as success by the venv_check's exit-0.
     assert "! python3 -c" in chain
     # The group uses && (not ||) between venv check and user attempt
@@ -464,7 +464,7 @@ def test_pip_install_runner_leaves_plain_commands_unchanged():
 
 def test_pip_install_attempt_wraps_in_status_preserving_subshell():
     """Each pip attempt must be a bash -c subshell that captures output,
-    prints tail, cleans up, and exits with pip's real status — not tail's."""
+    prints tail, cleans up, and exits with pip's real status - not tail's."""
     snippet = _pip_install_attempt("pip install -q huggingface_hub")
     assert snippet.startswith("bash -c '")
     assert "$(mktemp)" in snippet
@@ -475,7 +475,7 @@ def test_pip_install_attempt_wraps_in_status_preserving_subshell():
 
 
 def test_pip_install_attempt_no_bare_pipe_tail():
-    """A bare `| tail` pipeline would mask pip's exit code — must not appear."""
+    """A bare `| tail` pipeline would mask pip's exit code - must not appear."""
     snippet = _pip_install_attempt("pip install -q huggingface_hub")
     assert "| tail" not in snippet
 
@@ -703,7 +703,7 @@ def test_llama_cpp_linux_bootstrap_prefers_rocm_before_cuda():
     assert 'cmake -B build -DCMAKE_BUILD_TYPE=Release -DGGML_HIP=ON' in script
     assert 'cmake -B build -DCMAKE_BUILD_TYPE=Release -DGGML_CUDA=ON' in script
     assert script.index('DGGML_HIP=ON') < script.index('DGGML_CUDA=ON')
-    assert 'ROCm/HIP detected — building llama-server with HIP support' in script
+    assert 'ROCm/HIP detected - building llama-server with HIP support' in script
 
 
 def test_llama_cpp_linux_bootstrap_checks_cudart_before_cuda_build():
@@ -741,7 +741,7 @@ def test_llama_cpp_linux_bootstrap_nvcc_without_cudart_warns_and_falls_back():
     _append_llama_cpp_linux_accel_build_lines(runner_lines)
     script = "\n".join(runner_lines)
 
-    assert 'WARNING: nvcc found but CUDA runtime (libcudart.so) is not visible — building llama-server for CPU only.' in script
+    assert 'WARNING: nvcc found but CUDA runtime (libcudart.so) is not visible - building llama-server for CPU only.' in script
     assert 'GPU inference will not be available for this llama.cpp build.' in script
     assert 'libcudart is installed' in script
     # The CPU-only cmake fallback must appear inside the nvcc branch (before the
@@ -765,7 +765,7 @@ def test_llama_cpp_linux_bootstrap_keeps_cpu_fallback_when_no_gpu_toolchain():
     _append_llama_cpp_linux_accel_build_lines(runner_lines)
     script = "\n".join(runner_lines)
 
-    assert 'WARNING: no HIP/CUDA/Vulkan toolchain found — building llama-server for CPU only.' in script
+    assert 'WARNING: no HIP/CUDA/Vulkan toolchain found - building llama-server for CPU only.' in script
     assert 'Install Vulkan (libvulkan-dev) / ROCm for AMD GPUs or CUDA tooling for NVIDIA' in script
 
 

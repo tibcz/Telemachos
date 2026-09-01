@@ -316,7 +316,7 @@ def test_put_vision_text_allows_same_owner_to_write_cache(tmp_path, monkeypatch)
 
 
 def test_download_file_survives_corrupted_uploads_json(tmp_path, monkeypatch):
-    # A truncated/corrupt uploads.json must not 500 the download endpoint —
+    # A truncated/corrupt uploads.json must not 500 the download endpoint -
     # metadata simply becomes unavailable and the file is still served.
     handler, alice_id, _bob_id, upload_dir = _make_upload_store(tmp_path, monkeypatch)
     download_file = _upload_endpoints(handler, monkeypatch)["download_file"]

@@ -5,13 +5,13 @@ Singleton ChromaDB client.
 
 Two modes, chosen by environment:
 
-- **embedded** (``CHROMADB_MODE=embedded``) — an in-process
+- **embedded** (``CHROMADB_MODE=embedded``) - an in-process
   ``chromadb.PersistentClient`` writing to ``CHROMA_DIR`` under the data
   directory. No socket, no second process, nothing to start. This is what the
   standalone Telemachos.app uses: vector memory and RAG have to work out of
   the box, and a desktop app cannot ask its user to run `docker compose up
   chromadb` first.
-- **http** (default) — ``chromadb.HttpClient`` against a standalone ChromaDB
+- **http** (default) - ``chromadb.HttpClient`` against a standalone ChromaDB
   service. Unchanged behaviour for server/Docker deployments.
 
 Embedded mode needs the full ``chromadb`` package; the HTTP path is happy with
@@ -119,7 +119,7 @@ def _build_http_client(chromadb):
 
     client = chromadb.HttpClient(host=host, port=port)
 
-    # Health check before caching — if the port is open but the service isn't
+    # Health check before caching - if the port is open but the service isn't
     # healthy yet (e.g. still starting), don't poison the singleton with a dead
     # client; leave _client unset so the next call retries.
     client.heartbeat()
@@ -131,7 +131,7 @@ def get_chroma_client():
     """Get or create the singleton ChromaDB client.
 
     Raises RuntimeError with a clear install hint if the `chromadb` package
-    is not installed — it's an optional dependency (RAG + memory vectors).
+    is not installed - it's an optional dependency (RAG + memory vectors).
     """
     global _client
     if _client is not None:
@@ -140,7 +140,7 @@ def get_chroma_client():
     chromadb = _import_chromadb()
 
     # Assign to the singleton only after the client is fully built. Both
-    # builders raise on failure, and a half-built client must not be cached —
+    # builders raise on failure, and a half-built client must not be cached -
     # the next call has to be free to retry.
     if embedded_mode():
         _client = _build_embedded_client(chromadb)

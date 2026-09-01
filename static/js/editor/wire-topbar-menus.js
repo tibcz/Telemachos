@@ -1,12 +1,12 @@
 /**
- * Topbar dropdown menus — Image, Filter, and Resize.
+ * Topbar dropdown menus - Image, Filter, and Resize.
  *
  *   Image menu (#ge-image-menu-btn → #ge-image-menu):
  *     resize, selection (edge feather/delete), fill, rotate 90/180,
  *     flip horizontal/vertical.
  *
  *   Filter menu (#ge-filter-menu-btn → #ge-filter-menu):
- *     Blur sub-menu — Gaussian, Zoom.
+ *     Blur sub-menu - Gaussian, Zoom.
  *
  *   Resize menu (#ge-resize-menu-btn → #ge-resize-menu):
  *     preset W×H items (data-resize-w/-h) apply immediately;
@@ -54,7 +54,7 @@ export function wireTopbarMenus({
       return;
     }
     saveState('Resize canvas');
-    // Only resize the main canvas — layers keep their original size.
+    // Only resize the main canvas - layers keep their original size.
     // Content outside the new bounds is clipped during composite, not
     // destroyed.
     if (state.maskCanvas) {
@@ -118,7 +118,7 @@ export function wireTopbarMenus({
     }
   }
 
-  // ── Filter menu (Blur sub-menu — Gaussian / Zoom) ──
+  // ── Filter menu (Blur sub-menu - Gaussian / Zoom) ──
   {
     const btn = document.getElementById('ge-filter-menu-btn');
     const menu = document.getElementById('ge-filter-menu');

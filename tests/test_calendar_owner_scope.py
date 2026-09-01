@@ -2,7 +2,7 @@
 
 The email auto-calendar pass fans out over EVERY user's mailbox and used to
 feed an *unscoped* upcoming-events snapshot to the extraction LLM, then execute
-the model's create/update/delete ops via do_manage_calendar with owner=None —
+the model's create/update/delete ops via do_manage_calendar with owner=None -
 so processing one tenant's mail could read AND mutate another tenant's calendar
 (and leak every tenant's event titles to the LLM endpoint).
 

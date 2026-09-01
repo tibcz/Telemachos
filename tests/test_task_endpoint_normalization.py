@@ -26,7 +26,7 @@ def test_full_chat_url_is_unchanged_idempotent():
 
 
 def test_native_ollama_url_left_alone():
-    # Native Ollama (/api...) has its own downstream normalizer — don't touch it.
+    # Native Ollama (/api...) has its own downstream normalizer - don't touch it.
     assert _normalize_chat_endpoint("http://localhost:11434/api") == "http://localhost:11434/api"
     assert _normalize_chat_endpoint("http://localhost:11434/api/chat") == "http://localhost:11434/api/chat"
 

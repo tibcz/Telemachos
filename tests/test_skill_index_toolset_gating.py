@@ -3,7 +3,7 @@ caller provides an explicit active-toolset list.
 
 Callers that don't know the active tool set (API skill listings, the chat
 preface) pass active_toolsets=None. The old behavior coerced None to [] and
-hid every skill that declared requires_toolsets — so a skill like a local
+hid every skill that declared requires_toolsets - so a skill like a local
 notes lookup that needs grep + read_file silently vanished from the index
 the moment it declared its tool needs. None now means "don't gate".
 """

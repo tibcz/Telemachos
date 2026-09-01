@@ -5,7 +5,7 @@ replacement so the legacy import path and the canonical ``routes.history.*``
 path resolve to the *same* module object. This is required because
 ``test_history_compact_tool_calls.py`` and ``test_fork_session_metadata.py``
 do ``import routes.history_routes as history_routes`` followed by
-``monkeypatch.setattr(history_routes, "_verify_session_owner", ...)`` — for
+``monkeypatch.setattr(history_routes, "_verify_session_owner", ...)`` - for
 those patches to take effect at runtime, the legacy module object and the
 canonical one must be identical. This test pins that contract.
 """

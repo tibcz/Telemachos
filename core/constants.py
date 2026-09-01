@@ -1,5 +1,5 @@
 # core/constants.py
-"""Backward-compatible shim — the single source of truth is src/constants.py.
+"""Backward-compatible shim - the single source of truth is src/constants.py.
 
 Historically there were two copies of this module (this one lagged behind at
 APP_VERSION 0.9.1 and was missing the consolidated tool-output constants). To

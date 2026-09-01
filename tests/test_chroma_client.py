@@ -13,7 +13,7 @@ import src.chroma_client as cc
 
 
 def _free_port() -> int:
-    """Bind to port 0, grab the assigned port, release it — nothing listens."""
+    """Bind to port 0, grab the assigned port, release it - nothing listens."""
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind(("127.0.0.1", 0))
     port = s.getsockname()[1]

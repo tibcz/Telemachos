@@ -4,7 +4,7 @@
 `scalar_keys` whitelist allowing cross-user ownership reassignment.
 
 This test sets up two user-owned skills on disk with the SAME slug
-(`login-flow`) — Alice's and Bob's — and then calls `update_skill` with
+(`login-flow`) - Alice's and Bob's - and then calls `update_skill` with
 NO `owner` argument. If the bug is real, exactly one of the two files
 will be mutated (whichever `_iter_skill_files` yields first) and the
 caller will have effectively re-stamped the file as owned by the value
@@ -84,7 +84,7 @@ def test_update_skill_does_not_mutate_foreign_owned_skill(tmp_path):
     # DIFFERENT category directories so they are real, separately
     # addressable files. (The on-disk layout is
     # `<category>/<name>/SKILL.md`, so two users can in fact have
-    # the same slug under different categories — exactly the situation
+    # the same slug under different categories - exactly the situation
     # that triggers the first-match-wins bug in update_skill.)
     alice_path = _write_skill_md(
         skills_root, category="alice-cat", name="login-flow",
@@ -113,7 +113,7 @@ def test_update_skill_does_not_mutate_foreign_owned_skill(tmp_path):
         )
     except TypeError as e:
         # If the method were fixed to require an owner arg, this is
-        # the desired (safe) behavior — the call refused.
+        # the desired (safe) behavior - the call refused.
         pytest.skip(
             f"update_skill raised TypeError (refused unsafe call): {e}"
         )
@@ -150,7 +150,7 @@ def test_update_skill_does_not_mutate_foreign_owned_skill(tmp_path):
             "to update_skill that did not scope to his owner."
         )
 
-    # The return value should not lie about success — if the manager
+    # The return value should not lie about success - if the manager
     # touched nothing because both files were foreign-owned, the safer
     # behavior is to return False, not True. (A return of True is the
     # buggy path; we don't assert False, we just don't assert True.)
@@ -159,7 +159,7 @@ def test_update_skill_does_not_mutate_foreign_owned_skill(tmp_path):
 
 def test_update_skill_scalar_keys_exclude_owner():
     """Static check: the manager's scalar_keys whitelist MUST NOT
-    include 'owner' — otherwise a non-owner caller can pass
+    include 'owner' - otherwise a non-owner caller can pass
     updates={'owner': 'attacker'} and reassign the file. The fix
     removed 'owner' from scalar_keys; this test now asserts the
     fix is in place."""
@@ -209,7 +209,7 @@ def test_read_skill_md_and_references_are_owner_scoped(tmp_path):
 
     no_owner_md = sm.read_skill_md("login-flow")
     assert no_owner_md is None, (
-        "read_skill_md without owner matched an owned skill — "
+        "read_skill_md without owner matched an owned skill - "
         "default should only match ownerless skills."
     )
     assert sm.read_skill_md("login-flow", owner="charlie") is None
@@ -244,7 +244,7 @@ def test_update_skill_positive_scoping(tmp_path):
         "Alice's file was not updated despite passing owner='alice'."
     )
     assert "bob original" in after_bob and "alice updated" not in after_bob, (
-        "Bob's file was mutated by Alice's update_skill call — cross-tenant leak."
+        "Bob's file was mutated by Alice's update_skill call - cross-tenant leak."
     )
 
 

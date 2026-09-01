@@ -877,7 +877,7 @@ function _filterCachedList() {
 
 // Is there a live download task for this repo in the Running tab? The cache
 // reports any incomplete download dir as "downloading", but if nothing is
-// actively pulling it, it's really a stalled/partial download — so we label it
+// actively pulling it, it's really a stalled/partial download - so we label it
 // accordingly. Reads the running-tab tasks straight from localStorage (same
 // key the running module writes) to avoid a cross-module import cycle.
 function _isActivelyDownloading(repoId) {
@@ -1150,10 +1150,10 @@ function _rerenderCachedModels() {
     html += `<div style="flex:1;min-width:0;">`;
     const _mc = modelColor(m.repo_id) || '';
     const _runningPill = _isActivelyServing(m.repo_id)
-      ? ` <span class="cookbook-serve-running-pill is-clickable" title="This model is currently being served — click to open in Running" data-repo="${esc(m.repo_id)}" role="button" tabindex="0">running</span>`
+      ? ` <span class="cookbook-serve-running-pill is-clickable" title="This model is currently being served - click to open in Running" data-repo="${esc(m.repo_id)}" role="button" tabindex="0">running</span>`
       : '';
     const _downloadingPill = _isDownloading
-      ? ` <span class="cookbook-serve-downloading-pill${_isDlActive ? '' : ' is-stalled'}" title="${_isDlActive ? 'Download in progress' : 'Download stalled — retry to resume'}">${_isDlActive ? 'downloading' : 'stalled'}</span>`
+      ? ` <span class="cookbook-serve-downloading-pill${_isDlActive ? '' : ' is-stalled'}" title="${_isDlActive ? 'Download in progress' : 'Download stalled - retry to resume'}">${_isDlActive ? 'downloading' : 'stalled'}</span>`
       : '';
     const _favoritePill = _isFavorite ? ' <span class="memory-cat-badge memory-cat-pinned cookbook-serve-fav-badge">pinned</span>' : '';
     html += `<div class="memory-item-title cookbook-serve-title"${_mc ? ` style="color:${_mc}"` : ''}><span class="cookbook-serve-title-name">${modelLogo(m.repo_id)}${esc(shortName)}</span>${_favoritePill}${hfLink ? ` <a href="${esc(hfLink)}" target="_blank" rel="noopener" class="cookbook-hf-link">HF ↗</a>` : ''}${_runningPill}${_downloadingPill}</div>`;
@@ -1230,7 +1230,7 @@ function _rerenderCachedModels() {
       dropdown.className = 'hwfit-cached-dropdown';
       dropdown._anchor = btn;
       btn.classList.add('cookbook-menu-active');
-      // Shared close — used by every item, the mobile Cancel, outside-click,
+      // Shared close - used by every item, the mobile Cancel, outside-click,
       // and the Escape arbiter (reassigned to the registry-aware close below).
       let closeDropdown = () => { dropdown.remove(); btn.classList.remove('cookbook-menu-active'); };
       const _di = (svg) => `<span class="dropdown-icon">${svg}</span>`;
@@ -1261,13 +1261,13 @@ function _rerenderCachedModels() {
           if (opt.action === 'serve') item.click();
           else if (opt.action === 'favorite') {
             const favored = _toggleServeFavorite(repo);
-            uiModule.showToast(favored ? 'Favorited — pinned to top' : 'Unfavorited');
+            uiModule.showToast(favored ? 'Favorited - pinned to top' : 'Unfavorited');
             _rerenderCachedModels();
           }
           else if (opt.action === 'delete') _deleteCachedModel(repo, item, false, m);
           else if (opt.action === 'retry') _promptResumeIncompleteModel(m, item);
           else if (opt.action === 'schedule') {
-            // Same entry point as the ^ button next to Launch — let
+            // Same entry point as the ^ button next to Launch - let
             // cookbookSchedule.js handle it. Expand the panel first
             // so the form has somewhere to mount.
             if (!item.querySelector('.hwfit-serve-panel')) item.click();
@@ -1299,7 +1299,7 @@ function _rerenderCachedModels() {
         });
         dropdown.appendChild(div);
       }
-      // Mobile-only Cancel — gives an explicit close on touch devices where
+      // Mobile-only Cancel - gives an explicit close on touch devices where
       // outside-tap-to-close is fiddly. Hidden on desktop via CSS.
       const _cancelIco = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
       const cancelDiv = document.createElement('div');
@@ -1310,7 +1310,7 @@ function _rerenderCachedModels() {
       const rect = btn.getBoundingClientRect();
       dropdown.style.cssText = `position:fixed;z-index:${topPortalZ()};visibility:hidden;top:0;right:${window.innerWidth-rect.right}px;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,0.3);font-size:12px;`;
       document.body.appendChild(dropdown);
-      // Clamp into the VISIBLE area (visualViewport, not innerHeight — they differ
+      // Clamp into the VISIBLE area (visualViewport, not innerHeight - they differ
       // on mobile under the dynamic toolbar). Flip above the button if there's no
       // room below, else clamp to the visible bottom edge, so it never runs
       // off-screen / grows the page.
@@ -1355,7 +1355,7 @@ function _rerenderCachedModels() {
         return;
       }
 
-      // Toggle — close if already open
+      // Toggle - close if already open
       if (item.classList.contains('doclib-card-expanded')) {
         const existingPanel = item.querySelector('.hwfit-serve-panel');
         existingPanel?._cleanupRuntimeReadiness?.();
@@ -1430,7 +1430,7 @@ function _rerenderCachedModels() {
           : (_es.gpus || detectedGpuIds));
       const tpOpts = [1,2,4,8].map(n => `<option${defaultTp==String(n)?' selected':''}>${n}</option>`).join('');
       const dtypeOpts = ['auto','float16','bfloat16'].map(d => `<option value="${d}"${sv('dtype','auto')===d?' selected':''}>${d}</option>`).join('');
-      // KV cache default — most models are fine on auto, but a few
+      // KV cache default - most models are fine on auto, but a few
       // (e.g. DeepSeek-V3/V4/R1 MoE) need fp8 explicitly or the launch
       // OOMs. _detectModelOptimizations seeds opts.kvCacheDtype for
       // those families; honour it unless the user has a saved override.
@@ -1465,7 +1465,7 @@ function _rerenderCachedModels() {
       const _modelPresets = _presetsForModel(_allPresets, repo);
       // Saved configs live in a single dropdown (used to be a row of squeezed
       // chips). The toggle shows the count; the menu lists each config (click to
-      // load, × to delete) plus a "Save current config" row — see _showSavedConfigMenu.
+      // load, × to delete) plus a "Save current config" row - see _showSavedConfigMenu.
       // Split button: "Save" saves the current config directly; the arrow opens
       // the dropdown of saved configs (load / delete). Arrow shows the count.
       // The arrow button shows just the saved-config count next to a "▾".
@@ -1473,9 +1473,9 @@ function _rerenderCachedModels() {
       // to click it to find out the badge isn't a notification dot.
       const _arrowLabel = _modelPresets.length > 0 ? `${_modelPresets.length} ▾` : '▾';
       const _arrowTitle = _modelPresets.length > 0
-        ? `${_modelPresets.length} saved launch config${_modelPresets.length === 1 ? '' : 's'} for ${_repoShort} — click ▾ to load or delete`
-        : `No saved launch configs for ${_repoShort} yet — click Save to add one`;
-      let _slotsHtml = `<div class="cookbook-serve-slots cookbook-saved-split" title="Saved launch configurations for this model — click ▾ to load or delete">`
+        ? `${_modelPresets.length} saved launch config${_modelPresets.length === 1 ? '' : 's'} for ${_repoShort} - click ▾ to load or delete`
+        : `No saved launch configs for ${_repoShort} yet - click Save to add one`;
+      let _slotsHtml = `<div class="cookbook-serve-slots cookbook-saved-split" title="Saved launch configurations for this model - click ▾ to load or delete">`
         + `<button type="button" class="cookbook-slot-btn cookbook-saved-save" title="Save current preset"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Preset</button>`
         + `<button type="button" class="cookbook-slot-btn cookbook-saved-arrow" title="${esc(_arrowTitle)}">${_arrowLabel}</button>`
         + `</div>`;
@@ -1492,12 +1492,12 @@ function _rerenderCachedModels() {
       panelHtml += `<div class="hwfit-serve-runtime-note" style="display:none;font-size:11px;line-height:1.35;color:var(--fg-muted);margin:0;padding:6px 28px 6px 10px;border-radius:5px;background:color-mix(in srgb, var(--fg) 4%, transparent);border:1px solid color-mix(in srgb, var(--border) 60%, transparent);position:relative;"><span class="hwfit-serve-runtime-text"></span><button type="button" class="hwfit-serve-runtime-close" title="Dismiss" aria-label="Dismiss" style="position:absolute;top:-8px;right:5px;background:none;border:0;color:inherit;cursor:pointer;padding:2px 4px;line-height:1;font-size:13px;opacity:0.6;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>`;
       panelHtml += `<div class="hwfit-serve-preset-row">${_slotsHtml}</div>`;
       panelHtml += `</div>`;
-      // Warn when serving a model whose download hasn't fully completed —
+      // Warn when serving a model whose download hasn't fully completed -
       // the user CAN still hit Launch (vLLM/llama-server will start, then
       // crash trying to read missing shards), but they should know.
       if (m && (m.status === 'downloading' || m.status === 'stalled' || m.has_incomplete)) {
         const _warnText = m.status === 'stalled'
-          ? `This model looks like a stale download shell (${esc(m.size || '0 KB')}). The weights aren't on disk — the serve will fail to load. Re-download first, or pick another model.`
+          ? `This model looks like a stale download shell (${esc(m.size || '0 KB')}). The weights aren't on disk - the serve will fail to load. Re-download first, or pick another model.`
           : `This model's download isn't complete yet (${esc(m.size || 'partial')}). The serve will start but is likely to crash on a missing shard. Wait for the download to finish, or relaunch after it's done.`;
         panelHtml += `<div class="hwfit-serve-warn" style="margin:0 0 8px;padding:6px 10px;border-radius:5px;font-size:11px;background:color-mix(in srgb, var(--color-warning, #f0ad4e) 14%, transparent);border:1px solid color-mix(in srgb, var(--color-warning, #f0ad4e) 40%, transparent);color:var(--color-warning, #f0ad4e);display:flex;gap:6px;align-items:flex-start;line-height:1.4;"><span aria-hidden="true">⚠</span><span>${_warnText}</span></div>`;
       }
@@ -1505,7 +1505,7 @@ function _rerenderCachedModels() {
       // Row 1: Engine + Server + Env
       panelHtml += `<div class="hwfit-serve-row">`;
       const backendOpts = _backendChoices.map(([v,l]) => `<option value="${v}"${defaultBackend===v?' selected':''}>${l}</option>`).join('');
-      // Custom Backend picker — native <select> can't host SVG inside
+      // Custom Backend picker - native <select> can't host SVG inside
       // options, so we render a button + menu that show the backend logo
       // beside its name. The hidden <select.hwfit-sf data-field="backend">
       // stays as the source-of-truth so every existing change handler
@@ -1513,19 +1513,19 @@ function _rerenderCachedModels() {
       // still fires via dispatchEvent('change') on selection.
       panelHtml += `<label>${_l('Engine','Inference engine: MLX, vLLM, SGLang, llama.cpp, Ollama, or Diffusers')}<div class="hwfit-backend-picker" data-backend-picker style="position:relative;width:100%;"><select class="hwfit-sf hwfit-backend-source" data-field="backend" style="display:none;">${backendOpts}</select><button type="button" class="hwfit-backend-btn" data-backend-btn aria-haspopup="listbox" aria-expanded="false" style="display:flex;align-items:center;gap:6px;width:100%;height:32px;padding:0 8px;background:var(--bg);color:var(--fg);border:1px solid var(--border);border-radius:4px;font:inherit;font-size:11px;cursor:pointer;text-align:left;position:relative;top:-4px;"><span class="hwfit-backend-btn-icon" data-backend-icon-slot aria-hidden="true" style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;color:var(--accent, var(--red));flex-shrink:0;"></span><span class="hwfit-backend-btn-label" data-backend-label style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="opacity:0.6;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg></button><div class="hwfit-backend-menu" data-backend-menu role="listbox" hidden style="position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:100;background:var(--panel, var(--bg));border:1px solid var(--border);border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,0.22);padding:4px;"></div></div></label>`;
       panelHtml += `<input type="hidden" class="hwfit-sf" data-field="host" value="${esc(_es.remoteHost || '')}" />`;
-      // Inference mode pill (llama.cpp only) — lives directly to the
+      // Inference mode pill (llama.cpp only) - lives directly to the
       // RIGHT of Backend in Row 1 so the engine and the GPU/CPU choice
       // are read together. .hwfit-backend-llamacpp visibility class
       // hides it when the user switches to vLLM/SGLang/Ollama.
       {
-        // Default CPU — works on every host without GPU/wheel matching
+        // Default CPU - works on every host without GPU/wheel matching
         // hassle. User picks GPU explicitly if they have the right setup
         // (avoids "click Launch → silent CPU fallback because the wheel
         // is CPU-only" surprises that ate hours of debugging).
         // Layout: CPU on left, GPU on right → mode-right triggers when
         // GPU is selected so the sliding pill animates rightward.
         // Default to GPU mode when hwfit detected a GPU backend on the
-        // current target — CPU as a global default sent the user down a
+        // current target - CPU as a global default sent the user down a
         // 35GB-model-on-CPU rabbit hole (-ngl 0, no flash-attn, no GPU
         // offload). Falls back to CPU only when hwfit detected no GPU
         // (cpu_x86 / generic / unscanned) or the cache is stale.
@@ -1549,16 +1549,16 @@ function _rerenderCachedModels() {
         _gpuBtnsHtml += `<button type="button" class="cookbook-gpu-btn${on ? ' active' : ''}" data-gpu="${i}">${i}</button>`;
       }
       // GPUs button strip moved to Row 2 (next to GPU Mem) below. 4px
-      // margin on the left, 8px on the right — extra 4px right-side gap
+      // margin on the left, 8px on the right - extra 4px right-side gap
       // separates the GPU chiclets from the GPU Mem field that follows
       // (asked-for breathing room; 4px on either side felt cramped on
       // the GPU-Mem boundary).
       const _gpusLabelHtml = `<label class="hwfit-gpus-label cookbook-llama-gpu-only" style="margin:0 8px 0 4px;">${_l('GPUs','Toggle which GPUs to use')}<div class="cookbook-gpu-group">${_gpuBtnsHtml}</div><input type="hidden" class="hwfit-sf" data-field="gpus" value="${esc(defaultGpus)}" /></label>`;
       panelHtml += _gpusLabelHtml;
       panelHtml += `</div>`;
-      // (hwfit-serve-runtime-note moved to the top of the panel — see above.)
+      // (hwfit-serve-runtime-note moved to the top of the panel - see above.)
       if (_ggufChoices.length > 1) {
-        // Show the GGUF File dropdown for BOTH llama.cpp and Ollama — Ollama
+        // Show the GGUF File dropdown for BOTH llama.cpp and Ollama - Ollama
         // also needs to know which exact .gguf to import via the new
         // `docker exec ollama-test ollama-import` auto-fill (otherwise the
         // helper falls back to "first sorted gguf", which may not match what
@@ -1569,7 +1569,7 @@ function _rerenderCachedModels() {
       } else if (_defaultGguf) {
         panelHtml += `<input type="hidden" class="hwfit-sf" data-field="gguf_file" value="${esc(_defaultGguf)}" />`;
       }
-      // Row 2: Core settings — the handful you actually touch every launch.
+      // Row 2: Core settings - the handful you actually touch every launch.
       // TP / Context / GPU / GPU Mem / Max Seqs / Dtype. Everything else
       // (Swap, KV Cache, Attention backend, Env vars, llama.cpp batch/ubatch)
       // moved to the Advanced fold below to keep this row scannable.
@@ -1580,16 +1580,16 @@ function _rerenderCachedModels() {
       // GPU Mem so "which devices + how much" sit adjacent. Max Seqs
       // follows Context per the "request-shape" cluster.
       panelHtml += `<label class="hwfit-backend-vllm hwfit-backend-sglang hwfit-backend-llamacpp">${_l('Dtype','Data type for weights. auto picks best for GPU')}<select class="hwfit-sf" data-field="dtype">${dtypeOpts}</select></label>`;
-      panelHtml += `<label class="hwfit-backend-vllm hwfit-backend-sglang">${_l('TP','Tensor Parallelism — split model across N GPUs')}<select class="hwfit-sf" data-field="tp">${tpOpts}</select></label>`;
+      panelHtml += `<label class="hwfit-backend-vllm hwfit-backend-sglang">${_l('TP','Tensor Parallelism - split model across N GPUs')}<select class="hwfit-sf" data-field="tp">${tpOpts}</select></label>`;
       // ctx resets to the model's max on every panel open (the real ctx slider
-      // lives in the Scan/Download toolbar — see cookbook.js .hwfit-ctx-control).
+      // lives in the Scan/Download toolbar - see cookbook.js .hwfit-ctx-control).
       const _knownCtxDefault = _knownModelContextMax({ ...m, repo_id: repo });
       const _ctxDefault = _knownCtxDefault ? String(_knownCtxDefault) : (m.context_length || m.context || '20000');
       const _ctxSavedValue = sv('ctx', _ctxDefault);
       const _ctxValue = _isMiniMaxMSeries && ['20000', '32768'].includes(String(_ctxSavedValue)) ? _ctxDefault : _ctxSavedValue;
       panelHtml += `<label class="hwfit-context-label">${_l('Context','Max tokens per request. Calculate suggests a value from model limit + selected GPU VRAM; edit manually to override.')}<span class="hwfit-context-control"><input type="text" class="hwfit-sf" data-field="ctx" value="${esc(_ctxValue)}" /><button type="button" class="hwfit-context-calc-btn cookbook-btn" title="Calculate and use suggested context from scanned hardware">Auto</button></span><span class="hwfit-auto-ctx-note"></span></label>`;
-      panelHtml += `<label class="hwfit-backend-vllm hwfit-backend-sglang">${_l('Max Seqs','Maximum concurrent requests. Lower = less memory. Default 4 — prosumer GPUs often OOM on vLLM default 256 during CUDA graph capture.')}<input type="text" class="hwfit-sf" data-field="max_seqs" value="${esc(sv('max_seqs', '4'))}" placeholder="4" /></label>`;
-      // GPU "auto" field removed — the GPU button strip below already
+      panelHtml += `<label class="hwfit-backend-vllm hwfit-backend-sglang">${_l('Max Seqs','Maximum concurrent requests. Lower = less memory. Default 4 - prosumer GPUs often OOM on vLLM default 256 during CUDA graph capture.')}<input type="text" class="hwfit-sf" data-field="max_seqs" value="${esc(sv('max_seqs', '4'))}" placeholder="4" /></label>`;
+      // GPU "auto" field removed - the GPU button strip below already
       // writes data-field="gpus" (the canonical comma-separated device
       // list) and the command builders now read from that single source.
       panelHtml += `<label class="hwfit-backend-vllm hwfit-backend-sglang">${_l('GPU Mem','Fraction of GPU memory (0.0–1.0). Lower if OOM')}<input type="text" class="hwfit-sf" data-field="gpu_mem" value="${esc(sv('gpu_mem', _isMiniMaxMSeries ? '0.95' : '0.90'))}" /></label>`;
@@ -1608,7 +1608,7 @@ function _rerenderCachedModels() {
       panelHtml += `<label class="hwfit-backend-vllm" style="grid-column:1 / -1;">${_l('Served Name','vLLM --served-model-name. Keeps the OpenAI model id stable when serving from a local snapshot path.')}<input type="text" class="hwfit-sf" data-field="served_model_name" value="${esc(svm('served_model_name', _defaultServedModelName))}" placeholder="${esc(repo)}" style="width:100%;" /></label>`;
       panelHtml += `<label class="hwfit-backend-vllm" style="grid-column:1 / -1;">${_l('Model Path','Argument passed after `vllm serve`. MiniMax M3 auto-fills the cached snapshot path because the nightly runtime needs the local repo files.')}<input type="text" class="hwfit-sf" data-field="model_path" value="${esc(_modelPathValue)}" placeholder="${esc(repo)}" style="width:100%;" /></label>`;
       panelHtml += `<label class="hwfit-backend-vllm">${_l('KV Cache','vLLM --kv-cache-dtype. auto uses the model/runtime default; fp8 reduces KV memory for long context.')}<select class="hwfit-sf" data-field="vllm_kv_cache_dtype" style="height:32px;">${vllmKvCacheOpts}</select></label>`;
-      // Attention backend selector — pin the kernel impl. Default `auto` lets
+      // Attention backend selector - pin the kernel impl. Default `auto` lets
       // vLLM pick FlashInfer (which JITs on first use and breaks on older
       // system nvcc) → FlashAttention → xformers. Forcing FLASH_ATTN skips
       // the JIT entirely, fixing the `nvcc fatal: Unsupported gpu
@@ -1689,7 +1689,7 @@ function _rerenderCachedModels() {
       panelHtml += `<label class="hwfit-sf-cb"><input type="checkbox" class="hwfit-sf" data-field="trust_remote"${sv('trust_remote',_isMiniMaxMSeries)?' checked':''} /> Trust Remote Code${_h('SGLang/vLLM: allow model code from HuggingFace via --trust-remote-code')}</label>`;
       panelHtml += `<label class="hwfit-sf-cb hwfit-backend-vllm hwfit-backend-sglang"><input type="checkbox" class="hwfit-sf" data-field="auto_tool"${sv('auto_tool',_nativeToolDefault)?' checked':''} /> Auto Tool Choice${_h('SGLang/vLLM: enable native tool calling and auto-pick the detected tool-call parser')}</label>`;
       // Always-render the Reasoning Parser, Expert Parallel, and MoE Env
-      // checkboxes — the model-family detection above is a hint, not a
+      // checkboxes - the model-family detection above is a hint, not a
       // hard gate. User asked to keep these visible regardless so that
       // a borderline-undetected MoE/reasoning model can still toggle
       // them without dropping back to the raw command box.
@@ -1698,7 +1698,7 @@ function _rerenderCachedModels() {
       panelHtml += `<label class="hwfit-sf-cb"><input type="checkbox" class="hwfit-sf" data-field="prefix_cache"${sv('prefix_cache',false)?' checked':''} /> Prefix / Radix Cache${_h('vLLM: prefix caching. SGLang: RadixAttention prefix cache; when off Telemachos adds --disable-radix-cache.')}</label>`;
       // Inline the previously-second vLLM checks row so Expert Parallel /
       // Speculative / MoE Env sit next to Prefix Caching with no gap. All
-      // three are vLLM-only — class-gated so they hide on SGLang. Always
+      // three are vLLM-only - class-gated so they hide on SGLang. Always
       // render so the user can flip them on for any MoE model.
       panelHtml += `<label class="hwfit-sf-cb hwfit-backend-vllm hwfit-backend-sglang"><input type="checkbox" class="hwfit-sf" data-field="expert_parallel"${sv('expert_parallel',_expertParallelDefault)?' checked':''} /> Expert Parallel${_h('SGLang/vLLM MoE: shard expert layers across GPUs. Useful for DeepSeek/MiniMax/Qwen MoE; avoid on dense models.')}</label>`;
       panelHtml += `<label class="hwfit-sf-cb hwfit-backend-sglang">Decode Graph${_h('SGLang only: tune decode CUDA graph capture. Smaller batch can fix DeepSeek-V4 graph-capture errors; disabled is safest but slower.')} <select class="hwfit-sf" data-field="sglang_decode_graph" style="height:24px;max-width:92px;"><option value=""${sv('sglang_decode_graph','') === '' ? ' selected' : ''}>auto</option><option value="bs16"${sv('sglang_decode_graph','') === 'bs16' ? ' selected' : ''}>bs 16</option><option value="disabled"${sv('sglang_decode_graph','') === 'disabled' ? ' selected' : ''}>off</option></select></label>`;
@@ -1712,14 +1712,14 @@ function _rerenderCachedModels() {
         if (!_specMethods.includes(_specMethod)) _specMethods.unshift(_specMethod);
         const _specOpts = _specMethods.map(m =>
           `<option value="${m}"${m === _specMethod ? ' selected' : ''}>${m}</option>`).join('');
-        panelHtml += `<label class="hwfit-sf-cb hwfit-backend-vllm hwfit-spec-group"><input type="checkbox" class="hwfit-sf" data-field="speculative" /> Speculative <select class="hwfit-sf hwfit-spec-method" data-field="spec_method" title="vLLM --speculative-config method">${_specOpts}</select><input type="number" class="hwfit-sf hwfit-spec-tokens hwfit-spec-tokens-bare" data-field="spec_tokens" value="${esc(_specTokens)}" min="1" max="10" title="num_speculative_tokens" style="width:44px;" /><span class="hwfit-help-chip hwfit-help-chip-inline" title="MTP / speculative decoding is supported on a few model families only — turn it on when the model card explicitly recommends it. On supported models it can boost inference throughput up to ~3×; on unsupported models it will either be ignored or fail to launch." style="margin-left:6px;">?</span></label>`;
+        panelHtml += `<label class="hwfit-sf-cb hwfit-backend-vllm hwfit-spec-group"><input type="checkbox" class="hwfit-sf" data-field="speculative" /> Speculative <select class="hwfit-sf hwfit-spec-method" data-field="spec_method" title="vLLM --speculative-config method">${_specOpts}</select><input type="number" class="hwfit-sf hwfit-spec-tokens hwfit-spec-tokens-bare" data-field="spec_tokens" value="${esc(_specTokens)}" min="1" max="10" title="num_speculative_tokens" style="width:44px;" /><span class="hwfit-help-chip hwfit-help-chip-inline" title="MTP / speculative decoding is supported on a few model families only - turn it on when the model card explicitly recommends it. On supported models it can boost inference throughput up to ~3×; on unsupported models it will either be ignored or fail to launch." style="margin-left:6px;">?</span></label>`;
       }
-      // Always-render MoE Env Vars — the env vars dict is empty for
+      // Always-render MoE Env Vars - the env vars dict is empty for
       // most dense models (toggle is a no-op then), but for MoE families
       // the user can still flip it on without re-fitting model detection.
       panelHtml += `<label class="hwfit-sf-cb hwfit-backend-vllm"><input type="checkbox" class="hwfit-sf" data-field="moe_env" /> MoE Env Vars${_h('Adds MoE-specific env vars to the launch command: VLLM_USE_DEEP_GEMM=0, VLLM_USE_FLASHINFER_MOE_FP16=1, OMP_NUM_THREADS=4. Helpful on MoE models like Qwen3 A3B/A10B, MiniMax, DeepSeek V3+; ignored on dense models.')}</label>`;
       panelHtml += `</div>`;
-      // ── llama.cpp Advanced — grouped by purpose ──
+      // ── llama.cpp Advanced - grouped by purpose ──
       // Three clean field rows + one checkbox row, all selects/inputs the
       // same 28px height (no per-field `top:-Npx` nudges). Groups follow
       // user mental model: (1) where it runs on GPU, (2) how memory is
@@ -1728,27 +1728,27 @@ function _rerenderCachedModels() {
       const llamaFitOpts = ['', 'off', 'on'].map(d => `<option value="${d}"${sv('llama_fit','')===d?' selected':''}>${d||'default'}</option>`).join('');
       const llamaSplitModeOpts = ['', 'layer', 'tensor', 'row', 'none'].map(d => `<option value="${d}"${sv('llama_split_mode','')===d?' selected':''}>${d||'default'}</option>`).join('');
 
-      // Group 1 — GPU placement (GPU-only, hides in CPU mode)
+      // Group 1 - GPU placement (GPU-only, hides in CPU mode)
       panelHtml += `<div class="hwfit-serve-row hwfit-backend-llamacpp cookbook-llama-gpu-only hwfit-llama-placement-row">`;
       panelHtml += `<label>${_l('Split Mode','llama.cpp GPU placement. layer = default; tensor splits weights and KV across GPUs.')}<select class="hwfit-sf" data-field="llama_split_mode">${llamaSplitModeOpts}</select></label>`;
       panelHtml += `<label>${_l('Tensor Split','GPU proportions, e.g. 50,50 across two GPUs. Blank = auto.')}<input type="text" class="hwfit-sf" data-field="llama_tensor_split" value="${esc(sv('llama_tensor_split', ''))}" placeholder="auto" /></label>`;
       panelHtml += `<label>${_l('Main GPU','--main-gpu index inside the visible GPU set. Useful for split mode none/row.')}<input type="text" class="hwfit-sf" data-field="llama_main_gpu" value="${esc(sv('llama_main_gpu', ''))}" placeholder="auto" /></label>`;
       panelHtml += `</div>`;
 
-      // Group 2 — Memory tuning (KV cache + MoE-on-CPU + Fit policy)
+      // Group 2 - Memory tuning (KV cache + MoE-on-CPU + Fit policy)
       panelHtml += `<div class="hwfit-serve-row hwfit-backend-llamacpp hwfit-llama-memory-row">`;
       panelHtml += `<label>${_l('KV Cache','cache-type-k/v: quantize the KV cache. q4_0 = smallest (more context), q8_0 = long-context, f16 = full.')}<select class="hwfit-sf" data-field="cache_type">${_kvOpts}</select></label>`;
       panelHtml += `<label class="cookbook-llama-gpu-only">${_l('CPU MoE','n-cpu-moe: number of MoE expert layers to run on CPU when the model is bigger than VRAM. 0 = all on GPU.')}<input type="text" class="hwfit-sf" data-field="n_cpu_moe" value="${esc(sv('n_cpu_moe',''))}" placeholder="0" /></label>`;
       panelHtml += `<label>${_l('Fit','llama.cpp --fit. Leave default unless you need explicit off/on behavior for a preset.')}<select class="hwfit-sf" data-field="llama_fit">${llamaFitOpts}</select></label>`;
       panelHtml += `</div>`;
 
-      // Group 3 — Request batching (Batch / UBatch / Parallel)
+      // Group 3 - Request batching (Batch / UBatch / Parallel)
       panelHtml += `<div class="hwfit-serve-row hwfit-backend-llamacpp hwfit-llama-batch-row">`;
       panelHtml += `<label>${_l('Batch','llama.cpp prompt batch size. Blank = default.')}<input type="text" class="hwfit-sf" data-field="llama_batch_size" value="${esc(sv('llama_batch_size', ''))}" placeholder="2048" /></label>`;
       panelHtml += `<label>${_l('UBatch','llama.cpp physical micro-batch size. Blank = default.')}<input type="text" class="hwfit-sf" data-field="llama_ubatch_size" value="${esc(sv('llama_ubatch_size', ''))}" placeholder="512" /></label>`;
       panelHtml += `<label>${_l('Parallel','llama.cpp parallel slots. Blank = default; 1 matches single-lane presets.')}<input type="text" class="hwfit-sf" data-field="llama_parallel" value="${esc(sv('llama_parallel', ''))}" placeholder="1" /></label>`;
       panelHtml += `</div>`;
-      // Auto-profile chips row removed — visual fit with the rest of the
+      // Auto-profile chips row removed - visual fit with the rest of the
       // serve panel was off, and the manual ctx/n_cpu_moe/cache controls
       // above are already sufficient. The hwfit profile API
       // (/api/hwfit/profiles) is still available for any caller that
@@ -1760,7 +1760,7 @@ function _rerenderCachedModels() {
       panelHtml += `<span style="opacity:0.7;">GPU memory:</span>`;
       panelHtml += `<span class="hwfit-vram-readout" style="opacity:0.5;">checking…</span>`;
       panelHtml += `</div>`;
-      // Group 4 — llama.cpp toggles. Single row of checkboxes, GPU-only
+      // Group 4 - llama.cpp toggles. Single row of checkboxes, GPU-only
       // ones (Flash Attn, Allow CPU overflow) hide
       // automatically in CPU mode. Order: perf-critical → safety → I/O →
       // niche. MTP Spec sits last because it owns its own numstep widget
@@ -1782,7 +1782,7 @@ function _rerenderCachedModels() {
       panelHtml += `<label>Harmonize GPU${_h('Separate GPU for img2img/harmonize. Leave empty to use same GPU')}<input type="text" class="hwfit-sf" data-field="diff_harmonize_gpu" value="${esc(sv('diff_harmonize_gpu', ''))}" placeholder="auto" style="width:50px;" /></label>`;
       panelHtml += `</div>`;
       // Model-specific optimizations. The checks row always renders for the
-      // vLLM backend so the Speculative (MTP) control is ALWAYS reachable —
+      // vLLM backend so the Speculative (MTP) control is ALWAYS reachable -
       // even for models the auto-detector doesn't recognize. Expert-parallel,
       // reasoning-parser and MoE-env still only appear when auto-detected.
       // Expert Parallel / Speculative / MoE Env moved into Row 3 above so
@@ -1795,7 +1795,7 @@ function _rerenderCachedModels() {
       // ── End Advanced fold ──
       panelHtml += `</details>`;
       // Command preview + actions. Wrap the textarea so a floating Copy
-      // button can sit at its top-right corner — same pattern as the chat
+      // button can sit at its top-right corner - same pattern as the chat
       // run-output panel.
       panelHtml += `<details class="hwfit-serve-cmd-details">`;
       panelHtml += `<summary class="hwfit-serve-cmd-summary">Launch command</summary>`;
@@ -1817,7 +1817,7 @@ function _rerenderCachedModels() {
       panelHtml += `<span class="hwfit-serve-launch-group">`;
       panelHtml += `<button class="cookbook-btn hwfit-serve-launch"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:4px;flex-shrink:0;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Launch</button>`;
       // Chevron points DOWN because the schedule form opens beneath the
-      // panel — the arrow signals the direction of motion, not menu state.
+      // panel - the arrow signals the direction of motion, not menu state.
       panelHtml += `<button class="cookbook-btn hwfit-serve-schedule-arrow" type="button" aria-haspopup="menu" aria-label="More launch actions" title="More launch actions"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>`;
       panelHtml += `</span>`;
       panelHtml += `</div>`;
@@ -1832,7 +1832,7 @@ function _rerenderCachedModels() {
       requestAnimationFrame(() => panel.scrollIntoView({ block: 'nearest', behavior: 'smooth' }));
       // Firefox-mobile fallback: the CSS that grows the cached-list and
       // expanded card uses :has(.doclib-card-expanded), which Firefox
-      // mobile doesn't support — so the panel stays collapsed and the
+      // mobile doesn't support - so the panel stays collapsed and the
       // form is unusable. Pin explicit px heights here. On Chromium/
       // WebKit the !important CSS still wins, so this is a no-op there.
       // (See project_skills_expand_firefox memory note.)
@@ -1869,7 +1869,7 @@ function _rerenderCachedModels() {
           // before Q4_K_M/001 etc); fall back to any single GGUF sorted.
           const dir = _ggufSearchDirExpr(m, repo);
           // GGUF needs the actual .gguf FILE, not the folder. For a custom-dir
-          // model the file lives under "<path>/<repo>" — search there just like we
+          // model the file lives under "<path>/<repo>" - search there just like we
           // search the HF snapshots dir, so serving a GGUF from a custom dir works
           // instead of handing llama.cpp a directory (which fails).
           const _ldir = m.path ? _shellQuote(`${m.path}/${repo}`) : '""';
@@ -1915,8 +1915,8 @@ function _rerenderCachedModels() {
       //    we don't know the model's real limit (not in catalog / profiles
       //    fetch failed). This is what stops the radv ErrorDeviceLost crash.
       //  - panel._modelCtxMax: the model's actual trained limit (set by the
-      //    profiles fetch below) — a tighter, model-specific cap when known.
-      const ABSOLUTE_CTX_MAX = 1048576;   // 1M tokens — above any real n_ctx_train
+      //    profiles fetch below) - a tighter, model-specific cap when known.
+      const ABSOLUTE_CTX_MAX = 1048576;   // 1M tokens - above any real n_ctx_train
       panel._modelCtxMax = panel._modelCtxMax || _knownModelContextMax(m) || 0;
       panel._modelWeightsGb = panel._modelWeightsGb || 0;
       panel._fitSystem = panel._fitSystem || null;
@@ -2078,8 +2078,8 @@ function _rerenderCachedModels() {
       // Tighten the ctx slider's upper bound to the model's trained limit.
       // Asking llama.cpp for ctx > n_ctx_train overflows and, with a quantized
       // KV cache, can crash the GPU (radv ErrorDeviceLost). The auto-profile
-      // chip row that used to also live here was removed — visual fit with
-      // the rest of the serve panel was off — but this clamp is essential.
+      // chip row that used to also live here was removed - visual fit with
+      // the rest of the serve panel was off - but this clamp is essential.
       (async () => {
         try {
           const { ctxMax, weightsGb } = await _loadContextProfile();
@@ -2118,9 +2118,9 @@ function _rerenderCachedModels() {
           else if (pct >= 85) color = 'var(--orange, #ffb86c)';
           let txt = `${usedG.toFixed(1)} / ${totG.toFixed(1)} GB (${pct}%) · ${freeG.toFixed(1)} GB free`;
           if (spilling) {
-            txt += ` · ⚠ ${spillG.toFixed(1)} GB spilled to RAM — slow (raise CPU MoE or lower context)`;
+            txt += ` · ⚠ ${spillG.toFixed(1)} GB spilled to RAM - slow (raise CPU MoE or lower context)`;
           } else if (pct >= 90) {
-            txt += ` · tight — risk of OOM/spill on long context or images`;
+            txt += ` · tight - risk of OOM/spill on long context or images`;
           } else {
             txt += ` · healthy`;
           }
@@ -2140,7 +2140,7 @@ function _rerenderCachedModels() {
         if (ok === false) clearInterval(_vramTimer);
       }, 4000);
 
-      // Backend icons — accent color, rendered via currentColor. vLLM gets
+      // Backend icons - accent color, rendered via currentColor. vLLM gets
       // a stylized double-V mark, the others fall back to a recognizable
       // glyph for the engine family. Shown beside each option in the
       // custom picker so the dropdown lists "[V] vLLM", "[⚡] SGLang", etc.
@@ -2181,7 +2181,7 @@ function _rerenderCachedModels() {
             <span class="hwfit-backend-item-label" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${it.label}</span>
           </button>
         `).join('');
-        // Hover styling (no global CSS rule — keep it self-contained).
+        // Hover styling (no global CSS rule - keep it self-contained).
         _backendMenu.querySelectorAll('.hwfit-backend-item').forEach(btn => {
           btn.addEventListener('mouseenter', () => { btn.style.background = 'color-mix(in srgb, var(--fg) 8%, transparent)'; });
           btn.addEventListener('mouseleave', () => { btn.style.background = ''; });
@@ -2233,7 +2233,7 @@ function _rerenderCachedModels() {
         const b = panel.querySelector('[data-field="backend"]')?.value || 'vllm';
         panel.dataset.backendActive = b;
         panel.querySelectorAll('[class*="hwfit-backend-"]').forEach(el => {
-          // Skip the entire backend-picker subtree — the picker's own
+          // Skip the entire backend-picker subtree - the picker's own
           // classes (`hwfit-backend-picker`, `-btn`, `-menu`, `-item`,
           // `-btn-icon`, `-btn-label`, `-item-icon`, `-item-label`) all
           // match the wildcard and would get hidden as if they were
@@ -2253,7 +2253,7 @@ function _rerenderCachedModels() {
         // Mirror the message into a small chip next to the model title at
         // the top of the card, so the readiness state is visible without
         // having to look down into the panel body.
-        // Clean up any title chip from previous versions — the readiness
+        // Clean up any title chip from previous versions - the readiness
         // text now lives inside the panel at the top, not in the card title.
         const card = panel.closest('.doclib-card, .memory-item');
         const titleEl = card ? card.querySelector('.memory-item-title') : null;
@@ -2342,7 +2342,7 @@ function _rerenderCachedModels() {
         const p = modelSlots[slotIdx];
         if (!p) return;
         const cmd = p.cmd || '';
-        // Hoisted so the GPU/venv restore below can use it in BOTH branches —
+        // Hoisted so the GPU/venv restore below can use it in BOTH branches -
         // it used to be scoped to the else branch, throwing a ReferenceError when
         // a preset had saved fields (which aborted GPU + env restoration).
         const _ex = (re) => { const m = cmd.match(re); return m ? m[1] : ''; };
@@ -2409,7 +2409,7 @@ function _rerenderCachedModels() {
             if (f && checks[f] !== undefined && el.type === 'checkbox') { el.checked = checks[f]; }
           });
         }
-        // Restore the venv path from the saved config — OVERRIDE whatever's in the
+        // Restore the venv path from the saved config - OVERRIDE whatever's in the
         // box (don't just fill when empty), so loading a config reliably brings its
         // venv with it. (task-saved / older presets keep it as p.envPath.) Only
         // skip when the preset has no venv at all, so we don't blank a typed one.
@@ -2465,8 +2465,8 @@ function _rerenderCachedModels() {
         if (!t) return;
         t.textContent = n > 0 ? `${n} ▾` : '▾';
         t.title = n > 0
-          ? `${n} saved launch config${n === 1 ? '' : 's'} for ${_repoShort} — click ▾ to load or delete`
-          : `No saved launch configs for ${_repoShort} yet — click Save to add one`;
+          ? `${n} saved launch config${n === 1 ? '' : 's'} for ${_repoShort} - click ▾ to load or delete`
+          : `No saved launch configs for ${_repoShort} yet - click Save to add one`;
       }
 
       // Save the current panel fields as a new named preset (shared by the menu's
@@ -2479,7 +2479,7 @@ function _rerenderCachedModels() {
         const cmdBox = panel.querySelector('.hwfit-serve-cmd');
         const cmd = _normalizeServeCmdForLaunch((_cmdManuallyEdited && cmdBox) ? cmdBox.value : panel._cmd);
         // Already saved? If an existing preset for this model has the identical
-        // launch command, don't make a duplicate — tell the user via a popup.
+        // launch command, don't make a duplicate - tell the user via a popup.
         const _norm = s => String(s || '').replace(/\s+/g, ' ').trim();
         const _existing = modelSlots.find(p => _norm(p.cmd) === _norm(cmd));
         if (_existing) {
@@ -2522,7 +2522,7 @@ function _rerenderCachedModels() {
         let closeMenu = () => { dropdown.remove(); anchor.classList.remove('cookbook-menu-active'); };
         const rect = anchor.getBoundingClientRect();
         const minW = 190;
-        // Cap width/height to the viewport and start hidden — we clamp the final
+        // Cap width/height to the viewport and start hidden - we clamp the final
         // position after mount (below) using the menu's real measured size, so it
         // can't run off-screen on a narrow mobile viewport.
         dropdown.style.cssText = `position:fixed;display:block;visibility:hidden;z-index:${topPortalZ()};top:0;left:0;right:auto;min-width:${minW}px;max-width:calc(100vw - 16px);max-height:calc(100vh - 24px);overflow-y:auto;box-sizing:border-box;background:var(--panel,var(--bg));border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.3);padding:6px;font-size:11px;`;
@@ -2562,7 +2562,7 @@ function _rerenderCachedModels() {
           if (p.confirmedWorking) {
             const badge = document.createElement('span');
             badge.className = 'cookbook-saved-confirmed';
-            badge.title = 'Confirmed working — this config launched and registered an endpoint';
+            badge.title = 'Confirmed working - this config launched and registered an endpoint';
             badge.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#50fa7b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
             it.appendChild(badge);
           }
@@ -2574,7 +2574,7 @@ function _rerenderCachedModels() {
             // Close the menu FIRST so it always dismisses, even if loading throws.
             closeMenu();
             _loadSlotIntoPanel(slotIdx);
-            // Confirm the click landed — loading is silent otherwise, so it was
+            // Confirm the click landed - loading is silent otherwise, so it was
             // unclear the settings actually changed.
             uiModule.showToast(`Loaded "${p.label || `Config ${idx + 1}`}"`);
             // Briefly flash the command box so the user sees the panel update.
@@ -2591,7 +2591,7 @@ function _rerenderCachedModels() {
             if (target) {
               target.favorite = !target.favorite;
               _savePresets(cur.map(_redactServeStateForStorage));
-              uiModule.showToast(target.favorite ? 'Favorited — pinned to top' : 'Unfavorited');
+              uiModule.showToast(target.favorite ? 'Favorited - pinned to top' : 'Unfavorited');
               _showSavedConfigMenu(anchor);
             }
           });
@@ -2627,7 +2627,7 @@ function _rerenderCachedModels() {
         closeMenu = bindMenuDismiss(dropdown, () => { dropdown.remove(); anchor.classList.remove('cookbook-menu-active'); }, (ev) => !dropdown.contains(ev.target) && ev.target !== anchor && !anchor.contains(ev.target));
       }
 
-      // "Save" segment — save the current config directly.
+      // "Save" segment - save the current config directly.
       const savedSaveBtn = panel.querySelector('.cookbook-saved-save');
       if (savedSaveBtn) {
         savedSaveBtn.addEventListener('click', async (e) => {
@@ -2636,7 +2636,7 @@ function _rerenderCachedModels() {
           await _saveCurrentConfig();
         });
       }
-      // Arrow segment — open/close the saved-configs dropdown.
+      // Arrow segment - open/close the saved-configs dropdown.
       const savedArrowBtn = panel.querySelector('.cookbook-saved-arrow');
       if (savedArrowBtn) {
         savedArrowBtn.addEventListener('click', (e) => {
@@ -2661,7 +2661,7 @@ function _rerenderCachedModels() {
           panel.querySelector('[data-field="gpus"]').value = active;
           // Guard: vLLM/SGLang tensor-parallel only works across IDENTICAL GPUs.
           // If the probe knows the per-GPU models and the selection mixes types,
-          // warn — serving across a mixed set will fail or run badly.
+          // warn - serving across a mixed set will fail or run badly.
           const byIdx = panel._gpuProbe && panel._gpuProbe.byIdx;
           if (byIdx && activeBtns.length > 1) {
             const names = new Set(activeBtns
@@ -2670,7 +2670,7 @@ function _rerenderCachedModels() {
               .map(g => g.name));
             if (names.size > 1 && !panel._mixedGpuWarned) {
               panel._mixedGpuWarned = true;   // once per panel, don't nag
-              uiModule.showToast('Mixed GPU types selected — tensor-parallel needs identical GPUs. Pick one pool (e.g. all the same card).', 7000);
+              uiModule.showToast('Mixed GPU types selected - tensor-parallel needs identical GPUs. Pick one pool (e.g. all the same card).', 7000);
             } else if (names.size <= 1) {
               panel._mixedGpuWarned = false;  // reset once they're back to one pool
             }
@@ -2680,7 +2680,7 @@ function _rerenderCachedModels() {
         });
       });
 
-      // Wire "Probe GPUs" / "Clear Server" — annotate GPU buttons with free VRAM and per-GPU PIDs
+      // Wire "Probe GPUs" / "Clear Server" - annotate GPU buttons with free VRAM and per-GPU PIDs
       const _probeBtn = panel.querySelector('.cookbook-gpu-probe');
       const _clearBtn = panel.querySelector('.cookbook-gpu-clear');
       const _splitArrow = panel.querySelector('.cookbook-gpu-split-arrow');
@@ -2875,7 +2875,7 @@ function _rerenderCachedModels() {
           // Position below the button using viewport coords (popup is
           // position:fixed). Measure the popup AFTER it's in the DOM so
           // we get the real rendered size, then clamp both axes so the
-          // popup stays fully visible — GPU buttons near the right edge
+          // popup stays fully visible - GPU buttons near the right edge
           // of the modal previously anchored the popup mostly off-screen.
           const r = anchorBtn.getBoundingClientRect();
           const vw = window.innerWidth  || document.documentElement.clientWidth;
@@ -2938,7 +2938,7 @@ function _rerenderCachedModels() {
           try { data = await res.json(); } catch (_) { data = {}; }
           if (!res.ok) {
             const err = data.detail || data.error || res.statusText || `HTTP ${res.status}`;
-            const hint = res.status === 404 ? ' — server may need a restart to pick up new endpoint' : '';
+            const hint = res.status === 404 ? ' - server may need a restart to pick up new endpoint' : '';
             if (!silent) uiModule.showToast('GPU probe failed: ' + err + hint, 8000);
             return null;
           }
@@ -2985,7 +2985,7 @@ function _rerenderCachedModels() {
             const g = panel._gpuProbe.byIdx.get(idx);
             b.classList.remove('gpu-free', 'gpu-busy', 'gpu-missing');
             if (!g) {
-              // GPU doesn't exist on this server — hide it rather than show a
+              // GPU doesn't exist on this server - hide it rather than show a
               // dead button. The panel renders up to 8 before the count is known
               // (e.g. a single-GPU box would otherwise show 0–7).
               b.style.display = 'none';
@@ -2997,7 +2997,7 @@ function _rerenderCachedModels() {
             const totalGb = (g.total_mb / 1024).toFixed(1);
             const procCount = (g.processes && g.processes.length) || 0;
             const procLine = procCount
-              ? `\n${procCount} process(es) — click to view/kill`
+              ? `\n${procCount} process(es) - click to view/kill`
               : '';
             const backendLine = g.backend || data.backend ? `\nprobe: ${g.source || data.source || g.backend || data.backend}` : '';
             b.title = `GPU ${idx} ${g.name}\n${freeGb} / ${totalGb} GB free · util ${g.util_pct}%${procLine}${backendLine}`;
@@ -3025,7 +3025,7 @@ function _rerenderCachedModels() {
         });
 
         // Auto-probe (silent) on open so the GPU buttons reflect the real count
-        // — a single-GPU server should show just GPU 0, not the placeholder 0–7.
+        // - a single-GPU server should show just GPU 0, not the placeholder 0–7.
         // Falls back to the full 0–7 set if the server is unreachable.
         _runProbe(true).catch(() => {});
 
@@ -3184,7 +3184,7 @@ function _rerenderCachedModels() {
             }
             // Hide every GPU-only control (chiclets, Tensor Split,
             // Split Mode, Main GPU, Flash Attn, etc.)
-            // in CPU mode — `-ngl 0` ignores them and showing them
+            // in CPU mode - `-ngl 0` ignores them and showing them
             // implies they matter.
             panel.classList.toggle('cookbook-llama-cpu-mode', want === 'cpu');
             panel.querySelectorAll('.cookbook-llama-gpu-only').forEach(el => {
@@ -3211,7 +3211,7 @@ function _rerenderCachedModels() {
           panel.querySelectorAll('.cookbook-llama-gpu-only').forEach(el => { el.style.display = 'none'; });
         }
       }
-      // Themed +/- buttons next to spec_tokens — step the adjacent number input.
+      // Themed +/- buttons next to spec_tokens - step the adjacent number input.
       panel.querySelectorAll('.hwfit-numstep-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.preventDefault();
@@ -3241,7 +3241,7 @@ function _rerenderCachedModels() {
       }
       if (_cmdTextarea) _cmdTextarea.addEventListener('input', () => { _cmdManuallyEdited = true; });
 
-      // Cancel button — collapses the serve config panel (same effect as
+      // Cancel button - collapses the serve config panel (same effect as
       // tapping the row to toggle it shut). Mobile users wanted an explicit
       // "back out" affordance next to Launch.
       const _collapsePanel = () => {
@@ -3257,7 +3257,7 @@ function _rerenderCachedModels() {
         _collapsePanel();
       });
       // Esc anywhere on the page closes the open serve panel. Skips when
-      // the user is typing in a field — they want Esc to deselect / blur
+      // the user is typing in a field - they want Esc to deselect / blur
       // those, not collapse the form they're configuring.
       const _onEscClose = (ev) => {
         if (ev.key !== 'Escape') return;
@@ -3270,7 +3270,7 @@ function _rerenderCachedModels() {
           t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable
         );
         if (inField) return;
-        // Skip when one of the dropdown/menu popovers is open — the
+        // Skip when one of the dropdown/menu popovers is open - the
         // popovers handle their own Esc and use stopPropagation, so any
         // Esc that bubbles here means nothing else claimed it.
         ev.stopPropagation();
@@ -3320,7 +3320,7 @@ function _rerenderCachedModels() {
         // Pasted commands often carry hidden newlines / CRs / tabs from copies
         // out of model cards or wrapped help text. The backend cmd allowlist
         // rejects \n / \r outright (`Invalid characters in cmd`), so collapse
-        // all whitespace to single spaces before launch — same effect as the
+        // all whitespace to single spaces before launch - same effect as the
         // user manually re-flowing the textarea, no behavior change.
         const _rawLaunchCmd = (_cmdManuallyEdited && _cmdTextarea) ? _cmdTextarea.value : panel._cmd;
         let launchCmd = _normalizeServeCmdForLaunch(_rawLaunchCmd);
@@ -3343,7 +3343,7 @@ function _rerenderCachedModels() {
           return;
         }
         // Pre-launch: check our own task list for a serve already running
-        // on this host. Offer to stop+launch as the default action — the
+        // on this host. Offer to stop+launch as the default action - the
         // SSH-based port probe below is more thorough but it can miss
         // when SSH glitches or `ss` isn't installed. This catches the
         // common case instantly without waiting for a network round-trip.
@@ -3421,7 +3421,7 @@ function _rerenderCachedModels() {
         }
         // llama.cpp VRAM-fit preflight. Catches the silent-CPU-fallback
         // trap: when the model + KV cache exceed the selected GPUs' free
-        // VRAM, llama-cpp-python doesn't error — it pushes layers/KV to
+        // VRAM, llama-cpp-python doesn't error - it pushes layers/KV to
         // CPU and inference crawls at sub-1 tok/s. Off by default; can
         // be bypassed per-launch via the dialog's "Allow CPU overflow"
         // action, OR persistently by ticking the same-named checkbox.
@@ -3430,19 +3430,19 @@ function _rerenderCachedModels() {
             && !serveState.llama_cpu_overflow) {
           try {
             const _ctx = Math.max(1, parseInt(serveState.ctx, 10) || 8192);
-            // Model size on disk — close enough for GPU footprint of a GGUF.
+            // Model size on disk - close enough for GPU footprint of a GGUF.
             const _modelBytes = Number(m?.size_bytes || 0) || Math.round((Number(m?.size_gb || 0)) * 1024 * 1024 * 1024);
             const _modelGb = _modelBytes / (1024 ** 3);
             // KV cache heuristic. ~0.7MB / token / 7.5GB-of-model at fp16
             // KV, scaled linearly by model size. Imperfect but covers
-            // the common 7B–70B range within ~20% — good enough to catch
+            // the common 7B–70B range within ~20% - good enough to catch
             // overflow before it silently happens.
             const _kvGbPerToken = _modelGb > 0 ? (_modelGb / 7.5) * 0.0007 : 0.0007;
             const _kvGb = _ctx * _kvGbPerToken;
             const _needGb = _modelGb + _kvGb;
             const _selStr = (serveState.gpus || '').trim();
             const _selIdx = _selStr ? _selStr.split(',').map(s => parseInt(s.trim(), 10)).filter(n => Number.isFinite(n)) : [0];
-            // Fetch FRESH GPU data per-launch — the hwfit cache may be
+            // Fetch FRESH GPU data per-launch - the hwfit cache may be
             // stale or for a different host (e.g. user switched server
             // picker without scanning), which used to silently skip the
             // preflight and let the launch silently fall to CPU.
@@ -3468,7 +3468,7 @@ function _rerenderCachedModels() {
             };
             const _selFreeGb = _selIdx.reduce((s, i) => s + _freeFor(i), 0);
             // Skip the gate when we don't have any free-VRAM data (probe
-            // failed) — better to let the launch try than silently refuse
+            // failed) - better to let the launch try than silently refuse
             // on a missing data point.
             if (_selFreeGb > 0 && _needGb > _selFreeGb && _modelGb > 0) {
               // Suggest the smallest set of additional GPUs whose free
@@ -3487,7 +3487,7 @@ function _rerenderCachedModels() {
               // Recommend ctx that just-fits on current selection.
               const _recCtxRaw = Math.floor((_selFreeGb - _modelGb) / _kvGbPerToken);
               const _recCtx = Math.max(1024, Math.floor(_recCtxRaw / 1024) * 1024);
-              // Custom modal — styledConfirm only takes 2 buttons; this
+              // Custom modal - styledConfirm only takes 2 buttons; this
               // surface needs up to 4 actions (Reduce / Add GPUs / Allow / Cancel).
               const _action = await new Promise(resolve => {
                 const ov = document.createElement('div');
@@ -3550,10 +3550,10 @@ function _rerenderCachedModels() {
               try { updateCmd(); } catch {}
             }
           } catch (_e) {
-            // Preflight is best-effort — never block on its own failure.
+            // Preflight is best-effort - never block on its own failure.
           }
         }
-        // Pre-launch GPU probe — common failure pattern: vLLM/SGLang launched
+        // Pre-launch GPU probe - common failure pattern: vLLM/SGLang launched
         // on a host where no GPU is visible (driver missing, $CUDA_VISIBLE_DEVICES
         // unset, container without --gpus). Catch it BEFORE the user spends
         // minutes watching the task fail.
@@ -3572,24 +3572,24 @@ function _rerenderCachedModels() {
             const _probeGpus = Array.isArray(_probeData) ? _probeData : (_probeData.gpus || []);
             if (!_probeGpus.length) {
               const _proceed = await window.styledConfirm(
-                `No GPU detected on ${_probeHost ? _probeHost : 'this host'}. ${serveState.backend.toUpperCase()} needs a visible CUDA/ROCm accelerator to start — launching now will most likely crash early.\n\nLaunch anyway?`,
+                `No GPU detected on ${_probeHost ? _probeHost : 'this host'}. ${serveState.backend.toUpperCase()} needs a visible CUDA/ROCm accelerator to start - launching now will most likely crash early.\n\nLaunch anyway?`,
                 { title: 'No GPU detected', confirmText: 'Launch anyway', cancelText: 'Cancel', danger: true },
               );
               if (!_proceed) { _restoreLaunchBtn(); return; }
             }
           } catch {
-            // Network / probe failure — don't block. Better to let the launch
+            // Network / probe failure - don't block. Better to let the launch
             // proceed than to silently refuse because the probe endpoint
             // hiccuped (the user can read the real error in the task output).
           }
         }
 
-        // Pre-launch PORT probe — second most common failure pattern is
+        // Pre-launch PORT probe - second most common failure pattern is
         // collision with an already-running server (vllm crashing with
         // "Address already in use" because Ollama owns 11434, or a
         // previous vllm on the same port wasn't killed). The post-mortem
         // "Suggested action: Kill existing vLLM" came AFTER the failed
-        // launch — user wants to know BEFORE clicking Launch. Parse the
+        // launch - user wants to know BEFORE clicking Launch. Parse the
         // port out of the cmd, ssh-check who owns it on the target host,
         // and offer to abort or proceed.
         try {
@@ -3630,16 +3630,16 @@ function _rerenderCachedModels() {
             }
           }
         } catch {
-          // Probe failure — don't block. If the port check can't run we'd
+          // Probe failure - don't block. If the port check can't run we'd
           // rather let the launch try than silently refuse.
         }
-        // Save in the { _byRepo, _lastUsed } schema — no legacy flat keys at
+        // Save in the { _byRepo, _lastUsed } schema - no legacy flat keys at
         // the root so per-model state doesn't leak between models.
         // Stamp `_forceBackend: true` so the next open of this model defaults
         // to the launched configuration end-to-end, even when the detector
         // would have picked a different backend. Without this flag, the
         // `savedMatchesBackend` gate inside sv() throws away every saved
-        // value when the detected backend doesn't match — the user opens
+        // value when the detected backend doesn't match - the user opens
         // Serve again and the panel looks like a fresh form despite a
         // known-good prior launch.
         try {
@@ -3658,7 +3658,7 @@ function _rerenderCachedModels() {
         const venvVal = panel.querySelector('[data-field="venv"]')?.value?.trim();
         const gpusVal = panel.querySelector('[data-field="gpus"]')?.value?.trim();
         const origGpus = _envState.gpus;
-        // Resolve the target host from the visible Server dropdown — the reliable
+        // Resolve the target host from the visible Server dropdown - the reliable
         // source. Relying on _envState.remoteHost silently sent serves to Local
         // when that value was stale/empty. Pass it explicitly to the launcher.
         const serveHost = launchTarget.host || '';
@@ -3675,7 +3675,7 @@ function _rerenderCachedModels() {
         // Preflight: launching a GPU engine (llama.cpp / vLLM / SGLang)
         // against the local-in-container target on a host whose hwfit
         // scan reports no GPU backend. That falls through to a CPU build
-        // / CPU inference path and is usually NOT what the user wants —
+        // / CPU inference path and is usually NOT what the user wants -
         // they typically have a host-side GPU (AMD/Vulkan, NVIDIA on a
         // different box) that the container can't see. Surface this so
         // the user can pick the host as a remote target instead, or
@@ -3718,7 +3718,7 @@ function _rerenderCachedModels() {
         }
       });
 
-      // Copy button — now icon-only, so flash a green checkmark on success
+      // Copy button - now icon-only, so flash a green checkmark on success
       // instead of swapping to text (which would also break the width).
       panel.querySelector('.hwfit-serve-copy').addEventListener('click', (e) => {
         // Without stopPropagation the click bubbles up to the
@@ -3742,7 +3742,7 @@ function _rerenderCachedModels() {
 // ── Delete / retry cached model ──
 
 // Resolve the host the cached list was scanned from, mirroring
-// _fetchCachedModels — so a delete targets the SAME machine the model
+// _fetchCachedModels - so a delete targets the SAME machine the model
 // actually lives on, not just the globally-selected serve host.
 function _serverFromCacheSelection() {
   let host = _envState.remoteHost || '';
@@ -3848,13 +3848,13 @@ async function _deleteCachedModel(repo, itemEl, skipConfirm = false, model = nul
     if (host) cmd = _sshCmd(host, cmd, _getPort(host));
   }
   // Deleting a large model (tens/hundreds of GB) can take a while, especially
-  // over SSH — show a whirlpool spinner on the row so it doesn't look frozen.
+  // over SSH - show a whirlpool spinner on the row so it doesn't look frozen.
   let _wp = null, _prevPos = '';
   if (itemEl) {
     _wp = spinnerModule.createWhirlpool(18);
     const ov = document.createElement('div');
     ov.className = 'cookbook-delete-overlay';
-    // Just the whirlpool, centered — no "Deleting…" text.
+    // Just the whirlpool, centered - no "Deleting…" text.
     ov.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb, var(--panel, var(--bg)) 82%, transparent);z-index:5;border-radius:inherit;';
     ov.appendChild(_wp.element);
     _prevPos = itemEl.style.position;
@@ -3988,14 +3988,14 @@ export async function openServePanelForRepo(repo, fields) {
   if (serveTab && !serveTab.classList.contains('active')) {
     serveTab.click();
   } else {
-    // Already on the Serve tab — refresh the list so the card is present.
+    // Already on the Serve tab - refresh the list so the card is present.
     try { await _fetchCachedModels(); } catch {}
   }
   // Poll for the model's card to render, then expand it. Cached-model
   // fetch is async and we don't get a direct completion hook from the
   // tab click, so retry for a few seconds.
   // A model downloaded to a CUSTOM dir is scanned by its folder name (the short
-  // name), while the download task carries the full HF repo id — so match by the
+  // name), while the download task carries the full HF repo id - so match by the
   // exact repo OR by the short (last-segment) name, else the card is never found.
   const _short = repo.split('/').pop();
   const _esc = (v) => (window.CSS && CSS.escape) ? CSS.escape(v) : v;
@@ -4024,7 +4024,7 @@ export async function openServePanelForRepo(repo, fields) {
     }
     await new Promise(r => setTimeout(r, 100));
   }
-  uiModule.showToast('Model not found in cache — switch to the Serve tab manually');
+  uiModule.showToast('Model not found in cache - switch to the Serve tab manually');
   return false;
 }
 
@@ -4162,7 +4162,7 @@ export async function _fetchCachedModels(fresh = false, opts = {}) {
     }
     // Sync the header dir pills to THIS server (the one whose models we're listing).
     // They were rendered once from _es.remoteHost, which can differ from the
-    // cache-server dropdown — so the title showed only ~/.cache even while listing
+    // cache-server dropdown - so the title showed only ~/.cache even while listing
     // models from a custom model directory. Keep them in lock-step with the actual scan host.
     const _dirsEl = document.querySelector('.cookbook-serve-dirs');
     if (_dirsEl && selectedServer) {

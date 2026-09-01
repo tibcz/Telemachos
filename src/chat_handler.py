@@ -113,11 +113,11 @@ class ChatHandler:
         return temperature, max_tokens, preset_system_prompt, character_name
 
     def enhance_message_if_needed(self, message: str) -> str:
-        """CoT enhancement disabled — modern models reason natively."""
+        """CoT enhancement disabled - modern models reason natively."""
         return message
 
     # ------------------------------------------------------------------
-    # Preprocessing — shared between /api/chat and /api/chat_stream
+    # Preprocessing - shared between /api/chat and /api/chat_stream
     # ------------------------------------------------------------------
 
     async def preprocess_message(
@@ -220,7 +220,7 @@ class ChatHandler:
                     file_info["name"], file_info.get("mime", "")
                 ):
                     if main_is_vision:
-                        # Main model can see images — just note it, image is passed via build_user_content.
+                        # Main model can see images - just note it, image is passed via build_user_content.
                         enhanced_message = f"{enhanced_message}\n\n[Image attached: {file_info['name']}]"
                         _m = meta_by_id.get(att_id)
                         if _m is not None:
@@ -236,7 +236,7 @@ class ChatHandler:
                                 with open(_vcache, encoding="utf-8") as _vf:
                                     _vtext = _vf.read().strip()
                                 if _vtext:
-                                    enhanced_message += f"\n[User-corrected caption / OCR for this image — treat as authoritative]:\n{_vtext}"
+                                    enhanced_message += f"\n[User-corrected caption / OCR for this image - treat as authoritative]:\n{_vtext}"
                                     _sync_upload_vision_to_gallery(file_info, owner, _vtext)
                                     _m = meta_by_id.get(att_id)
                                     if _m is not None:
@@ -244,7 +244,7 @@ class ChatHandler:
                             except Exception:
                                 pass
                     else:
-                        # Main model is text-only — use VL model for description.
+                        # Main model is text-only - use VL model for description.
                         # Prefer the cached/user-edited text in UPLOAD_DIR/.vision/{id}.txt
                         # so a manual correction (via the chat attachment dropdown's
                         # editable textarea) overrides what the vision model would say.

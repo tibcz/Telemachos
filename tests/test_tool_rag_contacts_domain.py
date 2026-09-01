@@ -1,6 +1,6 @@
 """Regression: the agent tool-RAG domain classifier had no contacts domain,
 so contact-lookup requests matched no domain, were flagged low_signal, and had
-tool retrieval SKIPPED entirely — the model only received ALWAYS_AVAILABLE tools
+tool retrieval SKIPPED entirely - the model only received ALWAYS_AVAILABLE tools
 (manage_memory, ask_user, update_plan) and never `resolve_contact`/`manage_contact`,
 so it could not look up contacts from the CardDAV address book (it looped on
 manage_memory instead).

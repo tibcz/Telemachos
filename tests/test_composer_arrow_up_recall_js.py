@@ -147,7 +147,7 @@ def test_whitespace_only_composer_is_not_empty():
 
 @pytest.mark.skipif(not _HAS_NODE, reason="node binary not on PATH")
 def test_multiline_caret_navigation_preserved():
-    # Caret on line 2 — ArrowUp must not recall or preventDefault.
+    # Caret on line 2 - ArrowUp must not recall or preventDefault.
     text = "line one\nline two"
     out = _run([{"initial": text, "caret": len(text), "last": "ignored"}])[0]
     assert out["value"] == text
@@ -314,7 +314,7 @@ def test_prompt_recall_is_not_duplicated_in_app_js():
     static/app.js once carried a near-verbatim copy of this recall logic, wired
     as a second capture-phase listener on the same textarea. That copy lacked
     the draft guard here, and because it called stopImmediatePropagation it won
-    regardless of registration order — so a typed multi-line prompt was replaced
+    regardless of registration order - so a typed multi-line prompt was replaced
     by the last sent one instead of the caret moving up a line.
     """
     app_js = (_REPO / "static" / "app.js").read_text(encoding="utf-8")

@@ -3,21 +3,21 @@
 The DB owner-rename loop in the rename_user route updates every SQL-backed
 owner column, but three file-backed / in-memory stores are left stale:
 
-1. session_manager.sessions  — in-memory session objects carry s.owner set at
+1. session_manager.sessions  - in-memory session objects carry s.owner set at
    load time; get_sessions_for_user does an exact `s.owner == username` check,
    so the renamed user's sidebar empties until a server restart.
 
-2. data/deep_research/*.json  — each report JSON has an `owner` field;
+2. data/deep_research/*.json  - each report JSON has an `owner` field;
    research_routes filters by `d.get("owner") == user`, making every report
    invisible after rename.
 
-3. research_handler._active_tasks — in-flight research jobs carry the same
+3. research_handler._active_tasks - in-flight research jobs carry the same
    owner key while status/cancel/active routes filter by it.
 
-4. data/memory.json  — a flat array where every entry has an `owner` field;
+4. data/memory.json  - a flat array where every entry has an `owner` field;
    memory_manager.load(owner=user) filters on it, so all memories vanish.
 
-5. data/uploads/uploads.json — each upload row carries an `owner` field and
+5. data/uploads/uploads.json - each upload row carries an `owner` field and
    owner-prefixed index key; stale metadata denies renamed users their uploads.
 
 Regression coverage: these bugs are invisible in unit tests that mock the DB
@@ -56,7 +56,7 @@ def rename_endpoint(monkeypatch, tmp_path):
     pr._save = lambda d: None
     monkeypatch.setitem(sys.modules, "routes.prefs_routes", pr)
     # Patch the module-level constants so file-update steps write to tmp_path.
-    # (Patching sc.DATA_DIR wouldn't work — auth_routes binds DEEP_RESEARCH_DIR
+    # (Patching sc.DATA_DIR wouldn't work - auth_routes binds DEEP_RESEARCH_DIR
     # and MEMORY_FILE at import time, so we must patch those names on the module.)
     monkeypatch.setattr(ar, "DEEP_RESEARCH_DIR", str(tmp_path / "deep_research"))
     monkeypatch.setattr(ar, "MEMORY_FILE", str(tmp_path / "memory.json"))
@@ -257,7 +257,7 @@ def test_rename_leaves_other_research_untouched(rename_endpoint):
 
 def test_rename_no_deep_research_dir_does_not_crash(rename_endpoint):
     endpoint, _am, tmp_path = rename_endpoint
-    # No deep_research dir — must not crash.
+    # No deep_research dir - must not crash.
     res = asyncio.run(endpoint("alice", SimpleNamespace(username="alice2"), _request(tmp_path)))
     assert res["ok"] is True
 
@@ -396,7 +396,7 @@ def test_rename_research_respects_custom_data_dir(monkeypatch, tmp_path):
     asyncio.run(endpoint("alice", SimpleNamespace(username="alice2"), _request(tmp_path)))
 
     assert json.loads(p.read_text(encoding="utf-8"))["owner"] == "alice2", (
-        "research JSON at custom DATA_DIR was not patched — DEEP_RESEARCH_DIR constant not used"
+        "research JSON at custom DATA_DIR was not patched - DEEP_RESEARCH_DIR constant not used"
     )
 
 
@@ -433,7 +433,7 @@ def test_rename_memory_json_case_insensitive(rename_endpoint):
 
 def test_rename_no_memory_json_does_not_crash(rename_endpoint):
     endpoint, _am, tmp_path = rename_endpoint
-    # No memory.json — must not crash.
+    # No memory.json - must not crash.
     res = asyncio.run(endpoint("alice", SimpleNamespace(username="alice2"), _request(tmp_path)))
     assert res["ok"] is True
 
@@ -611,7 +611,7 @@ def test_rename_no_skills_dir_does_not_crash(rename_endpoint):
 
 def test_rename_skill_md_owner_case_insensitive(rename_endpoint):
     """SKILL.md written with owner: Alice (mixed case) must be updated when
-    renaming alice — the regex was missing re.IGNORECASE."""
+    renaming alice - the regex was missing re.IGNORECASE."""
     endpoint, _am, tmp_path = rename_endpoint
 
     skill_dir = tmp_path / "skills" / "general" / "s"
@@ -625,7 +625,7 @@ def test_rename_skill_md_owner_case_insensitive(rename_endpoint):
 
 def test_rename_usage_keys_case_insensitive(rename_endpoint):
     """_usage.json keys stored as Alice::skill-name must be migrated when
-    renaming alice — the old startswith check was not lowercasing."""
+    renaming alice - the old startswith check was not lowercasing."""
     endpoint, _am, tmp_path = rename_endpoint
 
     skills_root = tmp_path / "skills"

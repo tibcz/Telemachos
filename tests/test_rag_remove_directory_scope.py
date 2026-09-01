@@ -1,4 +1,4 @@
-"""Regression guard for #1660 — removing one RAG directory must delete only that
+"""Regression guard for #1660 - removing one RAG directory must delete only that
 directory's chunks, never wipe the whole shared collection.
 
 Two compounding defects were fixed:
@@ -11,7 +11,7 @@ Two compounding defects were fixed:
      substring would over-delete siblings). Now it filters stored absolute
      `source` paths in Python with a path boundary (dir or dir + os.sep).
 
-These tests are hermetic — no chromadb; VectorRAG is exercised against a fake
+These tests are hermetic - no chromadb; VectorRAG is exercised against a fake
 collection, PersonalDocsManager against a fake rag manager.
 """
 import os
@@ -89,7 +89,7 @@ class _FakeRag:
         self.rebuild_called = False
 
     def rebuild_index(self):
-        # The catastrophic op — mimic delete_collection wiping everything.
+        # The catastrophic op - mimic delete_collection wiping everything.
         self.rebuild_called = True
         self.store.clear()
         return True

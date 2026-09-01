@@ -3,9 +3,9 @@
 #1473 converted the title and sports-hint matches in ranking.py to word
 boundaries, but left two raw substring tests behind:
 
-  - snippet_score: ``term in snippet.lower()`` — query term "port" hits
+  - snippet_score: ``term in snippet.lower()`` - query term "port" hits
     "transport"/"support", inflating a result's relevance.
-  - news_quality_adjustment: ``t in text or t in netloc`` for the subject term —
+  - news_quality_adjustment: ``t in text or t in netloc`` for the subject term -
     query "us" substring-matches "business"/"music", so an off-topic page
     wrongly escapes the off-topic penalty for a country/subject news query.
 
@@ -65,7 +65,7 @@ def test_offtopic_subject_substring_is_still_penalized(ranking):
     # "business"; A mentions "us" as a standalone word. The snippets are padded
     # past the 200-char length cap and are otherwise identical, so both sides
     # have equal base scores and the ONLY thing that can differ is the off-topic
-    # penalty — isolating the bug from incidental length/term scoring.
+    # penalty - isolating the bug from incidental length/term scoring.
     filler = (
         "regional market report covered many provincial topics and figures in "
         "detail over the period with extra commentary and analysis written for "

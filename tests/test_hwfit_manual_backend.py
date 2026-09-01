@@ -2,7 +2,7 @@
 
 `_apply_manual_hardware` replaces detected hardware with a user-described box so
 the Cookbook can rank models against hardware you don't have yet. These pin that
-the accepted backends stay in lock-step with what services.hwfit.fit can rank —
+the accepted backends stay in lock-step with what services.hwfit.fit can rank -
 notably that "metal" is honoured (Apple Silicon is GGUF-only via llama.cpp /
 Ollama) instead of being silently coerced to CUDA.
 """
@@ -54,7 +54,7 @@ def test_manual_rocm_and_cuda_are_not_unified_memory():
     for backend in ("cuda", "rocm"):
         s = _apply_manual_hardware({"unified_memory": True}, manual_mode="gpu", manual_backend=backend)
         assert s["backend"] == backend
-        # Discrete GPUs are not unified memory — a stale flag must be cleared.
+        # Discrete GPUs are not unified memory - a stale flag must be cleared.
         assert "unified_memory" not in s
 
 
@@ -68,7 +68,7 @@ def test_manual_ram_mode_wipes_gpu_and_unified_flag():
 
 
 def test_simulated_metal_box_only_recommends_gguf_or_mlx():
-    """End-to-end: a simulated Metal box must rank exactly like a real Mac —
+    """End-to-end: a simulated Metal box must rank exactly like a real Mac -
     only locally servable GGUF or MLX models survive."""
     system = _apply_manual_hardware(
         {"backend": "cuda", "available_ram_gb": 32.0, "total_ram_gb": 64.0},

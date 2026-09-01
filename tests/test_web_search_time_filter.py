@@ -1,4 +1,4 @@
-"""Issue #2756 — a native web_search function call must preserve time_filter.
+"""Issue #2756 - a native web_search function call must preserve time_filter.
 
 The web_search schema advertises a time_filter enum and the executor honors it
 when content is JSON {"query","time_filter"}, but function_call_to_tool_block's

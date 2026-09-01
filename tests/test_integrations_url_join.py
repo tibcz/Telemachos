@@ -55,7 +55,7 @@ WEBHOOK_BASE = "https://discord.com/api/webhooks/123/tokentokentoken"
     "base,path,expected",
     [
         # Bare "/" (the minimum path execute_api_call accepts) must not
-        # grow a trailing slash — Discord webhooks 404 on it (#5138).
+        # grow a trailing slash - Discord webhooks 404 on it (#5138).
         (WEBHOOK_BASE, "/", WEBHOOK_BASE),
         (WEBHOOK_BASE + "/", "/", WEBHOOK_BASE),
         (WEBHOOK_BASE, "", WEBHOOK_BASE),

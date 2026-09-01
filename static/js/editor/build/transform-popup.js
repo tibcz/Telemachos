@@ -2,7 +2,7 @@
  * Static markup for the Transform popup that floats over the canvas
  * when the user activates the Resize/Transform tool.
  *
- * Pure DOM — no module state, no event listeners. The caller wires all
+ * Pure DOM - no module state, no event listeners. The caller wires all
  * IDs via document.getElementById / pop.querySelector.
  *
  * @returns {string}

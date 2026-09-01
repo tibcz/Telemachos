@@ -1,7 +1,7 @@
 // Tests for the pure streaming-markdown segmenter.
 //
 // The segmenter's one job: given the full accumulated markdown text so far,
-// report how many leading characters are SAFE to finalize — i.e. freeze and
+// report how many leading characters are SAFE to finalize - i.e. freeze and
 // never re-render. "Safe" means: rendering the finalized prefix and the live
 // tail separately produces the same DOM as rendering the whole text at once.
 //

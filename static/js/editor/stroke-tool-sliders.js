@@ -14,7 +14,7 @@
  * The whole block was three near-identical 30-LOC copies before; now
  * it's one helper that takes the tool's prefix + a state-field bag.
  *
- * Usage: just call wireStrokeToolSliders() — the DOM IDs are wired
+ * Usage: just call wireStrokeToolSliders() - the DOM IDs are wired
  * statically from #ge-{eraser,brush,clone}-{opacity,flow,softness}
  * + their labels + preview swatches.
  */
@@ -48,7 +48,7 @@ function wireToolSliders(prefix, fields) {
     state[fields.softness] = parseInt(e.target.value);
     document.getElementById(`ge-${prefix}-softness-label`).textContent = state[fields.softness] + '%';
     // Preview tweens from a hard disk into a soft radial gradient as
-    // softness rises (the CSS already sets the radial gradient — we
+    // softness rises (the CSS already sets the radial gradient - we
     // just tween the inner solid radius to communicate the falloff).
     if (softPrev) {
       const innerStop = Math.max(0, 60 - state[fields.softness] * 0.55);

@@ -4,7 +4,7 @@
 Drives the GitHub OAuth *device flow* and, on success, creates (or refreshes)
 an owner-scoped ``ModelEndpoint`` pointing at the Copilot API with the
 device-flow access token stored as its (encrypted) ``api_key``. After that the
-endpoint behaves like any other OpenAI-compatible provider — the Copilot-
+endpoint behaves like any other OpenAI-compatible provider - the Copilot-
 specific request headers are injected centrally by ``build_headers`` /
 ``_provider_headers`` (see :mod:`src.copilot`).
 
@@ -118,7 +118,7 @@ def _start_device_flow(request: Request, form) -> DeviceFlowStart:
 
     # verification_uri_complete embeds the user code, so the browser tab we
     # open lands the user straight on GitHub's "Authorize" screen with the
-    # code pre-filled — one click, no manual code entry.
+    # code pre-filled - one click, no manual code entry.
     return DeviceFlowStart(
         pending={
             "device_code": device_code,
@@ -159,7 +159,7 @@ def _poll_device_flow(_request: Request, pending: Dict) -> DeviceFlowPoll:
         return DeviceFlowPoll.slow_down(int(data.get("interval") or 0) or None)
     if err in ("expired_token", "access_denied"):
         return DeviceFlowPoll.failed(err)
-    # Unknown error — surface but keep the session for another try.
+    # Unknown error - surface but keep the session for another try.
     return DeviceFlowPoll.pending(err or "unknown")
 
 

@@ -1,10 +1,10 @@
-"""Regression tests for issue #1363 — after a deep-research job finishes, asking
+"""Regression tests for issue #1363 - after a deep-research job finishes, asking
 the agent to "check it out / read that report" had it web_fetch the HTML report
 render (and drift into unrelated searches) instead of reading the saved report.
 
 Per the maintainer's diagnosis the fix is in the agent/tool-routing path: a
 finished report should be read via `manage_research` (action read), resolving the
-most-recent id with `action list` when none is given — not by fetching the
+most-recent id with `action list` when none is given - not by fetching the
 `/api/research/report/{id}` HTML.
 
 These tests pin both halves:

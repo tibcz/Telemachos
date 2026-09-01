@@ -56,7 +56,7 @@ def _install_fake_client(monkeypatch, *, redirect_from, redirect_to):
             # redirect following. Asserting ``follow_redirects is False`` here
             # (not merely accepting the kwarg) makes any regression to
             # ``follow_redirects=True`` fail these tests instead of passing
-            # silently — httpx being faked would otherwise hide the change.
+            # silently - httpx being faked would otherwise hide the change.
             assert kwargs.get("follow_redirects") is False, (
                 "skill importer must construct httpx.Client with "
                 "follow_redirects=False; got "

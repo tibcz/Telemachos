@@ -1,4 +1,4 @@
-"""Issue #3207 — newly created characters missing from Group participant dropdown.
+"""Issue #3207 - newly created characters missing from Group participant dropdown.
 
 The fix has two parts:
 1. group.js _getCharacterList() merges in-memory userTemplates from presets.js

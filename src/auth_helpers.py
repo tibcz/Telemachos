@@ -78,14 +78,14 @@ def require_user(request: Request) -> str:
     modes where no username is available.
 
     The three "" cases are:
-      1. AUTH_ENABLED=false — the operator explicitly turned auth off.
+      1. AUTH_ENABLED=false - the operator explicitly turned auth off.
          The full /login flow is skipped (issue #622), so route-level
          require_user must let the request through too instead of 401-ing
          and forcing the browser to /login.
-      2. Unconfigured first-run + loopback caller — pre-setup access from
+      2. Unconfigured first-run + loopback caller - pre-setup access from
          localhost so the operator can hit the SPA before creating the
          first admin.
-      3. LOCALHOST_BYPASS=true + loopback caller — documented dev bypass.
+      3. LOCALHOST_BYPASS=true + loopback caller - documented dev bypass.
 
     Use this on routes that touch user data so middleware misconfig can't
     open them up.
@@ -143,7 +143,7 @@ def require_privilege(request: Request, key: str) -> str:
     if not isinstance(privs, dict):
         privs = {}
     # True = permitted; missing key defaults to permitted (unknown privileges
-    # fail open — the UI gates display-side).
+    # fail open - the UI gates display-side).
     if not privs.get(key, True):
         raise HTTPException(403, f"Your account is not allowed to {key.replace('_', ' ')}.")
     return user

@@ -125,7 +125,7 @@ def _save_local_contacts(contacts: List[Dict]) -> None:
 # ── vCard parsing ──
 
 def _vunesc(value: str) -> str:
-    """Reverse _vesc() — turn escaped vCard text back into the raw value.
+    """Reverse _vesc() - turn escaped vCard text back into the raw value.
     Order matters: handle \\n/\\, /\\; first, backslash-unescape last."""
     if not value:
         return value
@@ -167,7 +167,7 @@ def _parse_vcards(text: str) -> List[Dict]:
             line = line.strip()
             # Strip an optional RFC 6350 group prefix (e.g. "item1.EMAIL;...")
             # that Apple Contacts / iCloud / many CardDAV servers emit by
-            # default — without this the property-name checks below miss those
+            # default - without this the property-name checks below miss those
             # lines and silently drop the email / phone. The group token only
             # precedes the property name, so it is safe to strip for matching
             # and value extraction, and a no-op for non-grouped lines.
@@ -225,7 +225,7 @@ def _build_vcard(name: str, email: str, uid: Optional[str] = None,
     PREF=1. All values are RFC-6350-escaped."""
     if not uid:
         uid = str(uuid.uuid4())
-    # Normalize email lists — `email` arg is a convenience for single-email
+    # Normalize email lists - `email` arg is a convenience for single-email
     # creation; `emails` (if given) is authoritative.
     email_list = [e.strip() for e in (emails if emails is not None else ([email] if email else [])) if e and e.strip()]
     phone_list = [p.strip() for p in (phones or []) if p and p.strip()]
@@ -237,7 +237,7 @@ def _build_vcard(name: str, email: str, uid: Optional[str] = None,
     else:
         first = name
         last = ""
-    # N field is structured (5 components separated by ';') — escape each
+    # N field is structured (5 components separated by ';') - escape each
     # component individually so a comma in the name doesn't split it.
     n_field = f"{_vesc(last)};{_vesc(first)};;;"
     lines = [
@@ -284,7 +284,7 @@ def _abs_url(href: str) -> str:
     return _validate_carddav_url(joined)
 
 
-# CardDAV REPORT body — pull every card's etag + raw vCard in ONE request,
+# CardDAV REPORT body - pull every card's etag + raw vCard in ONE request,
 # alongside the resource href. Lets us map each contact's UID to the real
 # server resource path (which is NOT always <uid>.vcf for contacts created
 # by other clients).
@@ -298,7 +298,7 @@ _ADDRESSBOOK_QUERY = (
 
 
 def _fetch_via_report(cfg, auth):
-    """Try a CardDAV REPORT addressbook-query — returns contacts WITH an
+    """Try a CardDAV REPORT addressbook-query - returns contacts WITH an
     `href` field, or None if the server doesn't support it / errors."""
     from defusedxml import ElementTree as ET
     try:
@@ -324,7 +324,7 @@ def _fetch_via_report(cfg, auth):
             c = parsed[0]
             c["href"] = href_el.text.strip()
             out.append(c)
-        # If the REPORT parsed to ZERO contacts, don't trust it — some
+        # If the REPORT parsed to ZERO contacts, don't trust it - some
         # CardDAV servers treat an empty <filter/> as "match nothing" and
         # return a valid-but-empty 207. Return None so the caller falls
         # back to the plain GET (which lists everything). A genuinely empty
@@ -386,7 +386,7 @@ def _resolve_resource_url(uid: str) -> str:
     found = _lookup()
     if found:
         return found
-    # Not in cache (or no href) — refresh once and retry before guessing.
+    # Not in cache (or no href) - refresh once and retry before guessing.
     try:
         _fetch_contacts(force=True)
     except Exception:
@@ -453,7 +453,7 @@ def _vcard_url(uid: str) -> str:
 def _import_vcards(text: str) -> Dict:
     """Import a (possibly multi-card) .vcf blob. Each card is PUT to the
     CardDAV server PRESERVING its full original content (ADR/ORG/photo/
-    etc.) — we don't rebuild it, just ensure it has VERSION + UID and
+    etc.) - we don't rebuild it, just ensure it has VERSION + UID and
     normalize line endings. Returns {imported, failed, total}."""
     from urllib.parse import quote
     cfg = _get_carddav_config()
@@ -712,19 +712,19 @@ def _delete_contact(uid: str) -> bool:
             _contact_cache["fetched_at"] = None
             # Verify: force a fresh fetch and check the UID is actually gone.
             # A 404 on the guessed URL ({uid}.vcf) can mean the contact
-            # lives at a different resource URL — the DELETE missed it but
+            # lives at a different resource URL - the DELETE missed it but
             # we'd silently report success. This check catches that.
             fresh = _fetch_contacts(force=True)
             still_there = any(c.get("uid") == uid for c in fresh)
             if still_there:
                 logger.warning(
                     f"CardDAV DELETE reported success for {uid} "
-                    f"but UID still present after re-fetch — "
+                    f"but UID still present after re-fetch - "
                     f"resource URL may differ from {redact_url(url)}"
                 )
                 return False
             if r.status_code == 404:
-                logger.info(f"CardDAV DELETE 404 for {uid} — already gone")
+                logger.info(f"CardDAV DELETE 404 for {uid} - already gone")
             return True
         logger.warning(f"CardDAV DELETE returned {r.status_code}: {r.text[:200]}")
         return False
@@ -885,11 +885,11 @@ def setup_contacts_routes():
         return {"success": True}
 
     # NOTE: the /{uid} routes are declared LAST so the literal paths above
-    # (/list, /search, /add, /config) win — otherwise PUT /config would
+    # (/list, /search, /add, /config) win - otherwise PUT /config would
     # match PUT /{uid} with uid="config".
     @router.put("/{uid}")
     async def edit_contact(uid: str, data: dict, _admin: str = Depends(require_admin)):
-        """Edit an existing contact — name / emails / phones / address."""
+        """Edit an existing contact - name / emails / phones / address."""
         name = (data.get("name") or "").strip()
         emails = data.get("emails")
         phones = data.get("phones")

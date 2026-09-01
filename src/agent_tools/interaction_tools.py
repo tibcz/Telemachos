@@ -7,7 +7,7 @@ class AskUserTool:
     async def execute(self, content, ctx):
         """
         ask_user: the agent poses a multiple-choice question to the user to get a
-        decision/clarification. This is a pure UI-control marker — no subprocess,
+        decision/clarification. This is a pure UI-control marker - no subprocess,
         no filesystem. It returns an `ask_user` payload that the agent loop turns
         into an `ask_user` SSE event and then ENDS the turn, so the chat waits for
         the user's selection (their choice arrives as the next message).
@@ -58,7 +58,7 @@ class AskUserTool:
 class UpdatePlanTool:
     async def execute(self, content, ctx):
         """
-        update_plan: the agent writes back to the active plan — tick an item done
+        update_plan: the agent writes back to the active plan - tick an item done
         or revise steps (e.g. when the user asks to change something). Pure UI
         marker: returns a `plan_update` payload the agent loop turns into a
         `plan_update` SSE event; the frontend replaces the stored plan and refreshes

@@ -329,7 +329,7 @@ _CHAT_JS = Path(__file__).resolve().parent.parent / "static" / "js" / "chat.js"
 def test_frontend_always_sends_explicit_allow_bash():
     """chat.js must always send allow_bash (both true and false), not only on toggle ON."""
     source = _CHAT_JS.read_text(encoding="utf-8")
-    # Must not only append 'true' — must also handle the false case
+    # Must not only append 'true' - must also handle the false case
     assert "allow_bash', el('bash-toggle').checked ? 'true' : 'false'" in source or \
            "allow_bash', 'false'" in source, (
         "Frontend must send explicit allow_bash=false when toggle is off"

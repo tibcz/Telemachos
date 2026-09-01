@@ -18,7 +18,7 @@ from src.llm_core import _detect_provider, _host_match, _is_kimi_code_url, KIMI_
 logger = logging.getLogger(__name__)
 
 # Model-name substrings that are NOT chat/generation models. When an endpoint
-# has no explicit model configured we pick the first CHAT model from its list —
+# has no explicit model configured we pick the first CHAT model from its list -
 # never an embedding/tts/etc. (an OpenAI-style endpoint often lists
 # `text-embedding-ada-002` first, which silently broke email-summarize and
 # other resolve_endpoint callers with "Cannot reach model").
@@ -127,7 +127,7 @@ def _endpoint_hidden_models(ep) -> set:
 def _endpoint_enabled_models(ep) -> list:
     """Cached models minus the ones disabled on the endpoint, order preserved.
 
-    The auto-pick fallback must never select a model the user disabled — a
+    The auto-pick fallback must never select a model the user disabled - a
     Groq endpoint can list 16 models with only 1 enabled, and picking the
     raw first one resolves to a model that 400s ("requires terms acceptance").
     """
@@ -179,7 +179,7 @@ def _resolve_tailscale_host(hostname: str) -> Optional[str]:
     except socket.gaierror:
         pass
 
-    # DNS failed — try tailscale
+    # DNS failed - try tailscale
     try:
         result = subprocess.run(
             ["tailscale", "status", "--json"],
@@ -288,7 +288,7 @@ def build_models_url(base: str) -> Optional[str]:
 
     For OpenAI-compatible servers (LM Studio, llama.cpp, vLLM,
     text-generation-webui, etc.) the model list is exposed at ``/v1/models``.
-    When the user-supplied base has no path — e.g. ``http://localhost:1234`` —
+    When the user-supplied base has no path - e.g. ``http://localhost:1234`` -
     we still need to land on ``/v1/models`` (issue #25); insert the ``/v1``
     segment only when the path is empty, leaving any explicit non-empty path
     untouched (so custom prefixes like ``/openai`` or ``/api/openai/v1`` keep
@@ -357,7 +357,7 @@ def resolve_endpoint(
         fallback_headers: Headers to use if using fallback.
 
     Returns:
-        (endpoint_url, model, headers) — resolved or fallback values.
+        (endpoint_url, model, headers) - resolved or fallback values.
     """
     try:
         from src.settings import get_user_setting, load_settings

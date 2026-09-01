@@ -61,7 +61,7 @@ _telemachos_complete() {
             COMPREPLY=($(compgen -W "$subs" -- "$cur"))
             return 0
         fi
-        # `telemachos foo <tab>` — complete with foo's own subcommands
+        # `telemachos foo <tab>` - complete with foo's own subcommands
         local sub="${COMP_WORDS[1]}"
         # `telemachos help <tab>` lists every subcommand
         if [ "$sub" = "help" ] && [ "$COMP_CWORD" -eq 2 ]; then

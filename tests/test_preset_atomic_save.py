@@ -2,7 +2,7 @@
 
 save() used a plain open("w") + json.dump, which truncates presets.json before
 writing the new content. A crash / power loss / serialization error mid-write
-leaves the file truncated or empty — the user loses every saved preset. The
+leaves the file truncated or empty - the user loses every saved preset. The
 save now goes through core.atomic_io.atomic_write_json (tmp file + os.replace),
 which the rest of the codebase already uses for JSON state files.
 """
@@ -13,7 +13,7 @@ from src.preset_manager import PresetManager
 
 
 class _Unserializable:
-    """json.dump cannot serialize this — stands in for a mid-write failure."""
+    """json.dump cannot serialize this - stands in for a mid-write failure."""
 
 
 def test_save_uses_atomic_write_json():

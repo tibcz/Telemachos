@@ -4,11 +4,11 @@ LM Studio's OpenAI-compatible surface exposes its model list at
 ``/v1/models`` (just like llama-server, vLLM, text-generation-webui). Two
 distinct failure modes were reported by users:
 
-1. Pasting ``http://localhost:1234`` (no ``/v1``) — ``build_models_url``
+1. Pasting ``http://localhost:1234`` (no ``/v1``) - ``build_models_url``
    used to return ``http://localhost:1234/models``, which LM Studio does
    not expose, so the user got a generic "No models found" error even
    though the server was running and reachable.
-2. Pasting ``http://localhost:1234/v1`` (with ``/v1``) — the model list
+2. Pasting ``http://localhost:1234/v1`` (with ``/v1``) - the model list
    fetch was correct, but the error message gave the user no way to tell
    whether the URL was wrong, the server was down, or the server was
    reachable but had no model loaded.
@@ -80,7 +80,7 @@ def test_build_models_url_strips_chat_completions(monkeypatch):
 
 def test_build_models_url_preserves_explicit_non_v1_path(monkeypatch):
     """User-supplied non-empty paths (e.g. `/openai`) must not be overridden
-    with `/v1`. We only insert `/v1` when the path is empty — that matches
+    with `/v1`. We only insert `/v1` when the path is empty - that matches
     the documented contract: a custom path is the caller's intent."""
     monkeypatch.setattr(endpoint_resolver, "resolve_url", lambda url: url)
     _neutralize_provider_detection(monkeypatch)

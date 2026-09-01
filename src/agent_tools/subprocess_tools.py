@@ -316,7 +316,7 @@ class BashTool:
             )
             if timed_out:
                 return {
-                    "error": f"bash: timed out after {DEFAULT_BASH_TIMEOUT}s — sent Ctrl-C to tmux session",
+                    "error": f"bash: timed out after {DEFAULT_BASH_TIMEOUT}s - sent Ctrl-C to tmux session",
                     "exit_code": 124,
                     "stdout": _truncate(stdout, MAX_OUTPUT_CHARS),
                     "stderr": _truncate(stderr, MAX_OUTPUT_CHARS),
@@ -348,7 +348,7 @@ class BashTool:
             progress_cb=progress_cb,
         )
         if timed_out:
-            return {"error": f"bash: timed out after {DEFAULT_BASH_TIMEOUT}s — process killed", "exit_code": 124, "stdout": _truncate(stdout, MAX_OUTPUT_CHARS), "stderr": _truncate(stderr, MAX_OUTPUT_CHARS)}
+            return {"error": f"bash: timed out after {DEFAULT_BASH_TIMEOUT}s - process killed", "exit_code": 124, "stdout": _truncate(stdout, MAX_OUTPUT_CHARS), "stderr": _truncate(stderr, MAX_OUTPUT_CHARS)}
         output = stdout.rstrip()
         err = stderr.rstrip()
         if err:
@@ -374,7 +374,7 @@ class PythonTool:
             progress_cb=progress_cb,
         )
         if timed_out:
-            return {"error": f"python: timed out after {DEFAULT_PYTHON_TIMEOUT}s — process killed", "exit_code": 124, "stdout": _truncate(stdout, MAX_OUTPUT_CHARS), "stderr": _truncate(stderr, MAX_OUTPUT_CHARS)}
+            return {"error": f"python: timed out after {DEFAULT_PYTHON_TIMEOUT}s - process killed", "exit_code": 124, "stdout": _truncate(stdout, MAX_OUTPUT_CHARS), "stderr": _truncate(stderr, MAX_OUTPUT_CHARS)}
         output = stdout.rstrip()
         err = stderr.rstrip()
         if err:

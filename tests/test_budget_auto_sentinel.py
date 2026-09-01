@@ -3,7 +3,7 @@
 - The DEFAULT value is the AUTO sentinel: it scales to the model's context window.
   Any non-default value is an explicit cap. A materialized default 6000 can't be
   told apart from a deliberate 6000 (the settings-save path persists defaults), so
-  the default reads as auto — pin a cap with a nearby value (e.g. 5999).
+  the default reads as auto - pin a cap with a nearby value (e.g. 5999).
 - Auto-scaling only trusts a DISCOVERED context window; a bare DEFAULT_CONTEXT
   fallback stays conservative instead of scaling off an unproven window.
 """
@@ -25,7 +25,7 @@ def test_default_value_is_the_auto_sentinel():
 def test_saving_an_unrelated_setting_does_not_re_cap_the_budget(tmp_path, monkeypatch):
     """End-to-end regression (WGlynn, #4121): changing ANY setting makes the
     settings-save path persist the merged dict, which materializes the budget
-    default into settings.json. The budget must still AUTO-SCALE — it must not be
+    default into settings.json. The budget must still AUTO-SCALE - it must not be
     re-read as an explicit 6000 cap. This locks the exact reopening shut.
     """
     settings_file = tmp_path / "settings.json"
@@ -44,7 +44,7 @@ def test_saving_an_unrelated_setting_does_not_re_cap_the_budget(tmp_path, monkey
     assert raw["agent_input_token_budget"] == DEFAULT_BUDGET
     assert raw["search_result_count"] == 9
 
-    # ...yet it must read as AUTO (value == default), not an explicit cap — even
+    # ...yet it must read as AUTO (value == default), not an explicit cap - even
     # though is_setting_overridden would report True for it now.
     assert settings.is_setting_overridden("agent_input_token_budget") is True
     soft = int(settings.get_setting("agent_input_token_budget", DEFAULT_BUDGET) or 0)
@@ -84,7 +84,7 @@ def test_get_context_length_known_surfaces_endpoint_proven_vs_fallback():
 
 def test_budget_context_binds_known_flag_to_its_own_value():
     """Regression (RaresKeY, #4122): scale the budget off the value the `known`
-    flag actually proves — never a stale/missing context_length from a different
+    flag actually proves - never a stale/missing context_length from a different
     lookup. Covers the local-restaleness case (fresh proven value beats a stale
     fallback) and the no-arg-caller case (discovers a long window despite fallback=0).
     """

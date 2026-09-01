@@ -65,7 +65,7 @@ export function shortcutsPopupHTML() {
 
 
 /**
- * History panel — sidebar listing all undo entries.
+ * History panel - sidebar listing all undo entries.
  * @param {string} historyIcon  Inline SVG markup for the title icon.
  */
 export function historyPanelHTML(historyIcon) {
@@ -83,7 +83,7 @@ export function historyPanelHTML(historyIcon) {
 
 
 /**
- * Empty-canvas size-prompt modal — body markup (caller controls show /
+ * Empty-canvas size-prompt modal - body markup (caller controls show /
  * hide and wires the Cancel / Create buttons).
  */
 export function canvasSizePromptHTML() {

@@ -64,17 +64,17 @@ DEFAULT_SETTINGS = {
     "stt_model": "base",
     "stt_language": "",
     "search_provider": "searxng",
-    # Default fallback chain — when the primary provider fails or
+    # Default fallback chain - when the primary provider fails or
     # rate-limits, we try DuckDuckGo next. Free, no API key required, so
     # safe to ship on by default for every user.
     "search_fallback_chain": ["duckduckgo"],
     "search_url": "",
     "search_result_count": 5,
     # SafeSearch level applied to every provider that exposes one.
-    # "strict"   — apply the provider's strongest filtering level (default;
+    # "strict"   - apply the provider's strongest filtering level (default;
     #              keeps unrelated low-quality/spam recommendations out)
-    # "moderate" — provider-default filtering behavior
-    # "off"      — disable filtering entirely (advanced users only)
+    # "moderate" - provider-default filtering behavior
+    # "off"      - disable filtering entirely (advanced users only)
     #
     # Providers that honor this setting (translated to each provider's native
     # param in src/search/providers.py:_safesearch_for):
@@ -84,7 +84,7 @@ DEFAULT_SETTINGS = {
     #     Google PSE    safe=active (omitted for "off"; PSE has no middle tier)
     #     Serper.dev    safe=active (omitted for "off"; proxies Google's `safe`)
     # Providers NOT touched: Tavily (no SafeSearch knob; filters at index time)
-    # and any custom backend reached via search_url — they keep whatever the
+    # and any custom backend reached via search_url - they keep whatever the
     # backend itself decides, so operators stay in control of self-hosted /
     # niche search instances.
     "search_safesearch": "strict",
@@ -107,7 +107,7 @@ DEFAULT_SETTINGS = {
     # Hard wall-clock cap on a single deep-research run. The previous 600s
     # (10 min) default cut off slow local / edge LLMs mid-synthesis; 1800s
     # (30 min) is comfortable for most local setups while still bounding
-    # runaway jobs. Set to 0 to disable the cap entirely (unlimited) — only
+    # runaway jobs. Set to 0 to disable the cap entirely (unlimited) - only
     # for very long deep-research runs, since a stalled job then runs an
     # unbounded model/API bill. Other values are bounded to [60, 86400].
     # Tune via Settings or by editing data/settings.json.
@@ -116,16 +116,16 @@ DEFAULT_SETTINGS = {
     "agent_max_rounds": 20,  # per-message agent step cap (clamped 1..200)
     # Soft input-token budget for the agent loop. The DEFAULT value (6000) is the
     # "auto" sentinel: it means "scale the budget to the model's context window"
-    # (#1230) — so long-context models aren't capped at 6000. Set ANY OTHER value
-    # to enforce an explicit cap (clamped to the window only — hard_max does not
+    # (#1230) - so long-context models aren't capped at 6000. Set ANY OTHER value
+    # to enforce an explicit cap (clamped to the window only - hard_max does not
     # apply to explicit budgets, #1230); set 0 to disable soft-trimming. The
     # default is treated as auto because the settings-save path materializes
-    # defaults, so a persisted 6000 can't be told apart from a deliberate 6000 —
+    # defaults, so a persisted 6000 can't be told apart from a deliberate 6000 -
     # to pin a budget near the default, use a nearby value (e.g. 5999).
     "agent_input_token_budget": 6000,
     # Ceiling on the *auto-derived* input budget; a configurable setting since #1273
     # (the merged #1230 left it a module constant). No effect on an explicit budget
-    # — a deliberate value is honoured (#1230). Default matches
+    # - a deliberate value is honoured (#1230). Default matches
     # `src.context_budget.DEFAULT_HARD_MAX`; lower this for
     # cost-paranoid setups, raise it on premium APIs with very large windows you
     # want to actually use (e.g. 900_000 to fill a 1M-context model). See
@@ -177,7 +177,7 @@ DEFAULT_SETTINGS = {
     "reminder_email_to": "",
     # Generic outbound webhook channel: pick any saved Integration as the
     # target and supply a JSON payload template. Use {{title}} and {{message}}
-    # as placeholders — they are JSON-escaped before substitution, so the
+    # as placeholders - they are JSON-escaped before substitution, so the
     # rendered string is always valid JSON. Works with Discord, Slack, Teams,
     # ntfy (JSON mode), or any service that accepts a POST with a JSON body.
     "reminder_webhook_integration_id": "",
@@ -266,7 +266,7 @@ def is_setting_overridden(key: str) -> bool:
     equal to its default is indistinguishable from "never set" via get_setting.
     Callers that must distinguish an explicit user choice from a default read
     the raw saved file via this. (Note: a materialized default is also "present",
-    so value-sensitive callers should compare against the default — see
+    so value-sensitive callers should compare against the default - see
     ``context_budget.budget_is_explicit``.)
     """
     try:
@@ -278,13 +278,13 @@ def is_setting_overridden(key: str) -> bool:
 
 
 # Per-user settings (user prefs override the global admin default). Used for
-# keys that a user is allowed to choose individually — currently the vision
+# keys that a user is allowed to choose individually - currently the vision
 # model + image-generation model. The owner argument is the authed username
 # resolved by FastAPI deps; an empty/None owner falls through to the global.
 _PER_USER_KEYS = {
     "vision_model", "vision_enabled", "vision_model_fallbacks",
     "image_model", "image_gen_enabled", "image_quality",
-    # Default chat endpoint / model — without per-user resolution every new
+    # Default chat endpoint / model - without per-user resolution every new
     # account inherited whatever the most-recent admin picked, which then
     # got injected into the chat composer on first open.
     "default_endpoint_id", "default_model",
@@ -296,10 +296,10 @@ _PER_USER_KEYS = {
 def get_user_setting(key: str, owner: str = "", default: Any = None) -> Any:
     """Resolve `key` from the caller's per-user prefs first, falling back to
     the global setting. Only the small whitelist in `_PER_USER_KEYS` is
-    eligible — for any other key this is equivalent to `get_setting(key)`.
+    eligible - for any other key this is equivalent to `get_setting(key)`.
 
     Falls back gracefully if the prefs module can't be imported (cycle/early
-    boot) — admin-global settings keep working.
+    boot) - admin-global settings keep working.
     """
     if owner and key in _PER_USER_KEYS:
         try:

@@ -1,4 +1,4 @@
-// compare/scoreboard.js — vote history display
+// compare/scoreboard.js - vote history display
 import Storage from '../storage.js';
 import state from './state.js';
 import { VOTES_STORAGE_KEY } from './icons.js';
@@ -7,7 +7,7 @@ import uiModule from '../ui.js';
 
 const escapeHtml = uiModule.esc;
 
-// Type icons for the mode tabs — match the Compare selector's tab icons.
+// Type icons for the mode tabs - match the Compare selector's tab icons.
 const _TYPE_ICONS = {
   chat: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
   agent: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>',
@@ -21,7 +21,7 @@ const _searchProviderNames = new Set(['brave search', 'duckduckgo', 'google', 's
 /** Guess the compare mode for a vote record (legacy votes lack a mode field). */
 function _guessVoteMode(v) {
   if (v.mode) return v.mode;
-  // Legacy vote — check if models look like search providers
+  // Legacy vote - check if models look like search providers
   if (v.models && v.models.some(m => _searchProviderNames.has(m.toLowerCase()))) return 'search';
   return 'chat';
 }
@@ -82,7 +82,7 @@ export function showScoreboard() {
     // Clear previous table
     const prev = body.querySelector('.scoreboard-wrap');
     if (prev) {
-      // The Clear button was moved INTO the wrap on a prior render — rescue it
+      // The Clear button was moved INTO the wrap on a prior render - rescue it
       // back to the body before removing the wrap, otherwise it's destroyed
       // with the wrap and never re-found (it vanished after visiting an empty
       // mode like Images and switching back).
@@ -133,7 +133,7 @@ export function showScoreboard() {
       for (const [name, s] of sorted) {
         const pct = s.games ? Math.round((s.wins / s.games) * 100) : 0;
         const avgCost = s.costCount ? (s.totalCost / s.costCount) * 1000 : null;
-        const costStr = avgCost !== null ? ('$' + (avgCost < 1 ? avgCost.toFixed(2) : avgCost.toFixed(0))) : '—';
+        const costStr = avgCost !== null ? ('$' + (avgCost < 1 ? avgCost.toFixed(2) : avgCost.toFixed(0))) : '-';
         const tr = document.createElement('tr');
         tr.innerHTML =
           '<td class="scoreboard-model">' + escapeHtml(name) + '</td>' +

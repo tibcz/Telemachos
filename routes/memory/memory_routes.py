@@ -47,7 +47,7 @@ def _load_for_update(memory_manager) -> List[Dict[str, Any]]:
     except MemoryStoreUnreadable as e:
         logger.error("Refusing to rewrite the memory store: %s", e)
         raise HTTPException(
-            503, "Memory store is temporarily unreadable — no changes were made."
+            503, "Memory store is temporarily unreadable - no changes were made."
         )
 
 
@@ -61,7 +61,7 @@ def setup_memory_routes(memory_manager: MemoryManager, session_manager: SessionM
     def _assert_session_owner(session_obj, user):
         """SECURITY: 404 if the caller does not own this session.
 
-        SessionManager.get_session is NOT owner-scoped — it returns any
+        SessionManager.get_session is NOT owner-scoped - it returns any
         session by id. These routes accept a caller-supplied session id, so
         without this gate a user could target another tenant's session and
         leak their chat history, their session-scoped LLM credentials, or the
@@ -73,7 +73,7 @@ def setup_memory_routes(memory_manager: MemoryManager, session_manager: SessionM
     def _verify_memory_owner(memory: dict, user: Optional[str]):
         """Raise 404 if user doesn't own this memory.
 
-        SECURITY: strict ownership — previously `mem_owner and mem_owner != user`
+        SECURITY: strict ownership - previously `mem_owner and mem_owner != user`
         allowed any user to read/edit/delete memories with an empty/null owner
         field, which leaked legacy data across the multi-user deploy.
         """
@@ -311,7 +311,7 @@ def setup_memory_routes(memory_manager: MemoryManager, session_manager: SessionM
         )
 
         if not endpoint_url or not model:
-            raise HTTPException(400, "No default model configured — set one in Settings")
+            raise HTTPException(400, "No default model configured - set one in Settings")
 
         result = await audit_memories(
             memory_manager,
@@ -440,7 +440,7 @@ def setup_memory_routes(memory_manager: MemoryManager, session_manager: SessionM
         # Send to LLM for memory extraction
         import_prompt = (
             "You are a memory extraction assistant. The user uploaded a document. "
-            "Analyze the text below and extract specific, useful facts — things like "
+            "Analyze the text below and extract specific, useful facts - things like "
             "names, preferences, jobs, locations, relationships, opinions, projects, "
             "goals, contacts, or any other personal details worth remembering.\n\n"
             "Rules:\n"
@@ -512,7 +512,7 @@ def setup_memory_routes(memory_manager: MemoryManager, session_manager: SessionM
                 return {"ok": True, "pinned": pinned}
         raise HTTPException(404, f"Memory item {memory_id} not found")
 
-    # Wildcard routes MUST come last — otherwise they swallow /import, /search, etc.
+    # Wildcard routes MUST come last - otherwise they swallow /import, /search, etc.
     @router.get("/{memory_id}")
     def get_memory_item(request: Request, memory_id: str):
         """Get a specific memory item by ID."""

@@ -13,7 +13,7 @@ from core.platform_compat import (
     run_ssh_command,
 )
 
-CACHE_TTL = 24 * 3600  # 24 h — hardware probes are user-initiated via the Rescan button; bumped
+CACHE_TTL = 24 * 3600  # 24 h - hardware probes are user-initiated via the Rescan button; bumped
                        # from 30 min so changing filters doesn't keep re-probing the rig every
                        # half-hour during a long session.
 
@@ -56,7 +56,7 @@ def _group_gpus(gpus):
     vLLM tensor-parallel only works across IDENTICAL GPUs, so a mixed box must
     be split into homogeneous pools. Each group carries the device indices so a
     serve command can pin CUDA_VISIBLE_DEVICES to exactly one pool. Biggest pool
-    (by total VRAM) first — that's the sensible auto-default serving target.
+    (by total VRAM) first - that's the sensible auto-default serving target.
     """
     groups = {}
     order = []
@@ -98,7 +98,7 @@ def _detect_nvidia():
     # Last resort: call nvidia-smi by absolute path. Some hosts have a login
     # shell that isn't bash (or a profile that errors), so the bash -lc retry
     # above still comes back empty even though the binary is right there.
-    # Also handles WSL where nvidia-smi lives at /usr/lib/wsl/lib/ — a path
+    # Also handles WSL where nvidia-smi lives at /usr/lib/wsl/lib/ - a path
     # that may not be in the server process's PATH.
     if not out:
         for _p in NVIDIA_PATH_CANDIDATES:
@@ -114,7 +114,7 @@ def _detect_nvidia():
         return None
 
     # nvidia-smi present but unable to talk to the driver (e.g. it was updated
-    # without a reboot). It prints an error and no GPU rows — surface that as a
+    # without a reboot). It prints an error and no GPU rows - surface that as a
     # driver error rather than the misleading "No GPU".
     _low = out.lower()
     if ("nvml" in _low or "driver/library version mismatch" in _low
@@ -138,7 +138,7 @@ def _detect_nvidia():
                 # Grace Blackwell GB10 / DGX Spark and other unified-memory
                 # NVIDIA parts report memory.total as "[N/A]"/"Not Supported"
                 # because the GPU shares the system LPDDR pool instead of
-                # carrying discrete VRAM. Don't drop the device — remember it so
+                # carrying discrete VRAM. Don't drop the device - remember it so
                 # we report a unified-memory GPU below rather than "No GPU" (#1340).
                 if parts[1]:
                     unified.append({"index": idx, "name": parts[1]})
@@ -179,10 +179,10 @@ def classify_amd_gfx(gfx):
     """Map an AMD ISA target (e.g. "gfx1200") to (gfx, family).
 
     family is one of:
-      "rdna"    — consumer Radeon RX (gfx10xx RDNA1/2, gfx11xx RDNA3, gfx12xx RDNA4)
-      "cdna"    — datacenter Instinct (gfx908 MI100, gfx90a MI200, gfx94x/95x MI300+)
-      "gcn"     — older GCN/Vega (gfx900/906)
-      "unknown" — empty/unrecognized; callers must treat conservatively
+      "rdna"    - consumer Radeon RX (gfx10xx RDNA1/2, gfx11xx RDNA3, gfx12xx RDNA4)
+      "cdna"    - datacenter Instinct (gfx908 MI100, gfx90a MI200, gfx94x/95x MI300+)
+      "gcn"     - older GCN/Vega (gfx900/906)
+      "unknown" - empty/unrecognized; callers must treat conservatively
 
     This drives the serving decision: vLLM/SGLang on ROCm are validated on CDNA
     but fragile on consumer RDNA (AWQ kernels largely unsupported, FP8 needs
@@ -232,7 +232,7 @@ def _detect_amd():
 
         rocminfo is the source of truth; its GPU agents report a `Name: gfxNNNN`
         line (CPU agents report a brand string, not a gfx target), so the first
-        gfx match is the GPU ISA. Returns (gfx, family) — see classify_amd_gfx.
+        gfx match is the GPU ISA. Returns (gfx, family) - see classify_amd_gfx.
         """
         info = _run(["rocminfo"]) or _run(["/opt/rocm/bin/rocminfo"]) or ""
         m = re.search(r"gfx\d+[a-f]?", info)
@@ -272,7 +272,7 @@ def _detect_amd():
         groups = _group_gpus(cards)
         gfx, family = _amd_arch()
         # NOTE: for APUs with BIOS UMA carveout (e.g. Strix Halo), vis_vram_total
-        # is the real usable GPU memory — it's physically backed but reserved
+        # is the real usable GPU memory - it's physically backed but reserved
         # by BIOS so it doesn't appear in /proc/meminfo. Don't cap it at system
         # RAM: the two pools are separate from the OS's perspective.
         return {
@@ -285,7 +285,7 @@ def _detect_amd():
             # Pick the actual runtime label: ROCm/HIP only when its
             # toolchain is installed, otherwise Vulkan if vulkaninfo is
             # present (mesa RADV works fine on RDNA/CDNA when ROCm
-            # packages are absent — see Strix Halo where ROCm support
+            # packages are absent - see Strix Halo where ROCm support
             # is still backporting). Reporting "rocm" on a Vulkan-only
             # host misleads downstream env-var pinning
             # (HIP_VISIBLE_DEVICES is a no-op there).
@@ -297,7 +297,7 @@ def _detect_amd():
             # AMD ISA/family so downstream can tell datacenter Instinct (CDNA,
             # where vLLM/SGLang run AWQ/GPTQ reliably) from consumer Radeon
             # (RDNA, where the practical path is GGUF via llama.cpp). Empty/
-            # "unknown" when rocminfo isn't available — callers must treat
+            # "unknown" when rocminfo isn't available - callers must treat
             # unknown conservatively, not assume vLLM works.
             "gpu_arch": gfx,
             "gpu_family": family,
@@ -309,7 +309,7 @@ def _detect_amd():
 def _detect_apple_silicon():
     """Detect Apple Silicon (M-series) GPUs.
 
-    Macs have no discrete VRAM — the GPU shares the system's unified memory.
+    Macs have no discrete VRAM - the GPU shares the system's unified memory.
     We report a fraction of total RAM as the usable GPU budget (matching macOS's
     default Metal working-set limit) so the Cookbook recommends models that
     actually run on the GPU instead of classifying the machine as CPU-only.
@@ -318,7 +318,7 @@ def _detect_apple_silicon():
     key off of (they already understand MLX / llama.cpp-Metal). Works locally
     (platform.system()=="Darwin") and over SSH (uname -s == Darwin).
     """
-    # Gate to macOS — locally via platform, remotely via uname.
+    # Gate to macOS - locally via platform, remotely via uname.
     if _remote_host:
         if "darwin" not in (_run(["uname", "-s"]) or "").lower():
             return None
@@ -333,7 +333,7 @@ def _detect_apple_silicon():
     if _canonical_cpu_arch(arch) != "arm64":
         return None
 
-    # Chip name, e.g. "Apple M4 Max" — carries the Pro/Max/Ultra variant that
+    # Chip name, e.g. "Apple M4 Max" - carries the Pro/Max/Ultra variant that
     # the fit bandwidth table keys off of.
     brand = (_run(["sysctl", "-n", "machdep.cpu.brand_string"]) or "Apple Silicon").strip()
 
@@ -408,7 +408,7 @@ def _detect_apple_silicon():
         "homogeneous": True,
         "backend": "metal",
         # Unified memory: the "VRAM" above is carved out of system RAM, not a
-        # separate pool — downstream fit logic uses this to avoid double-budgeting.
+        # separate pool - downstream fit logic uses this to avoid double-budgeting.
         "unified_memory": True,
     }
     if gpu_cores is not None:
@@ -451,7 +451,7 @@ def _get_ram_gb():
         return meminfo["MemTotal"] / (1024**2)
 
     # os.sysconf only exists on Unix; on Windows it's absent (AttributeError)
-    # and these constants aren't defined — guard so this never raises there.
+    # and these constants aren't defined - guard so this never raises there.
     if not _remote_host and hasattr(os, "sysconf") and "SC_PHYS_PAGES" in getattr(os, "sysconf_names", {}):
         try:
             pages = os.sysconf("SC_PHYS_PAGES")
@@ -461,7 +461,7 @@ def _get_ram_gb():
         except Exception:
             pass
 
-    # macOS has no /proc/meminfo — fall back to sysctl (works locally and over
+    # macOS has no /proc/meminfo - fall back to sysctl (works locally and over
     # SSH to a remote Mac, where the sysconf path above isn't taken).
     memsize = _run(["sysctl", "-n", "hw.memsize"])
     if memsize:
@@ -486,7 +486,7 @@ def _get_cpu_name():
             if line.startswith("model name"):
                 return line.split(":", 1)[1].strip()
 
-    # macOS has no /proc/cpuinfo — sysctl gives the chip name (e.g. "Apple M4").
+    # macOS has no /proc/cpuinfo - sysctl gives the chip name (e.g. "Apple M4").
     # Harmlessly returns nothing on Linux, so it's safe to try unconditionally.
     brand = _run(["sysctl", "-n", "machdep.cpu.brand_string"])
     if brand and brand.strip():
@@ -630,7 +630,7 @@ def _detect_windows():
         out = _powershell_encoded_for_ssh(ps_cmd.strip())
     else:
         # Local: pass a LIST argv straight to subprocess so the OS hands ps_cmd
-        # to PowerShell verbatim — no fragile string-level quote escaping. Prefer
+        # to PowerShell verbatim - no fragile string-level quote escaping. Prefer
         # pwsh (PS7), else Windows PowerShell 5.1.
         out = _run([_powershell_exe(), "-NoProfile", "-NonInteractive", "-Command", ps_cmd])
     if not out:
@@ -639,7 +639,7 @@ def _detect_windows():
     try:
         d = _json.loads(out)
         # PowerShell's Measure-Object .Sum / .Count come back as JSON numbers and
-        # decode to float; the Linux path returns plain ints for these — coerce
+        # decode to float; the Linux path returns plain ints for these - coerce
         # so the dict shape (and downstream int math) matches across platforms.
         def _as_int(v, default):
             try:
@@ -665,7 +665,7 @@ def _detect_windows():
             "platform": "windows",
         }
         # PowerShell only reports aggregate GPU info, not per-card detail, so we
-        # can't tell a mixed box from a uniform one here — assume one homogeneous
+        # can't tell a mixed box from a uniform one here - assume one homogeneous
         # pool spanning all reported GPUs (the common Windows case).
         _n = result["gpu_count"] or 0
         if result["has_gpu"] and _n > 0:
@@ -842,7 +842,7 @@ def detect_system(host="", ssh_port="", platform="", fresh=False):
             result = _attach_probe_context(result, host=host)
             _cache_by_host[cache_key] = (now, result)
             return result
-        # PowerShell probe failed entirely — fall through to the generic path
+        # PowerShell probe failed entirely - fall through to the generic path
         # below so we at least return a well-shaped dict rather than crashing.
 
     # Linux/Termux: existing multi-command detection
@@ -877,7 +877,7 @@ def detect_system(host="", ssh_port="", platform="", fresh=False):
             "gpu_groups": gpu_info.get("gpu_groups", []),
             "homogeneous": gpu_info.get("homogeneous", True),
             "backend": gpu_info["backend"],
-            # Apple Silicon / AMD APUs share system RAM with the GPU — carry the
+            # Apple Silicon / AMD APUs share system RAM with the GPU - carry the
             # flag through so callers can tell unified from discrete VRAM.
             "unified_memory": gpu_info.get("unified_memory", False),
         }
@@ -895,7 +895,7 @@ def detect_system(host="", ssh_port="", platform="", fresh=False):
             "gpu_count": 0,
             "backend": backend,
             # Set when nvidia-smi exists but failed (e.g. driver/library
-            # version mismatch) — lets the UI say "GPU driver error" instead
+            # version mismatch) - lets the UI say "GPU driver error" instead
             # of the misleading "No GPU".
             "gpu_error": _last_gpu_error,
         }

@@ -22,7 +22,7 @@ def get_rag_manager():
     Returns the VectorRAG instance on first successful init, None if ChromaDB
     isn't reachable / available. Failed init attempts are throttled to once
     per _RETRY_INTERVAL seconds so a missing ChromaDB doesn't busy-retry on
-    every request — callers (personal-doc routes etc.) get None back and
+    every request - callers (personal-doc routes etc.) get None back and
     return a clean 503 to the user instead.
 
     Historical note: this used to be hardcoded to ``return None`` with a
@@ -37,7 +37,7 @@ def get_rag_manager():
 
     now = time.monotonic()
     if now - _last_attempt < _RETRY_INTERVAL:
-        return None  # too soon to retry — last attempt failed
+        return None  # too soon to retry - last attempt failed
 
     _last_attempt = now
 

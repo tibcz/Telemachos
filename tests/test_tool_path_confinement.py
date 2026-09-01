@@ -1,14 +1,14 @@
 """Regression tests for read_file / write_file path confinement.
 
 Covers:
-  - /etc/shadow, /etc/passwd, /var/log — blocked (outside roots)
-  - ~/.ssh/authorized_keys — blocked (sensitive subpath deny list)
-  - Symlink that resolves into .ssh — blocked
-  - Relative traversal (~/../../etc/passwd) — blocked
-  - Shell rc files (.bashrc, .zshrc, .profile) — blocked
-  - SSH key filenames (id_rsa, id_ed25519) — blocked regardless of dir
-  - Legitimate paths under project data/ and /tmp — allowed
-  - Extra roots via tool_path_extra_roots setting — opt-in
+  - /etc/shadow, /etc/passwd, /var/log - blocked (outside roots)
+  - ~/.ssh/authorized_keys - blocked (sensitive subpath deny list)
+  - Symlink that resolves into .ssh - blocked
+  - Relative traversal (~/../../etc/passwd) - blocked
+  - Shell rc files (.bashrc, .zshrc, .profile) - blocked
+  - SSH key filenames (id_rsa, id_ed25519) - blocked regardless of dir
+  - Legitimate paths under project data/ and /tmp - allowed
+  - Extra roots via tool_path_extra_roots setting - opt-in
   - Even with $HOME as extra root, sensitive subpaths stay blocked
 """
 
@@ -100,7 +100,7 @@ def test_blocks_var_log():
 
 
 def test_blocks_ssh_authorized_keys():
-    """~/.ssh/authorized_keys — blocked by sensitive-subpath deny even
+    """~/.ssh/authorized_keys - blocked by sensitive-subpath deny even
     though $HOME is NOT a default root (the deny list fires first)."""
     from src.tool_execution import _resolve_tool_path
     with pytest.raises(ValueError, match="sensitive directory"):
@@ -130,7 +130,7 @@ def test_blocks_symlink_into_ssh(tmp_path):
 
 
 def test_blocks_traversal_outside_roots():
-    """~/../../etc/passwd — after tilde expansion and .. resolution the
+    """~/../../etc/passwd - after tilde expansion and .. resolution the
     path lands outside every allowed root."""
     from src.tool_execution import _resolve_tool_path
     with pytest.raises(ValueError):

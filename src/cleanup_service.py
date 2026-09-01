@@ -28,7 +28,7 @@ class CleanupConfig:
 def _apply_owner_filter(query, DbSession, owner: Optional[str]):
     """Apply owner filtering to a session query.
 
-    SECURITY: strict — the previous OR predicate let one user's cleanup
+    SECURITY: strict - the previous OR predicate let one user's cleanup
     archive/delete every null-owner session, including ones that hadn't
     been migrated. Now: only rows owned by this user.
     """

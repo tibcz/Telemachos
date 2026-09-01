@@ -1,18 +1,18 @@
 """Outbound URL safety checks (SSRF hardening).
 
-Run before the server makes a request to a *user-supplied* URL — e.g. the custom
+Run before the server makes a request to a *user-supplied* URL - e.g. the custom
 embedding endpoint set via ``POST /api/embeddings/endpoint``, which then triggers
 an outbound ``httpx`` call.
 
 Telemachos is local-first: pointing the embedding endpoint at a loopback or LAN
 address (a local vLLM / llama.cpp / Ollama server) is a normal, intended setup.
-So this guard does **not** blanket-block private addresses by default — that would
+So this guard does **not** blanket-block private addresses by default - that would
 break the primary use case. What it *always* rejects:
 
   - a non-HTTP(S) scheme (``file://``, ``gopher://``, ``ftp://`` …), and
   - the link-local range (``169.254.0.0/16`` / ``fe80::/10``), i.e. the cloud
-    instance-metadata SSRF credential-exfil vector — nobody serves embeddings
-    there — plus multicast / reserved / unspecified addresses.
+    instance-metadata SSRF credential-exfil vector - nobody serves embeddings
+    there - plus multicast / reserved / unspecified addresses.
 
 For exposed multi-tenant deployments, set ``EMBEDDING_BLOCK_PRIVATE_IPS=true`` to
 additionally reject all private and loopback targets (full SSRF lockdown).
@@ -41,7 +41,7 @@ def _default_resolver(host: str) -> List[str]:
 
 def _classify(ip: ipaddress._BaseAddress, *, block_private: bool) -> Optional[str]:
     """Return a rejection reason for an IP, or None if it is allowed."""
-    # IPv4-mapped IPv6 (e.g. ::ffff:169.254.169.254) — judge the embedded v4.
+    # IPv4-mapped IPv6 (e.g. ::ffff:169.254.169.254) - judge the embedded v4.
     if isinstance(ip, ipaddress.IPv6Address) and ip.ipv4_mapped is not None:
         ip = ip.ipv4_mapped
     if ip.is_link_local:

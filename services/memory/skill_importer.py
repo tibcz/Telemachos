@@ -276,7 +276,7 @@ def parse_skill_source(url: str) -> ResolvedSource:
     if scheme not in ("http", "https"):
         if scheme and url.lower().startswith(f"{scheme}://"):
             raise SkillImportError(f"unsupported URL scheme: {scheme}")
-        # Schemeless "github.com/owner/repo" — accept only a supported host.
+        # Schemeless "github.com/owner/repo" - accept only a supported host.
         rough_host = (urlparse("//" + url).hostname or "").lower()
         if rough_host not in _GITHUB_HOSTS and rough_host not in _SKILLS_SH_HOSTS:
             raise SkillImportError("Only GitHub or skills.sh URLs are supported")
@@ -299,7 +299,7 @@ def parse_skill_source(url: str) -> ResolvedSource:
         final = str(r.url)
         if _github_host(final) not in _GITHUB_HOSTS:
             raise SkillImportError(
-                "skills.sh did not redirect to GitHub — open the skill's "
+                "skills.sh did not redirect to GitHub - open the skill's "
                 "repository on GitHub, navigate to the exact skill folder or "
                 "SKILL.md file, and paste that URL; the repository-root link "
                 "alone is not sufficient"
@@ -366,7 +366,7 @@ def _github_response_error(response: httpx.Response) -> SkillImportError:
     low = detail.lower()
     if status == 403 and "rate limit" in low:
         return SkillImportError(
-            "GitHub API rate limit exceeded — try again in a bit"
+            "GitHub API rate limit exceeded - try again in a bit"
             + (f" ({detail})" if detail else "")
         )
     if status == 404:
@@ -471,7 +471,7 @@ def fetch_skill_bundle(url: str) -> Tuple[Dict[str, str], ResolvedSource]:
             files["SKILL.md"] = _fetch_text(_raw_url(src, "SKILL.md"))
         except Exception as e:
             raise SkillImportError(
-                "No SKILL.md found — link to a skill folder or SKILL.md on GitHub"
+                "No SKILL.md found - link to a skill folder or SKILL.md on GitHub"
             ) from e
     return files, src
 

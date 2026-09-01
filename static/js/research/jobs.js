@@ -1,5 +1,5 @@
 /**
- * Research job queue — add, start, monitor, cancel research jobs.
+ * Research job queue - add, start, monitor, cancel research jobs.
  */
 
 let _jobs = [];
@@ -37,14 +37,14 @@ export function init(apiBase) {
   _reconnectActive({ includeLibrary: true, forceLibrary: true });
   // Poll for active sessions periodically so research started elsewhere
   // (e.g. by the agent via trigger_research) gets adopted into the
-  // sidebar — _reconnectActive only ran once at load before, so
+  // sidebar - _reconnectActive only ran once at load before, so
   // agent-started jobs never appeared until a page reload.
   if (_activePollInterval) clearInterval(_activePollInterval);
   _activePollInterval = setInterval(() => { _reconnectActive(); }, 20000);
 }
 
 // Allow an immediate adopt when the chat stream signals a new research
-// session (research_started ui_event) — faster than the 12s poll.
+// session (research_started ui_event) - faster than the 12s poll.
 export function adoptSession(sessionId) {
   if (!sessionId || _jobs.some(j => j.id === sessionId)) return;
   _reconnectActive();
@@ -174,7 +174,7 @@ export async function startAllQueued() {
   await Promise.all(queued.map(j => _launchJob(j)));
 }
 
-/** Run queued jobs one at a time — waits for each to finish before launching
+/** Run queued jobs one at a time - waits for each to finish before launching
  *  the next. Useful when you want to avoid hammering the same model server. */
 export async function startAllQueuedSequential() {
   const queued = _jobs.filter(j => j.status === 'queued');

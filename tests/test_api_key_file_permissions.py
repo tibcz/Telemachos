@@ -3,7 +3,7 @@
 
 ``APIKeyManager.get_or_create_key`` writes the Fernet key that decrypts *every*
 stored provider credential. Older versions created it with the process umask
-(commonly 0o644 — group/world-readable). It must be locked to the owner, both
+(commonly 0o644 - group/world-readable). It must be locked to the owner, both
 when freshly created and when an older, too-permissive key is read back.
 
 POSIX-only: ``core.platform_compat.safe_chmod`` is a documented no-op on Windows

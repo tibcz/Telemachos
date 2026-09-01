@@ -1,4 +1,4 @@
-"""Search service — web search with SearXNG."""
+"""Search service - web search with SearXNG."""
 
 from .core import (
     comprehensive_web_search,

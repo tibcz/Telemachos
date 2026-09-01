@@ -1,7 +1,7 @@
 # Telemachos
 
 A self-contained AI workspace for Apple Silicon Macs. Chat, agents, deep
-research, documents, email, notes, tasks, calendar, and a local vector memory —
+research, documents, email, notes, tasks, calendar, and a local vector memory -
 in one application you download and open.
 
 There is no server to run, no Python to install, no Docker, no repository to
@@ -19,7 +19,7 @@ app bundle, starts it when you open the app, and stops it when you quit.
    again in the dialog that appears.
 
 That third step is a one-time thing, and it is worth understanding rather than
-just clicking through. This build is signed *ad-hoc* — a real cryptographic
+just clicking through. This build is signed *ad-hoc* - a real cryptographic
 signature, but one made with no Apple Developer certificate behind it. macOS
 therefore cannot tie the app to a registered developer and asks you to confirm
 you meant to open it. After you confirm once, it opens normally forever.
@@ -35,7 +35,7 @@ Requires macOS 13 or later on an Apple Silicon Mac (M1 and up).
 ## First launch
 
 Opening the app shows a start-up screen while the engine initialises its
-database and vector store. First launch takes longer than later ones — this is
+database and vector store. First launch takes longer than later ones - this is
 the only time that setup happens.
 
 Then you need to give it a model to think with. Open **Settings** and add an API
@@ -64,7 +64,7 @@ those are detected separately and keep working.
 
 The real risk in downloading model weights is not a virus in the usual sense.
 PyTorch `.bin` and `.pt` checkpoints are Python **pickles**, and unpickling
-executes arbitrary code by design — a hostile checkpoint owns the machine the
+executes arbitrary code by design - a hostile checkpoint owns the machine the
 moment it loads. Telemachos removes that possibility rather than warning about
 it:
 
@@ -110,11 +110,11 @@ To start completely fresh, quit the app and delete that folder.
 
 Telemachos is two pieces in one bundle:
 
-- **The shell** — a native Swift application. It reserves a loopback port,
+- **The shell** - a native Swift application. It reserves a loopback port,
   starts the engine, waits for it to report itself genuinely ready, and hosts
   the workspace in a `WKWebView`. It owns the window, the menus, downloads,
   microphone access and shutdown.
-- **The engine** — the Telemachos workspace, frozen with PyInstaller into
+- **The engine** - the Telemachos workspace, frozen with PyInstaller into
   `Contents/Resources/engine`. It binds `127.0.0.1` on a port the shell picks,
   and is not reachable from anywhere else on the network.
 
@@ -126,7 +126,7 @@ server you still have to run:
   that uses an in-process persistent client instead, so RAG and semantic memory
   work with nothing else installed.
 - **The engine can act as its own interpreter.** Telemachos starts helper
-  processes — the built-in MCP servers, the agent's Python tool — with
+  processes - the built-in MCP servers, the agent's Python tool - with
   `sys.executable`. Inside a frozen bundle that path *is* the engine, so an
   unguarded spawn would relaunch the whole app. The entry script in
   `packaging/macos/telemachos_engine.py` recognises the `python …` argument
@@ -172,7 +172,7 @@ packaging/macos/
 Telemachos is built on [Odysseus](https://github.com/odysseus-dev/odysseus) and
 is a modified version of it. Telemachos is licensed under the GNU Affero General
 Public License, version 3 or later, and Telemachos is distributed under the same
-licence — see [LICENSE](LICENSE) and [ACKNOWLEDGMENTS.md](ACKNOWLEDGMENTS.md).
+licence - see [LICENSE](LICENSE) and [ACKNOWLEDGMENTS.md](ACKNOWLEDGMENTS.md).
 
 The licence texts ship inside the application as well, and **About Telemachos**
 in the app menu links to them.

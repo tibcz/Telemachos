@@ -32,7 +32,7 @@ def extract_office_text(file_path: str) -> str:
     """Extract text from an Office/EPUB doc via the optional markitdown dep.
 
     Returns "" when markitdown is missing or extraction fails, mirroring
-    extract_pdf_text — the indexer then simply skips the file's content.
+    extract_pdf_text - the indexer then simply skips the file's content.
     """
     from src.markitdown_runtime import convert_to_markdown
     return convert_to_markdown(file_path) or ""
@@ -325,8 +325,8 @@ class PersonalDocsManager:
             # Targeted delete of just this directory's chunks. This previously
             # called rag_manager.rebuild_index(), which delete+recreates the
             # entire shared collection (every owner + the base index) and then
-            # re-indexed only the remaining tracked dirs — ownerless and never
-            # personal_dir — a catastrophic wipe (#1660). remove_directory now
+            # re-indexed only the remaining tracked dirs - ownerless and never
+            # personal_dir - a catastrophic wipe (#1660). remove_directory now
             # removes exactly this directory's chunks and leaves the rest intact.
             if self.rag_manager:
                 try:

@@ -95,7 +95,7 @@ def test_qwen_catalog_entries_point_at_verified_gguf_repos():
 
 def test_safetensors_models_still_recommended_on_cuda():
     """Regression guard: vLLM serves safetensors on CUDA, so non-GGUF repos must
-    NOT be filtered there — the GGUF-only rule is Metal-specific."""
+    NOT be filtered there - the GGUF-only rule is Metal-specific."""
     names = {r["name"] for r in rank_models(_cuda_system(), limit=900)}
     assert "microsoft/Phi-mini-MoE-instruct" in names
 
@@ -157,7 +157,7 @@ def test_apple_silicon_skipped_on_linux(monkeypatch):
 
 
 def test_intel_mac_skipped(monkeypatch):
-    """Intel Macs have no Metal GPU worth serving LLMs on — fall through to CPU."""
+    """Intel Macs have no Metal GPU worth serving LLMs on - fall through to CPU."""
     monkeypatch.setattr(hardware, "_remote_host", None)
     monkeypatch.setattr(hardware.platform, "system", lambda: "Darwin")
     monkeypatch.setattr(hardware.platform, "machine", lambda: "x86_64")

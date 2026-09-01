@@ -1,15 +1,15 @@
 /**
  * Mask builders used by the AI Harmonize pipeline.
  *
- *  - `layerUnionAlpha`  — union of every non-base layer's alpha, as a
+ *  - `layerUnionAlpha`  - union of every non-base layer's alpha, as a
  *                         binary (0/255) mask. Used as the substrate
  *                         for both seam and body masks.
- *  - `seamMask`         — feathered band along the alpha edges of all
+ *  - `seamMask`         - feathered band along the alpha edges of all
  *                         non-base layers. White = "blend here",
  *                         black = "leave alone". Returned as base64
  *                         PNG (so it can be POST'd to the diffusion
  *                         endpoint as JSON).
- *  - `layerBodyMask`    — feathered FULL shape of every non-base layer.
+ *  - `layerBodyMask`    - feathered FULL shape of every non-base layer.
  *                         White = "AI may redraw this pixel using the
  *                         existing pixels as a starting point";
  *                         black = "preserve exactly". Returned as base64.
@@ -81,7 +81,7 @@ export function seamMask(w, h, layers, featherPx = 12) {
   blctx.filter = 'none';
   const blurred = blctx.getImageData(0, 0, w, h);
   const mask = blctx.createImageData(w, h);
-  // Triangular weight peaked at mid-grey — picks out the alpha-edge band.
+  // Triangular weight peaked at mid-grey - picks out the alpha-edge band.
   for (let i = 0; i < blurred.data.length; i += 4) {
     const v = blurred.data[i];
     const dist = Math.abs(v - 128);

@@ -1,8 +1,8 @@
 // static/js/signature.js
 //
 // Reusable signature module. Two entry points:
-//   capture(opts)  — open a drawing modal, return Promise<Signature|null>
-//   pick(opts)     — show saved signatures + a "new" tile, return Promise<Signature|null>
+//   capture(opts)  - open a drawing modal, return Promise<Signature|null>
+//   pick(opts)     - show saved signatures + a "new" tile, return Promise<Signature|null>
 //
 // Signature shape: { id, dataUrl, width, height, name }
 //
@@ -29,7 +29,7 @@ function _safeSignatureDataUrl(raw) {
 }
 
 // Last signature the user picked or created in this session. Lets the export
-// modal pre-fill subsequent signature fields with the same one — sign once,
+// modal pre-fill subsequent signature fields with the same one - sign once,
 // applies everywhere.
 let _lastUsed = null;
 export function getLastUsed() { return _lastUsed; }
@@ -44,7 +44,7 @@ class SmoothPad {
     this.color = opts.color ?? '#111';
     this.bgColor = opts.bgColor ?? '#fff';
     // Heavy-smoothing knobs (much smoother than v1):
-    //  - minDistance: jitter floor (px) — bigger = more aggressive thinning
+    //  - minDistance: jitter floor (px) - bigger = more aggressive thinning
     //  - emaAlpha: live EMA on incoming points (lower = smoother, laggier)
     //  - chaikinIters: Chaikin corner-cutting passes on stroke-end redraw
     //    (each pass roughly doubles segment count and rounds every corner;
@@ -275,7 +275,7 @@ class SmoothPad {
     const ctx = this.ctx;
     const data = ctx.getImageData(0, 0, cw, ch).data;
     let minX = cw, minY = ch, maxX = -1, maxY = -1;
-    // bgColor is opaque white — detect non-white pixels
+    // bgColor is opaque white - detect non-white pixels
     for (let y = 0; y < ch; y++) {
       for (let x = 0; x < cw; x++) {
         const i = (y * cw + x) * 4;
@@ -480,7 +480,7 @@ export function pick(opts = {}) {
         </div>
         <div class="modal-body">
           <button class="sig-new-tile confirm-btn confirm-btn-primary" style="width:100%;margin-bottom:12px;padding:8px;">+ Draw new signature</button>
-          ${tiles ? `<div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:10px;">${tiles}</div>` : '<div style="opacity:0.6;font-size:0.8rem;text-align:center;padding:8px 0;">No saved signatures yet — draw one above.</div>'}
+          ${tiles ? `<div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:10px;">${tiles}</div>` : '<div style="opacity:0.6;font-size:0.8rem;text-align:center;padding:8px 0;">No saved signatures yet - draw one above.</div>'}
         </div>
       </div>
     `);

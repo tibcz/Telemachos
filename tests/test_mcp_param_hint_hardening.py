@@ -1,4 +1,4 @@
-"""Hardening for issue #2660 — `_format_mcp_params` renders untrusted MCP tool
+"""Hardening for issue #2660 - `_format_mcp_params` renders untrusted MCP tool
 schemas into the agent prompt (added in #2509/#2529). MCP servers are
 third-party, so field names and parameter counts are untrusted: names/types must
 be sanitized (no injected newlines / runaway length) and the rendered set must be
@@ -25,7 +25,7 @@ def test_normal_schema_renders_unchanged():
 
 def test_hostile_field_name_cannot_inject_newlines():
     # A server-controlled field name with newlines + injection text must be
-    # collapsed to a single line — it must not break out of the hint.
+    # collapsed to a single line - it must not break out of the hint.
     schema = {
         "type": "object",
         "properties": {

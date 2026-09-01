@@ -1262,12 +1262,12 @@ def test_anthropic_stream_preserves_error_semantics(monkeypatch, error, expected
 def test_dedupe_candidates_keeps_first_of_each_route():
     """Exact route repeats are dropped while credential-distinct routes remain."""
     cands = [
-        ("u1", "m1", {"h": 1}),   # first u1/m1 — kept
-        ("u1", "m1", {"h": 2}),   # same provider/model, different credential — kept
-        ("u2", "m2", {}),         # distinct — kept
-        ("u1", "m1", {"h": 1}),   # exact repeat — dropped
-        (None, "x", {}),          # malformed (no url) — dropped
-        ("u3", "", {}),           # malformed (no model) — dropped
+        ("u1", "m1", {"h": 1}),   # first u1/m1 - kept
+        ("u1", "m1", {"h": 2}),   # same provider/model, different credential - kept
+        ("u2", "m2", {}),         # distinct - kept
+        ("u1", "m1", {"h": 1}),   # exact repeat - dropped
+        (None, "x", {}),          # malformed (no url) - dropped
+        ("u3", "", {}),           # malformed (no model) - dropped
     ]
     assert llm_core.dedupe_model_candidates(cands) == [
         ("u1", "m1", {"h": 1}),
@@ -1280,7 +1280,7 @@ def test_dedupe_candidates_keeps_first_of_each_route():
 
 def test_duplicate_route_is_attempted_only_once(monkeypatch):
     """A fallback that repeats the primary's (url, model) must NOT make the chain
-    sail back into the same dead route — each distinct route is tried once."""
+    sail back into the same dead route - each distinct route is tried once."""
     calls = []
 
     async def fake_stream(url, model, messages, **kw):

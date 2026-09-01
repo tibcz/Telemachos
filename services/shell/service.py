@@ -1,5 +1,5 @@
 # services/shell/service.py
-"""Shell service — safe command execution."""
+"""Shell service - safe command execution."""
 
 from dataclasses import dataclass
 from typing import Optional, AsyncIterator

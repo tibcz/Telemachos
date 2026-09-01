@@ -1,4 +1,4 @@
-"""Regression guard for issue #1343 — clicking "New chat" left the previous
+"""Regression guard for issue #1343 - clicking "New chat" left the previous
 session's draft text in the composer.
 
 The direct model-picker path (sessions.js:createDirectChat) already cleared the

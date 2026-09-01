@@ -29,11 +29,11 @@ def _maybe_cascade_calendar_event(task) -> None:
     """Delete the linked calendar event when a cookbook_serve task is
     removed. Two lookup strategies:
 
-      1. PRIMARY — `cookbook_event_uid` marker stashed in task.prompt
+      1. PRIMARY - `cookbook_event_uid` marker stashed in task.prompt
          by cookbookSchedule.js right after creating the event. Direct
          UID match, no ambiguity.
 
-      2. FALLBACK — for tasks created before the marker was wired up
+      2. FALLBACK - for tasks created before the marker was wired up
          (or when the PATCH to add the marker failed silently), scan
          the Cookbook calendar for events whose summary equals the
          task name and delete the matches.
@@ -121,7 +121,7 @@ def _maybe_cascade_calendar_event(task) -> None:
                 if (ev.get("summary") or "").strip() != target:
                     continue
                 uid = ev.get("uid") or ev.get("id") or ""
-                # Strip the "::occurrence" suffix on recurring expansions —
+                # Strip the "::occurrence" suffix on recurring expansions -
                 # we want to delete the MASTER once, not each instance.
                 if "::" in uid:
                     uid = uid.split("::", 1)[0]
@@ -156,7 +156,7 @@ class TaskCreate(BaseModel):
     endpoint_url: Optional[str] = None
     then_task_id: Optional[str] = None            # chain: run this task after success
     notifications_enabled: Optional[bool] = None  # None lets action-specific defaults apply
-    character_id: Optional[str] = None             # built-in persona id (PERSONAS) — biases output voice
+    character_id: Optional[str] = None             # built-in persona id (PERSONAS) - biases output voice
 
 
 class TaskUpdate(BaseModel):
@@ -422,7 +422,7 @@ def setup_task_routes(task_scheduler) -> APIRouter:
         return {"ok": True, "opened": True, "enabled": bool(prefs.get("tasks_enabled")), "resumed": resumed}
 
     # Actions that execute shell/SSH commands or cross into admin-only
-    # Cookbook serving surfaces — restricted to admins.
+    # Cookbook serving surfaces - restricted to admins.
     # Non-admin users cannot create tasks with these action types via the
     # API. See review CRIT-C.
     _ADMIN_ONLY_ACTIONS = ADMIN_ONLY_TASK_ACTIONS
@@ -562,7 +562,7 @@ def setup_task_routes(task_scheduler) -> APIRouter:
     async def get_notifications(request: Request):
         """Return and clear pending task-run notifications for the
         current user. Anonymous callers get nothing (prevents
-        cross-tenant drain — see review CRIT-B)."""
+        cross-tenant drain - see review CRIT-B)."""
         user = _owner(request)
         if not user:
             return {"notifications": []}
@@ -901,7 +901,7 @@ def setup_task_routes(task_scheduler) -> APIRouter:
                 ScheduledTask, TaskRun.task_id == ScheduledTask.id
             )
             if user:
-                # Strict owner scope — was previously OR'ing in `owner IS NULL`
+                # Strict owner scope - was previously OR'ing in `owner IS NULL`
                 # rows for "legacy single-user" back-compat, but that leaks any
                 # legacy/migrated task's full result text to every authenticated
                 # user. _migrate_assign_legacy_owner runs on startup to claim
@@ -951,7 +951,7 @@ def setup_task_routes(task_scheduler) -> APIRouter:
                         "endpoint_url": _resolve_run_endpoint(db, t, r),
                         "session_id": t.session_id or "",
                         "research_id": _run_research_id(t),
-                        # Where the task delivered its result — the Activity tab
+                        # Where the task delivered its result - the Activity tab
                         # uses this to filter notification rows in/out.
                         "output_target": t.output_target or "session",
                     }
@@ -981,7 +981,7 @@ def setup_task_routes(task_scheduler) -> APIRouter:
 
     @router.get("/meta/output-targets")
     async def list_output_targets(request: Request):
-        """List available output targets — only delivery/send tools, not all MCP tools."""
+        """List available output targets - only delivery/send tools, not all MCP tools."""
         _owner(request)
         targets = [
             {"value": "session", "label": "Session", "description": "Save result to a chat session"},
@@ -989,7 +989,7 @@ def setup_task_routes(task_scheduler) -> APIRouter:
             {"value": "email", "label": "Email me", "description": "Send result through your configured SMTP account"},
         ]
         # Only include tools whose NAME clearly indicates an outbound delivery
-        # action — match by verb in the tool name, not by any mention of "email"
+        # action - match by verb in the tool name, not by any mention of "email"
         # in the description (which falsely picked up search_email, list_email,
         # etc.). Also exclude read/search/list tools whose names happen to start
         # with a delivery verb.
@@ -1044,7 +1044,7 @@ def setup_task_routes(task_scheduler) -> APIRouter:
 
     @router.post("/{task_id}/webhook/{token}")
     async def webhook_trigger(task_id: str, token: str):
-        """Unauthenticated endpoint — the token IS the auth."""
+        """Unauthenticated endpoint - the token IS the auth."""
         db = SessionLocal()
         try:
             task = db.query(ScheduledTask).filter(
@@ -1090,7 +1090,7 @@ def setup_task_routes(task_scheduler) -> APIRouter:
     async def parse_task(request: Request) -> Dict[str, Any]:
         """Turn a free-form description ("every weekday at 7am research the top
         AI news and summarize it") into a structured task draft the frontend
-        can pre-fill the form with. Returns a draft only — the user reviews and
+        can pre-fill the form with. Returns a draft only - the user reviews and
         saves it, so a misread schedule never goes live unreviewed."""
         from src.endpoint_resolver import resolve_endpoint
         from src.llm_core import llm_call_async

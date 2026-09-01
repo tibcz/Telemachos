@@ -5,7 +5,7 @@ The vector index reports `.healthy` only at init time. If the embedding
 backend dies later (OOM, model evicted, remote endpoint down), the per-fact
 `find_similar` / `add` calls raise. Before the fix these exceptions escaped the
 dedup loop, jumped past `memory_manager.save(...)`, and were swallowed by the
-function's outer try/except — so EVERY validated fact from the session was
+function's outer try/except - so EVERY validated fact from the session was
 silently lost (the feature promises "Errors are logged, never raised", but it
 also quietly dropped all the data).
 
@@ -62,7 +62,7 @@ def test_extraction_persists_facts_when_vector_store_fails_at_runtime(monkeypatc
         return facts_json
 
     monkeypatch.setattr(src.llm_core, "llm_call_async", _fake_llm)
-    # fire_event touches an async event loop / disk — neutralize it.
+    # fire_event touches an async event loop / disk - neutralize it.
     monkeypatch.setattr(src.event_bus, "fire_event", lambda *a, **k: None)
 
     with tempfile.TemporaryDirectory() as data_dir:
@@ -89,7 +89,7 @@ def test_healthy_vector_store_still_dedups_normally(monkeypatch):
     """Control: a vector hit on the user's OWN memory is honored (deduped) and
     add is not called. The vector store is a shared collection with no owner
     metadata, so a hit is only treated as a duplicate when the matched id
-    resolves to this user's own (or legacy unowned) memory — otherwise the
+    resolves to this user's own (or legacy unowned) memory - otherwise the
     fact would be a cross-tenant false drop. Here the match is alice's own
     memory, so the dedup must still fire."""
 

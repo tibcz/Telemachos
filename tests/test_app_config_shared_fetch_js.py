@@ -2,13 +2,13 @@
 
 Background: /api/auth/settings was fetched independently by six modules and
 /api/tools by three (chatRenderer.js is imported under three different ?v=
-query strings, so it is three separate module instances) — 4 and 3 requests on
+query strings, so it is three separate module instances) - 4 and 3 requests on
 one cold load. Beyond the redundant work, each caller could observe a different
 snapshot of the same object. appConfig.js gives them one promise each.
 
 The two properties that matter are opposites, so both are tested here:
 concurrent and later callers must NOT refetch, and a caller after a write MUST
-see the new value — which only holds if every writer invalidates. The last test
+see the new value - which only holds if every writer invalidates. The last test
 is a source scan that checks exactly that, since a forgotten invalidation
 serves a stale settings object for the rest of the session, which is worse than
 the duplicate fetches this replaces.
@@ -217,7 +217,7 @@ def test_every_settings_writer_invalidates_the_shared_cache():
 
     Checked by source scan rather than at runtime: the failure mode is a call
     site that was never wired up, which no unit test of the cache itself can
-    see. `appConfig.js` itself is skipped — it is the cache, not a writer.
+    see. `appConfig.js` itself is skipped - it is the cache, not a writer.
     """
     missing = []
     for path in _SCANNED:
@@ -233,7 +233,7 @@ def test_every_settings_writer_invalidates_the_shared_cache():
                 if invalidator + "(" not in near:
                     missing.append(f"{path.relative_to(_REPO)}:{line} POST {endpoint}")
     assert not missing, (
-        "POST sites with no nearby cache invalidation — the UI will serve a "
+        "POST sites with no nearby cache invalidation - the UI will serve a "
         "stale snapshot after these writes:\n  " + "\n  ".join(missing)
     )
 

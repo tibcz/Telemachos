@@ -1,6 +1,6 @@
 // In-house color picker with live-feedback HSV square, hue bar,
 // eyedropper, recent colors, and harmony suggestions.
-// Non-invasive: wraps existing <input type="color"> elements —
+// Non-invasive: wraps existing <input type="color"> elements -
 // their .value stays the source of truth, and we dispatch 'input'
 // events so existing listeners keep working.
 
@@ -138,7 +138,7 @@ function syncUI() {
   const preview = _popover.querySelector('.cp-preview');
 
   const pureHue = hsvToHex(_h, 100, 100);
-  sl.style.background = pureHue;   // base hue — white/black layers stacked on top via CSS
+  sl.style.background = pureHue;   // base hue - white/black layers stacked on top via CSS
 
   slH.style.left = (_s) + '%';
   slH.style.top = (100 - _v) + '%';
@@ -178,7 +178,7 @@ function setFromHex(hex) {
 }
 
 // ── Handlers ──────────────────────────────────────────────────────────
-// Window-level pointer listeners — installed ONCE, not per-popover, so they
+// Window-level pointer listeners - installed ONCE, not per-popover, so they
 // don't leak when the popover is rebuilt on every open.
 let _windowPointerInstalled = false;
 function _installWindowPointer() {
@@ -429,7 +429,7 @@ export function attachColorPicker(inputEl) {
     e.preventDefault();
     e.stopPropagation();
     // If the same input already has the picker open, close it (toggle).
-    // Otherwise always (re)open — never get stuck in a "won't reopen" state.
+    // Otherwise always (re)open - never get stuck in a "won't reopen" state.
     if (_input === inputEl && _popover) {
       close();
     } else {

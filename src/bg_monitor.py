@@ -3,7 +3,7 @@
 
 Reliability is the whole point: completion → agent re-invocation must never
 silently no-op. The monitor drains `bg_jobs.pending_followups()` every tick and
-only calls `mark_followed_up()` AFTER the agent run succeeds — so a transient
+only calls `mark_followed_up()` AFTER the agent run succeeds - so a transient
 failure is simply retried on the next tick. A timed-out/dead job still produces
 a follow-up ("the job failed/timed out"), so the user always hears back.
 """
@@ -38,7 +38,7 @@ def _background_result_message(rec):
 
 async def _drain_agent(sess, messages):
     """Run the agent loop headless against a session. Returns
-    (final_prose, tool_events) — tool_events in the same shape the live chat
+    (final_prose, tool_events) - tool_events in the same shape the live chat
     saves, so the frontend rebuilds them as standard agent-thread tool cards."""
     from src.agent_loop import stream_agent_loop
     full = ""
@@ -91,29 +91,29 @@ async def _drain_agent(sess, messages):
 
 async def _run_followup(rec: dict) -> bool:
     """Re-invoke the agent in the job's session with the result. Returns True
-    if the follow-up completed (or there's nothing to do) — i.e. it's safe to
+    if the follow-up completed (or there's nothing to do) - i.e. it's safe to
     mark followed_up. Returns False to retry on the next tick."""
     from src.ai_interaction import get_session_manager
     from core.models import ChatMessage
 
     sm = get_session_manager()
     if not sm:
-        return False  # not ready yet — retry
+        return False  # not ready yet - retry
     sess = sm.get_session(rec["session_id"])
     if not sess:
-        # Session was deleted — nothing to continue. Consider it handled so we
+        # Session was deleted - nothing to continue. Consider it handled so we
         # don't retry forever.
-        logger.info("bg-followup: session %s gone for job %s — skipping", rec.get("session_id"), rec.get("id"))
+        logger.info("bg-followup: session %s gone for job %s - skipping", rec.get("session_id"), rec.get("id"))
         return True
 
     # Don't write into a session that's mid-stream. The followup appends to
     # history + save_sessions(); a concurrent live turn does the same, and with
     # no per-session lock the two interleave (reordered/clobbered messages).
-    # Defer — return False so we retry on the next tick once the turn finishes.
+    # Defer - return False so we retry on the next tick once the turn finishes.
     try:
         from src import agent_runs
         if agent_runs.is_active(sess.id):
-            logger.info("bg-followup: session %s busy (live turn) — deferring job %s", sess.id, rec.get("id"))
+            logger.info("bg-followup: session %s busy (live turn) - deferring job %s", sess.id, rec.get("id"))
             return False
     except Exception:
         pass
@@ -124,7 +124,7 @@ async def _run_followup(rec: dict) -> bool:
     full, tool_events = await _drain_agent(sess, context)
 
     # Persist ONLY the assistant continuation so it renders as a normal agent
-    # turn — a standard chat bubble plus `tool_events` that the frontend
+    # turn - a standard chat bubble plus `tool_events` that the frontend
     # rebuilds into the usual agent-thread tool cards (chatRenderer:1494). The
     # trigger isn't saved as its own message (it'd be an out-of-place bubble);
     # the raw job output is stashed in metadata for traceability instead.
@@ -159,7 +159,7 @@ async def _loop():
 
 
 def start_bg_monitor():
-    """Idempotent — start the always-on background-job monitor."""
+    """Idempotent - start the always-on background-job monitor."""
     global _monitor_task
     if _monitor_task and not _monitor_task.done():
         return _monitor_task

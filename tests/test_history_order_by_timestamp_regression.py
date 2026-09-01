@@ -1,7 +1,7 @@
 """Regression guard for #1659.
 
 `routes/history_routes.py` ordered three ChatMessage queries by
-``DbChatMessage.created_at`` — the mark-stopped (`:268`), update-last-meta
+``DbChatMessage.created_at`` - the mark-stopped (`:268`), update-last-meta
 (`:323`) and merge-last-assistant (`:404`) handlers. The ``ChatMessage`` model
 does **not** inherit ``TimestampMixin`` and exposes only a ``timestamp`` column,
 so ``DbChatMessage.created_at`` raised ``AttributeError`` at query-build time ->
@@ -16,7 +16,7 @@ This test pins three things:
 import os
 from pathlib import Path
 
-# Keep the import-time engine hermetic — no on-disk app.db.
+# Keep the import-time engine hermetic - no on-disk app.db.
 os.environ.setdefault("DATABASE_URL", "sqlite:///:memory:")
 
 from sqlalchemy import create_engine

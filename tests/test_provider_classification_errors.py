@@ -3,7 +3,7 @@
 Split from `test_provider_classification.py` to keep error-message formatting
 separate from provider identification.
 
-  * `_format_upstream_error` — turns a raw upstream HTTP status + body into the
+  * `_format_upstream_error` - turns a raw upstream HTTP status + body into the
     one-line, provider-aware message the UI shows ("Provider probes" degraded
     reporting in the roadmap).
 
@@ -34,7 +34,7 @@ class TestFormatUpstreamError:
 
     def test_404_points_at_base_url(self):
         msg = _format_upstream_error(404, "", "https://api.groq.com/openai/v1")
-        assert msg == "Groq returned 404 — check the base URL and model name."
+        assert msg == "Groq returned 404 - check the base URL and model name."
 
     def test_429_rate_limited(self):
         msg = _format_upstream_error(

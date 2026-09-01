@@ -6,10 +6,10 @@ DeepSeek". `test_provider_endpoints.py` already pins URL/header *building*; this
 module pins the two pieces of provider setup that decide WHICH provider an
 endpoint is:
 
-  * `_detect_provider`  — host-based provider identification (drives payload
+  * `_detect_provider`  - host-based provider identification (drives payload
     shape, auth headers, and the /v1 collapse). The look-alike-host and
     domain-in-path cases guard the hostname (not substring) matching.
-  * `_provider_label`   — the human name shown in degraded-state messages.
+  * `_provider_label`   - the human name shown in degraded-state messages.
 
 Upstream-error formatting lives in `test_provider_classification_errors.py` and
 the token-param quirk in `test_provider_classification_token_params.py`.
@@ -40,7 +40,7 @@ class TestDetectProvider:
         ("http://localhost:11434/api", "ollama"),
         ("https://ollama.com", "ollama"),
         # xAI, DeepSeek and Gemini's OpenAI-compatible surface are NOT
-        # special-cased — they speak the OpenAI dialect, so the generic
+        # special-cased - they speak the OpenAI dialect, so the generic
         # "openai" path is correct, not a missed provider.
         ("https://api.openai.com/v1", "openai"),
         ("https://api.x.ai/v1", "openai"),
@@ -53,7 +53,7 @@ class TestDetectProvider:
         assert _detect_provider(url) == expected
 
     def test_lookalike_host_is_not_matched(self):
-        # Host merely *starts* with the provider domain as a label — a classic
+        # Host merely *starts* with the provider domain as a label - a classic
         # substring-match trap (anthropic.com.evil.example is not Anthropic).
         assert _detect_provider("https://anthropic.com.evil.example/v1") == "openai"
 

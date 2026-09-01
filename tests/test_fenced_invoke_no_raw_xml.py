@@ -1,4 +1,4 @@
-"""Issue #2925 — a fenced ```python/```bash block wrapping an <invoke> call that
+"""Issue #2925 - a fenced ```python/```bash block wrapping an <invoke> call that
 can't be converted (e.g. a hyphenated/namespaced tool name that _XML_INVOKE_RE's
 \\w+ won't match, or an unknown tool) must NOT fall through and ship the raw XML
 to the code executor as if it were python/bash.
@@ -23,7 +23,7 @@ from src.tool_parsing import parse_tool_blocks  # noqa: E402
 def test_unconvertible_invoke_in_fence_is_not_executed_as_code():
     text = '```python\n<invoke name="foo-bar">\n<parameter name="x">1</parameter>\n</invoke>\n```'
     blocks = parse_tool_blocks(text)
-    # the hyphenated name can't match _XML_INVOKE_RE, so nothing converts —
+    # the hyphenated name can't match _XML_INVOKE_RE, so nothing converts -
     # the raw XML must not be appended as a python/bash code block.
     assert not any(
         b.tool_type in ("python", "bash") and "<invoke" in b.content for b in blocks

@@ -2,7 +2,7 @@
 
 The name extractor used the ASCII-only class [A-Z][a-zA-Z]+, so a query like
 "İstanbul weather" or "Zürich hotels" yielded no name entities at all, and
-"São Paulo" lost "São" — non-English/accented place and proper names were
+"São Paulo" lost "São" - non-English/accented place and proper names were
 silently dropped from query enhancement. Detection is now Unicode-aware;
 ASCII behaviour (including camelCase mid-word capitals not counting as names)
 is preserved.

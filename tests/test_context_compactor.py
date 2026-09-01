@@ -1,4 +1,4 @@
-"""Tests for context_compactor.py — constants and prompt templates.
+"""Tests for context_compactor.py - constants and prompt templates.
 Uses mock imports to avoid loading the full app stack."""
 
 import asyncio
@@ -115,7 +115,7 @@ class TestContentAsText:
 
     def test_none_returns_empty(self):
         # Assistant turns that carried only native tool_calls persist
-        # content as None — flattening must not raise.
+        # content as None - flattening must not raise.
         assert _content_as_text(None) == ""
 
     def test_list_content_joins_text_blocks(self):
@@ -132,7 +132,7 @@ class TestContentAsText:
 class TestMaybeCompactFourthMessage:
     """Regression: a multi-message conversation must not crash compaction when
     a prior assistant turn used native tool_calls (content == None). This was
-    the '4th message stops working' bug — on a small-context model the soft
+    the '4th message stops working' bug - on a small-context model the soft
     85% threshold is crossed after a few turns, and the older half being
     summarized contained a None-content assistant message, which raised
     TypeError: 'NoneType' object is not subscriptable and broke the request."""
@@ -185,7 +185,7 @@ class TestMaybeCompactFourthMessage:
             {"role": "assistant", "content": "reply 2"},
             {"role": "user", "content": "turn 3"},
             {"role": "assistant", "content": "reply 3"},
-            {"role": "user", "content": "turn 4 — previously broke here"},
+            {"role": "user", "content": "turn 4 - previously broke here"},
         ]
 
     def test_does_not_crash_on_none_content_turn(self):
@@ -257,7 +257,7 @@ async def test_deferred_compaction_persists_only_after_route_commit(monkeypatch)
 
 class TestResearchPrimerPreserved:
     """A research-spinoff primer (metadata research_spinoff_from) must never be
-    trimmed away — it is the Discuss chat's sole knowledge base (drift fix)."""
+    trimmed away - it is the Discuss chat's sole knowledge base (drift fix)."""
 
     def _messages(self):
         return [

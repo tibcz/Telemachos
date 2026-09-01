@@ -1,5 +1,5 @@
 /**
- * Editor state store — a single mutable object that the gallery editor
+ * Editor state store - a single mutable object that the gallery editor
  * and its tool modules read and write directly.
  *
  * Migration: galleryEditor.js used to own ~110 module-scope `let`
@@ -11,7 +11,7 @@
  *
  * Slices land here one tool at a time; this file grows as more state
  * migrates out of galleryEditor.js. Defaults match the legacy
- * module-scope initializers verbatim — every `state.foo = …` reset
+ * module-scope initializers verbatim - every `state.foo = …` reset
  * site in galleryEditor.js still works unchanged.
  */
 export const state = {
@@ -46,7 +46,7 @@ export const state = {
   transformStartY: 0,
   transformStartOffX: 0,
   transformStartOffY: 0,
-  // Transform overlay canvas — separate canvas positioned over the
+  // Transform overlay canvas - separate canvas positioned over the
   // main canvas with extra slack for handle rendering. Created by
   // _buildEditor; the move/transform tools draw their handle layer
   // onto its 2D context.
@@ -65,7 +65,7 @@ export const state = {
   wandMode: 'replace',
   wandLiveRetune: false,
   wandLastSeed: null,
-  // Cached layer pixel data (getImageData is O(pixels) — expensive for
+  // Cached layer pixel data (getImageData is O(pixels) - expensive for
   // 4K layers; invalidated when the active layer changes).
   wandSrcCache: null,
 
@@ -76,7 +76,7 @@ export const state = {
   // Brush diameter in canvas pixels. Persisted across tool switches;
   // bumped to a mask-friendly default on first inpaint entry.
   brushSize: 8,
-  // Per-tool stroke modifiers — opacity + flow + softness. Each tool
+  // Per-tool stroke modifiers - opacity + flow + softness. Each tool
   // owns its own row so users can dial them in independently.
   brushOpacity: 100,
   brushFlow: 100,
@@ -88,7 +88,7 @@ export const state = {
   cloneFlow: 100,
   cloneSoftness: 100,
   // Clone-stamp source point (set via Alt-click or double-tap). Null
-  // means no source picked yet — clicking with the clone tool no-ops
+  // means no source picked yet - clicking with the clone tool no-ops
   // until a source is set.
   cloneSourceX: null,
   cloneSourceY: null,
@@ -117,7 +117,7 @@ export const state = {
   // Reused canvas for the union-of-masks tint pass (saves repeated
   // allocation on every composite).
   compositeMaskUnion: null,
-  // Visual tint applied to mask pixels in the composite — purely
+  // Visual tint applied to mask pixels in the composite - purely
   // cosmetic; the AI model still sees a hard binary mask.
   maskTintColor: 'rgba(255, 110, 110, 1)',
   maskTintOpacity: 0.28,
@@ -128,13 +128,13 @@ export const state = {
   // First-entry guard: bump brush size to the mask-friendly default
   // the first time the user opens inpaint per session.
   inpaintBrushInitialised: false,
-  // Last successful inpaint result layer — drives the live edge
+  // Last successful inpaint result layer - drives the live edge
   // feather / stroke sliders (those only apply to the most recent
   // result).
   lastInpaintLayerId: null,
   // Captured handlers so we can detach them on close without leaking.
   inpaintDismissHandlers: null,
-  // Background-remove tool state — pristine snapshot so the edge
+  // Background-remove tool state - pristine snapshot so the edge
   // cleanup sliders can live-rebuild alpha without re-running rembg.
   rembgLiveLayer: null,
   rembgLiveSnap: null,
@@ -178,7 +178,7 @@ export const state = {
   lassoPoints: [],
   lassoActive: false,
 
-  // In-editor copy/paste — separate from the OS clipboard so we can
+  // In-editor copy/paste - separate from the OS clipboard so we can
   // round-trip layer alpha and metadata losslessly.
   internalClipboard: null,
 
@@ -193,7 +193,7 @@ export const state = {
   // ── Document + layers ──
   layers: [],
   activeLayerId: null,
-  // Active tool ID — one of move/crop/transform/brush/eraser/clone/
+  // Active tool ID - one of move/crop/transform/brush/eraser/clone/
   // lasso/wand/inpaint/rembg/harmonize/sharpen/upscale/style.
   tool: 'move',
   // Display zoom (1 = 100%). pan{X,Y} translate the canvas inside the
@@ -211,7 +211,7 @@ export const state = {
   // same format (JPEG vs PNG matters: JPEG cuts upload size 5-10× for
   // camera photos over remote tunnels).
   originalExt: 'png',
-  // True between openEditor / closeEditor — guards async callbacks
+  // True between openEditor / closeEditor - guards async callbacks
   // that fire after the user closes the editor (don't draw onto a
   // dead canvas, don't re-mount the spinner).
   editorOpen: false,
@@ -225,7 +225,7 @@ export const state = {
   redoStack: [],
 
   // ── Layer offsets + id allocation ──
-  // Map<layerId, {x, y}> — kept in a Map so we can serialise it
+  // Map<layerId, {x, y}> - kept in a Map so we can serialise it
   // separately from the layer's own canvas. Mutated in place.
   layerOffsets: new Map(),
   nextLayerId: 1,
@@ -251,7 +251,7 @@ export const state = {
   persistTimer: null,
   // Current PUT/POST promise so concurrent saves can chain.
   persistInFlight: null,
-  // True when an edit happened during an in-flight save — triggers a
+  // True when an edit happened during an in-flight save - triggers a
   // follow-up persist after the current one finishes.
   persistDirty: false,
 };

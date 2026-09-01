@@ -79,7 +79,7 @@ async def test_batch_events_with_flat_strings():
 
 
 async def test_batch_events_partial_failure():
-    """Batch with some valid and some invalid events — should surface both counts and first error."""
+    """Batch with some valid and some invalid events - should surface both counts and first error."""
     from src.tool_implementations import do_manage_calendar
 
     owner = "tester-" + uuid.uuid4().hex[:6]
@@ -92,7 +92,7 @@ async def test_batch_events_partial_failure():
             },
             {
                 "summary": "Invalid Event",
-                # Missing required dtstart — will fail
+                # Missing required dtstart - will fail
             },
             {
                 "summary": "Valid Event 2",

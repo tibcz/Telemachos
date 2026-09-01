@@ -271,7 +271,7 @@ export async function uploadPending(opts = {}) {
   if (pendingFiles.length === 0) return [];
   _lastUploadCancelled = false;
 
-  // The message bubble is shown immediately, but the upload can take a moment —
+  // The message bubble is shown immediately, but the upload can take a moment -
   // dim the chips and overlay a whirlpool so it's clear the files are still
   // being sent (and aren't stuck). Cleared in the finally below.
   const strip = document.getElementById('attach-strip');
@@ -348,7 +348,7 @@ export async function uploadPending(opts = {}) {
     _uploadSpinners = [];
     if (strip) strip.classList.remove('attach-uploading');
     // Re-render: empty on success (chips gone), or restored on error so the
-    // user can retry — and either way the spinners are removed.
+    // user can retry - and either way the spinners are removed.
     renderAttachStrip();
   }
 }

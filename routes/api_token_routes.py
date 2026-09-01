@@ -1,4 +1,4 @@
-"""API Token management routes — /api/tokens/*."""
+"""API Token management routes - /api/tokens/*."""
 
 import secrets
 import uuid
@@ -172,7 +172,7 @@ def setup_api_token_routes() -> APIRouter:
                 token.name = payload["name"].strip()[:MAX_NAME_LEN]
             # Only touch scopes when the caller actually sent them. A partial
             # update such as a rename ({"name": ...} with no "scopes" key) must
-            # not silently reset the token to the default scope — that dropped
+            # not silently reset the token to the default scope - that dropped
             # every previously granted scope.
             if "scopes" in payload:
                 token.scopes = ",".join(_normalize_scopes(payload.get("scopes")))

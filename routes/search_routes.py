@@ -1,4 +1,4 @@
-"""Backward-compat shim — canonical location is routes/search/search_routes.py.
+"""Backward-compat shim - canonical location is routes/search/search_routes.py.
 
 This module is replaced in ``sys.modules`` by the canonical module object so
 that ``import routes.search_routes`` and ``from routes.search_routes import X``

@@ -1,4 +1,4 @@
-"""Tests for ntfy_health — probe logic, status classification, and sanitization."""
+"""Tests for ntfy_health - probe logic, status classification, and sanitization."""
 import types
 
 import pytest

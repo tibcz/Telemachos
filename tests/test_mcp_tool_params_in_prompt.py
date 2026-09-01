@@ -1,4 +1,4 @@
-"""Regression for issue #2509 — MCP tools must expose their input parameters.
+"""Regression for issue #2509 - MCP tools must expose their input parameters.
 
 ``McpManager.get_tool_descriptions_for_prompt()`` previously emitted only
 ``- name: description`` per MCP tool, so agents (notably on the fenced-block

@@ -65,7 +65,7 @@ _ORIG_RE = re.compile(
     re.IGNORECASE,
 )
 _WROTE_LINE_RE = re.compile(rf"^\s*On\s.+?\s{_WROTE}\s*:\s*$", re.IGNORECASE | re.MULTILINE)
-# CJK-style attribution lines — Japanese Gmail / Yahoo Mail JP / etc.
+# CJK-style attribution lines - Japanese Gmail / Yahoo Mail JP / etc.
 # Examples (all valid):
 #   2026年5月11日(月) 21:28 <alice@example.com>:
 #   2026年5月11日 21:28 alice@example.com:
@@ -194,7 +194,7 @@ def _strip_mashed_header(text: str) -> str:
 
 def _normalize_body(text: str) -> str:
     """Strip noise that mail clients (mostly Outlook) inject into the
-    plaintext body but that adds no signal — duplicate <mailto:> link
+    plaintext body but that adds no signal - duplicate <mailto:> link
     decorations, bracketed-URL annotations, repeated blank lines, and
     the mashed conversation-header at the top."""
     if not text:
@@ -202,7 +202,7 @@ def _normalize_body(text: str) -> str:
     text = _strip_mashed_header(text)
     # Outlook appends `<mailto:foo@bar>` after every email address it
     # finds, and `<https://...>` after every URL. Both are duplicate
-    # noise — they show the same target as the visible text. Drop them.
+    # noise - they show the same target as the visible text. Drop them.
     text = re.sub(r"<mailto:[^<>\s]*>", "", text, flags=re.IGNORECASE)
     text = re.sub(r"<https?://[^<>\s]*>", "", text, flags=re.IGNORECASE)
     # Trim trailing whitespace (incl. NBSP / form-feed / tab) so blank
@@ -236,7 +236,7 @@ def _outlook_header_block_end(stripped: list[str], levels: list[int], start: int
             found_sent = True
             break
         if not re.match(rf"^{_HDR_KEYS}\s*:", nl, re.IGNORECASE):
-            return start  # something other than a header key — abort
+            return start  # something other than a header key - abort
         j += 1
     if not found_sent:
         return start
@@ -351,7 +351,7 @@ def _parse_plaintext(text: str) -> list[dict[str, Any]] | None:
             meta_text = "\n".join(stripped_lines[i:attrib_end])
 
             # "-----Original Message-----" is almost always immediately
-            # followed by an Outlook From:/Sent: header — fold that into
+            # followed by an Outlook From:/Sent: header - fold that into
             # the SAME attribution event so we don't double-bump.
             if is_orig:
                 j = attrib_end
@@ -364,7 +364,7 @@ def _parse_plaintext(text: str) -> list[dict[str, Any]] | None:
                         attrib_end = oe2
 
             # If the next content line lives at a deeper > base, the
-            # upcoming `>` increase will be the depth step — suppress
+            # upcoming `>` increase will be the depth step - suppress
             # our own bump so we don't double up. Otherwise, this
             # attribution IS the step.
             next_base = lookahead_content_base(attrib_end)

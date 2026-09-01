@@ -1,5 +1,5 @@
 /**
- * History-panel subsystem — the floating frosted list of labeled
+ * History-panel subsystem - the floating frosted list of labeled
  * undo/redo entries that hangs off the topbar History button.
  *
  * Same docking pattern as the FX adjustment popups: drag the head to
@@ -142,7 +142,7 @@ export function createHistoryPanel({ undo, redo }) {
     if (!state.historyPanelEl) return;
     const list = state.historyPanelEl.querySelector('#ge-history-list');
     if (!list) return;
-    // Chronological order — oldest at top, latest at bottom. Past
+    // Chronological order - oldest at top, latest at bottom. Past
     // (undo) states first, then Current, then future (redo) states.
     const rows = [];
     for (let i = 0; i < state.undoStack.length; i++) {

@@ -2,7 +2,7 @@
 
 The digest query selected CalendarEvent with no owner scope, so a scheduled
 check-in for one user pulled EVERY user's calendar events (summaries,
-locations) into their digest — a cross-tenant leak. Ownership lives on
+locations) into their digest - a cross-tenant leak. Ownership lives on
 CalendarCal.owner; the query must join it, like routes/calendar_routes.
 """
 import tempfile

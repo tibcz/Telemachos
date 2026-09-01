@@ -15,7 +15,7 @@ from typing import Optional
 
 logger = logging.getLogger(__name__)
 
-# Session manager reference — set by app.py after initialization
+# Session manager reference - set by app.py after initialization
 _session_manager = None
 
 

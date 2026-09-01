@@ -3,8 +3,8 @@ holds a non-numeric string (e.g. {"agent_max_tool_calls": "unlimited"}).
 
 The HTTP admin endpoint validates/clamps this value, but a hand-edited or
 agent-written data/settings.json bypasses that. The read sits inside the agent
-streaming try-block whose only handler catches (CancelledError, GeneratorExit) —
-NOT ValueError — so an unguarded int() would propagate and break the SSE stream.
+streaming try-block whose only handler catches (CancelledError, GeneratorExit) -
+NOT ValueError - so an unguarded int() would propagate and break the SSE stream.
 It must be guarded like the agent_max_rounds read four lines below.
 """
 import ast
@@ -27,7 +27,7 @@ def _tool_budget_read_is_guarded(source: str) -> bool:
     for try_node in ast.walk(chat_stream):
         if not isinstance(try_node, ast.Try):
             continue
-        # Only the immediate try body — not nested trys — should own the assignment.
+        # Only the immediate try body - not nested trys - should own the assignment.
         assigns_budget = any(
             isinstance(t, ast.Name) and t.id == "_tool_budget"
             for stmt in try_node.body if isinstance(stmt, ast.Assign)

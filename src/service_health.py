@@ -2,7 +2,7 @@
 
 ROADMAP: "Better degraded-state reporting for ChromaDB, SearXNG, email, ntfy,
 and provider probes." There was no single readout of which subsystems are
-actually working — `/api/health` is only a liveness ping and each subsystem's
+actually working - `/api/health` is only a liveness ping and each subsystem's
 signal lives in a different module. This collects them into one uniform,
 *non-intrusive* report (no test push is sent, no real search is run), so the
 admin endpoint built on top of it is safe to poll.
@@ -12,10 +12,10 @@ Each probe returns:
     {"name": str, "status": "ok"|"degraded"|"down"|"disabled",
      "detail": str, "meta": dict}
 
-- ok        — reachable / working
-- degraded  — partially working (one of several components down)
-- down      — configured & enabled but unreachable / erroring
-- disabled  — not configured or turned off (not counted as a failure)
+- ok        - reachable / working
+- degraded  - partially working (one of several components down)
+- down      - configured & enabled but unreachable / erroring
+- disabled  - not configured or turned off (not counted as a failure)
 
 Design notes (driven by review feedback):
 
@@ -47,7 +47,7 @@ from urllib.parse import urlparse
 
 logger = logging.getLogger(__name__)
 
-# Status ordering for rolling up an overall verdict. "disabled" is excluded —
+# Status ordering for rolling up an overall verdict. "disabled" is excluded -
 # a turned-off feature must never drag the overall status down.
 _SEVERITY = {"ok": 0, "degraded": 1, "down": 2}
 
@@ -110,7 +110,7 @@ def _safe_url(url: Optional[str]) -> str:
 def _classify_error(exc: BaseException) -> str:
     """Map an exception to a controlled, secret-free category token.
 
-    Never returns `str(exc)` — httpx/imaplib exception text can embed the target
+    Never returns `str(exc)` - httpx/imaplib exception text can embed the target
     URL (which may carry credentials) or server-supplied detail.
     """
     if isinstance(exc, (asyncio.TimeoutError, concurrent.futures.TimeoutError,
@@ -158,7 +158,7 @@ def _bounded_map(items: List[Any], worker: Callable[[int, Any], Dict[str, Any]],
     `worker` must catch its own exceptions and return a per-item dict. Any item
     not finished within `budget` seconds *in total* is left as ``None`` (the
     caller substitutes a controlled `timeout` entry). The pool is shut down with
-    ``wait=False`` so stragglers never block the response — their own per-op
+    ``wait=False`` so stragglers never block the response - their own per-op
     timeout reaps them shortly after.
     """
     n = len(items)
@@ -270,7 +270,7 @@ def ntfy_health(integrations: List[Dict[str, Any]], settings: Dict[str, Any],
                 *, http_get: Callable = _http_get) -> Dict[str, Any]:
     """Non-intrusive ntfy probe via the server's built-in `/v1/health` route.
 
-    No test notification is POSTed — `/v1/health` returns `{"healthy":true}`
+    No test notification is POSTed - `/v1/health` returns `{"healthy":true}`
     without publishing to a topic. The request keeps whatever credentials the
     configured base_url carries, but `meta.base` is sanitized.
     """
@@ -306,7 +306,7 @@ def email_health(accounts: List[Dict[str, Any]],
 
     All connect → ok. Some fail → degraded. All fail → down. No account
     configured → disabled. Bounded by `_FANOUT_BUDGET` regardless of count.
-    `meta` carries only the account label and a controlled error category —
+    `meta` carries only the account label and a controlled error category -
     never credentials or raw exception text.
     """
     if not accounts:
@@ -350,7 +350,7 @@ def providers_health(endpoints: List[Dict[str, Any]],
     `endpoints` is a list of plain dicts ({name, base_url, api_key}) so this
     stays decoupled from the ORM and trivially testable. Non-empty model list
     → reachable. Bounded by `_FANOUT_BUDGET` regardless of count. `meta` never
-    contains api_key or raw URLs — only a display name (or a sanitized URL when
+    contains api_key or raw URLs - only a display name (or a sanitized URL when
     no name is set) and a controlled error category.
     """
     if not endpoints:
@@ -492,7 +492,7 @@ async def collect_service_health(rag_manager: Any = None,
         results = await asyncio.wait_for(asyncio.gather(*coros),
                                          timeout=_AGGREGATE_DEADLINE)
     except asyncio.TimeoutError:
-        # Hard backstop — should not normally fire given per-subsystem deadlines.
+        # Hard backstop - should not normally fire given per-subsystem deadlines.
         results = [_svc(n, DOWN, _detail_for("timeout"), error="timeout")
                    for n in names]
 

@@ -1,4 +1,4 @@
-"""Tests for the RateLimiter — pure in-memory, no server needed."""
+"""Tests for the RateLimiter - pure in-memory, no server needed."""
 import time
 import pytest
 

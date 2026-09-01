@@ -1,4 +1,4 @@
-"""Tests for endpoint_resolver — request header construction."""
+"""Tests for endpoint_resolver - request header construction."""
 from src.endpoint_resolver import build_headers
 
 

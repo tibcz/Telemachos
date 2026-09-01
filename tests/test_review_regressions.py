@@ -739,7 +739,7 @@ async def test_public_agent_policy_blocks_sensitive_tools(monkeypatch):
 async def test_disabled_qualified_email_tool_blocks_bare_alias(monkeypatch):
     """A bare email fence is an alias for its mcp__email__ form. Plan mode and
     the MCP settings toggle write the QUALIFIED name into disabled_tools, so
-    the gate must block the bare spelling too — and never reach the MCP
+    the gate must block the bare spelling too - and never reach the MCP
     manager (PR #3681 review follow-up)."""
     import src.tool_execution as tool_execution
     from src.tool_execution import execute_tool_block
@@ -793,7 +793,7 @@ async def test_tool_policy_qualified_email_block_covers_bare_alias(monkeypatch):
 @pytest.mark.asyncio
 async def test_disable_tool_email_covers_full_builtin_set(monkeypatch):
     """The friendly `disable_tool email` toggle must cover every built-in
-    email tool, in BOTH spellings — bare names (function-schema hiding,
+    email tool, in BOTH spellings - bare names (function-schema hiding,
     bare-fence dispatch) and mcp__email__* (MCP schema hiding, runtime
     qualified blocks). Hand-picking a subset left tools like delete_email
     and download_attachment enabled (PR #3681 review follow-up)."""
@@ -874,7 +874,7 @@ class _FakeMcpManager:
 @pytest.mark.asyncio
 async def test_bare_email_dispatch_rejects_non_object_json_args(monkeypatch):
     """The fence parser accepts JSON arrays as inline args, but email tools
-    take objects — a correctable error must come back instead of a silent
+    take objects - a correctable error must come back instead of a silent
     empty-args call (same class as #3966)."""
     _install_admin_auth_stub(monkeypatch)
     import src.tool_execution as tool_execution
@@ -897,7 +897,7 @@ async def test_bare_email_dispatch_rejects_non_object_json_args(monkeypatch):
 async def test_bare_email_dispatch_rejects_invalid_json_body(monkeypatch):
     """The classic tag/body form reaches execution unvalidated (only INLINE
     args are JSON-checked by the parser). A non-JSON-object body must return a
-    correctable parse error — silently becoming {} args would read the DEFAULT
+    correctable parse error - silently becoming {} args would read the DEFAULT
     mailbox instead of the one the model meant. Covers both the brace-looking
     `{account: "work"}` and the bare `account: work` shapes."""
     _install_admin_auth_stub(monkeypatch)
@@ -938,7 +938,7 @@ async def test_legacy_mcp_tools_decode_inline_json_args(monkeypatch):
 
     # Freeform (non-JSON) content keeps the line-based behavior.
     assert _build_mcp_args("web_search", "latest python release") == {"query": "latest python release"}
-    # A JSON object WITHOUT the tool's primary key is not args — fall back
+    # A JSON object WITHOUT the tool's primary key is not args - fall back
     # (write_file content the model happened to write as a bare object).
     assert _build_mcp_args("write_file", '{"config": "value"}') == {
         "path": '{"config": "value"}', "content": "",
@@ -949,7 +949,7 @@ def test_mcp_json_primary_keys_are_all_live():
     """Every _MCP_JSON_PRIMARY_KEYS entry must be reachable: _build_mcp_args is
     only called from _call_mcp_tool, which only runs for _MCP_TOOL_MAP tools.
     An entry outside _MCP_TOOL_MAP is dead code whose inline-JSON decode never
-    executes — manage_memory was exactly that (it routes through
+    executes - manage_memory was exactly that (it routes through
     dispatch_ai_tool), and a unit test on _build_mcp_args passed on the dead
     path while the real call still corrupted. This pins it so it can't recur."""
     from src.tool_execution import _MCP_JSON_PRIMARY_KEYS, _MCP_TOOL_MAP
@@ -965,7 +965,7 @@ async def test_write_file_inline_json_args(monkeypatch):
     by the handler itself: drive the LIVE path (execute_tool_block, no MCP) and
     assert the file is written to the intended path with the intended content,
     not a file literally named with the JSON blob. A _build_mcp_args unit test
-    can't catch this — it's on the dead MCP path for write_file."""
+    can't catch this - it's on the dead MCP path for write_file."""
     import src.tool_execution as tool_execution
     from src.tool_execution import execute_tool_block
 
@@ -995,7 +995,7 @@ async def test_write_file_inline_json_args(monkeypatch):
 @pytest.mark.asyncio
 async def test_plan_mode_blocks_mutating_email_aliases_without_mcp_inventory(monkeypatch):
     """Plan-mode safety for bare email aliases must hold from the STATIC
-    partition alone — no MCP read-only inventory involved: mutators (the
+    partition alone - no MCP read-only inventory involved: mutators (the
     draft/download tools included) are blocked before dispatch, while the
     explicitly read-only search_emails goes through."""
     _install_admin_auth_stub(monkeypatch)
@@ -1045,7 +1045,7 @@ async def test_plan_mode_blocks_mutating_email_aliases_without_mcp_inventory(mon
 @pytest.mark.asyncio
 async def test_bare_email_dispatch_empty_content_calls_with_empty_args(monkeypatch):
     """An empty fence (```list_email_accounts``` with no body) dispatches with
-    {} args — the no-arg call shape local models really emit."""
+    {} args - the no-arg call shape local models really emit."""
     _install_admin_auth_stub(monkeypatch)
     import src.tool_execution as tool_execution
     from src.tool_execution import execute_tool_block
@@ -1169,7 +1169,7 @@ def test_public_agent_policy_hides_sensitive_tools(monkeypatch):
 def test_presetup_does_not_grant_admin_tools_when_auth_enabled(monkeypatch):
     """Pre-setup window: auth is enabled but no admin user exists yet.
 
-    This must NOT be treated as single-user/admin at the tool layer — the
+    This must NOT be treated as single-user/admin at the tool layer - the
     server-execution tools (bash/python) stay blocked as defense-in-depth so
     an unauthenticated caller that slips past the auth middleware (e.g. via a
     loopback bypass) can't reach an RCE before setup completes.
@@ -1198,7 +1198,7 @@ def test_presetup_does_not_grant_admin_tools_when_auth_enabled(monkeypatch):
 
 def test_single_user_mode_keeps_full_tool_access_when_auth_disabled(monkeypatch):
     """Intentional single-user mode (AUTH_ENABLED=false) keeps full tool
-    access even with no admin user — this is the default local/self-host UX
+    access even with no admin user - this is the default local/self-host UX
     and must not regress."""
     monkeypatch.setenv("AUTH_ENABLED", "false")
     auth_mod = _install_core_auth_stub(monkeypatch)

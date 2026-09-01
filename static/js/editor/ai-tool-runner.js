@@ -1,6 +1,6 @@
 /**
  * Shared AI-tool runner. Used by Sharpen / Harmonize / Upscale / Style /
- * Bg-Remove / etc. — every tool that flattens the document, POSTs the
+ * Bg-Remove / etc. - every tool that flattens the document, POSTs the
  * PNG to a server-side image endpoint, and drops the result back in
  * as a new layer.
  *
@@ -64,7 +64,7 @@ export function createApplyImageTool({
       btn.appendChild(txt);
       btnSpinner.start();
     } catch { btn.textContent = busyLabel; }
-    // Tool-specific model picker — pulled from the per-tool select
+    // Tool-specific model picker - pulled from the per-tool select
     // (harmonize/style) if available, otherwise the global
     // fallback. Derived from the endpoint URL.
     if (!extraPayload._endpoint) {

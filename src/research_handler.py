@@ -45,9 +45,9 @@ def _format_probe_failure(model: str, exc: Exception) -> str:
         return f"Model '{model}' probe failed: {err}"
 
     if err:
-        return f"Cannot reach model '{model}' — {err}"
+        return f"Cannot reach model '{model}' - {err}"
 
-    return f"Cannot reach model '{model}' — check that the endpoint is running and accessible."
+    return f"Cannot reach model '{model}' - check that the endpoint is running and accessible."
 
 
 def _research_json_path(session_id: str) -> Optional[Path]:
@@ -79,7 +79,7 @@ class ResearchHandler:
             self._legacy_engine = ResearchOrchestrator(config)
             logger.info("Legacy ResearchOrchestrator initialized (fallback)")
         except ImportError:
-            logger.info("Legacy research_engine.py not found — DeepResearcher only")
+            logger.info("Legacy research_engine.py not found - DeepResearcher only")
             self._legacy_engine = None
         except Exception as e:
             logger.warning(f"Legacy research engine init failed: {e}")
@@ -103,7 +103,7 @@ class ResearchHandler:
         history = getattr(sess, 'history', [])
 
         # A bare affirmation ("yes", "ok", "go ahead") is the user accepting the
-        # clarifying-question round, NOT a research topic — researching the word
+        # clarifying-question round, NOT a research topic - researching the word
         # "yes" is the classic failure here. When synthesis can't run or fails,
         # fall back to the earliest substantive user message (the original ask)
         # rather than the literal follow-up.
@@ -153,7 +153,7 @@ class ResearchHandler:
                 messages=[{"role": "user", "content":
                     "Read this conversation and write a single, specific research query that captures "
                     "what the user wants to know. Include all relevant context, constraints, and preferences "
-                    "they mentioned. Output ONLY the research query — nothing else.\n\n"
+                    "they mentioned. Output ONLY the research query - nothing else.\n\n"
                     f"Conversation:\n{convo}"
                 }],
                 temperature=0.1,
@@ -218,7 +218,7 @@ class ResearchHandler:
             return None
 
     # ------------------------------------------------------------------
-    # Task registry — background research with persistence
+    # Task registry - background research with persistence
     # ------------------------------------------------------------------
 
     def rename_owner(self, old_owner: str, new_owner: str) -> int:
@@ -321,7 +321,7 @@ class ResearchHandler:
                 on_complete(*args, **kwargs)
 
         async def _run():
-            # Hard wall-clock timeout — saves partial results if an LLM call hangs
+            # Hard wall-clock timeout - saves partial results if an LLM call hangs
             # hard_timeout passed from start_research()
             try:
                 result = await asyncio.wait_for(
@@ -395,7 +395,7 @@ class ResearchHandler:
                         _guarded_complete(session_id, entry["result"], sources, findings)
                     except Exception as cb_err:
                         logger.warning(f"on_complete callback failed in error branch: {cb_err}")
-                    on_progress({"phase": "warning", "message": f"Research finished with errors — partial results saved ({_elapsed:.0f}s elapsed)"})
+                    on_progress({"phase": "warning", "message": f"Research finished with errors - partial results saved ({_elapsed:.0f}s elapsed)"})
                 else:
                     entry["result"] = str(e)
                     entry["status"] = "error"
@@ -899,7 +899,7 @@ class ResearchHandler:
     def _format_research_report(
         self, query: str, full_report: str, stats: dict, elapsed: float,
     ) -> str:
-        """Format research report (markdown only — sources/findings handled by frontend)."""
+        """Format research report (markdown only - sources/findings handled by frontend)."""
         full_report = strip_thinking(full_report)
         summary_lines = [
             f"**Duration:** {elapsed:.1f}s",

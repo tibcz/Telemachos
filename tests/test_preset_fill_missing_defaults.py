@@ -3,9 +3,9 @@ presets that are missing get filled in, WITHOUT clobbering user edits.
 
 This extends the adjacent legacy `custom`-shape migration in
 `PresetManager.load`, which already repairs forward-incompatible files and
-re-saves them. A missing built-in is never an intentional user action — there
+re-saves them. A missing built-in is never an intentional user action - there
 is no delete path for the built-in keys (only `user_templates` entries can be
-deleted), and presets are hidden via an `enabled: False` flag, not removal — so
+deleted), and presets are hidden via an `enabled: False` flag, not removal - so
 filling them back in is safe.
 """
 import json

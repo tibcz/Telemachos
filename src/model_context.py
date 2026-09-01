@@ -108,7 +108,7 @@ REQUEST_TIMEOUT = 5
 
 # Known context windows for major API models (used as fallback when /models
 # endpoint doesn't report context_length).
-# Substring matching — use the shortest unique prefix so variants get caught.
+# Substring matching - use the shortest unique prefix so variants get caught.
 KNOWN_CONTEXT_WINDOWS = {
     # --- Anthropic ---
     'claude-sonnet-4-5': 200000,
@@ -275,7 +275,7 @@ def get_context_length_known(endpoint_url: str, model: str) -> Tuple[int, bool]:
     """Like ``get_context_length`` but also returns whether the window was actually
     discovered (endpoint-reported or in the known-models table) rather than the bare
     DEFAULT_CONTEXT fallback. Callers that *scale* a budget off the window must not
-    trust an unknown value — a fallback 128K isn't proof the model holds 128K
+    trust an unknown value - a fallback 128K isn't proof the model holds 128K
     (review on #4122)."""
     return _get_context_length_cached(endpoint_url, model)
 
@@ -285,7 +285,7 @@ def budget_context_for_model(endpoint_url: str, model: str, *, fallback: int = 0
 
     Returns the *freshly discovered* window when it was actually proven
     (endpoint-reported / known table), else 0 so auto-scaling stays conservative.
-    Crucially this binds the ``known`` flag to the value it proves — callers must
+    Crucially this binds the ``known`` flag to the value it proves - callers must
     not pair this flag with a context length from a *different* lookup (a stale
     local re-query, or a caller that didn't pass one), which would budget off an
     unproven number (review on #4122). On probe error, returns ``fallback`` (the
@@ -409,7 +409,7 @@ def _query_context_length(endpoint_url: str, model: str) -> Tuple[int, bool]:
             return known, True
         # Not in the known table: read the real window from the catalog (cached
         # once per endpoint) instead of capping every unknown model at the
-        # default — that under-reported large windows on aggregators like
+        # default - that under-reported large windows on aggregators like
         # OpenRouter (issue #4886).
         api_ctx = _proxy_catalog_context(endpoint_url, model)
         if api_ctx:
@@ -417,7 +417,7 @@ def _query_context_length(endpoint_url: str, model: str) -> Tuple[int, bool]:
             return api_ctx, True
         return DEFAULT_CONTEXT, False
 
-    # Try llama.cpp /slots endpoint first — reports actual serving context
+    # Try llama.cpp /slots endpoint first - reports actual serving context
     if is_local_endpoint(endpoint_url):
         try:
             base = endpoint_url.split("/v1")[0] if "/v1" in endpoint_url else endpoint_url.rsplit("/", 1)[0]
@@ -465,7 +465,7 @@ def _query_context_length(endpoint_url: str, model: str) -> Tuple[int, bool]:
     if api_ctx and known:
         _is_local = is_local_endpoint(endpoint_url)
         if _is_local and api_ctx < known:
-            logger.info(f"Local endpoint reports {api_ctx} for {model} (known max: {known}) — using API value")
+            logger.info(f"Local endpoint reports {api_ctx} for {model} (known max: {known}) - using API value")
             return api_ctx, True
         result = max(api_ctx, known)
         if api_ctx < known:
@@ -486,7 +486,7 @@ def estimate_tokens(messages: List[Dict]) -> int:
     Uses chars * 0.3 which is closer to real BPE tokenizer output
     than the commonly-cited chars/4 (which underestimates by ~20-30%).
     Also adds ~4 tokens per message for role/formatting overhead, and counts
-    assistant tool_calls (name + arguments) — a tool-only turn carries
+    assistant tool_calls (name + arguments) - a tool-only turn carries
     content=None with the real payload in tool_calls, so ignoring them made the
     estimate (and the compaction/trim gates that rely on it) blind to large
     tool arguments.

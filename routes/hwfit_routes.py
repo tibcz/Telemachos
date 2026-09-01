@@ -27,14 +27,14 @@ def _validate_detection_target(host: str = "", ssh_port: str = "") -> tuple[str,
 
 
 def _apply_manual_hardware(system, manual_mode="", manual_gpu_count="", manual_vram_gb="", manual_ram_gb="", manual_backend=""):
-    """Manual hardware is a "what if I had this setup" simulator —
+    """Manual hardware is a "what if I had this setup" simulator -
     REPLACES the detected hardware entirely instead of adding to it.
 
     The previous additive behavior averaged the manual VRAM across
     all GPUs (base + manual), which meant adding "1× 400 GB" on top
     of "2× 70 GB" only nudged the per-GPU cap from 70 to 180 GB
     (= 540 / 3), so GGUF models bigger than that still didn't surface
-    — exactly the "cap stuck at detected level" bug the user hit.
+    - exactly the "cap stuck at detected level" bug the user hit.
     """
     manual_mode = (manual_mode or "").lower()
     if manual_mode not in {"gpu", "ram"}:
@@ -53,7 +53,7 @@ def _apply_manual_hardware(system, manual_mode="", manual_gpu_count="", manual_v
     system["manual_hardware"] = True
 
     if manual_mode == "ram":
-        # RAM-only simulation — wipe GPU entirely so the ranker uses
+        # RAM-only simulation - wipe GPU entirely so the ranker uses
         # CPU/RAM paths.
         system["has_gpu"] = False
         system["gpu_name"] = None
@@ -88,7 +88,7 @@ def _apply_manual_hardware(system, manual_mode="", manual_gpu_count="", manual_v
         {"index": i, "name": gpu_name, "vram_gb": vram_each}
         for i in range(count)
     ]
-    # Single homogeneous pool — vram_each here is the ACTUAL per-GPU
+    # Single homogeneous pool - vram_each here is the ACTUAL per-GPU
     # VRAM the user entered, not an average. That's the whole point:
     # raising vram_each lifts the per-GPU cap (GGUF, tensor-parallel
     # math) all the way up, not just by a small fraction.
@@ -195,7 +195,7 @@ def setup_hwfit_routes():
         """Rank LLM models against detected hardware and return scored results.
         gpu_count: override GPU count (0 = CPU only, 1-N = simulate N GPUs of the
             active group). gpu_group: index into system.gpu_groups (the homogeneous
-            pools) to target — empty/auto = the largest pool. vLLM can only
+            pools) to target - empty/auto = the largest pool. vLLM can only
             tensor-parallel across identical GPUs, so we never mix pools.
         fresh=true bypasses the hardware-detection cache."""
         from services.hwfit.hardware import detect_system
@@ -238,7 +238,7 @@ def setup_hwfit_routes():
 
         groups = system.get("gpu_groups") or []
         # Resolve the target homogeneous pool. Default (auto) = the largest pool,
-        # which for a uniform box is simply "all the GPUs" — no behaviour change.
+        # which for a uniform box is simply "all the GPUs" - no behaviour change.
         grp = None
         if groups:
             try:
@@ -274,7 +274,7 @@ def setup_hwfit_routes():
                 _apply_group(grp, n)
                 system["gpu_only"] = True
             else:
-                # No per-GPU detail (older detection) — assume uniform split.
+                # No per-GPU detail (older detection) - assume uniform split.
                 single_vram = (system.get("gpu_vram_gb") or 0) / (system.get("gpu_count") or 1)
                 system["gpu_count"] = max(1, n)
                 system["gpu_vram_gb"] = round(single_vram * max(1, n), 1)

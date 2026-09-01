@@ -31,8 +31,8 @@ def serve_html_with_nonce(request: Request, file_path: str) -> HTMLResponse:
     """Read an app-bundled HTML page and inject the CSP nonce into inline <script> tags.
 
     Callers pass fixed, server-owned template paths (index/login/backgrounds),
-    never a client-supplied path. So any read failure here — a missing file
-    (broken deployment) or a permission/IO error — is a server fault, not a
+    never a client-supplied path. So any read failure here - a missing file
+    (broken deployment) or a permission/IO error - is a server fault, not a
     client "not found": map all of them to a logged 500 so a missing core
     template surfaces in 5xx alerting instead of hiding behind a 404. If a
     future caller serves a client-influenced path where 404 is correct, branch

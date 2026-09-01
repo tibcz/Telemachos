@@ -1,9 +1,9 @@
 /**
- * emojiPicker.js — Monochrome icon picker (no colored emojis).
+ * emojiPicker.js - Monochrome icon picker (no colored emojis).
  * Curated set of common icons as inline SVGs. The PICKER shows monochrome SVGs,
- * and — crucially — every character it INSERTS is one with a real monochrome
+ * and - crucially - every character it INSERTS is one with a real monochrome
  * (text) presentation. On insert we append U+FE0E (VARIATION SELECTOR-15) so the
- * glyph renders flat/text, not as a system color emoji — so the RECIPIENT of an
+ * glyph renders flat/text, not as a system color emoji - so the RECIPIENT of an
  * email/message sees a non-colored symbol too, not just the sender. Pure-emoji
  * faces (😂, 👍, 😎) have no text form and are intentionally excluded.
  */
@@ -14,7 +14,7 @@ import { topPortalZ } from './toolWindowZOrder.js';
 // SVG icons matching Lucide style (24x24 viewBox, 2 stroke)
 const I = (path) => `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`;
 
-// Text variation selector — appended to chars that might render as color emoji,
+// Text variation selector - appended to chars that might render as color emoji,
 // asks the browser to use text (monochrome) presentation if available.
 const VS15 = '\uFE0E';
 
@@ -24,7 +24,7 @@ const EMOJI_GROUPS = [
     // Only chars with a genuine monochrome (text) presentation. VS15 is appended
     // on insert (see _insertEmoji) so they render flat for the recipient too.
     // Pure-emoji faces (grin/cry/sunglasses/thumbs) have no text form, so they're
-    // omitted — there is no way to send them non-colored as plain text.
+    // omitted - there is no way to send them non-colored as plain text.
     items: [
       ['☻', 'grin', I('<circle cx="12" cy="12" r="10"/><path d="M7 14 C 7 18, 17 18, 17 14 Z"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>')],
       ['♡', 'heart-outline', I('<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>')],
@@ -82,7 +82,7 @@ const EMOJI_GROUPS = [
       ['¶', 'pilcrow', I('<path d="M16 4 H 9 a4 4 0 0 0 0 8 H 12 V 20"/><line x1="16" y1="4" x2="16" y2="20"/>')],
       ['•', 'bullet', I('<circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/>')],
       ['…', 'ellipsis', I('<circle cx="6" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="18" cy="12" r="1.5" fill="currentColor" stroke="none"/>')],
-      ['—', 'em-dash', I('<line x1="4" y1="12" x2="20" y2="12"/>')],
+      ['-', 'em-dash', I('<line x1="4" y1="12" x2="20" y2="12"/>')],
       ['«', 'quote-l', I('<polyline points="12 5 6 12 12 19"/><polyline points="18 5 12 12 18 19"/>')],
       ['»', 'quote-r', I('<polyline points="6 5 12 12 6 19"/><polyline points="12 5 18 12 12 19"/>')],
       ['"', 'quote-dbl', I('<line x1="8" y1="5" x2="8" y2="11"/><line x1="11" y1="5" x2="11" y2="11"/><line x1="13" y1="5" x2="13" y2="11"/><line x1="16" y1="5" x2="16" y2="11"/>')],
@@ -113,7 +113,7 @@ let _closeOnEscape = null;
 let _savedRange = null;
 
 // `target` may be a textarea element id (string) or a resolver function that
-// returns the live target element — the latter lets a caller switch between a
+// returns the live target element - the latter lets a caller switch between a
 // textarea and a contenteditable (e.g. plain markdown vs. WYSIWYG email).
 export function createEmojiButton(target) {
   const btn = document.createElement('button');
@@ -121,7 +121,7 @@ export function createEmojiButton(target) {
   btn.className = 'emoji-picker-btn';
   btn.title = 'Insert icon';
   btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>';
-  // Don't steal focus from the editor on press — keeps the caret/selection so
+  // Don't steal focus from the editor on press - keeps the caret/selection so
   // the emoji lands where the user was typing.
   btn.addEventListener('mousedown', (e) => e.preventDefault());
   btn.addEventListener('click', (e) => {
@@ -279,7 +279,7 @@ function _insertEmoji(char) {
   // not just in our own (already-SVG) picker UI.
   const cp = char.codePointAt(0);
   const ins = cp >= 0x80 ? char + VS15 : char;
-  // Contenteditable (e.g. WYSIWYG email body) — insert at the saved caret.
+  // Contenteditable (e.g. WYSIWYG email body) - insert at the saved caret.
   if (_targetEl.isContentEditable) {
     _targetEl.focus();
     let range = _savedRange;

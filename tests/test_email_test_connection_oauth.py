@@ -7,7 +7,7 @@ Covers the changes made to routes/email_routes.py:
 - Password accounts must still use conn.login() / smtp.login().
 
 These tests use only in-memory SQLite (via SQLAlchemy) and mock network
-objects — no live email server or real OAuth credentials are needed.
+objects - no live email server or real OAuth credentials are needed.
 """
 
 import time

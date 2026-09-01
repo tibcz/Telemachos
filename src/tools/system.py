@@ -26,20 +26,20 @@ async def do_manage_skills(content: str, owner: Optional[str] = None) -> Dict:
 
     SKILL.md-backed CRUD with progressive disclosure (Hermes-style). Actions:
 
-      list / index               — Level 0: name + description summary.
-      view {name}                — Level 1: full SKILL.md.
-      view_ref {name, path}      — Level 2: a sub-file under the skill dir.
+      list / index               - Level 0: name + description summary.
+      view {name}                - Level 1: full SKILL.md.
+      view_ref {name, path}      - Level 2: a sub-file under the skill dir.
       add  {name, description, when_to_use, procedure[], pitfalls[],
             verification[], tags[], category, status}
-                                 — Create a new skill (draft by default).
+                                 - Create a new skill (draft by default).
       patch {name, old_string, new_string}
-                                 — Token-efficient surgical edit on the
+                                 - Token-efficient surgical edit on the
                                    raw SKILL.md text. Fails on ambiguous
                                    `old_string` (multiple matches).
-      edit  {name, content}      — Replace the entire SKILL.md.
-      publish {name}             — Flip status: draft -> published.
-      delete {name}              — Remove the skill directory.
-      search {query}             — Relevance match on published skills.
+      edit  {name, content}      - Replace the entire SKILL.md.
+      publish {name}             - Flip status: draft -> published.
+      delete {name}              - Remove the skill directory.
+      search {query}             - Relevance match on published skills.
     """
     try:
         args = _parse_tool_args(content)
@@ -104,7 +104,7 @@ async def do_manage_skills(content: str, owner: Optional[str] = None) -> Dict:
             proc = args.get("steps") or []
         if not proc and not args.get("body_extra") and not args.get("solution"):
             return {"error": "procedure (or solution body) is required", "exit_code": 1}
-        # Same auto-publish gate as the extractor path — when the user
+        # Same auto-publish gate as the extractor path - when the user
         # has auto_approve_skills on and the caller didn't pin an explicit
         # status, publish immediately. Audit later demotes/removes on fail.
         _status_arg = args.get("status")
@@ -141,7 +141,7 @@ async def do_manage_skills(content: str, owner: Optional[str] = None) -> Dict:
         )
         if entry.get("_deduped"):
             return {"results": (
-                f"A near-identical skill already exists: `{entry['name']}` — not creating "
+                f"A near-identical skill already exists: `{entry['name']}` - not creating "
                 f"a duplicate. View or edit it with action='view', name='{entry['name']}'."
             )}
         try:
@@ -155,7 +155,7 @@ async def do_manage_skills(content: str, owner: Optional[str] = None) -> Dict:
                 "\n\nThis skill is a DRAFT. Run through the procedure once to verify, "
                 f"then publish with action='publish', name='{entry['name']}'."
             )
-        return {"results": f"Created skill `{entry['name']}` — {entry.get('description','')}{verify_hint}"}
+        return {"results": f"Created skill `{entry['name']}` - {entry.get('description','')}{verify_hint}"}
 
     if action == "edit":
         if not name:
@@ -326,7 +326,7 @@ async def do_manage_tasks(content: str, owner: Optional[str] = None) -> Dict:
                 if t.next_run:
                     bits.append(f"next {t.next_run.isoformat()}Z")
                 detail = ", ".join(bits)
-                lines.append(f"{idx}. {t.name} ({t.id}) — {detail}")
+                lines.append(f"{idx}. {t.name} ({t.id}) - {detail}")
             return {"response": "\n".join(lines), "exit_code": 0}
 
         elif action == "create":
@@ -550,29 +550,29 @@ _APP_API_BLOCKLIST_PREFIXES = (
 # Use dedicated tools or UI flows instead.
 _APP_API_BLOCKLIST_METHOD_PATH = (
     ("GET",    "/api/email/accounts"),  # owner-filtered in tool context; use list_email_accounts MCP tool
-    ("POST",   "/api/cookbook/state"),   # whole-file overwrite — agent must use serve_preset/serve_model instead
+    ("POST",   "/api/cookbook/state"),   # whole-file overwrite - agent must use serve_preset/serve_model instead
     ("DELETE", "/api/cookbook/state"),
     # Host-control routes: package install, engine rebuild, and process
     # signalling should not be reachable through the generic API bridge.
     ("POST",   "/api/cookbook/packages/install"),
     ("POST",   "/api/cookbook/rebuild-engine"),
     ("POST",   "/api/cookbook/kill-pid"),
-    # Use the named tools (download_model / serve_model) — they handle
+    # Use the named tools (download_model / serve_model) - they handle
     # host-name resolution, per-host env_prefix, AND register the task
     # in cookbook state so it shows in the UI + list_downloads. Hitting
     # the raw endpoint via app_api skips all of that → orphan task.
     ("POST",   "/api/model/download"),
     ("POST",   "/api/model/serve"),
-    # Use trigger_research — it returns a UI hint so the Deep Research
+    # Use trigger_research - it returns a UI hint so the Deep Research
     # sidebar surfaces the session. Raw start works but the agent
     # fumbles the payload + the session doesn't reliably show up.
     ("POST",   "/api/research/start"),
-    # Use web_search — the HTTP search route is UI-shaped and generic
+    # Use web_search - the HTTP search route is UI-shaped and generic
     # app_api calls can return empty/poorly formatted results compared with the
     # named tool's source-aware output.
     ("GET",    "/api/search"),
     ("POST",   "/api/search"),
-    # Use the named tools — they handle owner attribution, natural-
+    # Use the named tools - they handle owner attribution, natural-
     # language due_date parsing, timezone, dedup, and tag/category
     # normalization. Hitting the raw endpoint via app_api saves a
     # note/event with the wrong fields, no reminder, or the wrong tz.
@@ -654,10 +654,10 @@ async def do_app_api(content: str, owner: Optional[str] = None) -> Dict:
         for r in rows[:200]:
             line = f"  {r['method']:6s} {r['path']}"
             if r["summary"]:
-                line += f"  — {r['summary']}"
+                line += f"  - {r['summary']}"
             lines.append(line)
         if len(rows) > 200:
-            lines.append(f"  ...({len(rows) - 200} more — filter to narrow)")
+            lines.append(f"  ...({len(rows) - 200} more - filter to narrow)")
         return {"output": "\n".join(lines), "endpoints": rows, "exit_code": 0}
 
     # action == "call"
@@ -674,30 +674,30 @@ async def do_app_api(content: str, owner: Optional[str] = None) -> Dict:
         return {"error": f"Unsupported method: {method}", "exit_code": 1}
     if any(method == m and path.startswith(p) for m, p in _APP_API_BLOCKLIST_METHOD_PATH):
         if "/api/email/accounts" in path:
-            return {"error": "Don't use /api/email/accounts via app_api — it is owner-filtered in tool context and may return empty. Use the `list_email_accounts` email tool, then pass `account` to list_emails/read_email.", "exit_code": 1}
+            return {"error": "Don't use /api/email/accounts via app_api - it is owner-filtered in tool context and may return empty. Use the `list_email_accounts` email tool, then pass `account` to list_emails/read_email.", "exit_code": 1}
         if "/api/cookbook/packages/install" in path:
-            return {"error": "Don't POST /api/cookbook/packages/install via app_api — package installation is host code execution. Use the dedicated Cookbook dependency UI/flow instead.", "exit_code": 1}
+            return {"error": "Don't POST /api/cookbook/packages/install via app_api - package installation is host code execution. Use the dedicated Cookbook dependency UI/flow instead.", "exit_code": 1}
         if "/api/cookbook/rebuild-engine" in path:
-            return {"error": "Don't POST /api/cookbook/rebuild-engine via app_api — engine rebuild mutates local or remote host state. Use the dedicated Cookbook UI/flow instead.", "exit_code": 1}
+            return {"error": "Don't POST /api/cookbook/rebuild-engine via app_api - engine rebuild mutates local or remote host state. Use the dedicated Cookbook UI/flow instead.", "exit_code": 1}
         if "/api/cookbook/kill-pid" in path:
-            return {"error": "Don't POST /api/cookbook/kill-pid via app_api — process signalling is host control. Use the dedicated Cookbook stop/diagnostic flow instead.", "exit_code": 1}
+            return {"error": "Don't POST /api/cookbook/kill-pid via app_api - process signalling is host control. Use the dedicated Cookbook stop/diagnostic flow instead.", "exit_code": 1}
         if "/api/model/download" in path:
-            return {"error": "Don't POST /api/model/download directly — use the `download_model` tool (it resolves the server name, sets the venv env_prefix, and registers the task so it shows in the UI).", "exit_code": 1}
+            return {"error": "Don't POST /api/model/download directly - use the `download_model` tool (it resolves the server name, sets the venv env_prefix, and registers the task so it shows in the UI).", "exit_code": 1}
         if "/api/model/serve" in path:
-            return {"error": "Don't POST /api/model/serve directly — use the `serve_model` or `serve_preset` tool (handles host resolution, env_prefix, and cookbook tracking).", "exit_code": 1}
+            return {"error": "Don't POST /api/model/serve directly - use the `serve_model` or `serve_preset` tool (handles host resolution, env_prefix, and cookbook tracking).", "exit_code": 1}
         if "/api/research/start" in path:
-            return {"error": "Don't POST /api/research/start directly — use the `trigger_research` tool (it surfaces the session in the Deep Research sidebar).", "exit_code": 1}
+            return {"error": "Don't POST /api/research/start directly - use the `trigger_research` tool (it surfaces the session in the Deep Research sidebar).", "exit_code": 1}
         if "/api/search" in path:
-            return {"error": "Don't hit /api/search via app_api — use the `web_search` tool for online lookups, or `web_fetch` for a specific URL.", "exit_code": 1}
+            return {"error": "Don't hit /api/search via app_api - use the `web_search` tool for online lookups, or `web_fetch` for a specific URL.", "exit_code": 1}
         if "/api/notes" in path:
-            return {"error": "Don't hit /api/notes via app_api — use the `manage_notes` tool. It accepts natural-language due_date ('11pm today', 'tomorrow at 9am'), fires reminders from the due_date itself (no separate calendar event), and uses the caller's timezone. The raw endpoint requires ISO-UTC + a separate calendar event, both of which the agent tends to get wrong.", "exit_code": 1}
+            return {"error": "Don't hit /api/notes via app_api - use the `manage_notes` tool. It accepts natural-language due_date ('11pm today', 'tomorrow at 9am'), fires reminders from the due_date itself (no separate calendar event), and uses the caller's timezone. The raw endpoint requires ISO-UTC + a separate calendar event, both of which the agent tends to get wrong.", "exit_code": 1}
         if "/api/calendar/events" in path:
-            return {"error": "Don't hit /api/calendar/events via app_api — use the `manage_calendar` tool. It handles tz-aware natural-language datetimes and reminder_minutes correctly. If the user wants a note + reminder, prefer `manage_notes` with due_date — it bundles both.", "exit_code": 1}
-        return {"error": f"{method} {path} is blocked — it overwrites the whole cookbook state file. Use list_serve_presets / serve_preset / serve_model instead.", "exit_code": 1}
+            return {"error": "Don't hit /api/calendar/events via app_api - use the `manage_calendar` tool. It handles tz-aware natural-language datetimes and reminder_minutes correctly. If the user wants a note + reminder, prefer `manage_notes` with due_date - it bundles both.", "exit_code": 1}
+        return {"error": f"{method} {path} is blocked - it overwrites the whole cookbook state file. Use list_serve_presets / serve_preset / serve_model instead.", "exit_code": 1}
 
     body = args.get("body")
     query = args.get("query") or None
-    # Pass owner so the backend impersonates the user — without this,
+    # Pass owner so the backend impersonates the user - without this,
     # POSTs (notes, calendar, todos, ...) get owner="internal-tool"
     # and the user that asked for them can't see the result.
     headers = {**_internal_headers(owner=owner), "Content-Type": "application/json"}

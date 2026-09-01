@@ -38,7 +38,7 @@ def _provider_label(url: str) -> str | None:
 
 @pytest.mark.skipif(not _HAS_NODE, reason="node binary not on PATH")
 @pytest.mark.parametrize("url,expected", [
-    # Loopback never names the tool from the port — it isn't authoritative.
+    # Loopback never names the tool from the port - it isn't authoritative.
     ("http://localhost:8080/v1",      "Local"),
     ("http://127.0.0.1:8080/v1",      "Local"),
     ("http://localhost:8000/v1",      "Local"),

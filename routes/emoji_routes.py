@@ -90,7 +90,7 @@ def setup_emoji_routes() -> APIRouter:
                 logger.warning("emoji cache read %s failed: %s", code, e)
             return _blank()
 
-        # First time we've seen this emoji — fetch the OpenMoji black SVG + cache
+        # First time we've seen this emoji - fetch the OpenMoji black SVG + cache
         # it. OpenMoji filenames are the codepoints uppercased.
         try:
             async with httpx.AsyncClient(timeout=8.0) as client:

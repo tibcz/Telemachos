@@ -3,7 +3,7 @@
  * context. The editor uses this beneath every layer pass so empty
  * (transparent) areas of the document are visible.
  *
- * Pure function — depends only on its arguments.
+ * Pure function - depends only on its arguments.
  *
  * @param {CanvasRenderingContext2D} ctx
  * @param {number} w  Width in canvas pixels.

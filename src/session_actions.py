@@ -120,7 +120,7 @@ async def run_auto_sort(owner: str, skip_llm: bool = False, delete_throwaway: bo
                     should_delete = True
                     deleted_throwaway += 1
                 elif msg_count <= 4 and first_text and len(first_text.split()) <= 8 and len(first_text) <= 80:
-                    # Short trivial chats — e.g. "write hi to a friend" → "Hi!"
+                    # Short trivial chats - e.g. "write hi to a friend" → "Hi!"
                     should_delete = True
                     deleted_throwaway += 1
                 else:
@@ -171,7 +171,7 @@ async def run_auto_sort(owner: str, skip_llm: bool = False, delete_throwaway: bo
         prompt = (
             "You are a session organizer. Group these chat sessions into folders by topic.\n\n"
             "Rules:\n"
-            "- Be aggressive about grouping — put EVERY session in a folder\n"
+            "- Be aggressive about grouping - put EVERY session in a folder\n"
             "- Use short folder names (2-4 words max)\n"
             "- Use the 8-char ID prefixes exactly as given\n"
             "- Output ONLY raw JSON, no markdown fences, no explanation\n\n"

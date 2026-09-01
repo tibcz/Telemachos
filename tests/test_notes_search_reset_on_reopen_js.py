@@ -1,8 +1,8 @@
-"""Issue #2919 — openPanel must reset _searchQuery so a reopened Notes panel
+"""Issue #2919 - openPanel must reset _searchQuery so a reopened Notes panel
 doesn't keep filtering by a stale query (the rebuilt search box renders empty).
 
 notes.js is a browser ES module with a heavy import chain (can't node-import in
-isolation), so — per the repo's DOM-coupled-guard convention — this asserts the
+isolation), so - per the repo's DOM-coupled-guard convention - this asserts the
 reset is present in openPanel, beside the existing _editingId reset.
 """
 import re

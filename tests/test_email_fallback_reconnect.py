@@ -1,11 +1,11 @@
-"""Regression for issue #1613 — on a large Gmail mailbox the email-summary
+"""Regression for issue #1613 - on a large Gmail mailbox the email-summary
 poller's `SEARCH ALL` fallback can time out mid-response, leaving its huge
 `* SEARCH <uids…>` line unread on the socket. The next command (the downstream
 re-select / EXAMINE) then reads those leftover bytes and fails with
 `EXAMINE => unexpected response: b'325188 …'`.
 
 `_latest_inbox_fallback_uids` reconnects on a failed SEARCH ALL so the downstream
-command always runs on a clean socket. Tested with a fake IMAP connection — no
+command always runs on a clean socket. Tested with a fake IMAP connection - no
 live server needed; reconnecting is correct by construction (a fresh connection
 cannot carry the old one's leftover bytes).
 """

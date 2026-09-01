@@ -50,7 +50,7 @@ export const UI_VIS_DEFAULT_OFF = new Set(['rag-toggle-btn', 'text-emojis', 'cha
 
 /**
  * Resolve every UI_VIS_MAP selector to visible (true) or hidden (false) for the
- * given saved state. Pure: no DOM, no localStorage — app.js applies the result.
+ * given saved state. Pure: no DOM, no localStorage - app.js applies the result.
  *
  * A key is visible when its stored value is not `false`, defaulting to on
  * unless it is in UI_VIS_DEFAULT_OFF. Per-tool entries also require the Tools

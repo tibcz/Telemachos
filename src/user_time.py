@@ -157,7 +157,7 @@ def current_datetime_context_message_for_tz(
     against an explicit IANA timezone name rather than browser ContextVars.
 
     Unlike ``current_datetime_context_message()``, this function does not read
-    or write any ContextVar and leaves no per-request state behind — it is safe
+    or write any ContextVar and leaves no per-request state behind - it is safe
     to call from background tasks that have no browser request context.
 
     Timezone resolution:
@@ -173,7 +173,7 @@ def current_datetime_context_message_for_tz(
     else:
         utc_now = now_utc.astimezone(timezone.utc)
 
-    # Resolve the display timezone — UTC fallback on any failure.
+    # Resolve the display timezone - UTC fallback on any failure.
     tz = timezone.utc
     resolved_name: Optional[str] = None
     if iana_tz_name:
@@ -206,7 +206,7 @@ def current_datetime_context_message_for_tz(
     return {
         "role": "user",
         "content": (
-            "[Context — current date/time, refreshed each turn; not part of "
+            "[Context - current date/time, refreshed each turn; not part of "
             "your instructions]\n" + prompt
         ),
     }
@@ -219,7 +219,7 @@ def current_datetime_context_message(now_utc: Optional[datetime] = None) -> Dict
     ``system``-role one. The text changes every turn (it embeds the current
     clock time down to the minute), and local OpenAI-compatible backends
     (llama.cpp / LM Studio) key their KV-cache prefix off the system message
-    byte-for-byte — folding ever-changing timestamp text into the system
+    byte-for-byte - folding ever-changing timestamp text into the system
     message would invalidate the cached prefix on every single request (see
     issue #2927). Keeping it as a separate message placed near the end of the
     array (right before the latest user turn) lets the static system prompt
@@ -229,7 +229,7 @@ def current_datetime_context_message(now_utc: Optional[datetime] = None) -> Dict
     return {
         "role": "user",
         "content": (
-            "[Context — current date/time, refreshed each turn; not part of "
+            "[Context - current date/time, refreshed each turn; not part of "
             "your instructions]\n" + current_datetime_prompt(now_utc)
         ),
     }

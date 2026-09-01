@@ -1,10 +1,10 @@
-"""Regression for issue #1602 — after closing an AI-written document, its "Open"
+"""Regression for issue #1602 - after closing an AI-written document, its "Open"
 button in the Documents library is grayed out, so the user can't reopen it.
 
 Root cause: closing/detaching a document nulls its session_id (the detach
 behaviour from #1238), and both Open controls in static/js/documentLibrary.js
 (the card's expanded Open button AND the card dropdown's Open item) gated on
-`doc.session_id` — wiring `libraryOpenInSession` (which early-returns when there's
+`doc.session_id` - wiring `libraryOpenInSession` (which early-returns when there's
 no session) and DISABLING the control otherwise. But the module already has
 `libraryOpenDocument`, which explicitly handles the orphaned case ("just open in
 editor without switching session"). The fix routes the no-session path there

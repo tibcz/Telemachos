@@ -4,7 +4,7 @@ Keeps an agent/chat stream running server-side after the SSE client disconnects
 (tab close, navigate away, refresh). The streaming generator is drained by a
 background asyncio task into a per-session replay buffer; SSE clients SUBSCRIBE
 to that buffer (replay everything so far, then live). Closing the SSE only drops
-the subscriber — the drain task keeps going.
+the subscriber - the drain task keeps going.
 
 The wrapped generator already persists the assistant message to the session on
 completion, so reopening the session shows the finished result even if nobody
@@ -41,7 +41,7 @@ _RUNS: Dict[str, _Run] = {}
 
 # How long a FINISHED run (and its full replay buffer) is retained after the
 # last subscriber disconnects, so a reconnect within the window can still
-# replay the result. After this, the run is evicted to bound memory — without
+# replay the result. After this, the run is evicted to bound memory - without
 # it, every session that ever streamed kept its entire event log forever.
 _EVICT_GRACE_S = 180
 
@@ -127,7 +127,7 @@ async def _drain(session_id: str, run: _Run, agen: AsyncGenerator[str, None],
 
     # If this run replaced an in-flight one (rapid double-send), wait for that
     # one to fully finish first. Its CancelledError handler calls aclose(), which
-    # persists its partial response — letting it complete before we start writing
+    # persists its partial response - letting it complete before we start writing
     # keeps the two runs' session saves sequential instead of interleaved.
     try:
         if prev_task is not None and not prev_task.done():
@@ -166,7 +166,7 @@ async def _drain(session_id: str, run: _Run, agen: AsyncGenerator[str, None],
     finally:
         # Wake every subscriber with the end sentinel so their SSE closes.
         _wake_subscribers()
-        # Run is terminal — arm the grace timer so it (and its buffer) is
+        # Run is terminal - arm the grace timer so it (and its buffer) is
         # eventually freed even if nobody ever reconnects. subscribe() cancels
         # this on connect and re-arms on disconnect.
         _schedule_evict(session_id, run)
@@ -214,7 +214,7 @@ async def subscribe(
         return
     q: asyncio.Queue = asyncio.Queue()
     run.subscribers.add(q)            # register BEFORE replaying so nothing is missed
-    # A live subscriber is connected — don't let a pending grace timer evict
+    # A live subscriber is connected - don't let a pending grace timer evict
     # the run out from under it mid-replay.
     if run.evict_task and not run.evict_task.done():
         run.evict_task.cancel()
@@ -249,7 +249,7 @@ async def subscribe(
                 next_seq = seq + 1
     finally:
         run.subscribers.discard(q)
-        # Last subscriber gone on a finished run — (re)arm eviction so the
+        # Last subscriber gone on a finished run - (re)arm eviction so the
         # buffer doesn't linger indefinitely.
         if not run.subscribers and run.status != "running":
             _schedule_evict(session_id, run)

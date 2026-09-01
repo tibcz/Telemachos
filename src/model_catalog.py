@@ -96,7 +96,7 @@ def detected_memory_gb():
     """Total system memory in GB, or 0.0 when it cannot be determined.
 
     On Apple Silicon this is unified memory, which is what actually bounds
-    model size — there is no separate VRAM to reason about.
+    model size - there is no separate VRAM to reason about.
     """
     try:
         from services.hwfit.hardware import detect_system
@@ -166,7 +166,7 @@ def resolve_files(repo, quant):
     rather than assuming one.
 
     Raises ValueError when the repo is not allowlisted, or when nothing matches
-    — a silent empty result would present as a download that does nothing.
+    - a silent empty result would present as a download that does nothing.
     """
     if repo not in allowed_repos():
         raise ValueError("repository is not in the curated catalog: %s" % repo)
@@ -194,7 +194,7 @@ def resolve_files(repo, quant):
 
     if not files:
         raise ValueError(
-            "no %s GGUF file found in %s — the repository may have been "
+            "no %s GGUF file found in %s - the repository may have been "
             "renamed or its quantisations changed" % (quant, repo)
         )
     return sorted(files, key=lambda f: f["path"])
@@ -314,7 +314,7 @@ def _download_one(client, repo, spec, destination, tier_id, done_bytes, total_by
     if expected and digest.hexdigest() != expected:
         os.remove(temp)
         raise ValueError(
-            "checksum mismatch for %s — the download was corrupted or the file "
+            "checksum mismatch for %s - the download was corrupted or the file "
             "is not the one HuggingFace published, so it has been discarded"
             % spec["path"]
         )

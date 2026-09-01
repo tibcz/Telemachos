@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""telemachos-personal — shell wrapper for the personal-docs RAG index.
+"""telemachos-personal - shell wrapper for the personal-docs RAG index.
 
 `data/personal_docs/` holds local files indexed into RAG so chat can
 recall their content (`contacts.txt`, runbook fragments, etc.). This

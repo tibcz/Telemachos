@@ -104,16 +104,16 @@ def main():
             entry["release_date"] = new
             updated += 1
             tag = f"set {new}" + (f" (was {old})" if old else "")
-        print(f"[{n}/{len(candidates)}] {name} — {tag}")
+        print(f"[{n}/{len(candidates)}] {name} - {tag}")
         if args.sleep:
             time.sleep(args.sleep)
 
     elapsed = time.time() - started
     print()
-    print(f"Done in {elapsed:.1f}s — {updated} updated, {skipped} skipped (HF unavailable / gated / missing date).")
+    print(f"Done in {elapsed:.1f}s - {updated} updated, {skipped} skipped (HF unavailable / gated / missing date).")
 
     if args.dry_run:
-        print("Dry run — no write.")
+        print("Dry run - no write.")
         return
 
     if updated:

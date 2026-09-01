@@ -1,5 +1,5 @@
 /**
- * Build the right-hand panel (controls + layers) — DOM creation,
+ * Build the right-hand panel (controls + layers) - DOM creation,
  * controls innerHTML population, mobile bottom-sheet swipe behavior,
  * controls-panel re-parenting on mobile, slider value-chip layout
  * normalization, layer-panel header + mobile peek/expand swipe, and
@@ -68,7 +68,7 @@ export function buildRightPanel({ controlsHTML, layerPanelHTML }) {
     wandTolerance: state.wandTolerance,
   });
   rightPanel.appendChild(controls);
-  // Mobile only (≤ 700 px — matches the .ge-editor-body column-stack
+  // Mobile only (≤ 700 px - matches the .ge-editor-body column-stack
   // breakpoint): the right panel becomes a transformed bottom-sheet,
   // so any position:fixed descendant gets trapped by the transform
   // and rides along with the panel. Re-parent the controls panel to
@@ -116,7 +116,7 @@ export function buildRightPanel({ controlsHTML, layerPanelHTML }) {
         dragging = false;
         const dy = e.changedTouches[0].clientY - sy;
         const dx = Math.abs(e.changedTouches[0].clientX - sx);
-        // Real swipe — three states cycle by direction:
+        // Real swipe - three states cycle by direction:
         //   minimized → peek → expanded   (swipe up)
         //   expanded → peek → minimized   (swipe down)
         if (Math.abs(dy) > 20 && Math.abs(dy) > dx) {
@@ -155,7 +155,7 @@ export function buildRightPanel({ controlsHTML, layerPanelHTML }) {
     }
   }
 
-  // Horizontal drag handle on the LEFT edge of the right panel — drag
+  // Horizontal drag handle on the LEFT edge of the right panel - drag
   // left to widen, right to narrow. Persists chosen width in
   // localStorage so it survives reopens. (Earlier version was a
   // vertical-drag for height; horizontal feels more natural since

@@ -13,7 +13,7 @@ signed by a private root CA which is not part of the standard system bundle:
 
 Operators point `LLM_CA_BUNDLE` at a PEM file containing the extra CA
 cert(s). The default system / certifi trust store is loaded first, then
-the operator's PEM is layered on top, so verification still happens —
+the operator's PEM is layered on top, so verification still happens -
 the trust set just gets larger. We deliberately do not provide a
 "verify=off" knob: weakening verification globally (or per-host) would
 expose those endpoints to MITM, and the operator-supplied bundle is the
@@ -26,13 +26,13 @@ Example (GigaChat):
     LLM_CA_BUNDLE=/etc/telemachos/ca/russian-trusted-root.pem
 
 Scope:
-    `llm_verify()` is intentionally consumed by only two call sites — the
+    `llm_verify()` is intentionally consumed by only two call sites - the
     shared async client in `src/llm_core.py` and the endpoint probes in
     `routes/model_routes.py`. Both reach LLM provider URLs. The override
     is NOT threaded into web_fetch, search providers, gallery downloads,
     embeddings, webhook delivery, or anything else that hits arbitrary
     URLs, and it does NOT affect the app's own browser-facing TLS. That
-    boundary is pinned by `tests/test_tls_overrides_scope.py` — extending
+    boundary is pinned by `tests/test_tls_overrides_scope.py` - extending
     it requires updating the allowlist there with a written justification.
 """
 
@@ -78,7 +78,7 @@ def _build_ssl_context() -> Optional[ssl.SSLContext]:
 
 
 # Resolved once at import time. The httpx clients in src/llm_core.py are
-# long-lived (process-wide), so editing LLM_CA_BUNDLE requires a restart —
+# long-lived (process-wide), so editing LLM_CA_BUNDLE requires a restart -
 # matching the existing semantics of LLM_HOST, SEARXNG_INSTANCE, etc.
 _SHARED_SSL_CONTEXT: Optional[ssl.SSLContext] = _build_ssl_context()
 
@@ -86,6 +86,6 @@ _SHARED_SSL_CONTEXT: Optional[ssl.SSLContext] = _build_ssl_context()
 def llm_verify():
     """Return the value to pass as `verify=` on httpx.get / httpx.Client /
     httpx.AsyncClient. Returns the extended-trust SSLContext when
-    LLM_CA_BUNDLE is set and loaded; otherwise True (httpx default — system
+    LLM_CA_BUNDLE is set and loaded; otherwise True (httpx default - system
     / certifi bundle, verification fully on)."""
     return _SHARED_SSL_CONTEXT if _SHARED_SSL_CONTEXT is not None else True

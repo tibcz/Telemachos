@@ -2,7 +2,7 @@
 
 #722 / PR #769 added an opt-in extra CA bundle (LLM_CA_BUNDLE) for
 private-CA LLM providers. The whole point is that the override stays
-SCOPED — it must extend trust for the intended outbound LLM provider
+SCOPED - it must extend trust for the intended outbound LLM provider
 requests only, and never:
 
   - touch arbitrary URL fetching (web_fetch, document downloads, generic
@@ -84,7 +84,7 @@ def test_llm_verify_only_used_in_allowlisted_files():
         "comment; if it's not, do not thread the extra CA bundle into it."
     )
     assert not missing, (
-        f"llm_verify() no longer called from {sorted(missing)} — the "
+        f"llm_verify() no longer called from {sorted(missing)} - the "
         "extra CA bundle integration regressed or the allowlist is stale."
     )
 
@@ -96,7 +96,7 @@ def test_tls_overrides_does_not_weaken_global_tls():
       - ssl._create_default_https_context = ssl._create_unverified_context
       - ssl._create_unverified_context (used as a default)
       - urllib3.disable_warnings(...)
-      - httpx.AsyncClient(verify=False) (anywhere — must stay verify=True
+      - httpx.AsyncClient(verify=False) (anywhere - must stay verify=True
         or an SSLContext)
       - requests.packages.urllib3.disable_warnings(...)
 
@@ -120,7 +120,7 @@ def test_tls_overrides_does_not_weaken_global_tls():
 
 def test_llm_verify_default_is_true_when_env_unset():
     """When LLM_CA_BUNDLE is unset, llm_verify() must return True so httpx
-    falls through to its built-in trust store. This is the safe default —
+    falls through to its built-in trust store. This is the safe default -
     operators have to opt in to get any change at all."""
     os.environ.pop("LLM_CA_BUNDLE", None)
     import importlib

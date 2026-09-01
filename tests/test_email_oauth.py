@@ -3,25 +3,25 @@
 Covers the security-critical surface added for Google Workspace / .edu
 IMAP/SMTP support:
 
-- `make_oauth_state` / `verify_oauth_state` — HMAC-signed OAuth state so the
+- `make_oauth_state` / `verify_oauth_state` - HMAC-signed OAuth state so the
   callback can't be CSRF'd or have its account_id/owner tampered with.
-- `_smtp_ready` — an OAuth account (no stored password) must still count as
+- `_smtp_ready` - an OAuth account (no stored password) must still count as
   send-capable; a host+user-only account without password or OAuth must not.
-- `_xoauth2_raw` / `_xoauth2_bytes` — SASL XOAUTH2 framing for SMTP/IMAP.
-- `_refresh_google_token` — token refresh stores result encrypted; failure is
+- `_xoauth2_raw` / `_xoauth2_bytes` - SASL XOAUTH2 framing for SMTP/IMAP.
+- `_refresh_google_token` - token refresh stores result encrypted; failure is
   silent (no token/secret in logs or return value).
-- `_get_valid_google_token` — uses cached token when fresh; calls refresh when
+- `_get_valid_google_token` - uses cached token when fresh; calls refresh when
   expired.
-- `google_oauth_callback` (real route) — invalid/tampered/missing state and
+- `google_oauth_callback` (real route) - invalid/tampered/missing state and
   provider errors return generic redirects with no PII; owner mismatch refuses
   the token write; a valid owner writes encrypted tokens only to the intended
   account.
-- `list_email_accounts` (real route) — exposes OAuth status but never token
+- `list_email_accounts` (real route) - exposes OAuth status but never token
   values.
-- `_imap_connect` — password accounts use login(); OAuth accounts use XOAUTH2.
+- `_imap_connect` - password accounts use login(); OAuth accounts use XOAUTH2.
 
 Route tests pull the live endpoint out of `setup_email_routes()` and call it
-directly — they pin the real handler, not a re-implementation. The ASGI app is
+directly - they pin the real handler, not a re-implementation. The ASGI app is
 not booted; outbound HTTP is mocked and the DB is an isolated in-memory SQLite.
 """
 
@@ -192,7 +192,7 @@ def _make_account(session, account_id="acct-1", owner="alice", **kwargs):
 
 def test_refresh_token_stored_encrypted_not_raw():
     """_refresh_google_token must encrypt the new access token before writing it
-    to the DB — storing the raw token string would expose credentials at rest."""
+    to the DB - storing the raw token string would expose credentials at rest."""
     from src.secret_storage import encrypt as _enc, decrypt as _dec
     from core.database import EmailAccount
 
@@ -259,7 +259,7 @@ def test_refresh_stores_encrypted_expiry_not_token():
 # ── Real OAuth callback route ─────────────────────────────────────
 #
 # These pull the actual google_oauth_callback endpoint out of the router and
-# invoke it — they pin the real route's behaviour, not a re-implementation, so
+# invoke it - they pin the real route's behaviour, not a re-implementation, so
 # they fail if the ownership/state guards are ever removed or weakened.
 
 def _callback_endpoint():
@@ -273,7 +273,7 @@ def _callback_endpoint():
 
 
 class _FakeRequest:
-    """Minimal stand-in for starlette Request — the callback reads the Host header
+    """Minimal stand-in for starlette Request - the callback reads the Host header
     and the request scheme. Behind a TLS terminator uvicorn's proxy-headers
     middleware rewrites the scheme from `X-Forwarded-Proto`, so the route sees
     `https` there and `http` on a plain origin."""
@@ -332,7 +332,7 @@ async def test_callback_tampered_state_returns_generic_error_no_leak():
 @pytest.mark.asyncio
 async def test_callback_owner_mismatch_does_not_write_tokens():
     """A signed, valid state whose owner does not match the target account's
-    owner must NOT write tokens — this blocks one authenticated user from
+    owner must NOT write tokens - this blocks one authenticated user from
     binding their Google account onto another user's mailbox row.
     """
     from routes.email_helpers import make_oauth_state
@@ -342,7 +342,7 @@ async def test_callback_owner_mismatch_does_not_write_tokens():
     _make_account(db, account_id="acct-x", owner="alice")
     db.close()
 
-    # Token-exchange + userinfo would succeed — the point is the ownership gate
+    # Token-exchange + userinfo would succeed - the point is the ownership gate
     # rejects the write *before* trusting them.
     token_resp = mock.MagicMock()
     token_resp.raise_for_status = mock.MagicMock()
@@ -351,7 +351,7 @@ async def test_callback_owner_mismatch_does_not_write_tokens():
     userinfo_resp.is_success = True
     userinfo_resp.json.return_value = {"email": "bob@evil.com", "name": "Bob"}
 
-    # State is genuinely signed, but for owner "bob" — not the row owner "alice".
+    # State is genuinely signed, but for owner "bob" - not the row owner "alice".
     state = make_oauth_state("acct-x", "bob")
 
     with mock.patch("httpx.post", return_value=token_resp), \
@@ -372,7 +372,7 @@ async def test_callback_owner_mismatch_does_not_write_tokens():
 
 @pytest.mark.asyncio
 async def test_callback_valid_owner_writes_encrypted_tokens_to_intended_account():
-    """A signed state whose owner matches the target account writes the tokens —
+    """A signed state whose owner matches the target account writes the tokens -
     and only to that account, stored encrypted (raw token never persisted)."""
     from routes.email_helpers import make_oauth_state
     from src.secret_storage import decrypt as _dec
@@ -426,7 +426,7 @@ async def test_callback_valid_owner_writes_encrypted_tokens_to_intended_account(
 #
 # Google rejects the token exchange unless the callback's `redirect_uri` is
 # byte-identical to the one the authorize step sent, so both routes have to
-# agree — including on the scheme. Deriving it from the request keeps HTTPS
+# agree - including on the scheme. Deriving it from the request keeps HTTPS
 # deployments working without pinning GOOGLE_OAUTH_REDIRECT_URI by hand;
 # hardcoding `http://` produced an unusable redirect behind any TLS front.
 
@@ -448,7 +448,7 @@ def _posted_redirect_uri(mock_post):
 @pytest.mark.asyncio
 @pytest.mark.parametrize("scheme", ("http", "https"))
 async def test_callback_redirect_uri_follows_the_request_scheme(scheme, monkeypatch):
-    """The token exchange must echo the scheme the request actually arrived on —
+    """The token exchange must echo the scheme the request actually arrived on -
     `https` behind a TLS terminator, `http` on a plain origin."""
     from routes.email_helpers import make_oauth_state
 
@@ -483,7 +483,7 @@ async def test_callback_redirect_uri_follows_the_request_scheme(scheme, monkeypa
 
 @pytest.mark.asyncio
 async def test_callback_redirect_uri_env_override_still_wins(monkeypatch):
-    """An explicit GOOGLE_OAUTH_REDIRECT_URI is used verbatim — deriving the
+    """An explicit GOOGLE_OAUTH_REDIRECT_URI is used verbatim - deriving the
     scheme must not override a value the operator pinned by hand."""
     from routes.email_helpers import make_oauth_state
 
@@ -763,7 +763,7 @@ def test_refresh_failure_returns_none_no_secret_raised():
 
 def test_refresh_without_credentials_returns_none():
     """_refresh_google_token must return None immediately when the OAuth client
-    credentials are not configured — no DB query, no HTTP call."""
+    credentials are not configured - no DB query, no HTTP call."""
     with mock.patch("routes.email_helpers.os.environ.get", return_value=""):
         from routes.email_helpers import _refresh_google_token
         result = _refresh_google_token("acct-any")
@@ -779,7 +779,7 @@ def test_imap_connect_uses_login_for_password_accounts():
     from routes.email_helpers import _imap_connect
 
     mock_conn = mock.MagicMock()
-    # _imap_connect calls _get_email_config internally — mock it to return our cfg.
+    # _imap_connect calls _get_email_config internally - mock it to return our cfg.
     cfg = {
         "imap_host": "imap.gmail.com",
         "imap_port": 993,
@@ -800,7 +800,7 @@ def test_imap_connect_uses_login_for_password_accounts():
 
 def test_imap_connect_uses_xoauth2_for_oauth_accounts():
     """OAuth accounts must call conn.authenticate('XOAUTH2', ...) and must NOT
-    call conn.login() — which would fail without a password."""
+    call conn.login() - which would fail without a password."""
     from routes.email_helpers import _imap_connect
     from src.secret_storage import encrypt as _enc
 
@@ -831,7 +831,7 @@ def test_imap_connect_uses_xoauth2_for_oauth_accounts():
 async def test_account_list_response_does_not_expose_token_values():
     """The /accounts list route is the client-facing account inventory. It must
     expose `oauth_provider` (so the UI can show OAuth status) but never the
-    access/refresh token values, encrypted or otherwise — only boolean
+    access/refresh token values, encrypted or otherwise - only boolean
     has_*_password flags and the provider name."""
     from routes.email_routes import setup_email_routes
     from src.secret_storage import encrypt as _enc

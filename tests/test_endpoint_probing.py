@@ -5,18 +5,18 @@ TestSetupProbeSafety in test_model_routes.py already covers the keyed-vs-unkeyed
 curated-fallback safety of `_probe_endpoint`. This module pins the rest of the
 probe surface that drives endpoint setup and degraded-state reporting:
 
-  * `_probe_endpoint`     — OpenAI vs native-Ollama model-list parsing, the
+  * `_probe_endpoint`     - OpenAI vs native-Ollama model-list parsing, the
     /api/tags fallback for Ollama builds without /v1/models, and the
     no-models-found result.
-  * `_ping_endpoint`      — reachability classification: 2xx, auth failures,
+  * `_ping_endpoint`      - reachability classification: 2xx, auth failures,
     the "this is Telemachos, not a model server" /login-redirect trap, generic
     redirects, transport errors, and the native-Ollama /api/version fallback.
-  * `_probe_single_model` — ok/fail/timeout status mapping, upstream error-body
+  * `_probe_single_model` - ok/fail/timeout status mapping, upstream error-body
     extraction, and per-provider (OpenAI / Anthropic) request routing.
-  * `_classify_endpoint`  — the Tailscale CGNAT (100.64.0.0/10) "local" range.
+  * `_classify_endpoint`  - the Tailscale CGNAT (100.64.0.0/10) "local" range.
 
 HTTP is faked by monkeypatching `model_routes.httpx.{get,post}`, mirroring the
-established pattern in test_model_routes.py — no network, no server.
+established pattern in test_model_routes.py - no network, no server.
 """
 import sys
 import types
@@ -223,7 +223,7 @@ class TestPingEndpoint:
 
     def test_auth_failure_is_reached_but_not_reachable(self, monkeypatch):
         _patch_resolve(monkeypatch)
-        # A 401 means the server answered — surface the status, not "offline".
+        # A 401 means the server answered - surface the status, not "offline".
         monkeypatch.setattr(
             model_routes.httpx, "get",
             lambda url, headers=None, timeout=None, verify=None, **kwargs: _resp(401),
@@ -444,7 +444,7 @@ class TestProbeSingleModel:
         result = _probe_single_model("https://chatgpt.com/backend-api/codex", None, "gpt-5.1-codex")
         assert result["status"] == "ok"
         assert result.get("skipped") is True
-        # Pin the full documented return shape — downstream JSON/UI reads latency_ms.
+        # Pin the full documented return shape - downstream JSON/UI reads latency_ms.
         assert result["latency_ms"] == 0
 
 

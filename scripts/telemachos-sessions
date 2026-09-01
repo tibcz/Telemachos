@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""telemachos-sessions — shell wrapper for chat sessions.
+"""telemachos-sessions - shell wrapper for chat sessions.
 
     telemachos-sessions list [--archived] [--folder F] [--limit N]
     telemachos-sessions show SESSION_ID
@@ -101,7 +101,7 @@ def _set_archived(args, archived: bool):
 
 def cmd_delete(args):
     if not args.yes:
-        fail("delete is irreversible — pass --yes to confirm")
+        fail("delete is irreversible - pass --yes to confirm")
     db = SessionLocal()
     try:
         s = db.get(DbSession, args.id)

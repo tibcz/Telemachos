@@ -1,7 +1,7 @@
 // static/js/emailLibrary/replyRecipients.js
 //
 // Pure helpers for building reply-all recipient lists. No DOM, no fetch,
-// no shared state — safe to import anywhere and to unit-test under node.
+// no shared state - safe to import anywhere and to unit-test under node.
 
 // Extract the bare email from "Name <email@x>" or a plain "email@x".
 export function extractEmail(addr) {

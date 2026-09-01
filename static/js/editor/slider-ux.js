@@ -8,7 +8,7 @@
  *      Desktop: only the layer-opacity slider gets a bubble (the
  *      eraser-row sliders already show a value chip on the right).
  *      Mobile: every slider in the editor gets a bubble.
- *   3. Click the value chip to type a number directly — replaces
+ *   3. Click the value chip to type a number directly - replaces
  *      the span with an inline input until blur/Enter.
  *
  * Wired ONCE on editor open; the listeners stay alive for the whole
@@ -30,7 +30,7 @@ export function wireSliderUx({ registerDocClickAway }) {
   sliderBubble.hidden = true;
   let sliderBubbleSlider = null;
 
-  // Find the container row for any slider — works for ge-eraser-row
+  // Find the container row for any slider - works for ge-eraser-row
   // sliders AND the layer-opacity slider on each layer item.
   function bubbleRowFor(slider) {
     return slider.closest('.ge-eraser-row, .ge-layer-item, .ge-control-row, .ge-adj-row');

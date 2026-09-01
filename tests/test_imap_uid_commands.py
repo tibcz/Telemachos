@@ -32,10 +32,10 @@ class _SpyImap:
         return "OK", []
 
     def search(self, *args):
-        raise AssertionError("conn.search() called — must use conn.uid('SEARCH', ...) instead")
+        raise AssertionError("conn.search() called - must use conn.uid('SEARCH', ...) instead")
 
     def fetch(self, *args):
-        raise AssertionError("conn.fetch() called — must use conn.uid('FETCH', ...) instead")
+        raise AssertionError("conn.fetch() called - must use conn.uid('FETCH', ...) instead")
 
     def logout(self):
         pass
@@ -54,7 +54,7 @@ async def test_sig_learner_uses_uid_search(monkeypatch):
 
     message, ok = await action_learn_sender_signatures("alice")
 
-    assert ok is False  # no LLM candidates — stops before LLM, after IMAP
+    assert ok is False  # no LLM candidates - stops before LLM, after IMAP
     assert any(c[0] == "SEARCH" for c in spy.uid_calls), "uid('SEARCH', ...) was not called"
 
 

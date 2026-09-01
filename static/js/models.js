@@ -99,7 +99,7 @@ function _buildModelRow(mid, url, displayName, endpointId, offline, modelType) {
   handle.title = 'Drag to reorder';
   row.appendChild(handle);
 
-  // Favorite indicator — provider logo or colored dot
+  // Favorite indicator - provider logo or colored dot
   const fav = document.createElement('span');
   const _favColor = modelColor(mid);
   const _logo = providerLogo(mid);
@@ -169,7 +169,7 @@ export async function refreshModels(force = false, opts = {}) {
   const cacheOnly = !!(opts && opts.cacheOnly);
   const hasCache = _cachedItems.length > 0;
 
-  // Skip network fetch if cache is fresh and not forced — still re-render UI
+  // Skip network fetch if cache is fresh and not forced - still re-render UI
   // Cache-only is used for cheap picker/settings opens, but it must not turn a
   // cold page load into an empty model list. If nothing has been fetched in this
   // tab yet, do one normal load.
@@ -195,7 +195,7 @@ export async function refreshModels(force = false, opts = {}) {
         // Pass ?refresh=true on forced refreshes so the BACKEND's 30s
         // per-user cache also gets bypassed. Without this, `force=true`
         // only clears the frontend cache and the same stale list comes
-        // back — newly-served endpoints don't appear until the cache
+        // back - newly-served endpoints don't appear until the cache
         // ages out. (Bug repro: serve a model, picker is empty for ~30s
         // even though the endpoint is in the DB and online.)
         const _seq = ++_fetchSeq;
@@ -502,13 +502,13 @@ export async function refreshModels(force = false, opts = {}) {
     // Enable drag sorting
     if (dragSortModule) {
       if (!needsGrouping) {
-        // Flat list — sort the whole #models container
+        // Flat list - sort the whole #models container
         dragSortModule.enable('models', '.models-row', {
           handleSelector: '.item-drag-handle',
           storageKey: 'models-order',
         });
       } else {
-        // Grouped — enable sort within each group container
+        // Grouped - enable sort within each group container
         box.querySelectorAll('.models-group-content').forEach(gc => {
           dragSortModule.enable(gc.id, '.models-row', {
             handleSelector: '.item-drag-handle',

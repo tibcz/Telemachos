@@ -2,7 +2,7 @@
 
 Covers GET /api/tokens, POST /api/tokens, DELETE /api/tokens/{token_id}.
 Uses direct endpoint extraction from setup_api_token_routes().routes and
-fake objects only — no real DB, no network, no external services.
+fake objects only - no real DB, no network, no external services.
 """
 
 import asyncio
@@ -66,7 +66,7 @@ def token_routes_mod(monkeypatch):
 
 
 # ---------------------------------------------------------------------------
-# Pure helpers — no module-level side effects
+# Pure helpers - no module-level side effects
 # ---------------------------------------------------------------------------
 
 
@@ -102,7 +102,7 @@ def _db_ctx(session):
 
 
 # ---------------------------------------------------------------------------
-# 1. Admin gate — all three endpoints reject non-admin callers
+# 1. Admin gate - all three endpoints reject non-admin callers
 # ---------------------------------------------------------------------------
 
 
@@ -127,7 +127,7 @@ def test_api_token_routes_require_admin_for_list_create_delete(monkeypatch, toke
 
 
 # ---------------------------------------------------------------------------
-# 2. POST /api/tokens — owner attribution, hashed at rest, raw returned once
+# 2. POST /api/tokens - owner attribution, hashed at rest, raw returned once
 # ---------------------------------------------------------------------------
 
 
@@ -223,7 +223,7 @@ def test_cookbook_launch_scope_implies_read(monkeypatch, token_routes_mod):
 
 
 # ---------------------------------------------------------------------------
-# 3. GET /api/tokens — safe display fields only, no hash or raw token
+# 3. GET /api/tokens - safe display fields only, no hash or raw token
 # ---------------------------------------------------------------------------
 
 
@@ -277,7 +277,7 @@ def test_list_tokens_returns_safe_display_fields_only(monkeypatch, token_routes_
 
 
 # ---------------------------------------------------------------------------
-# 4. DELETE /api/tokens/{id} — found → deleted + cache invalidated
+# 4. DELETE /api/tokens/{id} - found → deleted + cache invalidated
 # ---------------------------------------------------------------------------
 
 
@@ -303,7 +303,7 @@ def test_delete_token_deletes_and_invalidates_cache(monkeypatch, token_routes_mo
 
 
 # ---------------------------------------------------------------------------
-# 5. DELETE /api/tokens/{id} — not found → 404, cache NOT invalidated
+# 5. DELETE /api/tokens/{id} - not found → 404, cache NOT invalidated
 # ---------------------------------------------------------------------------
 
 
@@ -328,7 +328,7 @@ def test_delete_missing_token_returns_404_without_invalidating_cache(monkeypatch
 
 
 # ---------------------------------------------------------------------------
-# 6. PATCH /api/tokens/{id} — a partial update must not wipe scopes
+# 6. PATCH /api/tokens/{id} - a partial update must not wipe scopes
 # ---------------------------------------------------------------------------
 
 
@@ -348,7 +348,7 @@ def test_update_token_rename_preserves_scopes(monkeypatch, token_routes_mod):
 
     Previously update_token recomputed scopes from payload.get("scopes"),
     which is None on a rename, so _normalize_scopes(None) reset every token to
-    the default ["chat"] scope — a silent privilege/data loss.
+    the default ["chat"] scope - a silent privilege/data loss.
     """
     monkeypatch.setenv("AUTH_ENABLED", "true")
     mod = token_routes_mod
@@ -409,7 +409,7 @@ def test_update_missing_token_returns_404(monkeypatch, token_routes_mod):
 
 
 # ---------------------------------------------------------------------------
-# 7. Owner check — update/delete reject a different admin's token with 403
+# 7. Owner check - update/delete reject a different admin's token with 403
 # ---------------------------------------------------------------------------
 
 
@@ -505,7 +505,7 @@ def test_delete_token_owner_check_skipped_when_auth_disabled(monkeypatch, token_
 
 
 # ---------------------------------------------------------------------------
-# 7. PATCH /api/tokens/{id} — non-object JSON bodies must not 500
+# 7. PATCH /api/tokens/{id} - non-object JSON bodies must not 500
 # ---------------------------------------------------------------------------
 
 
@@ -527,7 +527,7 @@ def test_update_token_with_array_body_does_not_500(monkeypatch, token_routes_mod
     update_token = _get_handler(mod, "PATCH", "/tokens/{token_id}")
     resp = asyncio.run(update_token(request=req, token_id="tok123"))
 
-    # Name and scopes must be unchanged — payload was normalised to {}
+    # Name and scopes must be unchanged - payload was normalised to {}
     assert token.name == "original"
     assert token.scopes == "email:read"
     assert resp["name"] == "original"

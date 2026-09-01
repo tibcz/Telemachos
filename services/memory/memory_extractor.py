@@ -25,14 +25,14 @@ logger = logging.getLogger(__name__)
 def _tidy_state_path(memory_manager) -> str:
     """Sidecar JSON next to memory.json that remembers the fingerprint of
     the last successfully-audited state per owner. Lets the audit short-
-    circuit when nothing has changed since the previous tidy — running
+    circuit when nothing has changed since the previous tidy - running
     the LLM again on an already-clean list was wasting 30-120s per call
     and occasionally timing out on the second pass."""
     return os.path.join(os.path.dirname(memory_manager.memory_file), "memory_tidy_state.json")
 
 
 def _fingerprint_entries(entries) -> str:
-    """Stable hash of an owner's memories — order-independent, depends
+    """Stable hash of an owner's memories - order-independent, depends
     only on id+text+category. Any add/edit/delete invalidates it."""
     items = sorted(
         (str(e.get("id", "")), e.get("text", ""), e.get("category", ""))
@@ -77,7 +77,7 @@ EXTRACT_SYSTEM_PROMPT = (
     "Bad examples: what they asked about today, temporary moods, generic statements, "
     "things the assistant said, one-off tasks, opinions on the current topic.\n\n"
     "Rules:\n"
-    "- MAX 2 facts per conversation — only the most important\n"
+    "- MAX 2 facts per conversation - only the most important\n"
     "- Only extract facts the USER stated or clearly implied\n"
     "- Each fact must be a single short sentence (under 15 words)\n"
     "- If a fact is similar to something likely already known, skip it\n"
@@ -99,11 +99,11 @@ AUDIT_SYSTEM_PROMPT = (
     "are not sure two entries are the same fact, KEEP BOTH.\n"
     "   Merge: 'User's name is Sam' + 'The user is called Sam' -> one.\n"
     "   Do NOT merge related-but-distinct facts: 'Likes Python' and 'Uses "
-    "Python at work' are DIFFERENT — keep both.\n"
+    "Python at work' are DIFFERENT - keep both.\n"
     "2. REMOVE only entries that are genuinely worthless: about what the AI did "
     "(not the user), empty, or meaningless. Do NOT drop a real fact just "
     "because it seems minor or niche.\n"
-    "3. Keep the original wording. Only lightly trim obvious redundancy — do "
+    "3. Keep the original wording. Only lightly trim obvious redundancy - do "
     "NOT aggressively rewrite or shorten.\n"
     "4. Preserve the 'id' of the entry you keep when merging.\n"
     "5. Never invent facts. When unsure, KEEP.\n\n"
@@ -256,7 +256,7 @@ def _parse_extraction_json(raw: str) -> list:
     if text.startswith("```"):
         text = text.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
     # JSON may still be embedded in surrounding commentary (leading prose or
-    # trailing remarks like "[...] Done!") — slice from the first '[' to the
+    # trailing remarks like "[...] Done!") - slice from the first '[' to the
     # last ']' whenever both exist. Slice unconditionally: a reply that starts
     # with '[' can still carry trailing commentary that breaks json.loads.
     _start = text.find("[")
@@ -302,7 +302,7 @@ async def extract_and_store(
         if len(recent) < 2:
             return  # Need at least a user message and assistant response
 
-        # Strip media (images/audio) from messages — background memory extraction
+        # Strip media (images/audio) from messages - background memory extraction
         # only needs the text. The VL-generated descriptions are already in the
         # text content of the messages. This avoids sending image tokens to
         # non-vision models and prevents accidental "vision grounding" triggers.
@@ -326,7 +326,7 @@ async def extract_and_store(
         # Flatten the window into a SINGLE user message instead of appending the
         # raw alternating role messages. Passed as raw chat messages, the model
         # treats the window as a conversation to CONTINUE rather than a transcript
-        # to ANALYZE, so it reliably extracts nothing — typically returning `[]`
+        # to ANALYZE, so it reliably extracts nothing - typically returning `[]`
         # (and, depending on the input, sometimes an empty or <think>-only
         # completion when the window ends on an assistant turn). This was the real
         # cause of auto-memory logging "0 candidates" on every run. Reframing it as
@@ -371,7 +371,7 @@ async def extract_and_store(
 
             # Parse JSON, tolerating reasoning-model noise (<think> blocks, a
             # ```json fence, and leading/trailing commentary). See
-            # _parse_extraction_json — returns [] rather than raising.
+            # _parse_extraction_json - returns [] rather than raising.
             facts = _parse_extraction_json(raw)
         except Exception as e:
             logger.warning(f"LLM memory extraction failed; using fallback candidates if available: {e}")
@@ -413,7 +413,7 @@ async def extract_and_store(
 
             # Dedup: check vector similarity first (fast), then exact text match.
             # A runtime embedding/ChromaDB failure (backend OOM, model evicted,
-            # remote endpoint down) must not abort the whole batch — fall through
+            # remote endpoint down) must not abort the whole batch - fall through
             # to the text/fuzzy dedup below instead of losing every validated
             # fact extracted this session. (`.healthy` is only set at init, so
             # it does not catch failures that develop later.)
@@ -427,7 +427,7 @@ async def extract_and_store(
                     # The vector store is a single shared collection with no
                     # owner metadata, so find_similar can return ANOTHER
                     # tenant's memory. Only treat it as a duplicate when the
-                    # match is this user's own (or a legacy unowned) memory —
+                    # match is this user's own (or a legacy unowned) memory -
                     # otherwise the user's freshly-extracted fact would be
                     # silently dropped. Mirror the owner predicate used by the
                     # text dedup below; cross-tenant/stale matches fall through.
@@ -446,7 +446,7 @@ async def extract_and_store(
                 continue
 
             entry = memory_manager.add_entry(fact_text, source="auto", category=category, owner=_owner)
-            # Auto-pin identity facts (name, job, location) — core context
+            # Auto-pin identity facts (name, job, location) - core context
             if category == "identity":
                 entry["pinned"] = True
             if hasattr(session, "session_id"):
@@ -521,7 +521,7 @@ async def audit_memories(
         before_count = len(existing)
 
         # Skip the LLM call entirely when this exact set of memories was
-        # already audited — the previous tidy left them in a clean state
+        # already audited - the previous tidy left them in a clean state
         # and nothing has changed since. Returns instantly so the UI shows
         # "Already clean" without spending 30-120s on a wasted LLM round.
         # The fingerprint includes id+text+category; any add/edit/delete
@@ -529,7 +529,7 @@ async def audit_memories(
         current_fp = _fingerprint_entries(existing)
         last_state = _load_tidy_state(memory_manager).get(owner or "") or {}
         if last_state.get("fingerprint") == current_fp:
-            logger.info("Memory audit: state unchanged since last tidy — skipping LLM")
+            logger.info("Memory audit: state unchanged since last tidy - skipping LLM")
             return {
                 "before": before_count,
                 "after": before_count,
@@ -553,7 +553,7 @@ async def audit_memories(
             audit_messages,
             temperature=0.1,
             # 16384 (was 2000): the deduped list of all memories can be large,
-            # and a reasoning model spends tokens thinking first — 2000 truncated
+            # and a reasoning model spends tokens thinking first - 2000 truncated
             # the JSON so it never parsed ("bad_json").
             max_tokens=16384,
             headers=headers,
@@ -612,7 +612,7 @@ async def audit_memories(
                 if item.get("category"):
                     entry["category"] = item["category"]
             else:
-                # ID not found — skip to avoid inventing entries
+                # ID not found - skip to avoid inventing entries
                 logger.debug(f"Audit returned unknown id {mid}, skipping")
                 continue
 
@@ -621,14 +621,14 @@ async def audit_memories(
         after_count = len(final_entries)
 
         # Safety net against catastrophic over-deletion. A conservative tidy
-        # should never wipe out half the store in one pass — if the model
+        # should never wipe out half the store in one pass - if the model
         # returned far fewer entries than it was given (over-consolidation, a
         # dropped/truncated list, or it ignored ids), treat it as a misfire and
         # DON'T save. Better to no-op than to silently lose memories.
         if before_count >= 8 and after_count < before_count * 0.5:
             logger.warning(
                 f"Memory audit would cut {before_count} -> {after_count} "
-                f"(>50% removed) — refusing as unsafe, keeping originals"
+                f"(>50% removed) - refusing as unsafe, keeping originals"
             )
             return {"before": before_count, "after": before_count, "error": "unsafe_removal"}
 
@@ -662,7 +662,7 @@ async def audit_memories(
         )
 
         # Rebuild vector index from the full saved set, not just this owner's
-        # slice — otherwise the shared collection is wiped of every other
+        # slice - otherwise the shared collection is wiped of every other
         # owner's entries until they happen to run their own audit.
         if memory_vector and memory_vector.healthy:
             memory_vector.rebuild(saved_entries)

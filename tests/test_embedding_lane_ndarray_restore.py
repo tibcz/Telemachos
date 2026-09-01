@@ -4,7 +4,7 @@ preserved embeddings as a numpy ndarray.
 Real chromadb returns collection.get(include=["embeddings"]) as a numpy
 ndarray. The restore-after-failed-rewrite path used `embeddings or []` and a
 bare `if ... and embeddings:`, both of which raise
-"truth value of an array ... is ambiguous" on an ndarray — aborting the
+"truth value of an array ... is ambiguous" on an ndarray - aborting the
 restore and wiping the collection the reset was meant to preserve.
 
 This mirrors test_lane_reset_restores_existing_collection_when_rewrite_fails
@@ -59,7 +59,7 @@ def test_lane_reset_restores_when_chroma_returns_numpy_embeddings(monkeypatch):
 
     built = build_embedding_lanes("telemachos_memories")
 
-    # Both lanes are unavailable, but the existing row must survive — not be
+    # Both lanes are unavailable, but the existing row must survive - not be
     # wiped by an ndarray-truthiness crash in the restore path.
     assert built == []
     restored = fake.collections["telemachos_memories_custom"]

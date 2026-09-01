@@ -3,7 +3,7 @@
 // Shared mutable state for the email-library popup. Keeping these on a
 // single exported object lets sibling modules (utils, signatureFold,
 // future render/menu/composer splits) read and write the same values
-// without each one importing 19 `let` bindings — which ES modules
+// without each one importing 19 `let` bindings - which ES modules
 // don't allow from outside the defining module anyway.
 //
 // Writes look like `state._libOpen = true` everywhere; reads look like

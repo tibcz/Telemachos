@@ -1,4 +1,4 @@
-"""Issue #4593 — the CalDAV DAVClient must be closed on every path.
+"""Issue #4593 - the CalDAV DAVClient must be closed on every path.
 
 `_sync_blocking` (src/caldav_sync.py) and `_writeback_blocking`
 (src/caldav_writeback.py) each open their own DAVClient. The client holds an

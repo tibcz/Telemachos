@@ -50,7 +50,7 @@ PROVIDER_CASES = [
     ("deepseek", "https://api.deepseek.com",
      "https://api.deepseek.com/chat/completions",
      "https://api.deepseek.com/v1/models"),
-    # Gemini's OpenAI-compatible surface — treated as a generic OpenAI endpoint.
+    # Gemini's OpenAI-compatible surface - treated as a generic OpenAI endpoint.
     ("gemini_openai", "https://generativelanguage.googleapis.com/v1beta/openai",
      "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
      "https://generativelanguage.googleapis.com/v1beta/openai/models"),

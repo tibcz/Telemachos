@@ -12,8 +12,8 @@ Host-header allowlist as a positive defense. These tests pin the allowlist
 helpers + Starlette's middleware behavior so a future change can't silently
 re-open the hole.
 
-The tests AST-extract the security helpers — including the real
-``_configure_security_middleware`` wiring — from diffusion_server.py and run
+The tests AST-extract the security helpers - including the real
+``_configure_security_middleware`` wiring - from diffusion_server.py and run
 them against a fresh FastAPI app. That keeps the tests out of the torch /
 diffusers import path while still exercising the production middleware wiring
 instead of a hand-rebuilt copy.
@@ -42,8 +42,8 @@ def _load_helpers():
     """Extract the security helpers from diffusion_server.py via AST so the
     tests exercise the production wiring without importing the module (which
     would pull in torch / diffusers). Only the named top-level definitions are
-    compiled into a fresh module; everything else — including the heavy
-    imports — is left out. A renamed or removed helper fails loudly here."""
+    compiled into a fresh module; everything else - including the heavy
+    imports - is left out. A renamed or removed helper fails loudly here."""
     from fastapi.middleware.cors import CORSMiddleware
     from starlette.middleware.trustedhost import TrustedHostMiddleware
 
@@ -152,7 +152,7 @@ def _asgi_get(app, url, headers=None):
     This deliberately avoids ``starlette.testclient.TestClient``: its
     context-manager form spins up an ``anyio`` blocking portal (to run the
     lifespan), which deadlocks under some pytest / anyio / asyncio test
-    configurations — the focused Host-header test hung indefinitely during
+    configurations - the focused Host-header test hung indefinitely during
     review (see PR #347). A direct ASGI call needs neither a portal nor a
     lifespan, so it stays reliable regardless of the host project's async
     test plugins.
@@ -225,7 +225,7 @@ def test_cors_default_deny_does_not_emit_wildcard_acao():
 
     app = _configured_app(ns, cors_origins)
 
-    # Host is allowed, so the request itself succeeds — but the response must
+    # Host is allowed, so the request itself succeeds - but the response must
     # carry no ACAO, so a real browser would block the attacker page from
     # reading the body.
     resp = _asgi_get(
@@ -234,7 +234,7 @@ def test_cors_default_deny_does_not_emit_wildcard_acao():
     assert resp.status_code == 200
     acao = resp.headers.get("access-control-allow-origin")
     assert acao is None or acao == "", (
-        f"unexpected ACAO header: {acao!r} — the regression was wildcard CORS, "
+        f"unexpected ACAO header: {acao!r} - the regression was wildcard CORS, "
         f"so any non-empty default fails this gate"
     )
 

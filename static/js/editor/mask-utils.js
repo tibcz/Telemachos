@@ -1,7 +1,7 @@
 /**
  * Mask-canvas helpers used by the inpaint pipeline.
  *
- * Pure utility functions — they take a canvas (or layer-shape) as
+ * Pure utility functions - they take a canvas (or layer-shape) as
  * input and return a fresh canvas, with no module-level state.
  */
 

@@ -149,7 +149,7 @@ def _calendar_list_summary_from_tool_output(raw: str, max_items: int = 20) -> st
         when = re.sub(r"\s+", " ", m.group(1)).strip()
         title = re.sub(r"\s+", " ", m.group(2)).strip()
         suffix = re.sub(r"\s+", " ", m.group(4) or "").strip()
-        label = f"{title} — {when}"
+        label = f"{title} - {when}"
         if suffix:
             label += f" {suffix}"
         items.append(label)
@@ -227,7 +227,7 @@ def _format_email_summary_item(item: dict[str, str]) -> str:
         parts.append(item["date"])
     if item.get("uid"):
         parts.append(f"UID {item['uid']}")
-    text = " — ".join(parts)
+    text = " - ".join(parts)
     if item.get("summary"):
         text += f"\n  {item['summary']}"
     return text
@@ -302,7 +302,7 @@ def _load_mcp_disabled_map() -> Dict[str, set]:
     return disabled_map
 
 # System prompt that tells the LLM about available tools.
-# Always injected — the LLM decides whether to use them.
+# Always injected - the LLM decides whether to use them.
 _AGENT_PREAMBLE = """\
 You are an AI assistant with tool access. You can run shell commands, execute Python, search the web, \
 read/write files, create and edit documents, generate images, manage memories, and more. \
@@ -319,19 +319,19 @@ _AGENT_RULES = """\
 - Code/content >15 lines → ```create_document (NOT in chat). Short snippets OK in chat.
 - Long-form or structured writing is a document by default when the user asks to write/create/make/generate it and the answer would be more than a short paragraph. Use create_document instead of dumping the full content in chat.
 - Editing an existing document: ALWAYS use ```edit_document with FIND/REPLACE blocks. Do NOT rewrite the whole document with ```update_document unless genuinely changing more than half of it.
-- BIAS TOWARD ACTION on edit requests. If the user says "edit out X", "remove the Y paragraph", "change Z" — JUST DO IT with your best interpretation. Don't ask for clarification on minor ambiguity. The user can undo or re-prompt if wrong.
+- BIAS TOWARD ACTION on edit requests. If the user says "edit out X", "remove the Y paragraph", "change Z" - JUST DO IT with your best interpretation. Don't ask for clarification on minor ambiguity. The user can undo or re-prompt if wrong.
 - AFTER A TOOL SUCCEEDS, do not second-guess. The success message ("Document edited: v2, 1 edit") means it worked. Reply in ONE short sentence confirming what was done. No re-checking, no replaying the diff in your head, no validation theater.
-- AFTER A TOOL FAILS (timeout, error, "Unknown action", "not found"), DO NOT GO SILENT. The user expects a follow-up: either retry with a fix (e.g. correct args, longer-running form, run `tail -f /tmp/foo.log` to see progress, split into smaller steps), OR explicitly tell them "this didn't work, want me to try X instead?". A failed tool is not a stopping condition — only a successful one is.
-- YOU DECLARE WHEN THE JOB IS DONE — not a timer. Keep taking concrete steps while the task still needs them; you have plenty of rounds, so don't rush to quit just because you've made a few calls. There are exactly three ways to end a turn: (1) DONE — before you declare it, sanity-check that every concrete thing the user asked for actually exists or succeeded (file written, edit applied, command exited clean); then stop calling tools and write the final answer (that IS your "done" signal); (2) BLOCKED — you genuinely can't proceed (a capability is missing, permission denied, or data you can't obtain), so say plainly what's blocking you, in a sentence or two, and stop; (3) keep going with the single most useful next step. The only wrong moves are trailing off mid-task without one of these, and repeating a call you already ran.
+- AFTER A TOOL FAILS (timeout, error, "Unknown action", "not found"), DO NOT GO SILENT. The user expects a follow-up: either retry with a fix (e.g. correct args, longer-running form, run `tail -f /tmp/foo.log` to see progress, split into smaller steps), OR explicitly tell them "this didn't work, want me to try X instead?". A failed tool is not a stopping condition - only a successful one is.
+- YOU DECLARE WHEN THE JOB IS DONE - not a timer. Keep taking concrete steps while the task still needs them; you have plenty of rounds, so don't rush to quit just because you've made a few calls. There are exactly three ways to end a turn: (1) DONE - before you declare it, sanity-check that every concrete thing the user asked for actually exists or succeeded (file written, edit applied, command exited clean); then stop calling tools and write the final answer (that IS your "done" signal); (2) BLOCKED - you genuinely can't proceed (a capability is missing, permission denied, or data you can't obtain), so say plainly what's blocking you, in a sentence or two, and stop; (3) keep going with the single most useful next step. The only wrong moves are trailing off mid-task without one of these, and repeating a call you already ran.
 - Calendar: call `manage_calendar` with `action=list_calendars` FIRST before create/update/delete operations.
-- BULK email actions ("delete all those", "mark all as read", "archive these", "delete all spam", "mark these 19 read") → use the `bulk_email` tool ONCE with either the exact `uids` list from the latest `list_emails` result or `all_unread: true`. NEVER just say you deleted/archived/marked messages unless a delete/archive/mark/bulk email tool call succeeded. NEVER loop mark_email_read / archive_email / delete_email one message at a time — that floods the context and can blow the token budget. One bulk_email call handles the whole set.
+- BULK email actions ("delete all those", "mark all as read", "archive these", "delete all spam", "mark these 19 read") → use the `bulk_email` tool ONCE with either the exact `uids` list from the latest `list_emails` result or `all_unread: true`. NEVER just say you deleted/archived/marked messages unless a delete/archive/mark/bulk email tool call succeeded. NEVER loop mark_email_read / archive_email / delete_email one message at a time - that floods the context and can blow the token budget. One bulk_email call handles the whole set.
 - Email UIDs are the values after `UID:` in tool output, not list row numbers. For example, row `1.` with `UID: 90186` must use `"90186"`, never `"1"`.
 - "Last/latest/newest email" means call `list_emails` with `max_results: 1`, `unread_only: false`, and the right `account`, then read the UID returned by that tool if full content is needed. NEVER use a table row number like "#18" as an email UID.
 - Plain "list/show/check my inbox/emails" means latest inbox mail, including read messages. Do not set `unread_only: true` unless the user explicitly asks for unread/needs attention.
 - Multiple email accounts: if tool output says "Other accounts" or the user asks "my Gmail?", "other inbox?", "work mail?", "custom domain mail?", or names any mailbox/account, DO NOT answer from memory. Call `list_email_accounts` if needed, then call `list_emails`/`read_email`/`bulk_email` with the exact `account` value for that mailbox. Account names are user-defined labels; if the user typo-matches a known account, use the closest listed account instead of claiming it does not exist. NEVER use `app_api` or `/api/email/accounts` to discover email accounts; that route is owner-filtered in tool context and can falsely return empty.
 - User identity facts/preferences ("my name is <name>", "I live in <place>", "I prefer concise replies", "call me <name>") → use `manage_memory` with action=add. NEVER use `manage_contact` for facts about the user unless the user explicitly says to create/update a contact and provides contact details such as an email or phone.
 - "Create/add/write a note" / "notes" / "todos" / "remind me to X at <time>" → use `manage_notes`. Do NOT store notes in `manage_memory`; memory is for persistent facts/preferences about the user, not note content. For reminders, include a `due_date`; for todos, use `note_type=checklist` when appropriate.
-- "Do X every morning / daily / on a schedule / automatically" (e.g. "summarize my inbox every morning") → this is a request to CREATE A SCHEDULED TASK, not to do X once right now. Call `manage_tasks` with action=create (prompt = what to do, schedule + cron/time). Do NOT just perform the action inline this turn — the user wants it to recur. After creating, return a clickable `[Task name](#task-<id>)` link and tell them it'll run on schedule and show in the Tasks panel. If you also want to show a sample of this run, do that AFTER creating the task, not instead of it.
+- "Do X every morning / daily / on a schedule / automatically" (e.g. "summarize my inbox every morning") → this is a request to CREATE A SCHEDULED TASK, not to do X once right now. Call `manage_tasks` with action=create (prompt = what to do, schedule + cron/time). Do NOT just perform the action inline this turn - the user wants it to recur. After creating, return a clickable `[Task name](#task-<id>)` link and tell them it'll run on schedule and show in the Tasks panel. If you also want to show a sample of this run, do that AFTER creating the task, not instead of it.
 
 ## UI conventions
 - When you reference an entity by ID in your reply, render it as a STANDARD markdown link with a hash-prefixed anchor. The frontend converts these into clickable jump buttons:
@@ -340,19 +340,19 @@ _AGENT_RULES = """\
   - Notes: `[Title](#note-<id>)`
   - Gallery images: `[Caption](#image-<id>)`
   - Emails (use the UID from list_emails/read_email output): `[Subject](#email-<uid>)`
-  - Calendar events (use the uid from manage_calendar): `[Summary](#event-<uid>)` — opens the calendar on that day
+  - Calendar events (use the uid from manage_calendar): `[Summary](#event-<uid>)` - opens the calendar on that day
   - Tasks: `[Task name](#task-<id>)`
   - Skills: `[skill-name](#skill-<name>)`
   - Research jobs: `[Topic](#research-<session_id>)`
-- The format is `[link text](#kind-<id>)` — text in square brackets, anchor in parens. NOT `[name] [#kind-id]` and NOT `[#kind-id]`. That's plain text and the user can't click it.
-- Use this inside lists, tables, prose — anywhere. Tables: `| Name | Open |` rows like `| Big Chat | [open](#session-abc123) |` work fine.
+- The format is `[link text](#kind-<id>)` - text in square brackets, anchor in parens. NOT `[name] [#kind-id]` and NOT `[#kind-id]`. That's plain text and the user can't click it.
+- Use this inside lists, tables, prose - anywhere. Tables: `| Name | Open |` rows like `| Big Chat | [open](#session-abc123) |` work fine.
 - Examples:
-  - After `create_session` returns id `89effa28`: "Created [New Chat](#session-89effa28) — click to switch."
+  - After `create_session` returns id `89effa28`: "Created [New Chat](#session-89effa28) - click to switch."
   - Listing five sessions:
     ```
-    1. [Big Chat](#session-abc123) — 2h ago
-    2. [Code Review](#session-def456) — 5h ago
-    3. [Note Taking](#session-ghi789) — 1d ago
+    1. [Big Chat](#session-abc123) - 2h ago
+    2. [Code Review](#session-def456) - 5h ago
+    3. [Note Taking](#session-ghi789) - 1d ago
     ```
 """
 
@@ -360,24 +360,24 @@ _API_AGENT_RULES = """\
 ## Rules
 - Prefer native tool/function calling when tools are needed.
 - Only call tools when they materially help answer the request.
-- You MUST use tools to take action — do not describe what you would do. Act, don't narrate.
+- You MUST use tools to take action - do not describe what you would do. Act, don't narrate.
 - For web lookup/search/latest/current requests, call `web_search` or `web_fetch`. Do NOT use shell, Python, curl, requests, or scraping code for web lookup unless web tools are unavailable or already failed.
 - If `web_search` is listed in this prompt, web search is available. Do NOT tell the user search/web tools are unavailable.
 - Keep answers concise unless the user asks for depth.
 - For long code or content, use document tools instead of pasting large blocks into chat.
 - Long-form or structured writing is a document by default when the user asks to write/create/make/generate it and the answer would be more than a short paragraph. Call create_document instead of dumping the full content in chat.
-- Editing an existing document: ALWAYS use `edit_document` with find/replace. Only use `update_document` for genuine full rewrites (>50% changed) — do NOT echo the entire file back for small edits.
+- Editing an existing document: ALWAYS use `edit_document` with find/replace. Only use `update_document` for genuine full rewrites (>50% changed) - do NOT echo the entire file back for small edits.
 - If the active editor document is an email draft/compose window, treat that open email as the target for "write this", "write the email", "reply with...", "make it say...", "draft this", and similar requests. Do NOT create another document, search/list/manage documents, or open a different reply unless the user explicitly asks. Edit the open email draft with `edit_document` or `update_document`; preserve To/Cc/Bcc/Subject/In-Reply-To/References/X-* header lines unless the user asks to change them.
 - "Give suggestions / feedback / review / how can I improve this / what would make it better" about the OPEN document → call `suggest_document`, do NOT write a prose list of ideas in chat. It creates inline accept/reject bubbles on the doc. Give concrete `find`/`replace`/`reason` items. To suggest an ADDITION (e.g. "add a bow to the SVG", a new section), set `find` to a short existing anchor snippet and `replace` to that same snippet PLUS the new content. Only answer in prose when no document is open, or the request is purely conceptual with no concrete change to propose.
-- BIAS TOWARD ACTION on edit requests. If the user says "edit out X", "remove the Y paragraph", "change Z" — call the edit tool with your best interpretation. Don't ask for clarification on minor ambiguity. The user can undo.
-- AFTER A TOOL SUCCEEDS, do not second-guess. A success response means it worked. Reply in ONE short sentence confirming what was done. No verification thinking, no re-analyzing — move on.
+- BIAS TOWARD ACTION on edit requests. If the user says "edit out X", "remove the Y paragraph", "change Z" - call the edit tool with your best interpretation. Don't ask for clarification on minor ambiguity. The user can undo.
+- AFTER A TOOL SUCCEEDS, do not second-guess. A success response means it worked. Reply in ONE short sentence confirming what was done. No verification thinking, no re-analyzing - move on.
 - AFTER A TOOL FAILS, DO NOT GO SILENT. The user expects a follow-up: retry with a fix, run a diagnostic (`tail`, `ls`, `which`), or explicitly tell them what didn't work and what you'll try next. Failure is not a stopping condition.
-- YOU DECLARE WHEN THE JOB IS DONE — not a timer. Keep taking concrete steps while the task still needs them; don't quit early just because you've made a few calls. Three ways to end a turn: (1) DONE — before declaring it, verify every concrete deliverable the user asked for actually exists or succeeded; then stop calling tools and write the final answer (that IS your "done" signal); (2) BLOCKED — you can't proceed (missing capability, permission denied, unobtainable data), so state plainly what's blocking you and stop; (3) keep going with the single most useful next step. Never trail off mid-task without (1) or (2), and never repeat a call you already ran.
+- YOU DECLARE WHEN THE JOB IS DONE - not a timer. Keep taking concrete steps while the task still needs them; don't quit early just because you've made a few calls. Three ways to end a turn: (1) DONE - before declaring it, verify every concrete deliverable the user asked for actually exists or succeeded; then stop calling tools and write the final answer (that IS your "done" signal); (2) BLOCKED - you can't proceed (missing capability, permission denied, unobtainable data), so state plainly what's blocking you and stop; (3) keep going with the single most useful next step. Never trail off mid-task without (1) or (2), and never repeat a call you already ran.
 - Calendar: call `manage_calendar` with `action=list_calendars` FIRST before create/update/delete operations.
 - "Create/add/write a note" / "notes" / "todos" / "remind me to X at <time>" → use `manage_notes`. Do NOT store notes in `manage_memory`; memory is for persistent facts/preferences about the user, not note content. For reminders, include a `due_date`; for todos, use `note_type=checklist` when appropriate. `manage_tasks` is for RECURRING background AI jobs, NOT for one-off user reminders.
-- "Disable/turn off/enable/turn on <tool>" (shell, search, research, browser, documents, incognito, etc.) → call `ui_control` with `toggle <name> <on|off>`. Aliases accepted: shell→bash, search→web, deepresearch→research, documents→document_editor. NEVER record this as a memory — the user wants the toggle flipped, not a note about preferring it.
-- "Research X" / "do research on X" / "look into Y" / "deep dive on Z" → call `trigger_research` with `topic`. This starts a live job that appears in the Deep Research sidebar (streams progress + final report). **Do NOT use `web_search` for these** — saw the agent do a plain web_search for "do research on X" when the user wanted the deep-research job. "research X" is a deep-research request, not a quick lookup. (web_search is only for a single quick fact mid-task.) Do NOT POST /api/research/start via app_api either — blocked. After starting, tell the user it's running in the Deep Research sidebar. Only if the user explicitly wants it inline/quick should you fall back to web_search.
-- "Open/show <panel>" (documents, library, gallery, email, inbox, sessions, brain/memories, skills, settings, notes, cookbook) → call `ui_control` with `open_panel <name>`. Panel aliases: library/doc/docs/document→documents, images→gallery, mail/inbox/emails→email, chats/history→sessions, memory/memories→brain, preferences→settings, models/serve/serving→cookbook. CRITICAL: "open memory/memories/brain" / "open skills" / "open notes" / "open documents" / "open cookbook" means OPEN THE PANEL — call `ui_control`, NOT a manage/list tool. The "manage_*" tools list contents in chat; `ui_control open_panel` opens the visual modal the user is asking for.
+- "Disable/turn off/enable/turn on <tool>" (shell, search, research, browser, documents, incognito, etc.) → call `ui_control` with `toggle <name> <on|off>`. Aliases accepted: shell→bash, search→web, deepresearch→research, documents→document_editor. NEVER record this as a memory - the user wants the toggle flipped, not a note about preferring it.
+- "Research X" / "do research on X" / "look into Y" / "deep dive on Z" → call `trigger_research` with `topic`. This starts a live job that appears in the Deep Research sidebar (streams progress + final report). **Do NOT use `web_search` for these** - saw the agent do a plain web_search for "do research on X" when the user wanted the deep-research job. "research X" is a deep-research request, not a quick lookup. (web_search is only for a single quick fact mid-task.) Do NOT POST /api/research/start via app_api either - blocked. After starting, tell the user it's running in the Deep Research sidebar. Only if the user explicitly wants it inline/quick should you fall back to web_search.
+- "Open/show <panel>" (documents, library, gallery, email, inbox, sessions, brain/memories, skills, settings, notes, cookbook) → call `ui_control` with `open_panel <name>`. Panel aliases: library/doc/docs/document→documents, images→gallery, mail/inbox/emails→email, chats/history→sessions, memory/memories→brain, preferences→settings, models/serve/serving→cookbook. CRITICAL: "open memory/memories/brain" / "open skills" / "open notes" / "open documents" / "open cookbook" means OPEN THE PANEL - call `ui_control`, NOT a manage/list tool. The "manage_*" tools list contents in chat; `ui_control open_panel` opens the visual modal the user is asking for.
 - "Write/draft a reply saying X" for an open/read email → call `ui_control` with `action="open_email_reply"`, the email `uid`/`folder`, `mode="reply"`, and `body` containing the drafted reply. This opens the same email compose document as clicking Reply and DOES NOT send. Do NOT call `reply_to_email` unless the user explicitly says to send immediately.
 - "Open/start a reply", "open a reply to <sender>", "draft a reply window" with no requested body → find/read the email if needed, then call `ui_control` with `open_email_reply <uid> <folder> reply`.
 - Bulk email actions ("delete all those", "archive these", "mark all read") require a real email tool call. Use `bulk_email` once with UIDs from the latest `list_emails` result and the same `account`; never claim success without the tool result.
@@ -386,40 +386,40 @@ _API_AGENT_RULES = """\
 - Plain "list/show/check my inbox/emails" means latest inbox mail, including read messages. Do not set `unread_only: true` unless the user explicitly asks for unread/needs attention.
 - Multiple email accounts: if tool output says "Other accounts" or the user asks "my Gmail?", "other inbox?", "work mail?", "custom domain mail?", or names any mailbox/account, DO NOT answer from memory or infer it is the same inbox. Call `list_email_accounts` if needed, then call `list_emails`/`read_email`/`bulk_email` with the exact `account` value for that mailbox. Account names are user-defined labels; if the user typo-matches a known account, use the closest listed account instead of claiming it does not exist. NEVER use `app_api` or `/api/email/accounts` to discover email accounts; that route is owner-filtered in tool context and can falsely return empty.
 - User identity facts/preferences ("my name is <name>", "I live in <place>", "I prefer concise replies", "call me <name>") → use `manage_memory` with action=add. NEVER use `manage_contact` for facts about the user unless the user explicitly says to create/update a contact and provides contact details such as an email or phone.
-- You are running INSIDE Telemachos — there is no OpenWebUI, ChatGPT, or external chat backend to query. All chats/sessions live in THIS app and are accessed via `list_sessions` (or `manage_session` with `action=list`), and deleted via `manage_session` with `action=delete`. Do NOT shell out to find sqlite files, curl localhost:8080, or grep for routers — those don't exist here. If `list_sessions` returns rows, that IS the source of truth.
+- You are running INSIDE Telemachos - there is no OpenWebUI, ChatGPT, or external chat backend to query. All chats/sessions live in THIS app and are accessed via `list_sessions` (or `manage_session` with `action=list`), and deleted via `manage_session` with `action=delete`. Do NOT shell out to find sqlite files, curl localhost:8080, or grep for routers - those don't exist here. If `list_sessions` returns rows, that IS the source of truth.
 - After `list_sessions`, preserve the returned `[Chat title](#session-<id>)` links in your user-facing reply. Do not rewrite chat lists as plain tables with non-clickable titles.
 - "Cookbook" = the LLM-serving subsystem (NOT chat sessions, NOT a recipe app). Routing:
-  • "What's running" / "what's serving" / "show my cookbook" / "is anything up" → **first action MUST be `list_served_models` (no args)**. The tool is ALWAYS available. Do not run `ps aux`, do not `curl localhost:8000`, do not `which vllm`. Even if you don't remember seeing the tool listed, it IS available — call it. The output IS the source of truth (it tracks diffusion models, vLLM, SGLang, llama.cpp, Ollama, etc. — anything spawned via the cookbook, including remote hosts that `ps aux` here can't see).
+  • "What's running" / "what's serving" / "show my cookbook" / "is anything up" → **first action MUST be `list_served_models` (no args)**. The tool is ALWAYS available. Do not run `ps aux`, do not `curl localhost:8000`, do not `which vllm`. Even if you don't remember seeing the tool listed, it IS available - call it. The output IS the source of truth (it tracks diffusion models, vLLM, SGLang, llama.cpp, Ollama, etc. - anything spawned via the cookbook, including remote hosts that `ps aux` here can't see).
   • "What's downloading" / "show downloads" → `list_downloads` (always available).
   • "What models do I have" → `list_cached_models` (always available).
   • "Kill / stop / shut down" → `stop_served_model` (or `cancel_download`) with the session_id from the list.
   • Searching for a model → `search_hf_models`.
   • Downloading or serving a model → these run on a SERVER. If the user names one ("on gpu-box", "on the gpu box") pass `host=`. If they DON'T name one, the tool defaults to the cookbook's currently-selected server (NOT localhost). When there are multiple servers and it's genuinely ambiguous which they mean, call `list_cookbook_servers` and ask. Only download to localhost when the user explicitly says "locally" / "on this machine" (pass `local=true`).
   • Image/inpainting/diffusion serve requests ("serve inpaint", "SDXL inpainting", "image model") → use `serve_model` with a built-in image command. Apple/MLX image repos use `python3 scripts/mlx_image_server.py --model <repo> --port 8100`; non-MLX Diffusers repos use `python3 scripts/diffusion_server.py --model <repo> --port 8100`. Do NOT use `mlx_lm.server` for image models, do NOT invent modules like `diffusers_api_server`, and do NOT use bash/ssh/pip directly. The Cookbook route copies the server script to remote hosts and registers the image endpoint.
-  • Launching a saved preset explicitly ("run my preset", "start the saved SD 3.5 preset", "use the existing preset") → `list_serve_presets`, then `serve_preset {name: "..."}`. Do NOT fabricate a tmux command — the user already saved working ones from the UI. Only fall back to raw `serve_model` if no preset matches and the autonomous launch tool is not appropriate.
-  • Launching a model the user names ("serve minimax m2.7 on gpu-box") with NO preset → `serve_model {repo_id, cmd, host}`. The cookbook route OWNS tmux session creation AND state-file registration AND UI live-refresh — bypassing it produces an orphan the UI can never see. After launching, call `list_served_models` to verify readiness. If it reports a diagnosis and suggested adjusted command, retry with `serve_model` using that command instead of asking the user to debug raw tmux logs.
+  • Launching a saved preset explicitly ("run my preset", "start the saved SD 3.5 preset", "use the existing preset") → `list_serve_presets`, then `serve_preset {name: "..."}`. Do NOT fabricate a tmux command - the user already saved working ones from the UI. Only fall back to raw `serve_model` if no preset matches and the autonomous launch tool is not appropriate.
+  • Launching a model the user names ("serve minimax m2.7 on gpu-box") with NO preset → `serve_model {repo_id, cmd, host}`. The cookbook route OWNS tmux session creation AND state-file registration AND UI live-refresh - bypassing it produces an orphan the UI can never see. After launching, call `list_served_models` to verify readiness. If it reports a diagnosis and suggested adjusted command, retry with `serve_model` using that command instead of asking the user to debug raw tmux logs.
   • Adopting an already-running tmux session (someone or a prior bash launch started a server, but it's not in the cookbook) → `adopt_served_model {host, tmux_session, model, port}`. This registers it in cookbook_state.json AND adds it as a chat endpoint so the user can pick it in the model dropdown. Use this whenever you find a running server that the cookbook doesn't know about.
   • After ANY successful serve (preset or raw or adopted), the cookbook's serve flow auto-adds the model as an endpoint. If for some reason it didn't (e.g. the launch was external), call `adopt_served_model` to fix both at once, or `manage_endpoints` with action=add to register the URL manually.
-  **Anti-pattern (CRITICAL — saw the agent do this and it produced an orphan session invisible to the UI):** `ssh <host> 'tmux new-session ... vllm serve ...'` via bash. THIS IS WRONG even when it "works". The launch must go through `serve_model` so the cookbook route creates the tmux session AND writes the task to cookbook_state.json. If the user asks for a launch and you reach for bash/ssh/tmux, STOP — call `serve_model` instead. Bash launches don't show up in the Cookbook UI, can't be `stop_served_model`'d, and don't survive a UI refresh.
-  Anti-pattern (DO NOT do this — saw it twice): "I don't see list_served_models in my tool list, let me try bash ps aux." → wrong. The tool IS available. Just call it.
-  Anti-pattern: POSTing to `/api/cookbook/state` via `app_api` — that overwrites the whole state file (presets and all). Blocked. Use serve_preset / serve_model / stop_served_model.
+  **Anti-pattern (CRITICAL - saw the agent do this and it produced an orphan session invisible to the UI):** `ssh <host> 'tmux new-session ... vllm serve ...'` via bash. THIS IS WRONG even when it "works". The launch must go through `serve_model` so the cookbook route creates the tmux session AND writes the task to cookbook_state.json. If the user asks for a launch and you reach for bash/ssh/tmux, STOP - call `serve_model` instead. Bash launches don't show up in the Cookbook UI, can't be `stop_served_model`'d, and don't survive a UI refresh.
+  Anti-pattern (DO NOT do this - saw it twice): "I don't see list_served_models in my tool list, let me try bash ps aux." → wrong. The tool IS available. Just call it.
+  Anti-pattern: POSTing to `/api/cookbook/state` via `app_api` - that overwrites the whole state file (presets and all). Blocked. Use serve_preset / serve_model / stop_served_model.
 
 ## UI conventions
-- When referencing an entity by ID, render it as a STANDARD markdown link with a hash-prefixed anchor — the frontend renders these as clickable jump buttons:
+- When referencing an entity by ID, render it as a STANDARD markdown link with a hash-prefixed anchor - the frontend renders these as clickable jump buttons:
   - Sessions / chats: `[Name](#session-<id>)`
   - Documents: `[Title](#document-<id>)`
   - Notes: `[Title](#note-<id>)`
   - Gallery images: `[Caption](#image-<id>)`
   - Emails (use the UID from list_emails/read_email output): `[Subject](#email-<uid>)`
-  - Calendar events (use the uid from manage_calendar): `[Summary](#event-<uid>)` — opens the calendar on that day
+  - Calendar events (use the uid from manage_calendar): `[Summary](#event-<uid>)` - opens the calendar on that day
   - Tasks: `[Task name](#task-<id>)`
   - Skills: `[skill-name](#skill-<name>)`
   - Research jobs: `[Topic](#research-<session_id>)`
-- The format is `[link text](#kind-<id>)` — text in square brackets, anchor in parens. NOT `[name] [#kind-id]` and NOT `[#kind-id]`. That's plain text and the user can't click it.
-- Use this inside lists, tables, prose — anywhere. Tables: `| Big Chat | [open](#session-abc123) |` works.
+- The format is `[link text](#kind-<id>)` - text in square brackets, anchor in parens. NOT `[name] [#kind-id]` and NOT `[#kind-id]`. That's plain text and the user can't click it.
+- Use this inside lists, tables, prose - anywhere. Tables: `| Big Chat | [open](#session-abc123) |` works.
 - Examples:
-  - After `create_session` returns id `89effa28`: "Created [New Chat](#session-89effa28) — click to switch."
-  - Listing sessions: "1. [Big Chat](#session-abc123) — 2h ago, 2. [Code Review](#session-def456) — 5h ago\""""
+  - After `create_session` returns id `89effa28`: "Created [New Chat](#session-89effa28) - click to switch."
+  - Listing sessions: "1. [Big Chat](#session-abc123) - 2h ago, 2. [Code Review](#session-def456) - 5h ago\""""
 
 _AGENT_PREAMBLE = """\
 You are an AI assistant with tool access. Only the tools listed below are available for this turn.
@@ -517,7 +517,7 @@ _DOMAIN_RULES = {
 ## Contacts rules
 - Use `resolve_contact` to look up a contact's email or phone number by name. Searches the CardDAV address book and sent email history.
 - Use `manage_contact` to list, add, update, or delete contacts in the address book.
-- Do NOT use `manage_memory` for contact lookups — contact details live in the address book, not memory.""",
+- Do NOT use `manage_memory` for contact lookups - contact details live in the address book, not memory.""",
     "integrations": """\
 ## Integration/API rules
 - To query or control a configured service integration (Home Assistant, Miniflux, Gitea, Linkding, Jellyfin, or any other registered service), use `api_call` with the integration name, HTTP method, path, and optional JSON body.
@@ -562,20 +562,20 @@ TOOL_SECTIONS = {
 ```
 Run any shell command. Output is returned to you. Use for: installing packages, checking files, git, system info, process management, etc.
 Do NOT use bash/curl for web lookup/search/latest/current requests when `web_search` or `web_fetch` is available.
-NEVER use bash to create or change files — no `>`/`>>` redirects, no heredocs (`cat > f << 'EOF'`), no `tee`, `sed -i`, `awk -i`, no `python -c` that writes. To CREATE or fully rewrite a file use `write_file`; to change part of an existing file use `edit_file`. Those show a diff and are the ONLY allowed way to write files. (bash is for read-only inspection: `ls`, `cat` to READ, `grep`, `git status`/`git diff`, builds, installs.)
-For LONG-running commands (package installs, pip/npm, ffmpeg, model downloads, training, builds — anything that may take more than ~20s), make the FIRST line `#!bg` to run it in the BACKGROUND. You get a job id back immediately and are automatically re-invoked with the full output when it finishes — so you never block the chat waiting. Example:
+NEVER use bash to create or change files - no `>`/`>>` redirects, no heredocs (`cat > f << 'EOF'`), no `tee`, `sed -i`, `awk -i`, no `python -c` that writes. To CREATE or fully rewrite a file use `write_file`; to change part of an existing file use `edit_file`. Those show a diff and are the ONLY allowed way to write files. (bash is for read-only inspection: `ls`, `cat` to READ, `grep`, `git status`/`git diff`, builds, installs.)
+For LONG-running commands (package installs, pip/npm, ffmpeg, model downloads, training, builds - anything that may take more than ~20s), make the FIRST line `#!bg` to run it in the BACKGROUND. You get a job id back immediately and are automatically re-invoked with the full output when it finishes - so you never block the chat waiting. Example:
 ```bash
 #!bg
 pip install openai-whisper
 ```
-SANDBOX LIMITS: stdin/stdout are pipes, so there is NO interactive terminal — `input()`, `curses`, `termios`, `pygame`, and `tkinter` will all fail. Don't try to RUN interactive terminal games or GUI apps here — verify syntax (`python -c "import py_compile; py_compile.compile('x.py')"`) and tell the user to run it themselves in their own terminal. For anything the USER should play/use interactively (games, UIs, demos), prefer a single self-contained HTML file with `<canvas>` + inline JS — save it via `create_document` with language="html" and tell the user to hit the Run / Preview button (▶) in the document editor toolbar; it renders inline in a sandboxed iframe so the game is playable right there. Works from any machine that can reach the Telemachos UI — no need to copy files out.
-NEVER pipe multi-line Python through `python -c "..."` — shell quoting eats real newlines and `\\n` arrives as literal backslash-n, which Python parses as a line-continuation error on line 1. To run multi-line code, either use the dedicated `python` tool block above, or save to a file first with a quoted HEREDOC (`cat > /tmp/x.py << 'EOF' ... EOF`) and then `python /tmp/x.py`.""",
+SANDBOX LIMITS: stdin/stdout are pipes, so there is NO interactive terminal - `input()`, `curses`, `termios`, `pygame`, and `tkinter` will all fail. Don't try to RUN interactive terminal games or GUI apps here - verify syntax (`python -c "import py_compile; py_compile.compile('x.py')"`) and tell the user to run it themselves in their own terminal. For anything the USER should play/use interactively (games, UIs, demos), prefer a single self-contained HTML file with `<canvas>` + inline JS - save it via `create_document` with language="html" and tell the user to hit the Run / Preview button (▶) in the document editor toolbar; it renders inline in a sandboxed iframe so the game is playable right there. Works from any machine that can reach the Telemachos UI - no need to copy files out.
+NEVER pipe multi-line Python through `python -c "..."` - shell quoting eats real newlines and `\\n` arrives as literal backslash-n, which Python parses as a line-continuation error on line 1. To run multi-line code, either use the dedicated `python` tool block above, or save to a file first with a quoted HEREDOC (`cat > /tmp/x.py << 'EOF' ... EOF`) and then `python /tmp/x.py`.""",
 
     "python": """\
 ```python
 <python code>
 ```
-Execute Python code. Use for computation, data processing, scripting. NOT for writing code for the user (use create_document for that). Same sandbox limits as bash — no TTY, no GUI, no `input()`; for anything the user should interact with, generate a single HTML file with inline JS instead.
+Execute Python code. Use for computation, data processing, scripting. NOT for writing code for the user (use create_document for that). Same sandbox limits as bash - no TTY, no GUI, no `input()`; for anything the user should interact with, generate a single HTML file with inline JS instead.
 Prefer a dedicated tool whenever one fits the job (reading, searching, or writing files); use python only for computation/processing no dedicated tool covers - not for reading or writing files.
 Do NOT use Python/requests for web lookup/search/latest/current requests when `web_search` or `web_fetch` is available.""",
 
@@ -587,7 +587,7 @@ Or with JSON for fresh news:
 ```web_search
 {"query": "<your query>", "time_filter": "day"}
 ```
-Search the web for a SINGLE quick fact/lookup mid-task. For news / "today" / "latest" queries, pass `time_filter` ("day", "week", "month", or "year"). NOT for "research X" / "do research on X" / "look into X" requests — those mean a multi-source DEEP RESEARCH job: use `trigger_research` instead (it runs in the Deep Research sidebar and produces a full report). web_search = one quick query; trigger_research = a researched report.
+Search the web for a SINGLE quick fact/lookup mid-task. For news / "today" / "latest" queries, pass `time_filter` ("day", "week", "month", or "year"). NOT for "research X" / "do research on X" / "look into X" requests - those mean a multi-source DEEP RESEARCH job: use `trigger_research` instead (it runs in the Deep Research sidebar and produces a full report). web_search = one quick query; trigger_research = a researched report.
 If this `web_search` tool section is visible, search is available. Do NOT tell the user web/search tools are unavailable.
 Use this instead of `bash`, `curl`, `python`, `requests`, or scraping code for web lookup/search/latest/current requests.""",
 
@@ -614,7 +614,7 @@ Write content to a file. First line is the path, rest is the content.""",
 ```edit_file
 {"path": "<file path>", "old_string": "<exact text to replace>", "new_string": "<replacement>", "replace_all": false}
 ```
-Edit an EXISTING file by exact string replacement. PREFER this over bash (sed/echo/redirects) for changing files — it shows a before/after diff. `old_string` must match the file exactly and be unique unless `replace_all` is true. Use write_file to create a new file.""",
+Edit an EXISTING file by exact string replacement. PREFER this over bash (sed/echo/redirects) for changing files - it shows a before/after diff. `old_string` must match the file exactly and be unique unless `replace_all` is true. Use write_file to create a new file.""",
 
     "apply_patch": """\
 ```apply_patch
@@ -645,7 +645,7 @@ Return the absolute path of the active workspace folder. File tools are CONFINED
 <language>
 <content>
 ```
-Create a NEW document in the editor panel. Only use when the user explicitly asks for a new file/document. If a document is already open in the editor, the user's request "fix this", "add X", "change Y", etc. refers to THAT document — use edit_document, never create_document.""",
+Create a NEW document in the editor panel. Only use when the user explicitly asks for a new file/document. If a document is already open in the editor, the user's request "fix this", "add X", "change Y", etc. refers to THAT document - use edit_document, never create_document.""",
 
     "edit_document": """\
 ```edit_document
@@ -655,13 +655,13 @@ old text to find
 new replacement text
 <<<END>>>
 ```
-Edit a document OPEN IN THE EDITOR PANEL — NOT a file on disk. For files on disk (home folder, project files, any real path like ~/sweden.txt) use `edit_file` instead. Find exact text and replace it. Multiple FIND/REPLACE blocks per call OK. Use for any edit smaller than a full rewrite. **If a document is open in the editor, treat it as the user's current context: don't ask which file they mean, and don't create a new one — just edit_document the active one.** Do NOT re-send the whole file with update_document for small changes.""",
+Edit a document OPEN IN THE EDITOR PANEL - NOT a file on disk. For files on disk (home folder, project files, any real path like ~/sweden.txt) use `edit_file` instead. Find exact text and replace it. Multiple FIND/REPLACE blocks per call OK. Use for any edit smaller than a full rewrite. **If a document is open in the editor, treat it as the user's current context: don't ask which file they mean, and don't create a new one - just edit_document the active one.** Do NOT re-send the whole file with update_document for small changes.""",
 
     "update_document": """\
 ```update_document
 <entire new content>
 ```
-Replace the ENTIRE active document. ONLY use when you're genuinely rewriting more than half of it from scratch. For any smaller change, use edit_document — echoing back the whole file for a two-line edit wastes tokens and is hard to review.""",
+Replace the ENTIRE active document. ONLY use when you're genuinely rewriting more than half of it from scratch. For any smaller change, use edit_document - echoing back the whole file for a two-line edit wastes tokens and is hard to review.""",
 
     "suggest_document": """\
 ```suggest_document
@@ -684,56 +684,56 @@ Suggest changes with explanations (for review/feedback requests).""",
 ```
 Generate an image. Line 1 = description, line 2 = model name, line 3 = WxH (e.g. 1024x1024), line 4 = quality.""",
 
-    "chat_with_model": "- ```chat_with_model``` — Ask a DIFFERENT AI model and relay its answer. Line 1 = model name (or 'model@endpoint'), rest = your message. Use when the user says 'ask <model>', 'what does <model> think', or wants to compare/their answer from another model.",
-    "ask_teacher": "- ```ask_teacher``` — Escalate a hard question to a more capable model. Line 1 = model name or 'auto', rest = the question. Use when stuck or need expert knowledge.",
-    "list_models": "- ```list_models``` — Show all available AI models across all endpoints. Use when user asks what models are available.",
-    "manage_session": "- ```manage_session``` — Rename, archive, delete, fork, switch, or `list` chats (the UI calls them 'chats'; 'session' is internal). Line 1 = action (list/switch/rename/archive/unarchive/delete/important/unimportant/truncate/fork), Line 2 = exact chat id from `list_sessions` (or `current` where supported). For delete/archive/truncate, always list first and reuse the exact id; never invent placeholder ids. `switch`/`open` returns a clickable anchor link the user can tap to open the chat — use for \"open my X chat\".",
-    "manage_memory": "- ```manage_memory``` — Manage the user's persistent memory (facts about the USER themselves, their preferences, context that persists across chats). Line 1 = action (list/add/edit/delete/search), rest = content. Use when user says 'remember this' about themselves, states identity facts like 'my name is <name>' / 'call me <name>' / 'I live in <place>', or asks about stored memories. DO NOT use for info about another person (their address, phone, email, birthday) — that goes in `manage_contact`. If the user pastes an address/phone with a name and says 'save this for <person>', use `manage_contact add` with the address arg, NOT manage_memory.",
-    "manage_skills": "- ```manage_skills``` — Skill registry (SKILL.md format). Args (JSON): {\"action\": \"list|view|view_ref|search|add|edit|patch|publish|delete\", ...}. `list` returns the index of available skills (published + teacher-escalation drafts); `view name=foo` fetches the full SKILL.md; `view_ref name=foo path=...` loads a reference file under the skill directory. For `add`, provide an explicit kebab-case `name` and only report the exact returned name, because storage may normalize or dedupe it. Use this BEFORE doing domain work — there may already be a procedure (published or draft) that prescribes the correct steps. Drafts written by the teacher loop are authoritative guidance even though they're not yet published.",
-    "manage_tasks": "- ```manage_tasks``` — Create and manage scheduled background tasks (recurring AI jobs). Args (JSON): {\"action\": \"list|create|edit|delete|pause|resume|run\", ...}",
-    "manage_endpoints": "- ```manage_endpoints``` — Add, remove, or configure AI model API endpoints. Args (JSON): {\"action\": \"list|add|delete|enable|disable\", ...}. Use when user wants to add a new AI provider.",
-    "manage_mcp": "- ```manage_mcp``` — Manage MCP (Model Context Protocol) tool servers — external tools that extend your capabilities. Args (JSON): {\"action\": \"list|add|delete|reconnect|list_tools\", ...}",
-    "manage_webhooks": "- ```manage_webhooks``` — Configure outgoing webhooks (HTTP notifications on events like chat completion). Args (JSON): {\"action\": \"list|add|delete|enable|disable\", ...}",
-    "manage_tokens": "- ```manage_tokens``` — Generate or revoke API access tokens for external integrations. Args (JSON): {\"action\": \"list|create|delete\", ...}",
-    "manage_documents": "- ```manage_documents``` — List, read/open, delete, or tidy documents in the editor panel. Args (JSON): {\"action\": \"list|read|delete|tidy\", ...}. `list` returns rows like `[Title](#document-<id>) — lang, size, updated 5m ago` sorted MOST-RECENT FIRST; the user clicks the anchor to open. `read` (aliases: view/open/get) takes `document_id` and returns the content. When the user asks \"open/show/read my notes\" or \"what documents do I have\", use this — do NOT shell out, do NOT curl.",
-    "manage_research": "- ```manage_research``` — List, read/open, or delete saved DEEP RESEARCH results from the Library. Args (JSON): {\"action\": \"list|read|delete\", \"id\": \"<id>\", \"search\": \"...\"}. `list` returns rows like `[query](#research-<id>) — N sources` MOST-RECENT FIRST; the user clicks to open. `read` (aliases: open/view/get) takes `id` and returns the report text + sources. Use when the user says \"open/read/find/delete my research\" or \"that report\". This IS how you read a finished report: when the user refers to a just-completed deep-research job (\"check it out\", \"read that report\", \"summarize the research\") WITHOUT giving an id, call `manage_research` with `action:list` to get the most-recent id, then `action:read` with that id, and answer from the returned text. Do NOT `web_fetch`/`app_api` the `/api/research/report/{id}` URL — that endpoint renders HTML for the browser, not clean text — and do NOT start a fresh `web_search`/`trigger_research` just to read an existing report. To START new research, use trigger_research instead.",
-    "manage_settings": "- ```manage_settings``` — View/change the REAL app settings (same ones the Settings panel writes) AND turn tools on/off. Change a setting: `{\"action\":\"set\",\"key\":\"...\",\"value\":\"...\"}` — keys accept friendly aliases, e.g. voice→tts_voice, \"search engine\"→search_provider, \"default model\"→default_model, \"teacher model\"→teacher_model, \"task/background model\"→task_model, \"image quality\"→image_quality, \"reminder channel\"→reminder_channel (browser|email|ntfy), \"agent timeout\"/\"max tool calls\"/\"token budget\". Read: `{\"action\":\"get\",\"key\":\"...\"}`; see all: `{\"action\":\"list\"}`; reset one: `{\"action\":\"reset\",\"key\":\"...\"}`. Use this when the user asks to change ANY preference instead of making them open Settings. Secrets/API keys are read-only (tell them to set those in the panel). Tool toggles: `{\"action\":\"disable_tool|enable_tool\",\"tool\":\"shell\"}` (aliases: shell/search/browser/documents/memory/skills/images/tasks/notes/calendar/email), list disabled: `{\"action\":\"list_tools\"}`.",
+    "chat_with_model": "- ```chat_with_model``` - Ask a DIFFERENT AI model and relay its answer. Line 1 = model name (or 'model@endpoint'), rest = your message. Use when the user says 'ask <model>', 'what does <model> think', or wants to compare/their answer from another model.",
+    "ask_teacher": "- ```ask_teacher``` - Escalate a hard question to a more capable model. Line 1 = model name or 'auto', rest = the question. Use when stuck or need expert knowledge.",
+    "list_models": "- ```list_models``` - Show all available AI models across all endpoints. Use when user asks what models are available.",
+    "manage_session": "- ```manage_session``` - Rename, archive, delete, fork, switch, or `list` chats (the UI calls them 'chats'; 'session' is internal). Line 1 = action (list/switch/rename/archive/unarchive/delete/important/unimportant/truncate/fork), Line 2 = exact chat id from `list_sessions` (or `current` where supported). For delete/archive/truncate, always list first and reuse the exact id; never invent placeholder ids. `switch`/`open` returns a clickable anchor link the user can tap to open the chat - use for \"open my X chat\".",
+    "manage_memory": "- ```manage_memory``` - Manage the user's persistent memory (facts about the USER themselves, their preferences, context that persists across chats). Line 1 = action (list/add/edit/delete/search), rest = content. Use when user says 'remember this' about themselves, states identity facts like 'my name is <name>' / 'call me <name>' / 'I live in <place>', or asks about stored memories. DO NOT use for info about another person (their address, phone, email, birthday) - that goes in `manage_contact`. If the user pastes an address/phone with a name and says 'save this for <person>', use `manage_contact add` with the address arg, NOT manage_memory.",
+    "manage_skills": "- ```manage_skills``` - Skill registry (SKILL.md format). Args (JSON): {\"action\": \"list|view|view_ref|search|add|edit|patch|publish|delete\", ...}. `list` returns the index of available skills (published + teacher-escalation drafts); `view name=foo` fetches the full SKILL.md; `view_ref name=foo path=...` loads a reference file under the skill directory. For `add`, provide an explicit kebab-case `name` and only report the exact returned name, because storage may normalize or dedupe it. Use this BEFORE doing domain work - there may already be a procedure (published or draft) that prescribes the correct steps. Drafts written by the teacher loop are authoritative guidance even though they're not yet published.",
+    "manage_tasks": "- ```manage_tasks``` - Create and manage scheduled background tasks (recurring AI jobs). Args (JSON): {\"action\": \"list|create|edit|delete|pause|resume|run\", ...}",
+    "manage_endpoints": "- ```manage_endpoints``` - Add, remove, or configure AI model API endpoints. Args (JSON): {\"action\": \"list|add|delete|enable|disable\", ...}. Use when user wants to add a new AI provider.",
+    "manage_mcp": "- ```manage_mcp``` - Manage MCP (Model Context Protocol) tool servers - external tools that extend your capabilities. Args (JSON): {\"action\": \"list|add|delete|reconnect|list_tools\", ...}",
+    "manage_webhooks": "- ```manage_webhooks``` - Configure outgoing webhooks (HTTP notifications on events like chat completion). Args (JSON): {\"action\": \"list|add|delete|enable|disable\", ...}",
+    "manage_tokens": "- ```manage_tokens``` - Generate or revoke API access tokens for external integrations. Args (JSON): {\"action\": \"list|create|delete\", ...}",
+    "manage_documents": "- ```manage_documents``` - List, read/open, delete, or tidy documents in the editor panel. Args (JSON): {\"action\": \"list|read|delete|tidy\", ...}. `list` returns rows like `[Title](#document-<id>) - lang, size, updated 5m ago` sorted MOST-RECENT FIRST; the user clicks the anchor to open. `read` (aliases: view/open/get) takes `document_id` and returns the content. When the user asks \"open/show/read my notes\" or \"what documents do I have\", use this - do NOT shell out, do NOT curl.",
+    "manage_research": "- ```manage_research``` - List, read/open, or delete saved DEEP RESEARCH results from the Library. Args (JSON): {\"action\": \"list|read|delete\", \"id\": \"<id>\", \"search\": \"...\"}. `list` returns rows like `[query](#research-<id>) - N sources` MOST-RECENT FIRST; the user clicks to open. `read` (aliases: open/view/get) takes `id` and returns the report text + sources. Use when the user says \"open/read/find/delete my research\" or \"that report\". This IS how you read a finished report: when the user refers to a just-completed deep-research job (\"check it out\", \"read that report\", \"summarize the research\") WITHOUT giving an id, call `manage_research` with `action:list` to get the most-recent id, then `action:read` with that id, and answer from the returned text. Do NOT `web_fetch`/`app_api` the `/api/research/report/{id}` URL - that endpoint renders HTML for the browser, not clean text - and do NOT start a fresh `web_search`/`trigger_research` just to read an existing report. To START new research, use trigger_research instead.",
+    "manage_settings": "- ```manage_settings``` - View/change the REAL app settings (same ones the Settings panel writes) AND turn tools on/off. Change a setting: `{\"action\":\"set\",\"key\":\"...\",\"value\":\"...\"}` - keys accept friendly aliases, e.g. voice→tts_voice, \"search engine\"→search_provider, \"default model\"→default_model, \"teacher model\"→teacher_model, \"task/background model\"→task_model, \"image quality\"→image_quality, \"reminder channel\"→reminder_channel (browser|email|ntfy), \"agent timeout\"/\"max tool calls\"/\"token budget\". Read: `{\"action\":\"get\",\"key\":\"...\"}`; see all: `{\"action\":\"list\"}`; reset one: `{\"action\":\"reset\",\"key\":\"...\"}`. Use this when the user asks to change ANY preference instead of making them open Settings. Secrets/API keys are read-only (tell them to set those in the panel). Tool toggles: `{\"action\":\"disable_tool|enable_tool\",\"tool\":\"shell\"}` (aliases: shell/search/browser/documents/memory/skills/images/tasks/notes/calendar/email), list disabled: `{\"action\":\"list_tools\"}`.",
     "manage_notes": """\
 ```manage_notes
 {"action": "add", "title": "<short todo>", "due_date": "<natural language or ISO datetime>"}
 ```
-Notes, checklists, AND user reminders. Use this for "create/add/write a note", todos, checklists, and "remind me to X at <time>" — never use memory for note content. For reminders, pair a short `title` (what to do) with a `due_date` (when). `due_date` accepts natural language ("tomorrow at 1pm", "in 2 hours", "next monday 9am") or ISO ("2026-05-12T13:00:00"). Actions: `list`, `add` (title, content OR items:[{text,done}], note_type, color, label, due_date), `update`, `delete`, `toggle_item`.""",
-    "list_email_accounts": "- ```list_email_accounts``` — List configured email accounts. Use this before reading/sending when the user says Gmail, work mail, custom domain mail, or any non-default mailbox; pass the returned account name/email/id as `account` to email tools.",
+Notes, checklists, AND user reminders. Use this for "create/add/write a note", todos, checklists, and "remind me to X at <time>" - never use memory for note content. For reminders, pair a short `title` (what to do) with a `due_date` (when). `due_date` accepts natural language ("tomorrow at 1pm", "in 2 hours", "next monday 9am") or ISO ("2026-05-12T13:00:00"). Actions: `list`, `add` (title, content OR items:[{text,done}], note_type, color, label, due_date), `update`, `delete`, `toggle_item`.""",
+    "list_email_accounts": "- ```list_email_accounts``` - List configured email accounts. Use this before reading/sending when the user says Gmail, work mail, custom domain mail, or any non-default mailbox; pass the returned account name/email/id as `account` to email tools.",
     "send_email": """\
 ```send_email
 {"to": "recipient@example.com", "subject": "Re: Your question", "body": "Hi, ...", "account": "gmail"}
 ```
 Send a new email via SMTP. Use `resolve_contact` first if you only have a name. If multiple email accounts exist, call `list_email_accounts` first and pass the chosen `account`.
 
-CRITICAL — signatures: DO NOT invent a sign-off name. End the body with just `Thanks,` or similar — never type a person's name unless the user explicitly told you what to sign as. When `agent_email_confirm` is on (default), the tool returns `{pending: true, pending_id: ...}` and stages the email for the user to approve in the chat UI instead of SMTPing immediately.""",
+CRITICAL - signatures: DO NOT invent a sign-off name. End the body with just `Thanks,` or similar - never type a person's name unless the user explicitly told you what to sign as. When `agent_email_confirm` is on (default), the tool returns `{pending: true, pending_id: ...}` and stages the email for the user to approve in the chat UI instead of SMTPing immediately.""",
     "list_emails": """\
 ```list_emails
 {"folder": "INBOX", "max_results": 20, "unread_only": false, "account": "gmail"}
 ```
 List recent emails from a folder, newest first, including read messages by default. Use `list_email_accounts` first when the user names a mailbox/account, then pass `account`. For "last/latest/newest email", call with `max_results: 1` and `unread_only: false`.""",
-    "read_email": "- ```read_email``` — Read a specific email by UID. Args (JSON): {\"uid\": \"...\", \"folder\": \"INBOX\", \"account\": \"gmail\"}. Include `account` when the UID came from a named/non-default mailbox.",
+    "read_email": "- ```read_email``` - Read a specific email by UID. Args (JSON): {\"uid\": \"...\", \"folder\": \"INBOX\", \"account\": \"gmail\"}. Include `account` when the UID came from a named/non-default mailbox.",
     "reply_to_email": """\
 ```reply_to_email
-{"uid": "1234", "body": "Sounds good — talk Friday.", "account": "gmail"}
+{"uid": "1234", "body": "Sounds good - talk Friday.", "account": "gmail"}
 ```
-SEND a reply email immediately by UID. Do not use this for "write/draft a reply", "open a reply", or "start a reply" — those should use `ui_control` with `open_email_reply <uid> <folder> reply <body>` (or structured `body`) to open the email draft document. Only use this when the user explicitly says to send now. Never invent UID `1`. Threads automatically (In-Reply-To/References handled).
+SEND a reply email immediately by UID. Do not use this for "write/draft a reply", "open a reply", or "start a reply" - those should use `ui_control` with `open_email_reply <uid> <folder> reply <body>` (or structured `body`) to open the email draft document. Only use this when the user explicitly says to send now. Never invent UID `1`. Threads automatically (In-Reply-To/References handled).
 
-CRITICAL — signatures: DO NOT invent a sign-off name. End the body with just `Thanks,` or similar — never type a person's name unless the user explicitly told you what to sign as. When `agent_email_confirm` is on (default), the tool returns `{pending: true, pending_id: ...}` and stages the email for the user to approve in the chat UI instead of SMTPing immediately.""",
+CRITICAL - signatures: DO NOT invent a sign-off name. End the body with just `Thanks,` or similar - never type a person's name unless the user explicitly told you what to sign as. When `agent_email_confirm` is on (default), the tool returns `{pending: true, pending_id: ...}` and stages the email for the user to approve in the chat UI instead of SMTPing immediately.""",
     "bulk_email": """\
 ```bulk_email
 {"action": "delete", "uids": ["10997", "10998"], "folder": "INBOX", "account": "Gmail"}
 ```
 Bulk delete/archive/mark emails. Use this for "delete all those" after listing emails. Pass the exact UIDs and the same account from the list result, then report only the tool result.""",
-    "delete_email": "- ```delete_email``` — Delete one email by UID. Args (JSON): {\"uid\":\"...\", \"folder\":\"INBOX\", \"account\":\"Gmail\"}. For multiple messages use bulk_email.",
-    "archive_email": "- ```archive_email``` — Archive one email by UID. Args (JSON): {\"uid\":\"...\", \"folder\":\"INBOX\", \"account\":\"Gmail\"}. For multiple messages use bulk_email.",
-    "mark_email_read": "- ```mark_email_read``` — Mark one email read/unread. Args (JSON): {\"uid\":\"...\", \"read\":true, \"folder\":\"INBOX\", \"account\":\"Gmail\"}. For multiple messages use bulk_email.",
-    "resolve_contact": "- ```resolve_contact``` — Look up a contact's email by name. Searches CardDAV address book + sent email history. Args (JSON): {\"name\": \"...\"}. Use BEFORE send_email when the user gives only a name.",
-    "manage_contact": "- ```manage_contact``` — Create/update/delete/list CardDAV contacts. Args (JSON): {\"action\": \"list|add|update|delete\", \"name\": \"...\", \"email\": \"...\", \"phones\": [...], \"address\": \"...\", \"uid\": \"...\"}. Use for info about another person: email, phone, postal address. For 'save this for <person>' / address paste / phone next to a name, use this — NOT manage_memory. Do NOT use for user identity facts ('my name is X'); those are manage_memory. For update/delete, call action=list first for the uid.",
+    "delete_email": "- ```delete_email``` - Delete one email by UID. Args (JSON): {\"uid\":\"...\", \"folder\":\"INBOX\", \"account\":\"Gmail\"}. For multiple messages use bulk_email.",
+    "archive_email": "- ```archive_email``` - Archive one email by UID. Args (JSON): {\"uid\":\"...\", \"folder\":\"INBOX\", \"account\":\"Gmail\"}. For multiple messages use bulk_email.",
+    "mark_email_read": "- ```mark_email_read``` - Mark one email read/unread. Args (JSON): {\"uid\":\"...\", \"read\":true, \"folder\":\"INBOX\", \"account\":\"Gmail\"}. For multiple messages use bulk_email.",
+    "resolve_contact": "- ```resolve_contact``` - Look up a contact's email by name. Searches CardDAV address book + sent email history. Args (JSON): {\"name\": \"...\"}. Use BEFORE send_email when the user gives only a name.",
+    "manage_contact": "- ```manage_contact``` - Create/update/delete/list CardDAV contacts. Args (JSON): {\"action\": \"list|add|update|delete\", \"name\": \"...\", \"email\": \"...\", \"phones\": [...], \"address\": \"...\", \"uid\": \"...\"}. Use for info about another person: email, phone, postal address. For 'save this for <person>' / address paste / phone next to a name, use this - NOT manage_memory. Do NOT use for user identity facts ('my name is X'); those are manage_memory. For update/delete, call action=list first for the uid.",
     "manage_calendar": """\
 ```manage_calendar
 {"action": "create_event", "summary": "<event title>", "dtstart": "<natural language or ISO datetime>"}
@@ -744,31 +744,31 @@ For `create_event`: {summary, dtstart, dtend?, duration?, calendar?, location?, 
 For `update_event`: {uid, summary?, dtstart?, dtend?, all_day?, location?, description?, event_type?, importance?, rrule?}. Pass `rrule: ""` to remove recurrence and make a repeating event a single event. \
 `dtstart` accepts natural language ("tomorrow at 1pm", "in 2 hours", "next monday 9am") or ISO ("2026-05-12T13:00:00"). \
 If `dtend` omitted, defaults to dtstart+1h (or +1d when `all_day: true`). \
-For a RECURRING event pass `rrule` as an iCalendar RRULE string, e.g. `"FREQ=WEEKLY;BYDAY=MO"` (every Monday), `"FREQ=DAILY;COUNT=10"`, or `"FREQ=MONTHLY;BYMONTHDAY=1"` — create ONE event with the rrule, do not loop creating many events. Do not pass `rrule` for "next Wednesday only", "just this once", or any single occurrence. \
+For a RECURRING event pass `rrule` as an iCalendar RRULE string, e.g. `"FREQ=WEEKLY;BYDAY=MO"` (every Monday), `"FREQ=DAILY;COUNT=10"`, or `"FREQ=MONTHLY;BYMONTHDAY=1"` - create ONE event with the rrule, do not loop creating many events. Do not pass `rrule` for "next Wednesday only", "just this once", or any single occurrence. \
 If the user asks for a reminder/alarm before the event, pass `reminder_minutes` as an integer; do not write reminder text into the event description and do NOT also call `manage_notes` for the same reminder because calendar reminders are routed through Notes automatically. \
 `calendar` accepts a name ("Main") or short-id prefix.""",
-    "create_session": "- ```create_session``` — Create a new chat. Line 1 = chat name, line 2 = model name. Use for background/parallel work.",
-    "list_sessions": "- ```list_sessions``` — List chats sorted MOST-RECENT FIRST (the UI calls them 'chats') with clickable chat-title links. Output includes a relative \"last active\" timestamp per row, so the first row is the user's most recent chat. Content = optional filter keyword (matches chat name). When answering, preserve the `[title](#session-id)` links exactly; do not convert them into plain text.",
-    "send_to_session": "- ```send_to_session``` — Send a message to another session. Line 1 = session_id, rest = message. Use for orchestrating work across sessions.",
-    "search_chats": "- ```search_chats``` — Search past session transcripts for direct conversation evidence. Use when user asks 'did we discuss X?', 'find the conversation about Y', or when prior chat context is more appropriate than persistent memory.",
-    "pipeline": "- ```pipeline``` — Run a multi-step AI pipeline. Args (JSON) with ordered steps, each specifying a model and prompt. Use for complex workflows.",
-    "ui_control": "- ```ui_control``` — Control the UI: toggle tools on/off, OPEN PANELS, open email reply drafts, switch models, change themes. Commands: `toggle <name> on/off` (names: bash/shell, web/search, research, incognito, document_editor/documents), `open_panel <name>` (panels: documents, gallery, email, sessions, notes, memories/brain, skills, settings, cookbook), `open_email_reply <uid> <folder> <reply|reply-all|ai-reply> <body text>` (opens an email compose document pre-filled with body, DOES NOT send; use this for normal “write/draft a reply saying X” requests), `set_mode agent/chat`, `switch_model <name>`, `set_theme <preset>`, `create_theme <name> <bg> <fg> <panel> <border> <accent>` (optional key=val for advanced colors AND background effects: bgPattern=<none|dots|synapse|rain|constellations|perlin-flow|petals|sparkles|embers>, bgEffectColor=#RRGGBB, bgEffectIntensity=<num>, bgEffectSize=<num>, frosted=true|false). \"open documents\" / \"open library\" / \"show gallery\" / \"open inbox\" / \"open notes\" / \"open cookbook\" all map to `open_panel <name>`. Built-in theme presets: dark, light, midnight, paper, cyberpunk, retrowave, forest, ocean, ume, copper, terminal, organs, lavender, gpt, claude, cute. For any other vibe/name, use create_theme.",
-    "ask_user": "- ```ask_user``` — Ask the user a multiple-choice question when the task is genuinely ambiguous and the answer changes what you do next (pick an approach, confirm an assumption, choose a target). Args (JSON): {\"question\": \"...\", \"options\": [{\"label\": \"...\", \"description\": \"...\"?}, ...], \"multi\": false?}. 2-6 options. The user gets clickable buttons; calling this ENDS your turn and their choice comes back as your next message. Prefer sensible defaults — only ask when you truly can't proceed well without their input.",
-    "update_plan": "- ```update_plan``` — While executing an approved plan, write the plan back: tick steps done or revise them. Args (JSON): {\"plan\": \"- [x] done step\\n- [ ] next step\"}. Always pass the COMPLETE checklist, not a diff. Call it after finishing each step (mark it `- [x]`) and whenever the user asks to change the plan. The user's docked plan window updates live. Does nothing if there's no active plan.",
-    "list_served_models": "- ```list_served_models``` — Show what the Cookbook (LLM-serving subsystem) is currently running. NO args. Use this for ANY 'what's running' / 'what's serving' / 'show my cookbook' / 'is anything up' query. DO NOT shell out (`ps aux`, `docker ps`, etc.) — this tool is the source of truth. Failed serve tasks include recent logs plus diagnosis/retry suggestions; use those suggestions to call `serve_model` again with an adjusted command when appropriate.",
-    "stop_served_model": "- ```stop_served_model``` — Stop a running model server. Args (JSON): {\"session_id\": \"<from list_served_models>\"}. Use for 'kill my cookbook' / 'stop the model' / 'shut down vLLM'.",
-    "tail_serve_output": "- ```tail_serve_output``` — Read the actual tmux stderr/traceback of a CURRENTLY failing cookbook task. Args (JSON): {\"session_id\": \"<from list_served_models>\", \"tail\": 150?}. **Use ONLY after** you just launched something via `serve_model` AND `list_served_models` reports YOUR new task as `crashed`/`error`. DO NOT use it on old stopped/completed download tasks (they're historical noise — won't predict whether a new launch succeeds). DO NOT call it before launching a fresh attempt. When you do call it, bump `tail` to 400+ only if the visible error references 'see root cause above'.",
-    "download_model": "- ```download_model``` — Download a HuggingFace model. Args (JSON): {\"repo_id\": \"Qwen/Qwen3-8B\", \"host\": \"user@gpu-box\"?, \"include\": \"*Q4_K_M*\"?}.",
-    "serve_model": "- ```serve_model``` — Start serving a model with vLLM / SGLang / llama.cpp / Ollama / MLX Image / Diffusers. Args (JSON): {\"repo_id\": \"...\", \"cmd\": \"vllm serve <repo> --port 8000\" or \"python3 -m sglang.launch_server --model-path <repo> --port 30000\" or \"python3 scripts/mlx_image_server.py --model <repo> --port 8100\" or \"python3 scripts/diffusion_server.py --model <repo> --port 8100\", \"host\": \"user@gpu-box\"?}. For MLX image models, use `scripts/mlx_image_server.py`; for non-MLX image/inpaint/diffusion models, use `scripts/diffusion_server.py`. Never use `mlx_lm.server` for image models. After launch, call `list_served_models`; if it returns a diagnosis with an adjusted command, retry with that command.",
-    "list_downloads": "- ```list_downloads``` — Show in-progress HuggingFace model downloads (filters Cookbook tasks/status to downloads only). NO args. Use for 'what's downloading' / 'show my downloads' / 'check download progress'.",
-    "cancel_download": "- ```cancel_download``` — Cancel an in-progress download. Args (JSON): {\"session_id\": \"<from list_downloads>\"}. Use for 'cancel the download' / 'kill the download'.",
-    "search_hf_models": "- ```search_hf_models``` — Search HuggingFace for models. Args (JSON): {\"query\": \"qwen 8b\", \"limit\": 10?}. Use for 'find a model for X' / 'search huggingface' / 'what models are there for Y'.",
-    "list_cached_models": "- ```list_cached_models``` — List models already on disk. Args (JSON, all optional): {\"host\": \"server-name or user@gpu-box\"?, \"model_dir\": \"/data/models,/extra\"?}. Friendly Cookbook server names work. Use for 'what models do I have' / 'show cached models' / 'is X downloaded'.",
+    "create_session": "- ```create_session``` - Create a new chat. Line 1 = chat name, line 2 = model name. Use for background/parallel work.",
+    "list_sessions": "- ```list_sessions``` - List chats sorted MOST-RECENT FIRST (the UI calls them 'chats') with clickable chat-title links. Output includes a relative \"last active\" timestamp per row, so the first row is the user's most recent chat. Content = optional filter keyword (matches chat name). When answering, preserve the `[title](#session-id)` links exactly; do not convert them into plain text.",
+    "send_to_session": "- ```send_to_session``` - Send a message to another session. Line 1 = session_id, rest = message. Use for orchestrating work across sessions.",
+    "search_chats": "- ```search_chats``` - Search past session transcripts for direct conversation evidence. Use when user asks 'did we discuss X?', 'find the conversation about Y', or when prior chat context is more appropriate than persistent memory.",
+    "pipeline": "- ```pipeline``` - Run a multi-step AI pipeline. Args (JSON) with ordered steps, each specifying a model and prompt. Use for complex workflows.",
+    "ui_control": "- ```ui_control``` - Control the UI: toggle tools on/off, OPEN PANELS, open email reply drafts, switch models, change themes. Commands: `toggle <name> on/off` (names: bash/shell, web/search, research, incognito, document_editor/documents), `open_panel <name>` (panels: documents, gallery, email, sessions, notes, memories/brain, skills, settings, cookbook), `open_email_reply <uid> <folder> <reply|reply-all|ai-reply> <body text>` (opens an email compose document pre-filled with body, DOES NOT send; use this for normal “write/draft a reply saying X” requests), `set_mode agent/chat`, `switch_model <name>`, `set_theme <preset>`, `create_theme <name> <bg> <fg> <panel> <border> <accent>` (optional key=val for advanced colors AND background effects: bgPattern=<none|dots|synapse|rain|constellations|perlin-flow|petals|sparkles|embers>, bgEffectColor=#RRGGBB, bgEffectIntensity=<num>, bgEffectSize=<num>, frosted=true|false). \"open documents\" / \"open library\" / \"show gallery\" / \"open inbox\" / \"open notes\" / \"open cookbook\" all map to `open_panel <name>`. Built-in theme presets: dark, light, midnight, paper, cyberpunk, retrowave, forest, ocean, ume, copper, terminal, organs, lavender, gpt, claude, cute. For any other vibe/name, use create_theme.",
+    "ask_user": "- ```ask_user``` - Ask the user a multiple-choice question when the task is genuinely ambiguous and the answer changes what you do next (pick an approach, confirm an assumption, choose a target). Args (JSON): {\"question\": \"...\", \"options\": [{\"label\": \"...\", \"description\": \"...\"?}, ...], \"multi\": false?}. 2-6 options. The user gets clickable buttons; calling this ENDS your turn and their choice comes back as your next message. Prefer sensible defaults - only ask when you truly can't proceed well without their input.",
+    "update_plan": "- ```update_plan``` - While executing an approved plan, write the plan back: tick steps done or revise them. Args (JSON): {\"plan\": \"- [x] done step\\n- [ ] next step\"}. Always pass the COMPLETE checklist, not a diff. Call it after finishing each step (mark it `- [x]`) and whenever the user asks to change the plan. The user's docked plan window updates live. Does nothing if there's no active plan.",
+    "list_served_models": "- ```list_served_models``` - Show what the Cookbook (LLM-serving subsystem) is currently running. NO args. Use this for ANY 'what's running' / 'what's serving' / 'show my cookbook' / 'is anything up' query. DO NOT shell out (`ps aux`, `docker ps`, etc.) - this tool is the source of truth. Failed serve tasks include recent logs plus diagnosis/retry suggestions; use those suggestions to call `serve_model` again with an adjusted command when appropriate.",
+    "stop_served_model": "- ```stop_served_model``` - Stop a running model server. Args (JSON): {\"session_id\": \"<from list_served_models>\"}. Use for 'kill my cookbook' / 'stop the model' / 'shut down vLLM'.",
+    "tail_serve_output": "- ```tail_serve_output``` - Read the actual tmux stderr/traceback of a CURRENTLY failing cookbook task. Args (JSON): {\"session_id\": \"<from list_served_models>\", \"tail\": 150?}. **Use ONLY after** you just launched something via `serve_model` AND `list_served_models` reports YOUR new task as `crashed`/`error`. DO NOT use it on old stopped/completed download tasks (they're historical noise - won't predict whether a new launch succeeds). DO NOT call it before launching a fresh attempt. When you do call it, bump `tail` to 400+ only if the visible error references 'see root cause above'.",
+    "download_model": "- ```download_model``` - Download a HuggingFace model. Args (JSON): {\"repo_id\": \"Qwen/Qwen3-8B\", \"host\": \"user@gpu-box\"?, \"include\": \"*Q4_K_M*\"?}.",
+    "serve_model": "- ```serve_model``` - Start serving a model with vLLM / SGLang / llama.cpp / Ollama / MLX Image / Diffusers. Args (JSON): {\"repo_id\": \"...\", \"cmd\": \"vllm serve <repo> --port 8000\" or \"python3 -m sglang.launch_server --model-path <repo> --port 30000\" or \"python3 scripts/mlx_image_server.py --model <repo> --port 8100\" or \"python3 scripts/diffusion_server.py --model <repo> --port 8100\", \"host\": \"user@gpu-box\"?}. For MLX image models, use `scripts/mlx_image_server.py`; for non-MLX image/inpaint/diffusion models, use `scripts/diffusion_server.py`. Never use `mlx_lm.server` for image models. After launch, call `list_served_models`; if it returns a diagnosis with an adjusted command, retry with that command.",
+    "list_downloads": "- ```list_downloads``` - Show in-progress HuggingFace model downloads (filters Cookbook tasks/status to downloads only). NO args. Use for 'what's downloading' / 'show my downloads' / 'check download progress'.",
+    "cancel_download": "- ```cancel_download``` - Cancel an in-progress download. Args (JSON): {\"session_id\": \"<from list_downloads>\"}. Use for 'cancel the download' / 'kill the download'.",
+    "search_hf_models": "- ```search_hf_models``` - Search HuggingFace for models. Args (JSON): {\"query\": \"qwen 8b\", \"limit\": 10?}. Use for 'find a model for X' / 'search huggingface' / 'what models are there for Y'.",
+    "list_cached_models": "- ```list_cached_models``` - List models already on disk. Args (JSON, all optional): {\"host\": \"server-name or user@gpu-box\"?, \"model_dir\": \"/data/models,/extra\"?}. Friendly Cookbook server names work. Use for 'what models do I have' / 'show cached models' / 'is X downloaded'.",
     "app_api": """\
 ```app_api
 {"action": "call", "method": "GET", "path": "/api/cookbook/gpus"}
 ```
-GENERIC LOOPBACK to allowed Telemachos internal endpoints. Use this whenever the user wants something the UI can do but there's NO named tool for it. Many UI buttons hit /api/* endpoints — you can hit allowed ones. Auth is handled automatically.
+GENERIC LOOPBACK to allowed Telemachos internal endpoints. Use this whenever the user wants something the UI can do but there's NO named tool for it. Many UI buttons hit /api/* endpoints - you can hit allowed ones. Auth is handled automatically.
 
 **Discovery first.** If you're not sure of the path, call `{"action":"endpoints","filter":"<keyword>"}` (e.g. filter='calendar' or 'gallery' or 'theme') to list available endpoints with their methods + summaries. Then call with action='call'.
 
@@ -783,7 +783,7 @@ GENERIC LOOPBACK to allowed Telemachos internal endpoints. Use this whenever the
 - Sessions: `/api/sessions`, `/api/session/{id}`, `/api/session/{id}/truncate`
 - Themes: `/api/prefs/themes`, `/api/prefs/custom-themes`
 - Settings: `/api/settings`, `/api/prefs/{key}`
-- Research: `/api/research/start`, `/api/research/tasks` (note: `/api/research/report/{id}` renders HTML — to READ a report's text use the `manage_research` tool with `action:read`, not this endpoint)
+- Research: `/api/research/start`, `/api/research/tasks` (note: `/api/research/report/{id}` renders HTML - to READ a report's text use the `manage_research` tool with `action:read`, not this endpoint)
 - Compare: `/api/compare/sessions`, `/api/compare/start`
 - Email: use named email tools (`list_email_accounts`, `list_emails`, `read_email`, `scan_email_unsubscribes`, `unsubscribe_email`, `send_email`, `reply_to_email`). Do NOT use `/api/email/accounts`; it is owner-filtered in tool context and may falsely return empty.
 - Endpoints (model providers): `/api/endpoints`, `/api/endpoints/{id}`
@@ -791,7 +791,7 @@ GENERIC LOOPBACK to allowed Telemachos internal endpoints. Use this whenever the
 
 Body for POST/PUT/PATCH goes in `body` (object). Query params in `query` (object). Returns the parsed JSON of the response.
 
-**When to prefer named tools over app_api:** if a named wrapper exists (list_email_accounts, list_emails, read_email, scan_email_unsubscribes, manage_calendar, manage_notes, list_served_models, etc.) USE IT — it has nicer output formatting and clearer schema. Reach for `app_api` only when there's no wrapper for what you need.
+**When to prefer named tools over app_api:** if a named wrapper exists (list_email_accounts, list_emails, read_email, scan_email_unsubscribes, manage_calendar, manage_notes, list_served_models, etc.) USE IT - it has nicer output formatting and clearer schema. Reach for `app_api` only when there's no wrapper for what you need.
 
 Blocked paths/routes (refused for safety): /api/auth/, /api/users/, /api/tokens/, /api/admin/, /api/shell/, /api/backup/restore, /api/email/accounts, POST /api/cookbook/packages/install, POST /api/cookbook/rebuild-engine, POST /api/cookbook/kill-pid.""",
 }
@@ -810,7 +810,7 @@ def get_builtin_overrides() -> dict:
 
 
 def _section_text(name: str, default: str) -> str:
-    """Effective TOOL_SECTIONS text for a tool — user override if set,
+    """Effective TOOL_SECTIONS text for a tool - user override if set,
     else the shipped default."""
     ov = get_builtin_overrides()
     val = ov.get(name)
@@ -837,8 +837,8 @@ def _compact_tool_line(name: str, section: str) -> str:
         if in_fence and len(usage) < 3:
             usage.append(ln)
     if usage:
-        return f"- `{name}` — " + " ".join(usage)
-    return f"- `{name}` — " + lines[0][:160]
+        return f"- `{name}` - " + " ".join(usage)
+    return f"- `{name}` - " + lines[0][:160]
 
 
 def _assemble_prompt(tool_names: set, disabled_tools: set = None, compact: bool = False) -> str:
@@ -896,12 +896,12 @@ AGENT_SYSTEM_PROMPT = _assemble_prompt(set(TOOL_SECTIONS.keys()))
 _cached_base_prompt = None
 _cached_base_prompt_key = None
 
-# Constants — moved out of hot paths to avoid per-request/per-round allocation
+# Constants - moved out of hot paths to avoid per-request/per-round allocation
 # Hosts whose endpoints natively support OpenAI-style function calling.
 # When the active endpoint is one of these, the agent sends FUNCTION_TOOL_SCHEMAS
 # (so the model emits `tool_calls` directly) instead of relying on the model
-# to copy fenced-block examples from prompt text. Smaller models — DeepSeek
-# especially — often fail to follow the fenced-block convention and emit raw
+# to copy fenced-block examples from prompt text. Smaller models - DeepSeek
+# especially - often fail to follow the fenced-block convention and emit raw
 # JSON, which the agent then can't parse as a tool call.
 _API_HOSTS = frozenset([
     "api.openai.com", "api.anthropic.com",
@@ -1066,7 +1066,7 @@ def _agent_route_tool_mode(
         is_api_model = any(host in endpoint_url for host in _API_HOSTS) or model_supports_tools
     return is_api_model, is_ollama_native, ollama_openai_compat
 
-# Admin tool keywords — if the last user message contains any of these, include admin tools
+# Admin tool keywords - if the last user message contains any of these, include admin tools
 _ADMIN_KEYWORDS = [
     "session", "sessions", "chat", "chats", "conversation", "conversations",
     "delete", "fork", "truncate",
@@ -1075,7 +1075,7 @@ _ADMIN_KEYWORDS = [
     "task", "tasks", "schedule", "cron", "setting", "settings", "preference",
     "configure", "config", "setup", "manage", "admin", "pipeline", "second opinion",
     "list models", "switch model", "change model", "theme", "create theme",
-    # Documents — "show/list/read my docs", "open my notes file", etc.
+    # Documents - "show/list/read my docs", "open my notes file", etc.
     # Without these, manage_documents never reaches the prompt and the
     # agent flails (curl, bash) instead of using the right tool.
     "document", "documents", "doc", "docs", "library", "tidy",
@@ -1467,7 +1467,7 @@ def _classify_agent_request(messages: List[Dict], last_user: str) -> Dict[str, o
         domains.add("settings")
     if has(r"\b(contact|contacts|phone|phone number|address book|vcard)\b"):
         domains.add("contacts")
-    # API-integration intent — calling a configured service via the api_call
+    # API-integration intent - calling a configured service via the api_call
     # tool. Without this the #3794 repro ("Use the api_call tool to call Home
     # Assistant GET /api/states") matched no domain, classified as low-signal,
     # and the tool never reached the schema filter. Detect it explicitly so the
@@ -2150,7 +2150,7 @@ def _recent_context_for_retrieval(messages: List[Dict], max_user: int = 3, max_c
 
     A contextless follow-up ("yes", "and?", "do it in November") carries no
     tool signal on its own, so RAG/keyword retrieval drops the tools the
-    conversation is actually about — the model then "forgets" it has e.g.
+    conversation is actually about - the model then "forgets" it has e.g.
     manage_calendar and improvises with bash/app_api. Concatenating the recent
     user turns lets the follow-up inherit the topic so just-used tools stay
     surfaced. Newest-first, so the latest turn survives the length cap."""
@@ -2162,7 +2162,7 @@ def _recent_context_for_retrieval(messages: List[Dict], max_user: int = 3, max_c
         if isinstance(content, list):
             content = " ".join(b.get("text", "") for b in content if isinstance(b, dict))
         content = (content or "").strip()
-        # Skip injected envelopes — role=user but not human intent. Tool results
+        # Skip injected envelopes - role=user but not human intent. Tool results
         # are now wrapped via untrusted_context_message (metadata.trusted=False);
         # keep the legacy "[Tool execution results]" prefix for older histories.
         meta = msg.get("metadata") or {}
@@ -2292,7 +2292,7 @@ def _build_system_prompt(
     # IMPORTANT: this is intentionally NOT prepended into agent_prompt (the
     # system message) anymore. Its text changes every minute, and local
     # OpenAI-compatible backends (llama.cpp / LM Studio) key their KV-cache
-    # prefix off the system message byte-for-byte — mixing ever-changing
+    # prefix off the system message byte-for-byte - mixing ever-changing
     # timestamp text into the (already large, tool-laden) agent system prompt
     # would invalidate the cached prefix on every single request, forcing a
     # full prompt re-evaluation each turn (issue #2927). It's built here as a
@@ -2337,20 +2337,20 @@ def _build_system_prompt(
         if _is_email_doc:
             _email_prompt_doc = _compact_email_draft_context(_doc_raw)
             doc_ctx = (
-                f'ACTIVE EMAIL DRAFT (open in editor — the user is looking at this right now)\n'
+                f'ACTIVE EMAIL DRAFT (open in editor - the user is looking at this right now)\n'
                 f'Title: "{active_document.title}"\n'
                 f'```\n{_email_prompt_doc}\n```\n\n'
                 f'This is the current email compose window, not a normal document library item. If the user says "write", "draft", "reply", "make it say", or "write the email" without naming another target, edit THIS email draft.\n\n'
                 f'When the user asks you to write, reply to, or improve this email:\n'
-                f'1. Use `update_document` to update this email draft — keep all header lines (To, Subject, In-Reply-To, References, X-Source-UID, X-Source-Folder, X-Attachments) and the `---` separator EXACTLY as they are.\n'
+                f'1. Use `update_document` to update this email draft - keep all header lines (To, Subject, In-Reply-To, References, X-Source-UID, X-Source-Folder, X-Attachments) and the `---` separator EXACTLY as they are.\n'
                 f'2. Replace ONLY the new reply text above `---------- Previous message ----------`. You may omit the quoted history from your tool output; Telemachos preserves everything from that separator downward automatically.\n'
                 f'3. Write the reply body above the quoted original. Use the saved email writing style when present.\n'
                 f'4. Identity is critical: write as the logged-in user / mailbox owner only. NEVER sign as the recipient, original sender, quoted sender, spouse, assistant, company, or any third party. If adding a signature, use only the name/signature implied by the saved email writing style.\n'
                 f'5. Mechanical style is critical: never use em dash/en dash; use --. Never use curly apostrophes. For English emails, use Hi/Hiya from the saved style rather than Hey unless the user explicitly asks for Hey.\n'
-                f'6. Do NOT use create_document — the email is already open, you must update it.\n'
+                f'6. Do NOT use create_document - the email is already open, you must update it.\n'
                 f'7. Do NOT call read_email/list_emails for this turn. The open email draft above is the source of truth, and the quoted history excerpt is enough context for a reply.\n'
                 f'8. After a successful tool call, answer with a brief confirmation only. Do not paste the full email back into chat unless the user asks.\n\n'
-                f'Do NOT ask the user to paste or share the email — you already have it above.'
+                f'Do NOT ask the user to paste or share the email - you already have it above.'
             )
         else:
             # Branch on whether the active doc is a form-backed PDF (via the
@@ -2365,7 +2365,7 @@ def _build_system_prompt(
 
             if _is_form_backed:
                 doc_ctx = (
-                    f'ACTIVE PDF FORM (open in editor — the user is looking at this right now)\n'
+                    f'ACTIVE PDF FORM (open in editor - the user is looking at this right now)\n'
                     f'Title: "{active_document.title}"\n'
                     f'```\n{active_document.current_content}\n```\n\n'
                     f'The ENTIRE form is in the markdown above. Every field, on every '
@@ -2377,27 +2377,27 @@ def _build_system_prompt(
                     f'already loaded.\n\n'
                     f'TO EDIT: call `edit_document` with FIND/REPLACE matching whole '
                     f'bullet lines. The trailing HTML comment '
-                    f'`<!-- field=NAME type=TYPE -->` is the ground truth anchor — '
+                    f'`<!-- field=NAME type=TYPE -->` is the ground truth anchor - '
                     f'match it to pick the correct bullet.\n\n'
                     f'RULES:\n'
                     f'1. FIND the WHOLE bullet line including the trailing comment. '
                     f'REPLACE keeps the bullet structure and the comment exactly; '
                     f'only the value text after the label changes.\n'
-                    f'2. Text bullets — `- **label:** value <!--field=NAME-->` — '
+                    f'2. Text bullets - `- **label:** value <!--field=NAME-->` - '
                     f'replace `value`.\n'
-                    f'3. Choice bullets — `- **label** [opt1 / opt2 / opt3]: value <!--field=NAME-->` — '
+                    f'3. Choice bullets - `- **label** [opt1 / opt2 / opt3]: value <!--field=NAME-->` - '
                     f'replace `value` with one of the listed options verbatim.\n'
-                    f'4. Checkbox bullets — `- [ ] **label** <!--field=NAME-->` — '
+                    f'4. Checkbox bullets - `- [ ] **label** <!--field=NAME-->` - '
                     f'toggle `[ ]` ↔ `[x]`.\n'
                     f'5. NEVER invent values. If the user gives no value, ASK. Never '
                     f'write fake names, addresses, emails, or "NaN"/"N/A"/"TBD".\n'
                     f'6. NEVER edit the front-matter `<!-- pdf_form_source ... -->` '
                     f'or the `## Page N` section headers.\n'
-                    f'7. NEVER touch signature fields (type=signature) — the user '
+                    f'7. NEVER touch signature fields (type=signature) - the user '
                     f'signs those by clicking on the rendered PDF.\n'
                     f'8. Bulk requests are scoped by field type. "All included" means '
                     f'every choice field with that option. Do NOT touch text fields.\n'
-                    f'9. The user has an Export button — do NOT try to export.'
+                    f'9. The user has an Export button - do NOT try to export.'
                 )
             else:
                 _doc_raw = active_document.current_content or ""
@@ -2405,17 +2405,17 @@ def _build_system_prompt(
                     f"{_i}\t{_ln}" for _i, _ln in enumerate(_doc_raw.split("\n"), 1)
                 )
                 doc_ctx = (
-                    f'ACTIVE DOCUMENT (open in the editor — the user is looking at it right now)\n'
+                    f'ACTIVE DOCUMENT (open in the editor - the user is looking at it right now)\n'
                     f'Title: "{active_document.title}" | Language: {active_document.language or "text"}\n'
                     f'Below is the full text. Each line is prefixed with its line number and a TAB, '
-                    f'purely so you can locate references like "[Doc edit: L25]" — the number and tab '
+                    f'purely so you can locate references like "[Doc edit: L25]" - the number and tab '
                     f'are NOT part of the document.\n'
                     f'```\n{_doc_numbered}\n```\n'
-                    f'You ALREADY HAVE this document — it is right above. Do NOT ask the user to paste '
+                    f'You ALREADY HAVE this document - it is right above. Do NOT ask the user to paste '
                     f'it, and do NOT use read_file, bash, cat, or any tool to fetch it: it lives in the '
                     f'editor, NOT on disk, so those attempts will fail. Every request is about THIS '
                     f'document unless the user clearly says otherwise.\n'
-                    f'A "[Doc edit: L25]" prefix means the user is pointing at that line — use the '
+                    f'A "[Doc edit: L25]" prefix means the user is pointing at that line - use the '
                     f'numbers above to find the text they mean.\n'
                     f'To edit: use edit_document with <<<FIND>>>...<<<REPLACE>>>...<<<END>>>. The FIND '
                     f'text must match the document EXACTLY and must NOT include the leading line-number '
@@ -2423,7 +2423,7 @@ def _build_system_prompt(
                 )
                 if _document_writing_style:
                     doc_ctx += (
-                        "\n\nDOCUMENT WRITING STYLE — use only for normal prose writing/revision in this "
+                        "\n\nDOCUMENT WRITING STYLE - use only for normal prose writing/revision in this "
                         "document, not for code/data/JSON and not for email-specific greetings or signatures:\n"
                         f"{_document_writing_style}"
                     )
@@ -2461,7 +2461,7 @@ def _build_system_prompt(
     else:
         set_active_document(None)
 
-    # Active email reader — frontend told us the user has an email open.
+    # Active email reader - frontend told us the user has an email open.
     # Inject a context block so "reply", "summarize this", "what does it say"
     # resolve to the real UID instead of the agent inventing a fresh .md
     # draft with fake headers. This is the email equivalent of _doc_message.
@@ -2482,7 +2482,7 @@ def _build_system_prompt(
             f"Account: {_em_account or '(default)'}\n"
             f"From: {_em_from}\n"
             f"Subject: {_em_subject}{_preview_block}\n\n"
-            f"CRITICAL DEFAULT — every request about email this turn refers to "
+            f"CRITICAL DEFAULT - every request about email this turn refers to "
             f"THIS email unless the user names a DIFFERENT specific recipient "
             f"(a name, an email address, or another thread). Examples that "
             f"ALL mean reply-to-the-open-email:\n"
@@ -2491,7 +2491,7 @@ def _build_system_prompt(
             f"  • 'tell them X' / 'say hi' / 'thanks' / 'ack' / 'lmk'\n"
             f"  • 'summarize it' / 'what does it say' / 'tldr'\n"
             f"  • 'forward this' / 'forward to <addr>'\n"
-            f"DO NOT ASK THE USER 'who do you want to send this to?' — the "
+            f"DO NOT ASK THE USER 'who do you want to send this to?' - the "
             f"answer is ALWAYS the sender of the open email (above) unless they "
             f"named someone else. Asking that is the wrong move every time.\n\n"
             f"RULES for the open email:\n"
@@ -2502,7 +2502,7 @@ def _build_system_prompt(
             f"the reply text you wrote. This opens the proper reply doc with To/Subject/"
             f"In-Reply-To pre-filled by the backend. The user will see and edit "
             f"it before sending. DO NOT `create_document` a markdown file with "
-            f"hand-written `To:` / `Subject:` / `In-Reply-To:` headers — that "
+            f"hand-written `To:` / `Subject:` / `In-Reply-To:` headers - that "
             f"is wrong every time.\n"
             f"2. SEND a reply immediately (skip the draft): call "
             f"`reply_to_email` with the UID above. Only do this when the user "
@@ -2513,7 +2513,7 @@ def _build_system_prompt(
             f"answer in chat. Don't create a document for a summary unless "
             f"the user explicitly asks for one.\n"
             f"5. Never ask the user to paste the email or 'share it with you' "
-            f"— you already have its identity above and can read the full body.\n"
+            f"- you already have its identity above and can read the full body.\n"
             f"6. The ONLY time you ask 'who to send to?' is when the user "
             f"explicitly says 'send a NEW email to someone else' or names a "
             f"recipient you can't identify. A bare 'send email saying X' = the "
@@ -2582,11 +2582,11 @@ def _build_system_prompt(
                     "For English emails, default to Hi [Name] or Hiya from the saved style rather than Hey. "
                     "If the saved style specifies Best/newline/name, use that sign-off when a sign-off is natural."
                 )
-                # User-editable style text is untrusted — wrap it so a malicious
+                # User-editable style text is untrusted - wrap it so a malicious
                 # style value cannot inject system-role instructions.
                 _email_style_message = untrusted_context_message(
                     "email writing style",
-                    "EMAIL WRITING STYLE AND IDENTITY — FOLLOW FOR ANY EMAIL DRAFT OR SEND:\n" + _style,
+                    "EMAIL WRITING STYLE AND IDENTITY - FOLLOW FOR ANY EMAIL DRAFT OR SEND:\n" + _style,
                 )
         except Exception:
             pass
@@ -2668,7 +2668,7 @@ def _build_system_prompt(
                 lines = [""]
                 if relevant_skills:
                     # Bump the "uses" counter on every skill we actually surface
-                    # to the agent — otherwise every skill shows "0 times" no
+                    # to the agent - otherwise every skill shows "0 times" no
                     # matter how often it's been matched and applied.
                     for _sk in relevant_skills:
                         try:
@@ -2712,7 +2712,7 @@ def _build_system_prompt(
                 # inserts it next to the user's request, just like the
                 # _doc_message path already does for the active document.
                 # Also include the skill INDEX (one-line-per-skill catalogue
-                # from _build_base_prompt) — its name + description fields
+                # from _build_base_prompt) - its name + description fields
                 # are equally user-editable.
                 if relevant_skills or _skill_index_block:
                     _skills_text = "\n".join(lines)
@@ -2727,7 +2727,7 @@ def _build_system_prompt(
         except Exception as _sk_err:
             logger.debug(f"skill injection failed (non-fatal): {_sk_err}")
 
-    # Integration descriptions — user-editable fields, must not be in system role.
+    # Integration descriptions - user-editable fields, must not be in system role.
     if not suppress_local_context:
         try:
             from src.integrations import get_integrations_prompt
@@ -2740,7 +2740,7 @@ def _build_system_prompt(
         except Exception as _integ_err:
             logger.debug(f"Integration prompt injection skipped: {_integ_err}")
 
-    # MCP tool descriptions — sourced from external servers, must not be in system role.
+    # MCP tool descriptions - sourced from external servers, must not be in system role.
     if mcp_mgr:
         try:
             _mcp_desc = mcp_mgr.get_tool_descriptions_for_prompt(mcp_disabled_map or {})
@@ -2766,7 +2766,7 @@ def _build_system_prompt(
 
     messages = messages[:insert_idx] + [agent_msg] + messages[insert_idx:]
 
-    # Merge consecutive system messages — but skip _protected doc messages
+    # Merge consecutive system messages - but skip _protected doc messages
     merged = []
     for msg in messages:
         if (msg.get("_agent_injected") == "prompt"
@@ -2795,7 +2795,7 @@ def _build_system_prompt(
 
     # Insert the document message right before the last user message so it's
     # close to the user's request and survives context trimming independently.
-    # Same treatment for the matched-skills block — user-editable skill
+    # Same treatment for the matched-skills block - user-editable skill
     # content must never be in the system role (see _skills_message above).
     last_user_idx = len(merged) - 1
     for i in range(len(merged) - 1, -1, -1):
@@ -2893,7 +2893,7 @@ def _build_base_prompt(
         elif compact:
             agent_prompt = _assemble_prompt(set(TOOL_SECTIONS.keys()), disabled, compact=True)
 
-    # Inject the Level-0 skill index — one line per skill so the agent
+    # Inject the Level-0 skill index - one line per skill so the agent
     # knows what canonical procedures exist. Includes published skills
     # plus teacher-escalation drafts (auto-written when the student
     # fails a task; appear here on the very next turn so the student
@@ -2904,7 +2904,7 @@ def _build_base_prompt(
     # SECURITY: skill `name` and `description` are user-editable, so the
     # index block is returned SEPARATELY (not appended to agent_prompt).
     # The caller wraps it in untrusted_context_message and ships it as a
-    # user-role message — same treatment as the matched-skills block.
+    # user-role message - same treatment as the matched-skills block.
     skill_index_block = ""
     if not suppress_local_context and not suppress_skills:
         try:
@@ -2918,7 +2918,7 @@ def _build_base_prompt(
                          "Procedures the assistant should consult before doing domain work. "
                          "Fetch the full procedure with `manage_skills` action=view name=<name> "
                          "when one looks relevant. Entries tagged `(draft)` were written by the "
-                         "teacher-escalation loop after a prior failure — treat them as authoritative "
+                         "teacher-escalation loop after a prior failure - treat them as authoritative "
                          "guidance; if you follow one and it works, that's a good signal the procedure "
                          "is correct."]
                 by_cat: dict[str, list] = {}
@@ -2928,10 +2928,10 @@ def _build_base_prompt(
                     lines.append(f"\n**{cat}**")
                     for s in by_cat[cat]:
                         badge = " *(draft)*" if s.get("status") == "draft" else ""
-                        lines.append(f"- `{s['name']}` — {s['description']}{badge}")
+                        lines.append(f"- `{s['name']}` - {s['description']}{badge}")
                 skill_index_block = "\n\n" + "\n".join(lines)
         except Exception as _e:
-            # Skill index is a soft enhancement — never fail prompt assembly on it.
+            # Skill index is a soft enhancement - never fail prompt assembly on it.
             logger.debug(f"Skill-index injection skipped: {_e}")
 
     return agent_prompt, skill_index_block
@@ -2967,12 +2967,12 @@ def _resolve_tool_blocks(
         # have a reliable structured channel for real tool invocations. When such
         # a model emits no native tool_calls, any ```bash/```python/```json fence
         # in its prose is virtually always an illustrative example for the user
-        # (e.g. "here's the command you'd run"), not an attempted tool call —
+        # (e.g. "here's the command you'd run"), not an attempted tool call -
         # executing it causes accidental runs and clarification loops (#3222).
         #
         # Gate ONLY that fenced-block pattern for native models, not the whole
         # parser: explicit [TOOL_CALL]/<invoke>/<tool_code>/DSML markup that
-        # leaks into content as text is never illustrative — it's a real call
+        # leaks into content as text is never illustrative - it's a real call
         # the model couldn't emit on its structured channel (e.g. DeepSeek-V
         # falling back to DSML). Dropping the whole parser would silently lose
         # those too. Non-native / textual-only models keep every pattern,
@@ -3003,14 +3003,14 @@ def _append_tool_results(
     """Append tool execution results back into the message history for the next LLM round.
 
     `round_reasoning` (DeepSeek / vLLM reasoning-parser deltas) is echoed
-    back via `reasoning_content` on the assistant message — DeepSeek's API
+    back via `reasoning_content` on the assistant message - DeepSeek's API
     rejects follow-up requests in thinking mode that don't include the
     prior reasoning.
 
     NOTE: it is NOT universally ignored. Nemotron's chat template re-injects
     EVERY prior `reasoning_content` as a <think> block, and this agent loop is
     trimmed only once (before the loop), so across rounds the reasoning piles
-    up unbounded — bloating context and feeding the model its own prior
+    up unbounded - bloating context and feeding the model its own prior
     reasoning, which reinforces repetition/looping. So keep reasoning_content
     on the MOST RECENT assistant turn only: enough for DeepSeek continuity,
     without the per-round accumulation.
@@ -3095,7 +3095,7 @@ def _append_tool_results(
         # Tool output (shell/python stdout, file reads, fetched pages, email
         # bodies, MCP results) is sourced from outside the server. Wrap it as
         # untrusted data so prompt-injection inside a tool result is treated as
-        # data, not instructions — same hardening as skills (#788) and the
+        # data, not instructions - same hardening as skills (#788) and the
         # web/RAG context. THREAT_MODEL.md lists tool output as a surface that
         # must go through untrusted_context_message.
         arm_tool_gate = any(
@@ -3148,7 +3148,7 @@ def _compute_final_metrics(
         input_tokens = len(input_content) // 4
         output_tokens = len(full_response) // 4
     # Prefer the backend's true generation speed (llama.cpp
-    # timings.predicted_per_second) — pure decode, no prefill/tool/network time.
+    # timings.predicted_per_second) - pure decode, no prefill/tool/network time.
     # Fall back to tokens/wall-clock only when the backend didn't report it
     # (e.g. cloud APIs without timings); that figure reads low because
     # total_duration includes prefill + agent overhead.
@@ -3177,7 +3177,7 @@ def _compute_final_metrics(
         "output_tokens": output_tokens,
         "tokens_per_second": round(tps, 2),
         # True decode speed when the backend reported it; "computed" = the
-        # tokens/wall-clock fallback (reads low — includes prefill/overhead).
+        # tokens/wall-clock fallback (reads low - includes prefill/overhead).
         "tps_source": "backend" if (backend_gen_tps and backend_gen_tps > 0) else "computed",
         "total_tokens": input_tokens + output_tokens,
         "request_context_tokens": ctx_tokens,
@@ -3260,7 +3260,7 @@ _VERIFIER_EFFECTFUL_TOOLS = {
     "create_document", "update_document", "edit_document",
     "bash", "python", "write_file",
 }
-_VERIFIER_MAX_ROUNDS = 2  # cap re-verify cycles per turn — never loop forever
+_VERIFIER_MAX_ROUNDS = 2  # cap re-verify cycles per turn - never loop forever
 
 
 def _build_actions_snapshot(tool_events: list, limit: int = 8000) -> str:
@@ -3302,7 +3302,7 @@ async def _run_verifier_subagent(
         f"<actions_taken>\n{actions_snapshot[:8000]}\n</actions_taken>\n\n"
         "<checklist>\n"
         "1. Every concrete deliverable the request asked for was actually produced\n"
-        "2. Outputs/edits match what was asked — nothing missing, no extra or unrequested changes\n"
+        "2. Outputs/edits match what was asked - nothing missing, no extra or unrequested changes\n"
         "3. Tool results show success, not errors or empty output that got ignored\n"
         "4. Anything the request said to leave alone was left unchanged\n"
         "</checklist>\n\n"
@@ -3340,7 +3340,7 @@ def _empty_response_fallback(
 
     When a thinking model routes all tokens to reasoning_content (leaving
     content=""), full_response is empty but round_reasoning has content.
-    The reasoning was already streamed as {thinking:true} chunks — do not
+    The reasoning was already streamed as {thinking:true} chunks - do not
     re-emit it as a normal delta.  Just persist it and yield nothing.
 
     Returns:
@@ -3356,17 +3356,17 @@ def _empty_response_fallback(
 
 
 PLAN_MODE_DIRECTIVE = (
-    "## PLAN MODE — OVERRIDES EVERYTHING ELSE BELOW\n"
+    "## PLAN MODE - OVERRIDES EVERYTHING ELSE BELOW\n"
     "You are in PLAN MODE. Your ONLY job this turn is to PROPOSE a plan. You have "
     "NOT done anything yet. Do NOT claim you created, wrote, ran, sent, or changed "
-    "anything — that would be a lie.\n"
+    "anything - that would be a lie.\n"
     "\n"
-    "ABSOLUTE RULE — DO NOT MUTATE ANYTHING. Every write/state-changing tool, "
+    "ABSOLUTE RULE - DO NOT MUTATE ANYTHING. Every write/state-changing tool, "
     "including the shell (`bash`/`python`), is disabled this turn and will be "
-    "rejected — only read-only tools remain available. Use the read-only tools "
+    "rejected - only read-only tools remain available. Use the read-only tools "
     "listed below (read files, search code, browse the project, web lookups) to "
     "ground the plan. If the task is 'write a file', your plan is to DESCRIBE "
-    "writing it — you do NOT write it now.\n"
+    "writing it - you do NOT write it now.\n"
     "\n"
     "OUTPUT: present the plan as a GitHub-style checklist, one concrete step per line:\n"
     "- [ ] first action you will take once approved\n"
@@ -3381,15 +3381,15 @@ def build_active_plan_note(approved_plan: str) -> str:
     """System note that pins an approved plan during execution.
 
     Sent back by the frontend each turn so a long plan on a weak model survives
-    history truncation — the agent can always re-read it. Returns "" for empty
+    history truncation - the agent can always re-read it. Returns "" for empty
     input.
     """
     if not approved_plan or not approved_plan.strip():
         return ""
     return (
-        "## ACTIVE PLAN (approved — execute this)\n"
+        "## ACTIVE PLAN (approved - execute this)\n"
         "You are executing a plan the user already approved. THE FULL PLAN IS "
-        "BELOW — it is always provided here every turn. Do NOT say you lost it, "
+        "BELOW - it is always provided here every turn. Do NOT say you lost it, "
         "and do NOT look for it in tasks, notes, memory, files, or the API; just "
         "read it below. Work through it IN ORDER. After finishing each step, call "
         "the `update_plan` tool with the full checklist and that step marked "
@@ -3403,7 +3403,7 @@ def build_active_plan_note(approved_plan: str) -> str:
 
 
 def _detect_runaway_call(call_freq, threshold=15):
-    """Tool name of a call signature repeated >= ``threshold`` times — a real
+    """Tool name of a call signature repeated >= ``threshold`` times - a real
     runaway loop. Counts IDENTICAL repeated calls (same tool AND args), so a
     legitimate batch of distinct calls to one tool (e.g. creating 18 calendar
     events at once) is NOT flagged. Returns ``None`` when nothing is runaway.
@@ -4025,7 +4025,7 @@ async def stream_agent_loop(
 
     # The skill index injected by _build_system_prompt tells the model to
     # call `manage_skills action=view`, and Jaccard-matched skills are pasted
-    # into the prompt as procedures to follow — but neither path goes through
+    # into the prompt as procedures to follow - but neither path goes through
     # tool selection, so the model can be handed a procedure naming tools
     # (grep, read_file, ...) that aren't in its schema list. Keep the schemas
     # in lockstep: manage_skills is callable whenever any skill is indexed,
@@ -4046,7 +4046,7 @@ async def stream_agent_loop(
                 _relevant_tools.add("manage_skills")
                 if _retrieval_query:
                     # Validate against every known executable tool, not just
-                    # TOOL_SECTIONS — code-nav tools (grep/glob/ls) ship as
+                    # TOOL_SECTIONS - code-nav tools (grep/glob/ls) ship as
                     # schemas without a prompt-prose section.
                     from src.tool_policy import known_tool_names
                     _known = known_tool_names()
@@ -4424,13 +4424,13 @@ async def stream_agent_loop(
     _last_route_context_length = _initial_route_context_length
 
     # Loop-breaker state. Small models (e.g. deepseek-v4-flash) can get
-    # stuck firing the same tool call over and over with no text — burns
+    # stuck firing the same tool call over and over with no text - burns
     # all 20 rounds, looks like the chat "died". Track recent call
     # signatures + consecutive no-text tool rounds to bail early.
     _recent_call_sigs = collections.deque(maxlen=6)
     _stuck_rounds = 0
     # Frequency of each exact call signature (tool + args), for the runaway
-    # backstop. Counting identical repeats — not distinct same-tool calls —
+    # backstop. Counting identical repeats - not distinct same-tool calls -
     # lets a legit batch (e.g. 18 calendar events at once) through.
     _call_freq: collections.Counter = collections.Counter()
     _force_answer = False  # set by loop-breaker → next round runs with NO tools
@@ -4463,7 +4463,7 @@ async def stream_agent_loop(
     _ody_doc_tool_completed = False
 
     # Set when the loop runs out of rounds while the agent was still actively
-    # using tools — i.e. it was cut off, not finished. Drives a "Continue" event
+    # using tools - i.e. it was cut off, not finished. Drives a "Continue" event
     # so the user can resume instead of the turn silently stalling.
     _exhausted_rounds = False
 
@@ -4874,7 +4874,7 @@ async def stream_agent_loop(
         # stream_llm enforces a per-read INACTIVITY timeout (httpx read=timeout),
         # which kills a wedged/silent endpoint. This wall-clock deadline is the
         # complementary cap for the rare stream that trickles bytes forever and
-        # so never trips the inactivity timeout. Generous — only catches runaway.
+        # so never trips the inactivity timeout. Generous - only catches runaway.
         _round_deadline = time.time() + max(agent_stream_timeout * 4, 1200)
         _round_start = time.time()
         _round_first_event_logged = False
@@ -5078,7 +5078,7 @@ async def stream_agent_loop(
                         has_real_usage = True
                         _round_has_real_usage = True
                         # Backend-reported TRUE generation speed (llama.cpp
-                        # timings.predicted_per_second) — pure decode, excludes
+                        # timings.predicted_per_second) - pure decode, excludes
                         # prefill/network. Preferred over tokens/wall-clock, which
                         # reads low. Keep the last round's value (the gen phase).
                         if u.get("gen_tps"):
@@ -5216,7 +5216,7 @@ async def stream_agent_loop(
             elif chunk.startswith("event: "):
                 # Forward error events to frontend as visible text
                 yield chunk
-            # Intercept [DONE] — don't forward until all rounds finish
+            # Intercept [DONE] - don't forward until all rounds finish
 
         logger.info(
             "[agent-timing] round_stream_done round=%s elapsed=%.3fs text_chars=%s tool_calls=%s first_event=%s first_token=%s",
@@ -5323,7 +5323,7 @@ async def stream_agent_loop(
 
         # Force-answer round: we told the model to STOP calling tools and
         # answer. If it ignored that and emitted a (possibly DSML) tool
-        # call anyway, discard it — don't execute, don't re-loop. Keep
+        # call anyway, discard it - don't execute, don't re-loop. Keep
         # only the prose; if there's none, emit a graceful fallback.
         if _force_answer:
             if tool_blocks:
@@ -5343,7 +5343,7 @@ async def stream_agent_loop(
                         "content": (
                             "Using ONLY the information already gathered above, write "
                             "the final answer for the user now. Do NOT call any tools, "
-                            "do NOT explain your reasoning — output the finished response "
+                            "do NOT explain your reasoning - output the finished response "
                             "directly. If some data couldn't be fetched, just work with "
                             "what you have and note what's missing in one short line."
                         ),
@@ -5411,7 +5411,7 @@ async def stream_agent_loop(
         # Mirror the same fenced-pattern gate used to resolve tool_blocks above:
         # an illustrative fence that wasn't executed (because this is a native
         # model with no real native_tool_calls) must not be stripped from the
-        # persisted text either — otherwise it streams once and then disappears
+        # persisted text either - otherwise it streams once and then disappears
         # on reload (#3222 follow-up).
         cleaned_round = strip_tool_blocks(round_response, skip_fenced=(_is_api_model and not used_native and not guide_only)).strip()
         round_texts.append(cleaned_round)
@@ -5469,7 +5469,7 @@ async def stream_agent_loop(
             # "Let me investigate" patterns where the model announces an
             # action but emits no tool_call. The bug shows up most on
             # smaller models trained to verbalize plans before acting.
-            # We inject one sharp nudge ("you said you would X — call the
+            # We inject one sharp nudge ("you said you would X - call the
             # actual tool now") and loop again. Capped at
             # _MAX_INTENT_NUDGES so a model that genuinely cannot use the
             # tool doesn't pin us in a forever loop.
@@ -5501,7 +5501,7 @@ async def stream_agent_loop(
                 messages.append({
                     "role": "system",
                     "content": (
-                        f"You just wrote: \"{_matched_phrase}\" — but ended the "
+                        f"You just wrote: \"{_matched_phrase}\" - but ended the "
                         "turn without making the actual tool call. The user can "
                         "see you announced the action but didn't run it, which "
                         "is the most frustrating thing you can do. "
@@ -5539,17 +5539,17 @@ async def stream_agent_loop(
                     + "\n\n"
                 )
                 break
-            break  # no tools — done
+            break  # no tools - done
 
         # ── Loop-breaker (Terminus-style stall detector) ──────────────
         # Stall detector for repeated no-progress tool loops.
         # A round is "useless" ONLY when it re-issues a recent tool call AND
-        # writes no answer text — i.e. the model is going in circles.
+        # writes no answer text - i.e. the model is going in circles.
         # Genuine exploration (new, distinct calls) is never useless, so
         # multi-step work (file hunts, multi-host ssh, build→test→fix) rides
         # all the way to a real answer. We bail only on a streak of useless
         # rounds, or a single tool fired an absurd number of times (hard
-        # runaway backstop). On bail we don't give up — we force one
+        # runaway backstop). On bail we don't give up - we force one
         # tool-free round so the model declares done or declares blocked,
         # mirroring Terminus's explicit-completion handshake.
         _sig = "|".join(sorted(f"{b.tool_type}:{(b.content or '').strip()[:120]}" for b in tool_blocks))
@@ -5597,7 +5597,7 @@ async def stream_agent_loop(
             # apologizes honestly if it still writes nothing.
             _off = [t for t in ("web_search", "bash")
                     if disabled_tools and t in disabled_tools]
-            _off_note = (f" ({', '.join(_off)} is currently disabled — say so if "
+            _off_note = (f" ({', '.join(_off)} is currently disabled - say so if "
                          f"you needed it.)" if _off else "")
             _force_answer = True
             messages.append({
@@ -5797,7 +5797,7 @@ async def stream_agent_loop(
 
                 _tool_task = asyncio.create_task(_run_tool())
                 try:
-                    # Drain progress events as they arrive — block until the
+                    # Drain progress events as they arrive - block until the
                     # next event OR the tool finishes (sentinel = None).
                     while True:
                         evt = await _progress_q.get()
@@ -5811,7 +5811,7 @@ async def stream_agent_loop(
                     # If the SSE client disconnects (or this generator is
                     # otherwise closed) while we're awaiting a progress event
                     # above, GeneratorExit is thrown in right here and the
-                    # `await _tool_task` on the line above never runs — the
+                    # `await _tool_task` on the line above never runs - the
                     # task (and any subprocess execute_tool_block spawned for
                     # bash/python tools) would otherwise keep running
                     # orphaned with nothing left to await or cancel it.
@@ -5827,7 +5827,7 @@ async def stream_agent_loop(
             # A skill the model just loaded can prescribe tools that weren't
             # RAG-selected this turn (declared via requires_toolsets in its
             # frontmatter). Union them into the selection so the NEXT round's
-            # schema list includes them — otherwise the model reads "use
+            # schema list includes them - otherwise the model reads "use
             # grep" from the skill it fetched but has no grep schema to call.
             if (
                 block.tool_type == "manage_skills"
@@ -5901,7 +5901,7 @@ async def stream_agent_loop(
                 for doc_event in _document_stream_events(block):
                     yield f'data: {json.dumps(doc_event)}\n\n'
 
-            # Emit doc-specific event for document tools — the frontend
+            # Emit doc-specific event for document tools - the frontend
             # document panel handles this; no need to show content in chat.
             if is_doc_tool and "action" in result:
                 if result["action"] == "suggest":
@@ -5927,8 +5927,8 @@ async def stream_agent_loop(
             _pending_ask_user_event = None
             if "ask_user" in result:
                 # The question lives in the tool args. ChatMessage.to_dict()
-                # replays only role+content to the model next turn — tool_event
-                # metadata is dropped — so if the question is never in the saved
+                # replays only role+content to the model next turn - tool_event
+                # metadata is dropped - so if the question is never in the saved
                 # assistant text, the model can't see it already asked and will
                 # loop and re-ask after the user answers. Stream it as assistant
                 # text (once) so it persists and is replayed. The card shows the
@@ -5944,14 +5944,14 @@ async def stream_agent_loop(
 
             # update_plan: agent wrote back to the plan (ticked a step / revised).
             # Push it to the frontend so the stored plan + docked window update
-            # live. Does NOT end the turn — the agent keeps working.
+            # live. Does NOT end the turn - the agent keeps working.
             if "plan_update" in result:
                 yield (
                     f'data: {json.dumps({"type": "plan_update", "data": result["plan_update"]})}\n\n'
                 )
 
             # Build output for frontend tool bubble.
-            # Document tools get a short summary — content goes to the editor panel.
+            # Document tools get a short summary - content goes to the editor panel.
             output_text = ""
             if is_doc_tool and "action" in result:
                 action = result["action"]
@@ -6012,7 +6012,7 @@ async def stream_agent_loop(
                 for k in (
                     "toggle_name", "state", "mode", "model", "endpoint_url",
                     "theme_name", "colors",
-                    # ui_control open_email_reply payload — without these the
+                    # ui_control open_email_reply payload - without these the
                     # frontend openReplyDraft bails on undefined uid and the
                     # reply window silently never opens.
                     "uid", "folder", "account_id",
@@ -6068,7 +6068,7 @@ async def stream_agent_loop(
                         if _notes_text.startswith("AI: "):
                             _notes_text = _notes_text[4:].strip()
                         if _notes_text and not re.match(r"^(done|note|item|deleted)\b", _notes_text, re.IGNORECASE):
-                            _notes_text = f"Done — {_notes_text}"
+                            _notes_text = f"Done - {_notes_text}"
                 if _notes_text:
                     _clean_current = strip_tool_blocks(full_response).strip()
                     if _notes_text not in _clean_current:
@@ -6098,7 +6098,7 @@ async def stream_agent_loop(
                     if _tasks_action == "list" and _tasks_text:
                         _tasks_text = _tasks_text
                     elif _tasks_text and not re.match(r"^(done|created|updated|deleted|task)\b", _tasks_text, re.IGNORECASE):
-                        _tasks_text = f"Done — {_tasks_text}"
+                        _tasks_text = f"Done - {_tasks_text}"
                 if _tasks_text:
                     _clean_current = strip_tool_blocks(full_response).strip()
                     if _tasks_text not in _clean_current:
@@ -6156,7 +6156,7 @@ async def stream_agent_loop(
                 )
 
             # Inline research: emit the open-link as part of the assistant's
-            # actual response text — a `#research-<id>` anchor that chatRenderer
+            # actual response text - a `#research-<id>` anchor that chatRenderer
             # turns into a regular clickable link. Saved with the message, so it
             # PERSISTS across refresh (unlike the old ephemeral injected chip).
             _rsid = result.get("research_session_id")
@@ -6167,7 +6167,7 @@ async def stream_agent_loop(
             # Same pattern for notes: when manage_notes creates a note
             # and returns note_id, drop a `[View note](#note-<id>)` link
             # into the stream so chatRenderer's click handler routes to
-            # the new openNote() in notes.js — opens the notes panel and
+            # the new openNote() in notes.js - opens the notes panel and
             # scrolls/flashes the matching card. Without this, the agent
             # would write "View note" as a phrase with no target.
             _nid = result.get("note_id")
@@ -6202,7 +6202,7 @@ async def stream_agent_loop(
             if result.get("doc_id"):
                 tool_event["doc_id"] = result["doc_id"]
                 tool_event["doc_title"] = result.get("title", "")
-            # Persist the file-write/edit diff so it re-renders on reload — without
+            # Persist the file-write/edit diff so it re-renders on reload - without
             # this the diff shows live but vanishes from saved history.
             if result.get("diff"):
                 tool_event["diff"] = result["diff"]
@@ -6247,7 +6247,7 @@ async def stream_agent_loop(
         if budget_hit:
             break
 
-        # ask_user posed a question — stop here and wait for the user's choice.
+        # ask_user posed a question - stop here and wait for the user's choice.
         # Don't feed tool results back or advance a round; the user's selection
         # arrives as the next message and the agent resumes from there. The
         # question text is already in the streamed response, so it persists.
@@ -6293,7 +6293,7 @@ async def stream_agent_loop(
     else:
         # The for-loop completed every allowed round WITHOUT an early `break`
         # (a `break` fires on "done", budget, or error). Reaching this `else`
-        # means the agent kept working until it ran out of rounds — so offer
+        # means the agent kept working until it ran out of rounds - so offer
         # Continue instead of stopping silently. This catches ALL exhaustion
         # paths, including a verifier `continue` on the final round (the old
         # bottom-of-loop flag missed those).
@@ -6302,7 +6302,7 @@ async def stream_agent_loop(
     # If the loop hit the round cap while still working, tell the client so it
     # can show a "Continue" affordance instead of the turn just stopping.
     if _exhausted_rounds:
-        logger.info("[agent] round cap (%d) reached mid-task — emitting rounds_exhausted", max_rounds)
+        logger.info("[agent] round cap (%d) reached mid-task - emitting rounds_exhausted", max_rounds)
         yield f'data: {json.dumps({"type": "rounds_exhausted", "rounds": max_rounds})}\n\n'
 
     # If the response is completely empty and no tools were executed,

@@ -1,5 +1,5 @@
 /**
- * Deep Research side panel — open/close, form, job rendering, library.
+ * Deep Research side panel - open/close, form, job rendering, library.
  */
 import * as jobs from './jobs.js?v=20260630researchthumb';
 import themeModule from '../theme.js';
@@ -7,14 +7,14 @@ import createResearchSynapse from '../researchSynapse.js';
 import spinnerModule from '../spinner.js';
 import { sortModelIds } from '../modelSort.js';
 
-// Rotating research textarea placeholders — pick one at random each
+// Rotating research textarea placeholders - pick one at random each
 // time the panel is rendered so the example keeps feeling fresh.
 const _RESEARCH_HINTS = [
-  "e.g. Trace Telemachos's ten-year journey home from Troy — every island, monster, and detour, and why each one cost him",
+  "e.g. Trace Telemachos's ten-year journey home from Troy - every island, monster, and detour, and why each one cost him",
   "e.g. Compare Rust and Go for building a high-throughput web API in 2026",
   "e.g. Fact-check whether honey actually never spoils",
   "e.g. How to roast a duck so the skin stays crispy",
-  "e.g. The collapse of Bronze Age civilizations — leading theories and the evidence behind each",
+  "e.g. The collapse of Bronze Age civilizations - leading theories and the evidence behind each",
   "e.g. Best M.2 NVMe SSDs under $200 for a home AI workstation",
   "e.g. Why do cats knead with their paws? Cover the leading behavioural explanations",
   "e.g. Side effects and benefits of long-term creatine supplementation",
@@ -27,10 +27,10 @@ function _pickResearchHint() {
   return _RESEARCH_HINTS[i].replace(/"/g, '&quot;');
 }
 
-// jobId -> { synapse, status } — survives across _renderJobs() rebuilds so
+// jobId -> { synapse, status } - survives across _renderJobs() rebuilds so
 // the SVG keeps its accumulated nodes/edges between progress events.
 const _jobSynapses = new Map();
-// Which foldable job sections ('active' / 'past') the user has collapsed — kept
+// Which foldable job sections ('active' / 'past') the user has collapsed - kept
 // across re-renders so the panel doesn't re-expand on every job-state change.
 const _collapsedSections = new Set();
 
@@ -99,7 +99,7 @@ function _clearBadge() {
   if (dot) dot.remove();
 }
 
-// Live sidebar/rail feedback — mirrors the cookbook pattern. While
+// Live sidebar/rail feedback - mirrors the cookbook pattern. While
 // research jobs are running, the rail button pulses; errors flag red;
 // nothing running clears it. Panel-independent so it works with the
 // modal closed. Called from _renderJobs on every job-state change.
@@ -118,7 +118,7 @@ function _syncResearchRail() {
   const active = running > 0 || errored > 0;
   // Shared flag so sessions.js:_updateRailNotifs (which lights the same
   // rail button for INLINE research mode) ORs with us instead of
-  // clobbering — otherwise a session re-render would clear our dot.
+  // clobbering - otherwise a session re-render would clear our dot.
   window._researchJobsActive = active;
   if (railBtn) {
     railBtn.classList.remove('rail-notify', 'rail-notify-success', 'rail-notify-error', 'research-notif-active');
@@ -129,7 +129,7 @@ function _syncResearchRail() {
   if (toolBtn) {
     toolBtn.classList.toggle('research-notif-active', active);
     toolBtn.style.opacity = active ? '1' : '';
-    // Sidebar feedback while running — a small pulsing dot + round text,
+    // Sidebar feedback while running - a small pulsing dot + round text,
     // same style as Cookbook's running indicator (no glow).
     let wrap = toolBtn.querySelector('.research-sb-running');
     if (running > 0) {
@@ -141,7 +141,7 @@ function _syncResearchRail() {
       }
       const round = runningJob && runningJob.progress && runningJob.progress.round;
       // Just the round as "R1", "R2", … (empty until the first round lands).
-      // Only update when we actually have a round — don't blank it out on
+      // Only update when we actually have a round - don't blank it out on
       // progress ticks that lack one, or it flickers on/off between rounds.
       if (round) wrap.querySelector('.research-sb-status').textContent = `R${round}`;
     } else if (wrap) {
@@ -150,7 +150,7 @@ function _syncResearchRail() {
   }
   // Orbiting edge animation: faster when a job is running, slower while idle
   // (ambient). The rAF loop in _ensureOrbit drives --research-orbit-angle on
-  // the pane element — CSS-only @property animation silently no-op'd in some
+  // the pane element - CSS-only @property animation silently no-op'd in some
   // browsers, so JS drives it for universal compatibility.
   _orbitSpeedDegPerSec = running > 0 ? 60 : 22;  // 6s/rev vs ~16s/rev
   _ensureOrbit();
@@ -277,7 +277,7 @@ export function openPanel(focusJobId) {
     if (e.target === overlay) closePanel();
   });
 
-  // Document-level ESC handler — overlay-only listener never fired because
+  // Document-level ESC handler - overlay-only listener never fired because
   // overlay isn't focused. Tracked in module scope so closePanel can detach.
   _onDocKeydown = (e) => {
     if (e.key === 'Escape' && _open) {
@@ -287,7 +287,7 @@ export function openPanel(focusJobId) {
   };
   document.addEventListener('keydown', _onDocKeydown);
 
-  // Make the pane draggable by its header — same pattern as Library/Calendar.
+  // Make the pane draggable by its header - same pattern as Library/Calendar.
   const paneHeader = pane.querySelector('.research-pane-header');
   if (themeModule && themeModule.makeDraggable && paneHeader) {
     themeModule.makeDraggable(pane, paneHeader);
@@ -310,7 +310,7 @@ export function openPanel(focusJobId) {
 // chat anchor-link delegate ([Topic](#research-<session_id>)).
 function _focusJob(jobId) {
   if (!jobId) return;
-  // jobs may still be loading from /api/research/active — retry a few times.
+  // jobs may still be loading from /api/research/active - retry a few times.
   let tries = 0;
   const tryFocus = () => {
     const card = document.querySelector(`[data-job-id="${jobId}"]`);
@@ -415,7 +415,7 @@ function _buildPanelHTML() {
   `;
 }
 
-/** Fade/slide a card out, then run the removal — matches cookbook's smooth exit. */
+/** Fade/slide a card out, then run the removal - matches cookbook's smooth exit. */
 function _animateOutThenRemove(el, removeFn) {
   if (!el || !el.style) { removeFn(); return; }
   el.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
@@ -578,7 +578,7 @@ async function _handleStart() {
     }
   };
 
-  // Show busy briefly for click feedback. Don't await the full launch —
+  // Show busy briefly for click feedback. Don't await the full launch -
   // the per-job card immediately shows "Starting..." progress, and the
   // backend POST can take a while.
   _setBusy(true);
@@ -610,7 +610,7 @@ function _restoreSavedSettings() {
     const catSel = document.getElementById('research-category');
     if (catSel) catSel.value = saved.category;
   }
-  // Rounds intentionally defaults to "Auto" on every open — don't restore.
+  // Rounds intentionally defaults to "Auto" on every open - don't restore.
   // Users can pick a specific cap each time if needed.
   const search = document.getElementById('research-search-provider');
   if (search && saved.search_provider !== undefined) search.value = saved.search_provider;
@@ -669,7 +669,7 @@ function _renderJobs() {
 
   const allJobs = jobs.getJobs();
   if (!allJobs.length) {
-    // No empty-state text in the body — the query box above is the call to
+    // No empty-state text in the body - the query box above is the call to
     // action. But still surface the "All past research found in: Library,
     // Research" hint under the main title, since the Past section won't
     // render to host it (this is exactly the case the dynamic hint targets).
@@ -707,7 +707,7 @@ function _renderJobs() {
   }
 
   // The main Start button doubles as "Start All (N)" when more than one job
-  // is queued — clicking it then opens the parallel/sequential picker. No
+  // is queued - clicking it then opens the parallel/sequential picker. No
   // separate queue-bar button (that was the redundant second button).
   const queued = active.filter(j => j.status === 'queued');
   const startBtn = document.getElementById('research-start-btn');
@@ -748,7 +748,7 @@ function _renderJobs() {
   }
 
   // Group into foldable sections: "Active" (in-progress) and "Past research"
-  // (everything done — this session + library). Each has a clickable title
+  // (everything done - this session + library). Each has a clickable title
   // that collapses its body. Collapsed state persists across re-renders via
   // the module-level _collapsedSections set.
   const _addSection = (key, title, arr) => {
@@ -818,7 +818,7 @@ function _renderJobs() {
     container.appendChild(sec);
   };
 
-  // ("Clear all" lives inside the Past research section header — see _addSection.)
+  // ("Clear all" lives inside the Past research section header - see _addSection.)
 
   _addSection('active', 'Active', active);
   _addSection('past', 'Past research', recentDone.concat(past));
@@ -924,7 +924,7 @@ function _buildJobCard(job) {
     });
 
   } else if (job.status === 'running') {
-    // Auto mode (max_rounds=0/undefined) — show round number without total,
+    // Auto mode (max_rounds=0/undefined) - show round number without total,
     // and base the progress bar on a heuristic cap of 8 rounds.
     const userMaxR = job.settings?.max_rounds || 0;
     const phaseMaxR = userMaxR || 0;  // 0 = formatPhase shows "Round X" without total
@@ -951,7 +951,7 @@ function _buildJobCard(job) {
       e.stopPropagation(); _toggleSynapseMinimized();
     });
     // Click anywhere on the header (title/model/time) toggles the visualization
-    // too — the cancel/synapse buttons stopPropagation so they keep their own.
+    // too - the cancel/synapse buttons stopPropagation so they keep their own.
     const _runHdr = card.querySelector('.research-job-header');
     if (_runHdr) {
       _runHdr.style.cursor = 'pointer';
@@ -985,14 +985,14 @@ function _buildJobCard(job) {
     // Library-loaded jobs have sources=null but pre-set sourceCount; fresh jobs
     // populate sources directly. Prefer the pre-set count if present.
     const srcCount = job.sources?.length ?? job.sourceCount ?? 0;
-    // 0 sources = the research couldn't gather/extract anything — flag it.
+    // 0 sources = the research couldn't gather/extract anything - flag it.
     const failed = srcCount === 0;
     if (failed) card.classList.add('research-job-failed');
     const doneBadge = failed
       ? `<span class="research-cat-badge research-cat-failed">${_cancelIcon} no results</span>`
       : (job.category ? `<span class="research-cat-badge">${_esc(job.category)}</span>` : `<span class="research-cat-badge research-cat-standard">standard</span>`);
     const failNote = failed
-      ? `<div class="research-job-failnote">Couldn't extract anything — try rephrasing the question, or switch the search engine in Settings.</div>`
+      ? `<div class="research-job-failnote">Couldn't extract anything - try rephrasing the question, or switch the search engine in Settings.</div>`
       : '';
     const thumbSource = (job.sources || []).find(s => s && (s.image || s.og_image));
     const thumbUrl = job.thumbnail || thumbSource?.image || thumbSource?.og_image || '';
@@ -1017,14 +1017,14 @@ function _buildJobCard(job) {
       ${isExpanded ? `<div class="research-job-result">${_renderResult(job)}</div>` : ''}
     `;
     // Clicking anywhere on the card (except the action buttons, which
-    // stopPropagation) opens the visual report — same as the Visual Report btn.
+    // stopPropagation) opens the visual report - same as the Visual Report btn.
     card.style.cursor = 'pointer';
     card.addEventListener('click', () => {
       window.open(`${_apiBase}/api/research/report/${job.id}`, '_blank');
     });
     card.querySelector('[data-action="copy"]').addEventListener('click', async (e) => {
       e.stopPropagation();
-      const btn = e.currentTarget; // capture before await — currentTarget becomes null after
+      const btn = e.currentTarget; // capture before await - currentTarget becomes null after
       if (!job.result) await _ensureResult(job);
       _copyResult(job, btn);
     });
@@ -1102,7 +1102,7 @@ function _renderResult(job) {
 
   let html = '';
 
-  // Category hero banner — only for completed, known-category results
+  // Category hero banner - only for completed, known-category results
   if (cat && catIcon) {
     html += `
       <div class="research-hero research-hero-${cat}">
@@ -1234,7 +1234,7 @@ async function _chatAboutResearch(researchId, btn) {
       window.location.hash = '#' + payload.session_id;
       window.location.reload();
     } else {
-      // 200 OK but no session_id — server contract violation. Don't leave
+      // 200 OK but no session_id - server contract violation. Don't leave
       // the button stuck on 'Creating…'; surface the failure instead.
       throw new Error('Server returned no session id');
     }

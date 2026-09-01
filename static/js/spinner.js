@@ -181,7 +181,7 @@ class Spinner {
     const loop = ((performance.now() - this._wpStartedAt) % LOOP_MS) / LOOP_MS;
     const rot = loop * Math.PI * 2;
 
-    // Colors from CSS vars — read ONCE and cache. Calling getComputedStyle every
+    // Colors from CSS vars - read ONCE and cache. Calling getComputedStyle every
     // frame forces a full style recalc per frame, which janks/freezes the canvas
     // animation badly when it's painting over a heavy photo. (Theme changes are
     // rare; the spinner is short-lived, so a stale cache is fine.)
@@ -441,7 +441,7 @@ export function createWhirlpool(size = 24) {
  * A consistent inline loading row for list/library empty-states: a label plus
  * the whirlpool spinner. Returns a detached element; the spinner self-stops
  * once the element leaves the DOM (see _drawWhirlpool), so callers can just
- * replace it with results — no manual cleanup needed.
+ * replace it with results - no manual cleanup needed.
  */
 export function createLoadingRow(text = 'Loading…', size = 16) {
   const sp = new Spinner('', 'clean', 'whirlpool');

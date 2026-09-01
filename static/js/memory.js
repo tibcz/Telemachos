@@ -158,7 +158,7 @@ function buildCategoryChips() {
   const container = document.getElementById('memory-category-filters');
   if (!container) return;
 
-  // Hide the chip row entirely when there are no memories — no point showing
+  // Hide the chip row entirely when there are no memories - no point showing
   // an "all" chip with nothing to filter.
   if (!memories.length) { container.innerHTML = ''; return; }
 
@@ -183,10 +183,10 @@ function buildCategoryChips() {
 }
 
 async function syncToggles() {
-  // The settings tab no longer hosts a separate "Memory in context" toggle —
+  // The settings tab no longer hosts a separate "Memory in context" toggle -
   // the header toggle owns that pref directly now.
   await syncPrefToggle('memory-enabled-header-toggle', 'memory_enabled', 'Memory enabled', 'Memory disabled', false);
-  // The Skills header toggle owns the `skills_enabled` pref (was never wired —
+  // The Skills header toggle owns the `skills_enabled` pref (was never wired -
   // toggling it did nothing, so skills stayed on). Now it actually gates skill
   // injection (see chat_helpers.py: uprefs.skills_enabled).
   await syncPrefToggle('skills-enabled-header-toggle', 'skills_enabled', 'Skills enabled', 'Skills disabled', false);
@@ -211,7 +211,7 @@ async function syncToggles() {
     }
   }
 
-  // Same dim treatment for the Skills toggle — dims the skills panel when off.
+  // Same dim treatment for the Skills toggle - dims the skills panel when off.
   const skillsToggle = document.getElementById('skills-enabled-header-toggle');
   if (skillsToggle) {
     const skillsPanel = document.querySelector('[data-memory-panel="skills"]');
@@ -506,7 +506,7 @@ export async function tidyMemories() {
   if (tidyBtn) {
     tidyBtn.disabled = true;
     tidyBtn.textContent = '';
-    // Drop the button border while the whirlpool spins — just the spinner,
+    // Drop the button border while the whirlpool spins - just the spinner,
     // no box around it (restored in the finally below).
     tidyBtn.style.border = 'none';
     tidyBtn.style.background = 'none';
@@ -570,7 +570,7 @@ export async function tidyMemories() {
     showToast(`Tidied: ${data.removed} removed (${data.before} \u2192 ${data.after})`);
   } catch (error) {
     console.error('Tidy failed:', error);
-    showError('Tidy failed — check console');
+    showError('Tidy failed - check console');
   } finally {
     if (tidySpinner) tidySpinner.destroy();
     if (tidyBtn) {
@@ -612,7 +612,7 @@ async function animateTidyDiff(removedIds, editedItems) {
     if (filtered[i]) itemMap.set(filtered[i].id, el);
   });
 
-  // Animate edits first — show text morphing
+  // Animate edits first - show text morphing
   for (const { id, oldText, newText } of editedItems) {
     const el = itemMap.get(id);
     if (!el) continue;
@@ -634,7 +634,7 @@ async function animateTidyDiff(removedIds, editedItems) {
     await sleep(100);
   }
 
-  // Animate removals — strikethrough then fade out
+  // Animate removals - strikethrough then fade out
   for (const id of removedIds) {
     const el = itemMap.get(id);
     if (!el) continue;
@@ -821,7 +821,7 @@ export function renderMemoryList() {
       const dropdown = document.createElement('div');
       dropdown.className = 'memory-item-dropdown';
 
-      // Pin / Unpin — bookmark icon matches the chat-session "Favorite" SVG.
+      // Pin / Unpin - bookmark icon matches the chat-session "Favorite" SVG.
       // Filled when pinned, outlined when not.
       const _bookmarkPath = '<path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>';
       const _pinSvg = memory.pinned
@@ -842,7 +842,7 @@ export function renderMemoryList() {
       deleteItem.textContent = '✕ Delete';
       deleteItem.addEventListener('click', () => { dropdown.style.display = 'none'; deleteMemory(memory.id); });
 
-      // Select — enters bulk-select mode and pre-selects this memory. Same
+      // Select - enters bulk-select mode and pre-selects this memory. Same
       // pattern as the email/documents/skills Select item.
       const selectItem = document.createElement('div');
       selectItem.className = 'dropdown-item-compact';
@@ -856,7 +856,7 @@ export function renderMemoryList() {
         renderMemoryList();
       });
 
-      // Mobile-only Cancel — mirrors the email/documents popup pattern. CSS
+      // Mobile-only Cancel - mirrors the email/documents popup pattern. CSS
       // hides `.dropdown-cancel-mobile` on desktop where outside-click already
       // dismisses cleanly.
       const cancelItem = document.createElement('div');
@@ -881,7 +881,7 @@ export function renderMemoryList() {
         dropdown.style.left = 'auto';
         // Portaled to <body>, so it must outrank the Brain modal it belongs to.
         // Tool modals get a monotonically increasing z-index from modalManager's
-        // bring-to-front counter, which climbs unbounded over a long session —
+        // bring-to-front counter, which climbs unbounded over a long session -
         // once it passed the old hardcoded 10001 the menu rendered behind the
         // panel (#4720). topPortalZ() derives the value from the live tool-window
         // stack so the menu always sits just above, however high it has climbed.
@@ -903,7 +903,7 @@ export function renderMemoryList() {
           dropdown.style.overflowY = 'auto';
         }
 
-        // Swipe-down-to-dismiss — mirrors the documents library popup gesture.
+        // Swipe-down-to-dismiss - mirrors the documents library popup gesture.
         // Drag the popup down past ~60px and release to close; release earlier
         // and it snaps back. Vertical-only; horizontal flicks fall through.
         let _sw = null;
@@ -946,7 +946,7 @@ export function renderMemoryList() {
 
       item.appendChild(menuBtn);
 
-      // Long-press anywhere on the card opens the same dropdown — mirrors the
+      // Long-press anywhere on the card opens the same dropdown - mirrors the
       // documents library pattern. Skip when the touch starts on the kebab,
       // checkbox, or another button (those have their own click handlers).
       {
@@ -1160,7 +1160,7 @@ async function togglePin(id, pinned) {
       const mem = memories.find(m => m.id === id);
       if (mem) mem.pinned = pinned;
       renderMemoryList();
-      showToast(pinned ? 'Pinned — always in context' : 'Unpinned — RAG only');
+      showToast(pinned ? 'Pinned - always in context' : 'Unpinned - RAG only');
     }
   } catch (e) {
     console.error('Failed to toggle pin:', e);
@@ -1446,7 +1446,7 @@ async function handleImportFile(file) {
     document.querySelector('.memory-tab[data-memory-tab="browse"]')?.click();
   } catch (error) {
     console.error('Import failed:', error);
-    showError('Import failed — ' + error.message);
+    showError('Import failed - ' + error.message);
   } finally {
     if (importSpin) importSpin.destroy();
     if (importBtn) {

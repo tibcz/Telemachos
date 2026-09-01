@@ -2,7 +2,7 @@
 
 ``src/caldav_sync.py`` is a one-way pull (remote → local). So events created,
 edited, or deleted in Telemachos on a CalDAV-backed calendar only changed the local
-SQLite copy and never reached the server (iCloud/Nextcloud/Radicale/Fastmail) —
+SQLite copy and never reached the server (iCloud/Nextcloud/Radicale/Fastmail) -
 they'd silently disappear on the next pull and never show on the user's phone.
 
 This adds the missing write half. The remote calendar URL isn't stored locally
@@ -58,11 +58,11 @@ def build_event_ical(ev: dict) -> str:
         ve.add("dtstart", dtstart.date())
         ve.add("dtend", dtend.date())
     elif ev.get("is_utc"):
-        # Stored as naive-UTC instants — re-attach UTC so the server gets a Z time.
+        # Stored as naive-UTC instants - re-attach UTC so the server gets a Z time.
         ve.add("dtstart", dtstart.replace(tzinfo=timezone.utc))
         ve.add("dtend", dtend.replace(tzinfo=timezone.utc))
     else:
-        # Legacy naive-local ("floating") time — emit without a TZ.
+        # Legacy naive-local ("floating") time - emit without a TZ.
         ve.add("dtstart", dtstart)
         ve.add("dtend", dtend)
 
@@ -172,7 +172,7 @@ def push_event(calendars, local_cal_id: str, ev: dict, *, delete: bool = False,
 
 
 def _discover_calendars(client):
-    """Discover the principal's calendars, falling back to the URL itself —
+    """Discover the principal's calendars, falling back to the URL itself -
     same strategy as the pull path."""
     from caldav.lib.error import AuthorizationError, NotFoundError
     try:
@@ -255,7 +255,7 @@ async def writeback_event(owner: str, calendar_source: str, calendar_id: str,
     """Best-effort push of a local change to the remote CalDAV server.
 
     No-ops (``{"skipped": ...}``) when the calendar isn't CalDAV-backed or no
-    credentials are configured. Never raises — a remote failure is logged and
+    credentials are configured. Never raises - a remote failure is logged and
     returned, the local DB remaining the source of truth.
     """
     if calendar_source != "caldav":

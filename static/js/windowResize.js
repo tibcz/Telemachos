@@ -1,7 +1,7 @@
 // Shared window-resize helper. Companion to makeWindowDraggable: gives every
 // draggable tool window (Library, Notes, Tasks, Calendar, Gallery, Email,
 // Cookbook, Memory, Settings, Theme, Compare, Research, Sessions) edge- and
-// corner-resize, the same way a native desktop window resizes — grab any of
+// corner-resize, the same way a native desktop window resizes - grab any of
 // the four edges or four corners and drag.
 //
 // Why edge-proximity detection instead of injected handle elements:
@@ -16,7 +16,7 @@
 //   makeWindowResizable(content, {
 //     modal,        // optional wrapping .modal (for id-based size persistence)
 //     mobileSkip,   // viewport width at/below which resize is disabled (sheets)
-//     isLocked,     // () => bool — skip while fullscreen / docked
+//     isLocked,     // () => bool - skip while fullscreen / docked
 //     minWidth, minHeight,
 //     storageKey,   // localStorage key to persist {w,h}; null disables
 //     onResizeEnd,  // ({rect}) => void
@@ -123,7 +123,7 @@ export function makeWindowResizable(content, options = {}) {
     if (active.b) height = startRect.height + dy;
     if (active.l) { width = startRect.width - dx; left = startRect.left + dx; }
     if (active.t) { height = startRect.height - dy; top = startRect.top + dy; }
-    // Min-size clamps — keep the opposite edge anchored when pulling from
+    // Min-size clamps - keep the opposite edge anchored when pulling from
     // the left/top so the window doesn't jump.
     if (width < minW) { if (active.l) left = startRect.left + (startRect.width - minW); width = minW; }
     if (height < minH) { if (active.t) top = startRect.top + (startRect.height - minH); height = minH; }
@@ -174,7 +174,7 @@ export function makeWindowResizable(content, options = {}) {
       document.removeEventListener('mouseup', mu);
     };
     // Self-heal a missed mouseup (released outside the window, dropped event,
-    // window blur): a move with no buttons pressed means the drag is over —
+    // window blur): a move with no buttons pressed means the drag is over -
     // finish instead of running away on every subsequent mousemove.
     const mm = (e) => {
       if (e.buttons === 0) { mu(); return; }

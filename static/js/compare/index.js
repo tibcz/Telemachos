@@ -1,4 +1,4 @@
-// compare/index.js — orchestrator module (public API)
+// compare/index.js - orchestrator module (public API)
 /**
  * Model A/B Comparison module.
  * Builds its own multi-pane grid layout (up to 8 models).
@@ -57,7 +57,7 @@ function init(apiBase) {
   // Clean up unsaved compare sessions on page close/refresh
   window.addEventListener('beforeunload', () => {
     if (!state._saveOnClose && state._paneSessionIds.length > 0) {
-      // sendBeacon uses POST — use the bulk delete endpoint
+      // sendBeacon uses POST - use the bulk delete endpoint
       navigator.sendBeacon(
         `${state.API_BASE}/api/sessions/bulk-delete`,
         new Blob([JSON.stringify({ ids: state._paneSessionIds })], { type: 'application/json' })
@@ -126,7 +126,7 @@ function closeCompare() {
 // ── toggleMode ──
 // ────────────────────────────────────────────────────────────────────────────
 
-/** Toggle compare mode — shows model selector, then builds UI. */
+/** Toggle compare mode - shows model selector, then builds UI. */
 async function toggleMode() {
   if (state.isActive) {
     deactivate(true);
@@ -239,7 +239,7 @@ async function _buildCompareUI() {
   const modelShorts = _modelDisplayNames(state._selectedModels);
   _persistSelections();
 
-  // 1. Create sessions (skip for search mode — no LLM sessions needed)
+  // 1. Create sessions (skip for search mode - no LLM sessions needed)
   if (state._compareMode !== 'search') {
     const sessionIds = [];
     for (let i = 0; i < n; i++) {
@@ -386,7 +386,7 @@ async function _buildCompareUI() {
     btn.style.display = hasUnprobed ? '' : 'none';
   };
 
-  // (Scoreboard button moved into the vote bar, next to Tie — see vote.js.)
+  // (Scoreboard button moved into the vote bar, next to Tie - see vote.js.)
 
   const exportWrap = document.createElement('div');
   exportWrap.style.cssText = 'position:relative;display:inline-flex;';
@@ -435,7 +435,7 @@ async function _buildCompareUI() {
   container.appendChild(headerBar);
   state._compareElements.push(headerBar);
 
-  // Initial visibility — hidden if all current models are already probed
+  // Initial visibility - hidden if all current models are already probed
   window._updateCheckBtnState();
 
   // 9. Grid of panes
@@ -526,7 +526,7 @@ async function _buildCompareUI() {
     requestAnimationFrame(() => msgTA.focus());
   }
 
-  // Eval-prompts picker — sits inside the message box at top-right (where
+  // Eval-prompts picker - sits inside the message box at top-right (where
   // model-picker normally lives). Model-picker is irrelevant during compare,
   // so hide it and restore on deactivate via the wrap's _cleanup.
   _setupEvalPicker();
@@ -587,23 +587,23 @@ function handleCompareSubmit(e) {
   // Reset textarea height
   input.style.height = '';
   // Notify input listeners (eval-picker visibility, autosize, etc.) that the
-  // textarea is empty again — programmatic clears don't fire `input` natively.
+  // textarea is empty again - programmatic clears don't fire `input` natively.
   input.dispatchEvent(new Event('input', { bubbles: true }));
   // Mobile: dismiss the on-screen keyboard after the prompt is sent so the
   // user sees the streaming output instead of the typing area. A plain blur()
   // is often ignored on Firefox mobile, so toggle readonly around it (and blur
   // the active element too) to reliably collapse the keyboard.
-  // Mobile keyboard dismiss — use the SAME proven logic as the main chat send
+  // Mobile keyboard dismiss - use the SAME proven logic as the main chat send
   // (chat.js handleChatSubmit). Compare returns early in that flow, so it never
   // reached this code; replicating it here is what actually works on Firefox
   // mobile (readonly + blur, then drop readonly only once the blur is confirmed
-  // or the user taps to type again — avoids the keyboard bouncing back up).
+  // or the user taps to type again - avoids the keyboard bouncing back up).
   if (window.innerWidth <= 768) {
     try {
       input.setAttribute('readonly', 'readonly');
       input.blur();
       // Setting readonly on an ALREADY-FOCUSED textarea doesn't dismiss the
-      // keyboard on Firefox, and blur() is often ignored — so the readonly-only
+      // keyboard on Firefox, and blur() is often ignored - so the readonly-only
       // approach works only when the input happened not to be focused at send
       // time (inconsistent between 1st/2nd prompt). Deterministically pull focus
       // off the textarea by focusing a throwaway readonly input, then drop it.
@@ -639,7 +639,7 @@ async function _executeCompare(message) {
   if (state._streaming) return;
   if (state._selectedModels.length < 1) return;
 
-  // New round — allow voting again and clear the previous round's win/lose/tie
+  // New round - allow voting again and clear the previous round's win/lose/tie
   // styling (pane highlight + the Winner!/= title decorations), otherwise the
   // old result stays stuck on the panes through the next prompt.
   state._voted = false;
@@ -701,7 +701,7 @@ async function _executeCompare(message) {
         hist.scrollTop = hist.scrollHeight;
       }
 
-      // Fire searches — parallel or sequential based on _parallel setting
+      // Fire searches - parallel or sequential based on _parallel setting
       const t0 = performance.now();
       state._abortControllers = state._selectedModels.map(() => new AbortController());
 
@@ -724,7 +724,7 @@ async function _executeCompare(message) {
       if (state._parallel) {
         results = await Promise.all(state._selectedModels.map((m, i) => _searchOne(m, i)));
       } else {
-        // Sequential — run one at a time, dim waiting panes
+        // Sequential - run one at a time, dim waiting panes
         results = [];
         const panes = document.querySelectorAll('.compare-pane');
         panes.forEach((p, i) => { if (i > 0) p.style.opacity = '0.4'; });
@@ -971,7 +971,7 @@ async function _executeCompare(message) {
         streamToPane(i, sid, message, aiElements[i], { searchContext: sharedSearchContext, timeout: runTimeout })
       ));
     } else {
-      // Run one pane at a time (sequential) — active pane full opacity, others dimmed
+      // Run one pane at a time (sequential) - active pane full opacity, others dimmed
       const allPanes = document.querySelectorAll('.compare-pane');
       allPanes.forEach(p => { p.style.transition = 'opacity 0.4s ease'; });
       // Dim all except first
@@ -1037,7 +1037,7 @@ function _buildComparisonMarkdown() {
   if (!grid) return null;
   const panes = grid.querySelectorAll('.compare-pane');
   if (!panes.length) return null;
-  const prompt = state._lastPrompt || '(no prompt yet — run a comparison first)';
+  const prompt = state._lastPrompt || '(no prompt yet - run a comparison first)';
   const expected = state._expectedAnswer || '';
   const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
   let md = '# Compare\n\n';
@@ -1105,7 +1105,7 @@ async function _exportCopyMarkdown(_btn) {
       await navigator.clipboard.writeText(md);
     } else {
       // Avoid the focus-stealing textarea fallback when the modern API
-      // is available — that path briefly flashes the page as the
+      // is available - that path briefly flashes the page as the
       // textarea is added/focused/removed.
       const ta = document.createElement('textarea');
       ta.value = md;
@@ -1138,7 +1138,7 @@ function _exportPrint() {
   const md = _buildComparisonMarkdown();
   if (!md) return;
   // Render the markdown as a quick HTML view in a new window and trigger
-  // the system print dialog — user can pick "Save as PDF" from there.
+  // the system print dialog - user can pick "Save as PDF" from there.
   const w = window.open('', '_blank');
   if (!w) return;
   try { w.opener = null; } catch (_) {}
@@ -1160,7 +1160,7 @@ async function _exportComparison(btn) {
   const panes = grid.querySelectorAll('.compare-pane');
   if (!panes.length) return;
 
-  const prompt = state._lastPrompt || '(no prompt yet — run a comparison first)';
+  const prompt = state._lastPrompt || '(no prompt yet - run a comparison first)';
   const expected = state._expectedAnswer || '';
   const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
@@ -1214,7 +1214,7 @@ async function _exportComparison(btn) {
 }
 
 /**
- * Build the eval-prompts picker — shown only during compare. Mirrors the
+ * Build the eval-prompts picker - shown only during compare. Mirrors the
  * absolute-positioned model-picker location (top-right of .chat-input-top)
  * and is auto-cleaned up by the standard _compareElements teardown.
  */
@@ -1258,7 +1258,7 @@ function _setupEvalPicker() {
         research: 'Research prompts'
       }[mode] || 'Eval prompts');
     }
-    // research/html aren't first-class compare types — fall back gracefully
+    // research/html aren't first-class compare types - fall back gracefully
     const key = EVAL_PROMPTS[mode] ? mode
       : (mode === 'research' ? 'search' : 'chat');
     const list = EVAL_PROMPTS[key] || [];
@@ -1324,7 +1324,7 @@ function _setupEvalPicker() {
   wrap._renderItems = _renderItems;
   inputTop.appendChild(wrap);
 
-  // Expected-answer chip — placed above the chat-input-bar (outside it), so
+  // Expected-answer chip - placed above the chat-input-bar (outside it), so
   // it floats over the compare grid right before the message box. Shows when
   // a graded prompt is picked so the eval-runner can verify model output.
   const hintChip = document.createElement('div');
@@ -1335,7 +1335,7 @@ function _setupEvalPicker() {
     + ' <strong class="cmp-eval-expected-value"></strong>'
     + ' <button type="button" class="cmp-eval-expected-close" title="Dismiss">×</button>';
   // Anchor the floating panel against the input bar (needs position:relative
-  // — added via CSS rule on .chat-input-bar:has(.cmp-eval-expected) below).
+  // - added via CSS rule on .chat-input-bar:has(.cmp-eval-expected) below).
   const inputBar = document.querySelector('.chat-input-bar');
   if (inputBar) {
     inputBar.appendChild(hintChip);
@@ -1360,7 +1360,7 @@ function _setupEvalPicker() {
 
   // Hide the picker when the textarea has any user text (it's only useful
   // when starting fresh). Reappears when cleared. The expected-answer
-  // chip stays put across sends — clearing it on every empty-textarea
+  // chip stays put across sends - clearing it on every empty-textarea
   // tick wiped state._expectedAnswer before grading could read it, so
   // pane ✓/✗ badges never appeared. The chip is only cleared via its
   // own dismiss button (or when the user picks a new eval).
@@ -1427,7 +1427,7 @@ function removeOverlays() {
 // ── showShufflePoolEditor ──
 // ────────────────────────────────────────────────────────────────────────────
 
-/** Shuffle pool editor — lets users exclude broken models from the dice. */
+/** Shuffle pool editor - lets users exclude broken models from the dice. */
 async function showShufflePoolEditor() {
   let models;
   try { models = await fetchModels(); } catch (e) {

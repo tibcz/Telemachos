@@ -1,4 +1,4 @@
-"""Issue #1116 (latent ranking bug) — recency scoring uses UTC, not local time.
+"""Issue #1116 (latent ranking bug) - recency scoring uses UTC, not local time.
 
 `recency_score` measured age with `datetime.now()` (local) against UTC-style
 published dates, skewing the age by the host's UTC offset and risking a TypeError

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""telemachos-backup — snapshot + restore of the data directory.
+"""telemachos-backup - snapshot + restore of the data directory.
 
 Backs up everything the app keeps under `data/`: the SQLite DB, the
 Fernet key, JSON state files, RAG indexes, personal docs, attachments,
-WhatsApp session, etc. Output is a gzip tarball — composable with cron
+WhatsApp session, etc. Output is a gzip tarball - composable with cron
 + scp + s3cmd. The backup uses `sqlite3 .backup` for the DB so the
 app can keep running during the snapshot.
 
@@ -31,7 +31,7 @@ from pathlib import Path, PurePosixPath
 _DATA_DIR = _REPO_ROOT / "data"
 _BACKUP_DIR = _REPO_ROOT / "backups"
 
-# Stuff inside data/ that we explicitly skip — anything we can re-derive
+# Stuff inside data/ that we explicitly skip - anything we can re-derive
 # from the SQLite DB + JSON state. Keeps the tarball small.
 _SKIP_PATTERNS = {
     "mail-attachments",     # cached IMAP attachment extractions
@@ -52,7 +52,7 @@ def _sqlite_safe_copy(src: Path, dst: Path) -> None:
         src_conn.close()
         dst_conn.close()
     except Exception:
-        # Not a SQLite DB or backup unsupported — fall back.
+        # Not a SQLite DB or backup unsupported - fall back.
         dst.write_bytes(src.read_bytes())
 
 
@@ -160,7 +160,7 @@ def _backup_entry(p):
 
 
 def cmd_verify(args):
-    """Open the tarball read-only and walk its members — confirms
+    """Open the tarball read-only and walk its members - confirms
     integrity without extracting anything."""
     path = Path(args.path)
     if not path.exists():
@@ -215,7 +215,7 @@ def cmd_restore(args):
     if not path.exists():
         fail(f"no file at {path}")
     if not args.yes:
-        fail("restore is destructive — pass --yes to confirm overwriting data/")
+        fail("restore is destructive - pass --yes to confirm overwriting data/")
     # Sanity check: tarball entries must all be safe, regular files/dirs under
     # `data/`. Avoid extractall() so symlink/hardlink entries can't redirect a
     # later write outside the repo.

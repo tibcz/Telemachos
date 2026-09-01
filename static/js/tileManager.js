@@ -1,5 +1,5 @@
 /**
- * tileManager.js — desktop window tiling for tool modals.
+ * tileManager.js - desktop window tiling for tool modals.
  *
  * Hooks into any modal whose `.modal-header` is dragged (each tool wires its
  * own drag; we just watch pointer moves). Shows a translucent ghost preview
@@ -14,7 +14,7 @@
  *   - right edge                  → right half
  *   - bottom edge                 → bottom half
  *
- * Mobile (≤768px) is excluded — the swipe-dismiss UX takes precedence.
+ * Mobile (≤768px) is excluded - the swipe-dismiss UX takes precedence.
  *
  * Each modal-content remembers its pre-snap geometry so dragging away restores
  * the original size.
@@ -174,7 +174,7 @@ function _applySnap(content, rect, zoneName) {
   // fire on a left/right-edge drag-release. If we leave modalSnap's
   // `left-dock-active` body class + `--left-dock-w` padding in place, it
   // reserves a strip on the left AND this manager's safe-rect already
-  // accounts for the sidebar's (now padding-shifted) position — the two
+  // accounts for the sidebar's (now padding-shifted) position - the two
   // double-count and jam the window to the right behind a massive empty
   // zone, which gets worse each time the sidebar is toggled. Clear the
   // orphaned edge-dock state so only the tile-snap positions the window.
@@ -184,7 +184,7 @@ function _applySnap(content, rect, zoneName) {
 
   // Stash pre-snap geometry once; if we re-snap, keep the original. Capture a
   // CONCRETE fixed position (from the rendered rect when the inline value is
-  // empty) and the position itself — otherwise un-snap restored empty left/top
+  // empty) and the position itself - otherwise un-snap restored empty left/top
   // + no position, and the .modal flex parent re-centered the window.
   if (!content.dataset._tilePreSnap) {
     content.dataset._tilePreSnap = JSON.stringify({
@@ -198,7 +198,7 @@ function _applySnap(content, rect, zoneName) {
     });
   }
   content.style.transition = 'left 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), height 0.22s cubic-bezier(0.34, 1.56, 0.64, 1)';
-  // Use !important — some modals (e.g. cookbook) carry inline width/height
+  // Use !important - some modals (e.g. cookbook) carry inline width/height
   // and CSS that otherwise re-center the .modal-content, which made the snap
   // "jump back to the middle" on release.
   content.style.setProperty('position', 'fixed', 'important');
@@ -216,7 +216,7 @@ function _applySnap(content, rect, zoneName) {
 function _unsnap(content) {
   const pre = content.dataset._tilePreSnap;
   if (!pre) return;
-  // Clear the !important snap props first — Object.assign can't override them.
+  // Clear the !important snap props first - Object.assign can't override them.
   ['position', 'left', 'top', 'width', 'height', 'max-height', 'margin', 'transform']
     .forEach(p => content.style.removeProperty(p));
   try {
@@ -224,7 +224,7 @@ function _unsnap(content) {
     Object.assign(content.style, r);
   } catch {}
   // Keep it a fixed floating window so the restored left/top actually take
-  // effect — without position:fixed the .modal flex parent re-centers it.
+  // effect - without position:fixed the .modal flex parent re-centers it.
   if (!content.style.position) content.style.position = 'fixed';
   delete content.dataset._tilePreSnap;
   delete content.dataset._tileZone;

@@ -164,7 +164,7 @@ class ModelDiscovery:
         except Exception:
             pass
         # llama.cpp's llama-server exposes a native /props endpoint (no /v1 prefix)
-        # describing the loaded model, slots, and chat template — distinct from
+        # describing the loaded model, slots, and chat template - distinct from
         # LM Studio (/api/v1/models) and vLLM (/version, /metrics).
         try:
             r = httpx.get(f"http://{host}:{port}/props", timeout=1.5)

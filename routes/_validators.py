@@ -15,7 +15,7 @@ def validate_remote_host(v: str | None) -> str | None:
     if not _REMOTE_HOST_RE.match(v):
         raise HTTPException(
             400,
-            "Invalid remote_host — must be host or user@host, no SSH option syntax",
+            "Invalid remote_host - must be host or user@host, no SSH option syntax",
         )
     return v
 

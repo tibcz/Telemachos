@@ -1,5 +1,5 @@
 # src/tts_service.py
-"""Multi-provider TTS service — dispatches to local Kokoro, OpenAI-compatible API, or browser."""
+"""Multi-provider TTS service - dispatches to local Kokoro, OpenAI-compatible API, or browser."""
 
 import io
 import os
@@ -32,10 +32,10 @@ class TTSService:
 
     Reads provider config from data/settings.json on each call.
     Providers:
-      "disabled"        — no TTS
-      "browser"         — client-side Web Speech API (no server synthesis)
-      "local"           — Kokoro-82M on GPU
-      "endpoint:<id>"   — OpenAI-compatible /audio/speech via ModelEndpoint
+      "disabled"        - no TTS
+      "browser"         - client-side Web Speech API (no server synthesis)
+      "local"           - Kokoro-82M on GPU
+      "endpoint:<id>"   - OpenAI-compatible /audio/speech via ModelEndpoint
     """
 
     def __init__(self, cache_dir: str = TTS_CACHE_DIR):
@@ -248,7 +248,7 @@ class TTSService:
         return None
 
     def set_voice(self, voice: str):
-        """Legacy no-op — voice is now managed via admin settings."""
+        """Legacy no-op - voice is now managed via admin settings."""
 
     def get_stats(self) -> Dict[str, Any]:
         settings = self._load_settings()

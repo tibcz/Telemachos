@@ -1,7 +1,7 @@
 """CalDAV SSRF-via-redirect hardening.
 
 ``validate_caldav_url`` resolves and vets the initial host, but the CalDAV
-client's HTTP session follows 3xx redirects by default — so a validated public
+client's HTTP session follows 3xx redirects by default - so a validated public
 URL can be redirected, at request time, into loopback/private space (an SSRF
 that bypasses the host check). ``_build_dav_client`` pins the session to zero
 redirects. These tests exercise the real DAVClient request path (the sync /
@@ -75,7 +75,7 @@ def test_dav_client_does_not_follow_redirect_to_internal_host():
             # that is the intended fail-closed behavior. The security assertion
             # is that the internal sink was never contacted.
             pass
-        # The request must actually have left the building — otherwise an early
+        # The request must actually have left the building - otherwise an early
         # error would make "sink not hit" pass vacuously.
         assert public_methods == ["PROPFIND"], "the PROPFIND must reach the public server first"
         assert sink_hits == [], "redirect toward an internal host must not be followed"

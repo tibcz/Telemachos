@@ -1,6 +1,6 @@
 # core/session_manager.py
 """
-Session management — all session business logic and DB operations.
+Session management - all session business logic and DB operations.
 
 This is the single place that handles:
 - Loading/saving sessions to database
@@ -37,7 +37,7 @@ def _message_timestamp_iso(value: Optional[datetime]) -> Optional[str]:
 
 
 def _parse_msg_content(raw):
-    """Parse message content from DB — deserialises JSON arrays back to lists
+    """Parse message content from DB - deserialises JSON arrays back to lists
     (multimodal content with image/audio attachments)."""
     if isinstance(raw, list):
         return raw
@@ -84,7 +84,7 @@ class SessionManager:
     # ------------------------------------------------------------------
 
     def load_sessions(self):
-        """Load recent session METADATA from the database — messages are
+        """Load recent session METADATA from the database - messages are
         hydrated on demand by `get_session`. Previously this walked every
         message of every session into RAM at boot, which on a long-running
         personal-server box could be tens of thousands of rows held forever
@@ -210,8 +210,8 @@ class SessionManager:
             is_important=getattr(db_session, 'is_important', False) or False,
         )
 
-        # The rows just loaded are the whole transcript, so they — not the
-        # denormalized sessions.message_count column — are the truth for this
+        # The rows just loaded are the whole transcript, so they - not the
+        # denormalized sessions.message_count column - are the truth for this
         # cached object. get_session's hydration gate compares against this
         # number; seeding it from a drifted column would ask for a reload that
         # can never close the gap.
@@ -290,7 +290,7 @@ class SessionManager:
                 db_session.message_count = 0
             _now = datetime.now(timezone.utc)
             db_session.last_accessed = _now
-            # Clean "last conversation" timestamp — only bumped here on a
+            # Clean "last conversation" timestamp - only bumped here on a
             # real message persist, so it powers an accurate "Last active"
             # sort that ignores renames / model swaps / mere opens.
             db_session.last_message_at = _now
@@ -456,7 +456,7 @@ class SessionManager:
 
         ``message_count`` is reconciled against the real ``chat_messages`` rows
         rather than copied from the denormalized ``sessions.message_count``
-        column. That column drifts in normal operation — ``_persist_message``
+        column. That column drifts in normal operation - ``_persist_message``
         swallows a failed insert but ``add_message`` has already appended in
         memory, so the next successful persist writes rows+1, and a persist for
         an uncached session writes 0. Hydration keys off this number: a
@@ -509,7 +509,7 @@ class SessionManager:
             if session:
                 self.sessions[session_id] = session
             else:
-                # No messages — fall back to metadata-only entry so callers
+                # No messages - fall back to metadata-only entry so callers
                 # don't crash on KeyError for empty sessions.
                 meta = self._db_to_session_meta(db_session)
                 if meta is None:

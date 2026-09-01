@@ -3,7 +3,7 @@
 A single email whose Subject/From/To/Cc header declares an unknown or invalid
 MIME charset (e.g. `=?x-unknown-charset?B?...?=`, common in spam/malformed mail)
 used to raise an uncaught LookupError, because `bytes.decode(..., errors="replace")`
-only handles byte-decode errors — not codec *lookup* failures. That crash
+only handles byte-decode errors - not codec *lookup* failures. That crash
 propagated into the inbox list endpoint, message fetch, and the background mail
 pollers (routes/email_routes.py, routes/email_pollers.py, src/builtin_actions.py),
 so one bad message could take down the whole inbox render / poller loop.

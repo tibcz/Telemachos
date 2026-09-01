@@ -1,4 +1,4 @@
-"""Tests for endpoint_resolver — endpoint/model selection and enabled-model filtering."""
+"""Tests for endpoint_resolver - endpoint/model selection and enabled-model filtering."""
 import json
 
 from src.endpoint_resolver import (

@@ -1,4 +1,4 @@
-// Theme system — preset themes + custom color editing, stored in localStorage
+// Theme system - preset themes + custom color editing, stored in localStorage
 // ES6 module
 
 import Storage from './storage.js';
@@ -98,7 +98,7 @@ function _saveCustomThemes(obj) {
 }
 export function saveCustomTheme(name, colors, opts) {
   const ct = _loadCustomThemes();
-  // Enforce limit — allow overwriting existing, block new past max
+  // Enforce limit - allow overwriting existing, block new past max
   if (!ct[name] && Object.keys(ct).length >= MAX_CUSTOM_THEMES) {
     return 'limit';
   }
@@ -299,7 +299,7 @@ export function applyColors(colors) {
   _updateFavicon(colors.red || '#e06c75');
 }
 
-// Per-route SVG shape registry — kept in sync with the inline favicon
+// Per-route SVG shape registry - kept in sync with the inline favicon
 // script in index.html so a theme change keeps the route icon, not the
 // default boat. Returns the inner SVG markup colored with `fg`.
 const _ROUTE_FAVICON_SHAPES = {
@@ -434,7 +434,7 @@ export function applyBgEffectSize(v) {
   document.documentElement.style.setProperty('--bg-effect-size', String(n));
 }
 
-/** Toggle the global "frosted glass" look — applies a translucent + blurred
+/** Toggle the global "frosted glass" look - applies a translucent + blurred
  *  treatment to every panel, sidebar, modal, dropdown, and popover via CSS
  *  rules scoped to `body.theme-frosted`. */
 export function applyFrostedGlass(on) {
@@ -537,13 +537,13 @@ export function initThemeUI() {
   }
 
   // Attach the in-house color picker to every color input in the theme panel.
-  // Safe to call repeatedly — the picker marks inputs it's already wrapped.
+  // Safe to call repeatedly - the picker marks inputs it's already wrapped.
   try { initColorPickers(document); } catch (e) { console.warn('Color picker init failed', e); }
 
   // Populate the advanced color inputs with their computed defaults right now.
   // BUG FIX: without this, untouched inputs sat at the browser-default `#000000`
   // until the user clicked a swatch; the first edit of ANY advanced input then
-  // tripped readAdvanced() into storing every other `#000000` as an override —
+  // tripped readAdvanced() into storing every other `#000000` as an override -
   // e.g. editing Chat Bubble Border turned Sidebar Bg pure black.
   try {
     const saved = getSaved();
@@ -567,8 +567,8 @@ export function initThemeUI() {
       const opWrap = document.getElementById('theme-opacity-wrap');
       if (opWrap) opWrap.classList.toggle('hidden', targetId !== 'theme-tab-customize');
       // Restore full opacity / blur on every other tab. The slider's effect
-      // is meant to be Customize-only — peeking at the page while tweaking
-      // colors — so swapping back to Themes (or Schedule) should look
+      // is meant to be Customize-only - peeking at the page while tweaking
+      // colors - so swapping back to Themes (or Schedule) should look
       // exactly like the rest of the app's modals again.
       const popup = document.getElementById('theme-popup');
       if (popup) {
@@ -591,7 +591,7 @@ export function initThemeUI() {
   }
 
 
-  // Wire the "Peek" opacity toggle — fades the theme modal so the user can
+  // Wire the "Peek" opacity toggle - fades the theme modal so the user can
   // see the page behind it while tweaking colors on the Customize tab.
   // On/off only (no slider); starts off, lives in the title bar, and is
   // cleared when the user swaps to Themes / Schedule.
@@ -604,7 +604,7 @@ export function initThemeUI() {
     const apply = (on) => {
       const cards = popup.querySelectorAll('.admin-card');
       if (on) {
-        // Fade the modal + each inner card via color-mix — never element
+        // Fade the modal + each inner card via color-mix - never element
         // opacity, so text, controls and swatches stay sharp.
         const bgMix    = `color-mix(in srgb, var(--bg)    ${PEEK}%, transparent)`;
         const panelMix = `color-mix(in srgb, var(--panel) ${PEEK}%, transparent)`;
@@ -808,7 +808,7 @@ export function initThemeUI() {
       Object.entries(pickerIds).forEach(([k, pid]) => {
         // Picker value HAS already changed (input fired) for the one the
         // user touched. For that one, reading the current value gives the
-        // NEW color, which is fine — _oldDefaults uses the rest. We use
+        // NEW color, which is fine - _oldDefaults uses the rest. We use
         // computeAdvancedDefaults({...new}) once for the new defaults, and
         // the CSS variables for the OLD defaults.
       });
@@ -833,7 +833,7 @@ export function initThemeUI() {
       const _adv = {};
       let _hasAdv = false;
       // Normalize color strings to lowercase 6-char hex so getComputedStyle
-      // values (which keep whatever was set — could be #abc, #ABCDEF, or
+      // values (which keep whatever was set - could be #abc, #ABCDEF, or
       // rgb()) compare correctly against color-input pickers (always
       // #rrggbb lowercase). Without this, every advanced picker reads as
       // "user-set" and we'd revert to the v161 bug.
@@ -860,7 +860,7 @@ export function initThemeUI() {
           _adv[key] = pEl.value;
           _hasAdv = true;
         } else {
-          // Untouched — slide to the new default so it tracks the new palette.
+          // Untouched - slide to the new default so it tracks the new palette.
           pEl.value = _newDefaults[key];
         }
       }
@@ -890,7 +890,7 @@ export function initThemeUI() {
     });
   });
 
-  // Save custom theme — inline input
+  // Save custom theme - inline input
   const saveNameInputOld = document.getElementById('theme-save-name');
   const saveGoBtnOld = document.getElementById('theme-save-go');
   const saveError = document.getElementById('theme-save-error');
@@ -1015,7 +1015,7 @@ export function initThemeUI() {
       const base = readCurrentColors();
       base.advanced = readAdvanced();
       applyColors(base);
-      // Same auto-save routing as the basic color inputs above — write
+      // Same auto-save routing as the basic color inputs above - write
       // to the active custom theme if there is one, else fall back to
       // the transient 'custom' slot.
       const _activeSaved = getSaved();
@@ -1218,7 +1218,7 @@ export function initThemeUI() {
   const harmonyAccentEl = document.getElementById('harmony-accent');
   // Make sure the in-house color picker really attached to this one. The
   // global initColorPickers() call earlier in initThemeUI should have grabbed
-  // it, but in older sessions / partial loads it sometimes wasn't wrapped —
+  // it, but in older sessions / partial loads it sometimes wasn't wrapped -
   // call attachColorPicker idempotently so the popover, suggestions, recents
   // and hex syncing all match every other color row.
   if (harmonyAccentEl) {
@@ -1401,7 +1401,7 @@ function _showThemeZoneHighlight(selector) {
   try { els = document.querySelectorAll(selector); }
   catch { return; }
   els.forEach(el => {
-    // Skip elements inside the theme modal — highlighting itself is noise.
+    // Skip elements inside the theme modal - highlighting itself is noise.
     if (el.closest && el.closest('#theme-modal')) return;
     const r = el.getBoundingClientRect();
     if (r.width < 2 || r.height < 2) return;
@@ -1466,7 +1466,7 @@ export function initThemeZoneHighlight() {
 
 // Generic draggable helper for fixed-position elements
 // Thin wrapper around the shared makeWindowDraggable helper. Existing
-// callers pass (el, handle) — `el` is what gets moved, `handle` is the
+// callers pass (el, handle) - `el` is what gets moved, `handle` is the
 // drag handle. No fullscreen support (none of these consumers wanted it).
 export function makeDraggable(el, handle) {
   if (!el || !handle) return;
@@ -1475,7 +1475,7 @@ export function makeDraggable(el, handle) {
     content: el,
     header: handle,
     // Don't start a window-drag when the user grabs an interactive control
-    // in the header — e.g. the theme opacity slider now lives next to the
+    // in the header - e.g. the theme opacity slider now lives next to the
     // title, and dragging its thumb must move the slider, not the window.
     skipSelector: 'button, input, select, .theme-opacity-wrap',
   };
@@ -1533,7 +1533,7 @@ function _initSynapse() {
   const canvas = document.createElement('canvas');
   canvas.id = 'synapse-canvas';
   canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;';
-  // Decorative background effect — hide from assistive tech so screen readers
+  // Decorative background effect - hide from assistive tech so screen readers
   // don't announce an empty canvas and axe's "region" rule doesn't flag it.
   canvas.setAttribute('aria-hidden', 'true');
   document.body.prepend(canvas);
@@ -1565,11 +1565,11 @@ function _initSynapse() {
   function spawnPulse() {
     const speed = SPEED_MIN + Math.random() * (SPEED_MAX - SPEED_MIN);
     if (Math.random() > 0.5) {
-      // Horizontal — pick a grid row
+      // Horizontal - pick a grid row
       const row = Math.floor(Math.random() * (rows + 1));
       pulses.push({ x: -TRAIL_LEN, y: row * GRID, dx: speed, dy: 0 });
     } else {
-      // Vertical — pick a grid column
+      // Vertical - pick a grid column
       const col = Math.floor(Math.random() * (cols + 1));
       pulses.push({ x: col * GRID, y: -TRAIL_LEN, dx: 0, dy: speed });
     }
@@ -1593,7 +1593,7 @@ function _initSynapse() {
       const p = pulses[i];
       p.x += p.dx; p.y += p.dy;
 
-      // Off screen — remove
+      // Off screen - remove
       if (p.x > W + TRAIL_LEN || p.y > H + TRAIL_LEN) { pulses.splice(i, 1); continue; }
 
       // Trail (line gradient fading behind the dot)
@@ -1623,13 +1623,13 @@ function _initSynapse() {
   draw();
 }
 
-// ── Rain — thin vertical streaks falling ──
+// ── Rain - thin vertical streaks falling ──
 function _initRain() {
   if (document.getElementById('rain-canvas')) return;
   const canvas = document.createElement('canvas');
   canvas.id = 'rain-canvas';
   canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;';
-  // Decorative background effect — hide from assistive tech so screen readers
+  // Decorative background effect - hide from assistive tech so screen readers
   // don't announce an empty canvas and axe's "region" rule doesn't flag it.
   canvas.setAttribute('aria-hidden', 'true');
   document.body.prepend(canvas);
@@ -1698,13 +1698,13 @@ function _initRain() {
   draw();
 }
 
-// ── Constellations — static dots that slowly form/dissolve connecting lines ──
+// ── Constellations - static dots that slowly form/dissolve connecting lines ──
 function _initConstellations() {
   if (document.getElementById('constellations-canvas')) return;
   const canvas = document.createElement('canvas');
   canvas.id = 'constellations-canvas';
   canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;';
-  // Decorative background effect — hide from assistive tech so screen readers
+  // Decorative background effect - hide from assistive tech so screen readers
   // don't announce an empty canvas and axe's "region" rule doesn't flag it.
   canvas.setAttribute('aria-hidden', 'true');
   document.body.prepend(canvas);
@@ -1804,13 +1804,13 @@ function _bgSmoothNoise(x, y) {
   return a + (b - a) * ux + (cc - a) * uy + (a - b - cc + d) * ux * uy;
 }
 
-// ── Perlin Flow — colored particle streams ──
+// ── Perlin Flow - colored particle streams ──
 function _initPerlinFlow() {
   if (document.getElementById('perlin-flow-canvas')) return;
   const canvas = document.createElement('canvas');
   canvas.id = 'perlin-flow-canvas';
   canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;';
-  // Decorative background effect — hide from assistive tech so screen readers
+  // Decorative background effect - hide from assistive tech so screen readers
   // don't announce an empty canvas and axe's "region" rule doesn't flag it.
   canvas.setAttribute('aria-hidden', 'true');
   document.body.prepend(canvas);
@@ -1861,13 +1861,13 @@ function _initPerlinFlow() {
   draw();
 }
 
-// ── Petals — gentle falling flower petals ──
+// ── Petals - gentle falling flower petals ──
 function _initPetals() {
   if (document.getElementById('petals-canvas')) return;
   const canvas = document.createElement('canvas');
   canvas.id = 'petals-canvas';
   canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;';
-  // Decorative background effect — hide from assistive tech so screen readers
+  // Decorative background effect - hide from assistive tech so screen readers
   // don't announce an empty canvas and axe's "region" rule doesn't flag it.
   canvas.setAttribute('aria-hidden', 'true');
   document.body.prepend(canvas);
@@ -1906,7 +1906,7 @@ function _initPetals() {
       if (p.y > H + 15) Object.assign(p, makePetal());
       ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
       ctx.globalAlpha = 0.2;
-      // petal shape — two overlapping ellipses
+      // petal shape - two overlapping ellipses
       ctx.fillStyle = c;
       ctx.beginPath(); ctx.ellipse(-p.size * 0.2 * sz, 0, p.size * 0.6 * sz, p.size * 0.3 * sz, 0.3, 0, Math.PI * 2); ctx.fill();
       ctx.globalAlpha = 0.15;
@@ -1918,13 +1918,13 @@ function _initPetals() {
   draw();
 }
 
-// ── Sparkles — twinkling star-shaped sparkles ──
+// ── Sparkles - twinkling star-shaped sparkles ──
 function _initSparkles() {
   if (document.getElementById('sparkles-canvas')) return;
   const canvas = document.createElement('canvas');
   canvas.id = 'sparkles-canvas';
   canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;';
-  // Decorative background effect — hide from assistive tech so screen readers
+  // Decorative background effect - hide from assistive tech so screen readers
   // don't announce an empty canvas and axe's "region" rule doesn't flag it.
   canvas.setAttribute('aria-hidden', 'true');
   document.body.prepend(canvas);
@@ -1976,13 +1976,13 @@ function _initSparkles() {
   draw();
 }
 
-// ── Embers — warm particles rising with glow and occasional spark bursts ──
+// ── Embers - warm particles rising with glow and occasional spark bursts ──
 function _initEmbers() {
   if (document.getElementById('embers-canvas')) return;
   const canvas = document.createElement('canvas');
   canvas.id = 'embers-canvas';
   canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;';
-  // Decorative background effect — hide from assistive tech so screen readers
+  // Decorative background effect - hide from assistive tech so screen readers
   // don't announce an empty canvas and axe's "region" rule doesn't flag it.
   canvas.setAttribute('aria-hidden', 'true');
   document.body.prepend(canvas);

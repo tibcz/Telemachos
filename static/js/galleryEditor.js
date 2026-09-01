@@ -1,5 +1,5 @@
 /**
- * Gallery Editor — canvas-based image editor with layers, brush, eraser, text, crop, inpaint mask.
+ * Gallery Editor - canvas-based image editor with layers, brush, eraser, text, crop, inpaint mask.
  */
 
 import uiModule from './ui.js';
@@ -110,18 +110,18 @@ import { wireTopbarMenus } from './editor/wire-topbar-menus.js';
 
 const API_BASE = window.location.origin;
 // ── State ──
-// Transform-overlay canvas — sits over the main canvas with extra margin
+// Transform-overlay canvas - sits over the main canvas with extra margin
 // so resize / rotation handles render OUTSIDE the image edges. Pointer
 // events disabled; the main canvas still handles all input.
 const _TRANSFORM_OVERLAY_MARGIN = 60; // image-space px of slack on each side
-// Thin wrappers around the transform-handles impls — the refactor
+// Thin wrappers around the transform-handles impls - the refactor
 // imported them under *Impl aliases but several call sites still use
 // the bare names. Without these, _startTransform threw a ReferenceError
 // before opening the popup, so Transform showed no handles / no popup.
 function _drawTransformHandles() { _drawTransformHandlesImpl(_TRANSFORM_OVERLAY_MARGIN); }
 function _getTransformHandle(x, y) { return _getTransformHandleImpl(x, y); }
 function _syncTransformOverlay() { _syncTransformOverlayImpl(_TRANSFORM_OVERLAY_MARGIN); }
-// Inpaint uses a much bigger default brush — when the user enters
+// Inpaint uses a much bigger default brush - when the user enters
 // the inpaint tool for the first time in this editor session we bump
 // the slider to this value (without touching other tools).
 const _INPAINT_DEFAULT_BRUSH = 100;
@@ -190,35 +190,35 @@ function _registerDocClickAway(handler) {
 // Cached canvas reused each composite() to merge every visible mask
 // sub-layer into a single tinted overlay (avoids re-allocating on each
 // frame). Recreated lazily if dimensions change.
-// Softer default than the original full-saturation red — the user
+// Softer default than the original full-saturation red - the user
 // found the previous tint distracting. Tweakable via the color picker
 // under the Paint/Erase row.
 // Persistent paint/erase toggle for the Inpaint brush. False = paint
 // (default), true = erase. Ctrl+Alt held during a stroke flips this
 // transiently for the duration of that one stroke.
 // Resolved per-stroke at pointerdown: state.inpaintEraseMode XOR (Ctrl+Alt).
-// Most-recent inpaint result layer id — the post-generation Feather
+// Most-recent inpaint result layer id - the post-generation Feather
 // slider edits this layer's alpha edge live.
 
 // _dilateMask + _applyInpaintFeather live in editor/mask-utils.js
-// — see import at top of file.
+// - see import at top of file.
 
 // Eraser settings
 // Edge softness, 0..100. 0 = hard pixel edge; higher values blur the
 // stroke's alpha so the eraser fades out at the brush perimeter.
 // Brush settings (same shape as eraser).
-// Clone Stamp brush modifiers — independent from the Brush tool's
+// Clone Stamp brush modifiers - independent from the Brush tool's
 // settings so users can dial in cloning without losing their brush
 // preset (and vice-versa).
 // `state.cloneSourceX/Y` is the sample anchor set by Alt-click. While
 // painting, the source point moves in lockstep with the brush so the
 // sampled offset stays constant (Photoshop "aligned" mode).
-// First brush coord of the current stroke — used to compute the
+// First brush coord of the current stroke - used to compute the
 // running offset (`sample = source + (current - strokeStart)`).
 // Snapshot of the source layer's pixels at stroke-start so we can keep
 // sampling clean pixels even after the brush has painted over them
 // (avoids feedback / smearing).
-// Double-tap detection for the Clone tool on touch devices — sets the
+// Double-tap detection for the Clone tool on touch devices - sets the
 // sample anchor without a keyboard Alt modifier.
 
 // Undo/Redo
@@ -245,7 +245,7 @@ function _getSelectedAIEndpoint(type) {
 }
 
 /** Shared helper: flatten layers → POST to API → add result as new layer. */
-// Maps a layer-name (the past-participle returned from each AI tool —
+// Maps a layer-name (the past-participle returned from each AI tool -
 // "BG Removed", "Sharpened", etc.) into a present-progressive label for
 // the busy button state ("Removing…", "Sharpening…"). Falls back to a
 // neutral "Processing…" when the layer name doesn't match a known verb.
@@ -262,11 +262,11 @@ function _deriveBusyLabel(layerName) {
   return _BUSY_LABELS[String(layerName).toLowerCase()] || 'Processing…';
 }
 
-// AI-tool runner — sharpen / harmonize / upscale / style / bg-remove
+// AI-tool runner - sharpen / harmonize / upscale / style / bg-remove
 // all flatten the doc, POST a PNG to a server endpoint, and drop the
 // result back as a new layer. Full implementation in editor/ai-tool-
 // runner.js; instantiated lazily (so it can reference function decls
-// that haven't hoisted at module load time? — actually all named
+// that haven't hoisted at module load time? - actually all named
 // function decls hoist, so we instantiate at module top).
 const _applyImageTool = createApplyImageTool({
   flatten: () => flatten(),
@@ -589,7 +589,7 @@ function createLayer(name, width, height) {
     visible: true,
     opacity: 1,
     locked: false,
-    // Mask sub-layers — same shape as adjLayers, parallel concept.
+    // Mask sub-layers - same shape as adjLayers, parallel concept.
     // Each entry: {id, name, canvas, visible}. The "active" mask is the
     // one that paint / lasso / inpaint operations target; rendered as a
     // red overlay in composite().
@@ -604,10 +604,10 @@ function createLayer(name, width, height) {
       contrast: 1,   // 0..2 (1 = neutral)
       saturation: 1, // 0..2 (0 = grayscale, 1 = neutral)
       hue: 0,        // degrees, -180..180
-      // Levels — Photoshop-style three-stop adjust applied per channel.
+      // Levels - Photoshop-style three-stop adjust applied per channel.
       // input 0..255, gamma 0.1..9.9. Default is identity.
       levels: { inBlack: 0, inWhite: 255, gamma: 1.0, outBlack: 0, outWhite: 255 },
-      // Color Balance — additive per-channel shifts weighted by tone.
+      // Color Balance - additive per-channel shifts weighted by tone.
       // Each value is -100..+100 mapping to roughly ±60 in 0..255 space.
       colorBalance: {
         shadows:    { r: 0, g: 0, b: 0 },
@@ -621,9 +621,9 @@ function createLayer(name, width, height) {
 }
 
 // _layerFilterString + _fxFilterToSlider live in editor/fx/filter-string.js
-// — see import at top.
+// - see import at top.
 
-// _layerHasAdjustments lives in editor/layer-helpers.js — see import at top.
+// _layerHasAdjustments lives in editor/layer-helpers.js - see import at top.
 
 // ── Mask sub-layers ──
 // Resolves to the parent layer that should own masks for the current
@@ -638,7 +638,7 @@ function _activeParentLayer() {
 // currently activated (i.e. the user explicitly selected the parent
 // pixels as the paint target). Earlier code fell back to "last mask
 // in the list" which meant clicking the parent row couldn't escape
-// mask-paint mode — that surprised the user, so the fallback is
+// mask-paint mode - that surprised the user, so the fallback is
 // gone.
 function _getActiveMaskLayer() {
   const parent = _activeParentLayer();
@@ -689,7 +689,7 @@ function _buildMergedMaskCanvas() {
   return _buildMergedMaskCanvasImpl(state.layers, state.imgWidth, state.imgHeight);
 }
 
-// True if the layer needs the (slower) per-pixel LUT pass — i.e. Levels
+// True if the layer needs the (slower) per-pixel LUT pass - i.e. Levels
 // or Color Balance are non-identity. Brightness/Contrast/Saturation/Hue
 // alone can stay on the fast CSS-filter path.
 // _layerNeedsPixelPass + _adjustmentsKey live in editor/layer-helpers.js.
@@ -704,11 +704,11 @@ function _buildMergedMaskCanvas() {
 function _renderLayerPixelAdjustments(layer) {
   return _renderLayerPixelAdjustmentsImpl(layer, _adjustmentsKey(layer.adjustments));
 }
-// Layer FX popup — floating window bound to a specific layer. Sliders
+// Layer FX popup - floating window bound to a specific layer. Sliders
 // edit that layer's adjustments and live-update composite(). The popup
 // stays open across clicks elsewhere unless dismissed via its × button.
 
-// FX / adjustment-popup machinery — full implementation in
+// FX / adjustment-popup machinery - full implementation in
 // editor/fx/adj-popup.js. Wrappers preserve the legacy names that
 // every layer-row FX button, panel-row click, and undo/redo path
 // already references.
@@ -743,7 +743,7 @@ function _fillEnclosedMaskRegions() {
   if (w * h > 4096 * 4096) return; // safety cap
   const img = state.maskCtx.getImageData(0, 0, w, h);
   const d = img.data;
-  // visited bitmap — 0 = unvisited, 1 = reached from edge (outside),
+  // visited bitmap - 0 = unvisited, 1 = reached from edge (outside),
   // 2 = mask (alpha>0). After BFS, alpha=0 pixels with visited[i]=0
   // are enclosed.
   const visited = new Uint8Array(w * h);
@@ -759,7 +759,7 @@ function _fillEnclosedMaskRegions() {
   };
   for (let x = 0; x < w; x++) { seed(x, 0); seed(x, h - 1); }
   for (let y = 0; y < h; y++) { seed(0, y); seed(w - 1, y); }
-  // BFS — 4-connected.
+  // BFS - 4-connected.
   while (stack.length) {
     const k = stack.pop();
     const x = k % w, y = (k - x) / w;
@@ -779,7 +779,7 @@ function _fillEnclosedMaskRegions() {
   if (filled) state.maskCtx.putImageData(img, 0, 0);
 }
 
-// True if a layer has no opaque pixels — used to tag the row in the
+// True if a layer has no opaque pixels - used to tag the row in the
 // layer panel as "(empty)" so the user can tell at a glance which
 // layers carry actual content.
 // Lightweight loading overlay anchored to the canvas area. Used for
@@ -811,7 +811,7 @@ function _hideCanvasLoading() {
 // which masks have actually been painted on.
 // _isMaskCanvasEmpty lives in editor/layer-helpers.js.
 
-// Document-wide rotate / flip — implementations in
+// Document-wide rotate / flip - implementations in
 // editor/canvas-transforms.js. Wrappers preserve the legacy names that
 // the topbar Image menu and shortcuts already wire to.
 const _canvasTransforms = createCanvasTransforms({
@@ -847,15 +847,15 @@ function composite() {
   // Show mask overlay as red tint whenever a mask sub-layer is present
   // on the active parent (was previously gated on inpaint-tool only; now
   // masks are first-class layer entities, so users see them in any tool).
-  // Mask canvas has white pixels — we tint them red for visibility.
+  // Mask canvas has white pixels - we tint them red for visibility.
   if (state.maskVisible) {
     // Build a SINGLE merged mask canvas from every visible mask
-    // sub-layer (union of alpha — `lighter` keeps max alpha per pixel,
+    // sub-layer (union of alpha - `lighter` keeps max alpha per pixel,
     // so overlapping strokes don't visually stack). Then tint it red
     // once and composite at the configured opacity. Result: the user
     // sees a flat, consistent translucent red over the masked area
     // regardless of how many strokes / masks contributed to it. Mask
-    // visibility is INDEPENDENT of parent visibility — hiding the
+    // visibility is INDEPENDENT of parent visibility - hiding the
     // parent layer doesn't hide its masks.
     let _haveAny = false;
     if (!state.compositeMaskUnion) state.compositeMaskUnion = document.createElement('canvas');
@@ -890,17 +890,17 @@ function composite() {
   // Draw transform handles if active
   if (state.transformActive) _drawTransformHandles();
   else if (state.transformOverlay) state.transformOverlay.style.display = 'none';
-  // Persist the lasso selection overlay across composite redraws — without
+  // Persist the lasso selection overlay across composite redraws - without
   // this, leaving/re-entering the canvas (which triggers _endDraw →
   // composite) would visually wipe a completed selection even though
   // state.lassoPoints is still populated.
   if (!state.lassoActive && state.lassoPoints.length >= 3) _drawLassoOverlay();
-  // Same idea for the crop overlay — once the user releases the drag,
+  // Same idea for the crop overlay - once the user releases the drag,
   // the crop rect should remain visible until they Apply or cancel.
   // Hovering over the floating Apply button counts as a mouseleave on
   // the canvas, which used to wipe the overlay.
   if (state.cropRect && !state.cropping) _drawCropOverlay();
-  // Snap guides — drawn while the user is moving a layer with Ctrl held.
+  // Snap guides - drawn while the user is moving a layer with Ctrl held.
   if (state.activeSnapGuides && state.activeSnapGuides.length) _drawSnapGuides();
   // Magic-wand selection overlay (translucent red tint of the mask).
   if (state.wandMask && state.wandLayerId && state.wandMaskVisible) _drawWandOverlay();
@@ -960,7 +960,7 @@ function _drawCropOverlay() {
   state.mainCtx.setLineDash([]);
 }
 
-// _drawCheckerboard lives in editor/checkerboard.js — see import at top.
+// _drawCheckerboard lives in editor/checkerboard.js - see import at top.
 
 // ── History ──
 
@@ -983,7 +983,7 @@ function _snapshotState() {
     imgHeight: state.imgHeight,
     wand,
     layers: state.layers.map(l => {
-      // getImageData throws on a 0-sized canvas — guard so a single
+      // getImageData throws on a 0-sized canvas - guard so a single
       // broken layer/mask can't take down the whole snapshot (which
       // would silently break undo/redo for brush strokes etc.).
       let imageData = null;
@@ -998,7 +998,7 @@ function _snapshotState() {
         canvasH: l.canvas.height,
         imageData,
         offset: { ...(state.layerOffsets.get(l.id) || { x: 0, y: 0 }) },
-        // Deep-clone defensively — a non-serializable / circular value here
+        // Deep-clone defensively - a non-serializable / circular value here
         // would throw out of the whole snapshot (and historically aborted
         // every mutating op). Fall back to [] rather than blow up.
         adjLayers: (() => {
@@ -1031,7 +1031,7 @@ function _snapshotState() {
 function _saveState(label) {
   // saveState() runs FIRST in every mutating op (import, paste, copy,
   // merge, mask, delete, brush, …). If anything here throws, the whole
-  // operation aborts before its real work runs — which silently breaks
+  // operation aborts before its real work runs - which silently breaks
   // import ("no layer created") and every layer button. So each step is
   // isolated: a history-snapshot failure must degrade (lose one undo
   // step) rather than kill the user's action.
@@ -1095,7 +1095,7 @@ function _buildThumbnail() {
 
 async function _persistDraft() {
   if (!state.editorOpen || !state.layers.length) return;
-  // Coalesce concurrent saves — if one's already in-flight, mark dirty
+  // Coalesce concurrent saves - if one's already in-flight, mark dirty
   // and let the running call kick off another when it returns.
   if (state.persistInFlight) { state.persistDirty = true; return; }
   const payload = _buildDraftPayload();
@@ -1115,7 +1115,7 @@ async function _persistDraft() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
-      // 404 means our row was deleted while editing — fall through to
+      // 404 means our row was deleted while editing - fall through to
       // create a fresh one so the user doesn't lose work.
       if (res.status === 404) {
         state.draftId = null;
@@ -1261,7 +1261,7 @@ function _restoreState(snap) {
   // Rebuild the state.layers array from the snapshot order. This lets Ctrl+Z
   // restore deleted layers (previously the loop only updated existing
   // ones and silently dropped any layer the snapshot still knew about).
-  // Layers absent from the snapshot are dropped — that's the desired
+  // Layers absent from the snapshot are dropped - that's the desired
   // behavior for undoing an "+Add" or a paste.
   const _existingById = new Map(state.layers.map(l => [l.id, l]));
   const _rebuilt = [];
@@ -1292,7 +1292,7 @@ function _restoreState(snap) {
     // so the live render reflects the rolled-back FX state.
     layer.adjLayers = s.adjLayers ? JSON.parse(JSON.stringify(s.adjLayers)) : [];
     if (s.isBase !== undefined) layer.isBase = s.isBase;
-    // Restore mask sub-layers — rebuild each mask's canvas from the
+    // Restore mask sub-layers - rebuild each mask's canvas from the
     // snapshot's imageData. We don't reuse old mask canvases (snapshot
     // dims might differ after a transform) so a fresh canvas is safer.
     layer.masks = (s.masks || []).map(ms => {
@@ -1317,7 +1317,7 @@ function _restoreState(snap) {
     state.activeLayerId = state.layers[state.layers.length - 1].id;
   }
   // Repoint the global mask plumbing at the active parent's active
-  // mask sub-layer (if any) — undo can swap the actual canvas object.
+  // mask sub-layer (if any) - undo can swap the actual canvas object.
   {
     const m = _getActiveMaskLayer();
     if (m) { state.maskCanvas = m.canvas; state.maskCtx = m.ctx; }
@@ -1372,7 +1372,7 @@ function redo() {
 // Jump to any state in the labeled history. Negative offsets go back
 // (into state.undoStack), positive go forward (into state.redoStack). 0 = current.
 // Used by the history panel.
-// History panel — full implementation in editor/history-panel.js.
+// History panel - full implementation in editor/history-panel.js.
 // Wrappers preserve the legacy names that the topbar History button
 // + undo/redo paths already reference.
 const _historyPanel = createHistoryPanel({ undo, redo });
@@ -1384,7 +1384,7 @@ const _refreshHistoryPanelIfOpen = _historyPanel.refreshHistoryPanelIfOpen;
 
 // ── Canvas event helpers ──
 
-// _canvasCoords lives in editor/canvas-coords.js — see import at top.
+// _canvasCoords lives in editor/canvas-coords.js - see import at top.
 
 // ── Drawing ──
 
@@ -1392,10 +1392,10 @@ function _beginDraw(e) {
   // Fall back to the parent resolver so a stale activeLayerId doesn't
   // block strokes when there ARE layers present.
   const layer = activeLayer() || _activeParentLayer();
-  // Transform-tool drag (handle grab or move-fallback) — handler in
+  // Transform-tool drag (handle grab or move-fallback) - handler in
   // editor/tools/transform-drag.js.
   if (_transformDragTool.tryBegin(e)) return;
-  // Magic wand is selection-only — works even on locked layers because
+  // Magic wand is selection-only - works even on locked layers because
   // it doesn't mutate the layer until an action (Erase/Copy) is taken.
   // Full implementation in editor/tools/wand.js.
   if (state.tool === 'wand') return _wandTool.click(e);
@@ -1408,11 +1408,11 @@ function _beginDraw(e) {
   if (state.tool === 'move') return _beginMove(e);
   if (state.tool === 'crop') return _beginCrop(e);
   if (state.tool === 'lasso') return _beginLasso(e);
-  // Clone-stamp — source pick + stroke start. Full implementation in
+  // Clone-stamp - source pick + stroke start. Full implementation in
   // editor/tools/clone.js; per-sample stamping continues through the
   // shared `_strokeTo` pipeline below.
   if (state.tool === 'clone') return _cloneTool.begin(e);
-  // Brush / Eraser / Inpaint share a stroke pipeline — handler in
+  // Brush / Eraser / Inpaint share a stroke pipeline - handler in
   // editor/tools/stroke.js. Returns true for those tools, false
   // otherwise (any other tool that reached here is a no-op).
   _strokeTool.tryBegin(e);
@@ -1427,7 +1427,7 @@ function _continueDraw(e) {
     if (overCanvas) _updateBrushCursor(e);
     else if (state.cursorEl) state.cursorEl.style.display = 'none';
   }
-  // Transform-tool hover-cursor + handle drag — handler in
+  // Transform-tool hover-cursor + handle drag - handler in
   // editor/tools/transform-drag.js. Returns true when the drag is
   // consuming the event (rotation / resize); the hover-cursor pass
   // returns false so the dispatcher can still fall through to other
@@ -1440,18 +1440,18 @@ function _continueDraw(e) {
     if (state.cropping || state.cropMoving) return _continueCrop(e);
     return;
   }
-  // In-progress stroke (brush / eraser / inpaint / clone) — handler in
+  // In-progress stroke (brush / eraser / inpaint / clone) - handler in
   // editor/tools/stroke.js.
   _strokeTool.tryContinue(e);
 }
 
 function _endDraw() {
-  // Transform-tool drag end — handler in editor/tools/transform-drag.js.
+  // Transform-tool drag end - handler in editor/tools/transform-drag.js.
   if (_transformDragTool.tryEnd()) return;
   if (state.lassoActive) return _endLasso();
   if (state.moving) return _endMove();
   if (state.cropping || state.cropMoving) return _endCrop();
-  // Stroke end (brush / eraser / inpaint / clone) — handler in
+  // Stroke end (brush / eraser / inpaint / clone) - handler in
   // editor/tools/stroke.js.
   _strokeTool.tryEnd();
 }
@@ -1461,17 +1461,17 @@ function _endDraw() {
 // popup re-uses the existing #ge-inpaint-prompt and #ge-inpaint-run
 // elements by reparenting them into a positioned wrapper, so all the
 // existing handlers (Enter to submit, generate-button click) still fire.
-// Inpaint-stroke prompt popup feature was removed — the user types in
+// Inpaint-stroke prompt popup feature was removed - the user types in
 // the side panel and hits Generate there. Helpers _showInpaintPrompt /
 // _dismissInpaintPrompt and their dismiss-handlers were dead code and
 // have been deleted.
 
-// Clone Stamp painter — stamps circular samples from the source
+// Clone Stamp painter - stamps circular samples from the source
 // snapshot at every interpolated point between the last brush position
 // and the current one, so a drag produces a continuous clone. The
 // sample offset is fixed at stroke-start (Photoshop "aligned" mode):
 // `sample = source + (cursor − strokeStart)`.
-// Stroke pipeline — paints one segment last→current onto the active
+// Stroke pipeline - paints one segment last→current onto the active
 // layer (or active mask sub-layer). Full implementation in
 // editor/stroke-pipeline.js.
 const _strokePipeline = createStrokePipeline({
@@ -1479,7 +1479,7 @@ const _strokePipeline = createStrokePipeline({
   // and _getActiveMaskLayer() agree on which layer is active. Plain
   // activeLayer() returns null when activeLayerId is stale, which made
   // strokeTo bail even though a mask had been created on the fallback
-  // parent — the "inpaint draws nothing" bug.
+  // parent - the "inpaint draws nothing" bug.
   activeLayer: () => activeLayer() || _activeParentLayer(),
   getActiveMaskLayer: () => _getActiveMaskLayer(),
   composite,
@@ -1545,7 +1545,7 @@ function _updateBrushCursor(e) {
 
 // ── Move tool ──
 
-// Move tool — full implementation lives in editor/tools/move.js. Wrap
+// Move tool - full implementation lives in editor/tools/move.js. Wrap
 // `_beginMove` / `_continueMove` / `_endMove` to the factory output so
 // the existing dispatcher (_beginDraw / _continueDraw / _endDraw) keeps
 // working without changes.
@@ -1556,7 +1556,7 @@ const _endMove      = _moveTool.end;
 
 // ── Crop tool ──
 
-// Crop tool — full implementation in editor/tools/crop.js. Wire
+// Crop tool - full implementation in editor/tools/crop.js. Wire
 // `_beginCrop` / `_continueCrop` / `_endCrop` to the factory output so
 // the existing dispatcher keeps working without changes.
 const _cropTool = createCropTool({ composite, showCropApply: () => _showCropApply() });
@@ -1611,7 +1611,7 @@ function _showCropApply() {
   pop.style.left = (localX + 6) + 'px';
   pop.style.top = (localY + 6) + 'px';
   // Clamp inside the CANVAS image bounds (not just the canvas-area) so
-  // the panel doesn't sit on the dark padding around the canvas — it
+  // the panel doesn't sit on the dark padding around the canvas - it
   // stays anchored over the actual image.
   requestAnimationFrame(() => {
     const bRect = pop.getBoundingClientRect();
@@ -1662,7 +1662,7 @@ function _applyCrop() {
 
 // ── Free Transform (Ctrl+Alt+T) ──
 
-// Transform session — full implementation in
+// Transform session - full implementation in
 // editor/tools/transform-session.js. Wrappers preserve the legacy
 // names that the dispatcher / toolbar / shortcuts already reference.
 const _transformSession = createTransformSession({
@@ -1685,7 +1685,7 @@ const _cancelTransform     = _transformSession.cancelTransform;
 
 // ── Lasso tool ──
 
-// Lasso tool — full implementation in editor/tools/lasso.js.
+// Lasso tool - full implementation in editor/tools/lasso.js.
 const _lassoTool = createLassoTool({
   composite,
   drawLassoOverlay: () => _drawLassoOverlay(),
@@ -1695,7 +1695,7 @@ const _beginLasso    = _lassoTool.begin;
 const _continueLasso = _lassoTool.drag;
 const _endLasso      = _lassoTool.end;
 
-// Magic wand — selection-only click handler in editor/tools/wand.js.
+// Magic wand - selection-only click handler in editor/tools/wand.js.
 const _wandTool = createWandTool({
   activeLayer,
   saveState: _saveState,
@@ -1704,7 +1704,7 @@ const _wandTool = createWandTool({
   runMagicWand: (x, y, mode) => _runMagicWand(x, y, mode),
 });
 
-// Clone-stamp tool — source-pick + stroke-start handler in
+// Clone-stamp tool - source-pick + stroke-start handler in
 // editor/tools/clone.js. Per-sample stamping still runs through the
 // shared stroke pipeline (`_strokeTo`) since clone-mode is detected
 // there from state.cloneSourceSnapshot.
@@ -1796,7 +1796,7 @@ function _getLassoPath(ctx) {
 
 /**
  * Build a feathered selection mask from the current lasso polygon.
- * Implementation lives in editor/tools/lasso-mask.js — this wrapper
+ * Implementation lives in editor/tools/lasso-mask.js - this wrapper
  * forwards the current `state.lassoPoints` so existing callers keep
  * working unchanged.
  */
@@ -1811,9 +1811,9 @@ function _buildLassoMask(w, h, offX, offY, feather, grow) {
 // state.wandTolerance × 4.42 (4.42 ≈ scale factor so tolerance=100 ≈ max).
 //
 // `mode`:
-//   'replace'  (default) — replaces any previous selection
-//   'add'      — unions the new region with the existing selection
-//   'subtract' — removes the new region from the existing selection
+//   'replace'  (default) - replaces any previous selection
+//   'add'      - unions the new region with the existing selection
+//   'subtract' - removes the new region from the existing selection
 // Cached layer pixel data + dimensions for the wand. `getImageData` is
 // the dominant cost when live-retuning tolerance (millions of pixels →
 // 50–200 ms per call on a 4K canvas). Invalidated by _invalidateWandCache
@@ -1869,7 +1869,7 @@ function _runMagicWand(cx, cy, mode = 'replace', opts = {}) {
   const layer = activeLayer();
   if (!layer || layer.locked) return;
   // If an active mask sub-layer is selected, the wand operates on the
-  // MASK pixels rather than the parent layer's pixels — lets the user
+  // MASK pixels rather than the parent layer's pixels - lets the user
   // click inside / outside an existing mask to select that region for
   // further editing. Mask canvases are doc-sized with no per-layer
   // offset, so the seed coords are used as-is.
@@ -1888,7 +1888,7 @@ function _runMagicWand(cx, cy, mode = 'replace', opts = {}) {
   const w = sourceCanvas.width, h = sourceCanvas.height;
   if (lx < 0 || ly < 0 || lx >= w || ly >= h) return;
   // Read pixels from the chosen source. Bypass the cache when sourcing
-  // from a mask — masks change frequently and the cache is keyed by
+  // from a mask - masks change frequently and the cache is keyed by
   // parent layer id, not by mask id.
   const src = activeMask
     ? sourceCtx.getImageData(0, 0, w, h).data
@@ -2112,7 +2112,7 @@ function _wandClear() {
   _syncToolClearIndicators();
 }
 
-// Hover thumbnail — generated by downscaling the layer's canvas into a
+// Hover thumbnail - generated by downscaling the layer's canvas into a
 // small floating panel. Lives in document.body so panel `overflow:
 // hidden` can't clip it. One singleton element, repositioned per hover.
 function _showLayerThumb(rowEl, layer) {
@@ -2179,7 +2179,7 @@ function _loadLayerAlphaAsSelection(layer) {
   if (uiModule) uiModule.showToast('Layer pixels selected');
 }
 
-// Invert the active selection: lasso (point list — turn into a polygon
+// Invert the active selection: lasso (point list - turn into a polygon
 // covering the canvas with the lasso polygon as a hole) or wand (flip
 // the mask alpha). Wired to Ctrl+Alt+I.
 function _invertSelection() {
@@ -2295,7 +2295,7 @@ function _wandToMask() {
     }
   }
   state.maskCtx.putImageData(cur, 0, 0);
-  // Stay on the Wand tool — just bake the selection into the mask.
+  // Stay on the Wand tool - just bake the selection into the mask.
   // Clear the wand selection so a re-click starts fresh (and the red
   // overlay doesn't double up over the inpaint-mask red tint).
   state.wandMask = null;
@@ -2410,7 +2410,7 @@ function _syncToolClearIndicators() {
   //   (1) the "from-selection" highlight on each layer's Add-mask btn
   //   (2) the visibility of the post-selection refine rows (Feather +
   //       Edge stroke) on the lasso / wand panels.
-  //   (3) the topbar Fill button — visible whenever lasso/wand/active
+  //   (3) the topbar Fill button - visible whenever lasso/wand/active
   //       mask gives us a region to fill.
   const lassoHasSel = state.lassoPoints.length >= 3 && !state.lassoActive;
   const wandHasSel = !!state.wandMask;
@@ -2419,7 +2419,7 @@ function _syncToolClearIndicators() {
   document.querySelectorAll('.ge-layer-mask-btn').forEach(b => {
     b.classList.toggle('from-selection', hasSel);
   });
-  // Fill action now lives in the Image menu — enable when there's
+  // Fill action now lives in the Image menu - enable when there's
   // something fillable (selection or active mask).
   const fillItem = document.getElementById('ge-image-action-fill');
   if (fillItem) {
@@ -2592,7 +2592,7 @@ function _lassoToMask() {
   }
   state.maskCtx.putImageData(curData, 0, 0);
 
-  // Stay on the Lasso tool — just bake the selection into the mask.
+  // Stay on the Lasso tool - just bake the selection into the mask.
   // Keep the lasso points so the user can keep tweaking; clear the
   // active-shape state so the next click starts fresh if they want.
   state.lassoPoints = [];
@@ -2684,7 +2684,7 @@ async function _applyLiveBlur({ title, params, label, renderer }) {
   const snap = document.createElement('canvas');
   snap.width = w; snap.height = h;
   snap.getContext('2d').drawImage(layer.canvas, 0, 0);
-  // Save state BEFORE any preview — the undo stack now holds the
+  // Save state BEFORE any preview - the undo stack now holds the
   // pre-blur pixels. Apply leaves it; Cancel pops it.
   _saveState(label);
   const draw = (values) => {
@@ -2697,7 +2697,7 @@ async function _applyLiveBlur({ title, params, label, renderer }) {
     layer.ctx.clearRect(0, 0, w, h);
     layer.ctx.drawImage(snap, 0, 0);
     composite();
-    // Drop the snapshot we pushed — there's nothing to undo to.
+    // Drop the snapshot we pushed - there's nothing to undo to.
     if (state.undoStack.length) state.undoStack.pop();
     _refreshHistoryPanelIfOpen();
     return;
@@ -2804,8 +2804,8 @@ function _positionInpaintPanel(anchorBtn) {
   // appears to slide out from there. The toolbar button on the left
   // shifts around as controls reflow, which was causing the popover
   // to land in different spots on each open and look "jumpy" when the
-  // user grabbed it to move. Anchoring to the right panel — which has
-  // a stable position — keeps the docked appearance steady.
+  // user grabbed it to move. Anchoring to the right panel - which has
+  // a stable position - keeps the docked appearance steady.
   const layersHeader = document.querySelector('.ge-layers-header');
   const rightPanel = document.querySelector('.ge-right-panel');
   const ref = layersHeader || rightPanel;
@@ -2892,7 +2892,7 @@ function _buildEditor(container) {
   container.innerHTML = '';
   container.className = 'gallery-editor';
 
-  // Toolbar (left) — DOM construction lives in editor/build/toolbar.js;
+  // Toolbar (left) - DOM construction lives in editor/build/toolbar.js;
   // the big tool-switch handler stays here so it can touch module state.
   const { toolbar, toolKeyMap: _toolKeyMap } = _buildToolbar({
     currentTool: state.tool,
@@ -2912,7 +2912,7 @@ function _buildEditor(container) {
     onSelectTool: (toolId, _btn, toolbarEl) => {
       // Leaving transform mode without confirm? Treat tool change as confirm.
       if (state.transformActive && toolId !== 'transform') _confirmTransform();
-      // Re-clicking the active tool toggles the mobile control sheet —
+      // Re-clicking the active tool toggles the mobile control sheet -
       // lets the user swipe-down to dismiss, then tap the tool again to
       // bring it back. On desktop this is a no-op visually since the
       // controls live in the right panel.
@@ -2944,7 +2944,7 @@ function _buildEditor(container) {
       const brushControls = document.getElementById('ge-brush-controls');
       const needsBrush = ['brush', 'eraser', 'clone'].includes(toolId);
       if (brushControls) brushControls.style.display = needsBrush ? '' : 'none';
-      // Eraser and Clone don't care about color — hide the color row.
+      // Eraser and Clone don't care about color - hide the color row.
       const colorRow = document.getElementById('ge-color-row');
       if (colorRow) colorRow.style.display = (toolId === 'eraser' || toolId === 'clone') ? 'none' : '';
       const colorLabel = colorRow?.querySelector('label');
@@ -2981,7 +2981,7 @@ function _buildEditor(container) {
       }
       // Entering inpaint mode: make sure the active parent layer has a
       // mask sub-layer, and point the global mask plumbing at it. Also
-      // force the global mask-visibility flag back on — a previous
+      // force the global mask-visibility flag back on - a previous
       // Generate cleared it, but on re-entry the user expects to see
       // their mask again.
       if (state.tool === 'inpaint') {
@@ -3052,12 +3052,12 @@ function _buildEditor(container) {
       if (upscaleSection) upscaleSection.style.display = state.tool === 'upscale' ? '' : 'none';
       const styleSection = document.getElementById('ge-style-section');
       if (styleSection) styleSection.style.display = state.tool === 'style' ? '' : 'none';
-      // Toggle cursor — hide native cursor for tools that draw via our
+      // Toggle cursor - hide native cursor for tools that draw via our
       // own circle overlay (brush/eraser/inpaint/lasso); for other tools
       // pick a cursor that matches the tool's affordance.
       const useCircle = state.tool === 'brush' || state.tool === 'eraser' || state.tool === 'inpaint' || state.tool === 'lasso' || state.tool === 'clone';
       if (state.mainCanvas) {
-        // Custom SVG cursor for the Move tool — white fill with black
+        // Custom SVG cursor for the Move tool - white fill with black
         // stroke so it reads on both light and dark canvases.
         const moveCursorSvg = `data:image/svg+xml;utf8,${encodeURIComponent(
           '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L9 5 H11 V11 H5 V9 L2 12 L5 15 V13 H11 V19 H9 L12 22 L15 19 H13 V13 H19 V15 L22 12 L19 9 V11 H13 V5 H15 Z"/></svg>'
@@ -3072,7 +3072,7 @@ function _buildEditor(container) {
       composite();
     },
   });
-  // Top bar — static DOM lives in editor/build/topbar.js; all click
+  // Top bar - static DOM lives in editor/build/topbar.js; all click
   // handlers below wire to the IDs baked into the markup.
   const topBar = _buildTopbar();
   container.appendChild(topBar);
@@ -3101,7 +3101,7 @@ function _buildEditor(container) {
   }
   canvasArea.appendChild(state.mainCanvas);
 
-  // Transform overlay — separate canvas positioned over the main canvas
+  // Transform overlay - separate canvas positioned over the main canvas
   // with extra margin so the resize/rotation handles can render OUTSIDE
   // the image bounds. Sized + zoomed in sync with the main canvas via
   // _syncTransformOverlay(). The overlay is pointer-events:none so it
@@ -3118,7 +3118,7 @@ function _buildEditor(container) {
     if (state.transformActive) _drawTransformHandles();
   }, { passive: true });
 
-  // Canvas events (mouse + touch + pinch-zoom + pan) — full
+  // Canvas events (mouse + touch + pinch-zoom + pan) - full
   // implementation in editor/canvas-events.js.
   wireCanvasEvents({
     canvasArea,
@@ -3131,7 +3131,7 @@ function _buildEditor(container) {
 
   editorBody.appendChild(canvasArea);
 
-  // Right panel (controls + layers + resize handle) — full
+  // Right panel (controls + layers + resize handle) - full
   // implementation in editor/build/right-panel.js.
   const { rightPanel, controls, layerPanel } = buildRightPanel({
     controlsHTML: _controlsHTML,
@@ -3141,11 +3141,11 @@ function _buildEditor(container) {
   container.appendChild(editorBody);
   _wireInpaintPopoverWindow();
 
-  // Slider UX (expand-while-using, floating bubble, click-to-type) —
+  // Slider UX (expand-while-using, floating bubble, click-to-type) -
   // full implementation in editor/slider-ux.js.
   wireSliderUx({ registerDocClickAway: _registerDocClickAway });
 
-  // Shortcuts cheatsheet popover — full implementation in
+  // Shortcuts cheatsheet popover - full implementation in
   // editor/shortcuts-popover.js. (Dead `_makeShortcutsDraggable`
   // helper for the old centered-modal version was dropped.)
   const _shortcutsPopover = createShortcutsPopover();
@@ -3162,7 +3162,7 @@ function _buildEditor(container) {
   // Wire up controls
   controls.querySelector('.ge-color-picker').addEventListener('input', (e) => { state.color = e.target.value; });
   // Swap the editor's native color inputs for the in-house HSV picker
-  // we built in the theme system — eyedropper, suggestions, recents,
+  // we built in the theme system - eyedropper, suggestions, recents,
   // no native OS dialog. Each picker keeps its existing `input` event
   // wiring so callers just keep reading `e.target.value`.
   controls.querySelectorAll('.ge-color-picker').forEach(attachColorPicker);
@@ -3173,7 +3173,7 @@ function _buildEditor(container) {
   // Hide brush controls initially (default tool is Move)
   const initBrushCtrl = document.getElementById('ge-brush-controls');
   if (initBrushCtrl) initBrushCtrl.style.display = 'none';
-  // Brush-size slider is exponential — slider position 0..1000 maps to
+  // Brush-size slider is exponential - slider position 0..1000 maps to
   // brush size 1..800 via Math.pow(800, pos/1000). This gives fine
   // control at small sizes (where precision matters most) and bigger
   // jumps at the high end (where +/-50 px is barely visible anyway).
@@ -3201,7 +3201,7 @@ function _buildEditor(container) {
   _wireBrushSlider(controls.querySelector('.ge-size-slider'));
   _wireBrushSlider(document.getElementById('ge-inpaint-brush-slider'));
   // Topbar wiring (undo/redo/history, Save dropdown, zoom buttons,
-  // Export/Download/Project, Edge popup, cross-dropdown coordination) —
+  // Export/Download/Project, Edge popup, cross-dropdown coordination) -
   // full implementation in editor/wire-topbar.js.
   wireTopbar({
     undo, redo,
@@ -3218,13 +3218,13 @@ function _buildEditor(container) {
     registerDocClickAway: _registerDocClickAway,
     uiModule,
   });
-  // Fill — visible only when a selection or active mask exists. Pours
+  // Fill - visible only when a selection or active mask exists. Pours
   // the current colour into whichever target is live:
   //   - active mask sub-layer → fills the layer's pixels clipped by
   //     the mask (uses mask alpha as a stencil).
   //   - lasso closed → fills the polygon area on the active layer.
   //   - wand selection → fills the wand mask area on the active layer.
-  // Fill — invoked from the Image menu's "Fill selection / mask" item.
+  // Fill - invoked from the Image menu's "Fill selection / mask" item.
   // Pours the current colour into whichever target is live:
   //   - active mask sub-layer → fills the layer's pixels clipped by
   //     the mask (uses mask alpha as a stencil).
@@ -3263,7 +3263,7 @@ function _buildEditor(container) {
     if (uiModule) uiModule.showToast('Filled');
   }
 
-  // AI model selectors (Gen, Inpaint, per-tool) — full
+  // AI model selectors (Gen, Inpaint, per-tool) - full
   // implementation in editor/ai-models.js.
   wireAIModelSelectors({
     container,
@@ -3283,7 +3283,7 @@ function _buildEditor(container) {
     try {
       // Encode directly from the flattened canvas via toBlob() to avoid
       // the dataURL round-trip (which doubles peak memory). Pick JPEG for
-      // photo sources so 24MP uploads don't balloon to 200MB+ PNG —
+      // photo sources so 24MP uploads don't balloon to 200MB+ PNG -
       // critical when the editor is accessed over Tailscale Funnel etc.
       const flat = flatten();
       const ext = (state.originalExt || 'png').toLowerCase();
@@ -3314,7 +3314,7 @@ function _buildEditor(container) {
       const sizeMB = blob ? ` (${(blob.size / 1024 / 1024).toFixed(1)}MB)` : '';
       let msg = e?.message || 'unknown';
       if (e?.name === 'TypeError' || /fetch|network|load failed/i.test(msg)) {
-        msg = `network dropped${sizeMB} — try "Save as copy" or check connection`;
+        msg = `network dropped${sizeMB} - try "Save as copy" or check connection`;
       } else {
         msg += sizeMB;
       }
@@ -3325,12 +3325,12 @@ function _buildEditor(container) {
     }
   });
 
-  // Topbar overflow + canvas-size badge — full implementation in
+  // Topbar overflow + canvas-size badge - full implementation in
   // editor/wire-topbar-overflow.js.
   wireTopbarOverflow({ container, registerDocClickAway: _registerDocClickAway });
 
   // Topbar dropdown menus (Image, Filter, Resize) + the resize-canvas
-  // helpers — full implementation in editor/wire-topbar-menus.js. The
+  // helpers - full implementation in editor/wire-topbar-menus.js. The
   // returned `_resizeCustomPrompt` is consumed by the keyboard
   // shortcuts module (Ctrl+Shift+T).
   const { resizeCustomPrompt: _resizeCustomPrompt } = wireTopbarMenus({
@@ -3350,7 +3350,7 @@ function _buildEditor(container) {
 
   // Inpaint side-panel controls (Feather/Strength previews, post-gen
   // edge tuner, mask vis/invert/clear, paint-erase toggle, mask tint
-  // pickers) — full implementation in editor/wire-inpaint-controls.js.
+  // pickers) - full implementation in editor/wire-inpaint-controls.js.
   wireInpaintControls({
     composite,
     applyInpaintFeather: _applyInpaintFeather,
@@ -3360,7 +3360,7 @@ function _buildEditor(container) {
     uiModule,
   });
 
-  // AI inpaint (Generate / Remove / Outpaint) — full implementation
+  // AI inpaint (Generate / Remove / Outpaint) - full implementation
   // in editor/ai-inpaint.js.
   wireInpaintButtons({
     buildMergedMaskCanvas: () => _buildMergedMaskCanvas(),
@@ -3377,10 +3377,10 @@ function _buildEditor(container) {
   });
 
   // Per-tool Opacity / Flow / Softness sliders (Eraser / Brush /
-  // Clone) — full implementation in editor/stroke-tool-sliders.js.
+  // Clone) - full implementation in editor/stroke-tool-sliders.js.
   wireStrokeToolSliders();
 
-  // Sharpen + Bg Remove + edge cleanup — full implementation in
+  // Sharpen + Bg Remove + edge cleanup - full implementation in
   // editor/ai-rembg.js. Returns the selection-hint-mask builder so
   // the wand-rembg button (in the wand controls section) can reuse it.
   const { buildSelectionHintMask: _buildSelectionHintMask } = wireRembgAndSharpen({
@@ -3391,7 +3391,7 @@ function _buildEditor(container) {
     uiModule,
   });
 
-  // Image import (topbar / panel File / Clipboard / Gallery picker) —
+  // Image import (topbar / panel File / Clipboard / Gallery picker) -
   // full implementation in editor/wire-import.js. Returns the shared
   // handleImportedImage sink so drag-drop wires through the same path.
   const { handleImportedImage: _handleImportedImage } = wireImport({
@@ -3404,7 +3404,7 @@ function _buildEditor(container) {
   });
 
   // Harmonize / Canvas Upscale / AI Upscale / Style Transfer +
-  // Add-Empty-Layer — full implementation in editor/ai-tools-misc.js.
+  // Add-Empty-Layer - full implementation in editor/ai-tools-misc.js.
   const { addEmptyLayer: _addEmptyLayer } = wireAIToolsMisc({
     apiBase: API_BASE,
     buildLayerBodyMask: _buildLayerBodyMask,
@@ -3419,11 +3419,11 @@ function _buildEditor(container) {
     spinnerModule,
     uiModule,
   });
-  // (Merge dropdown removed — Merge Down / Merge All / Flatten Copy
+  // (Merge dropdown removed - Merge Down / Merge All / Flatten Copy
   // are now three inline icon buttons in the layers header next to
   // + Add. Their individual click handlers below already bind by id.)
 
-  // Lasso + Magic Wand panel controls — full implementation in
+  // Lasso + Magic Wand panel controls - full implementation in
   // editor/wire-selection-controls.js.
   wireSelectionControls({
     composite,
@@ -3463,7 +3463,7 @@ function _buildEditor(container) {
   });
   _wireAiCommandBox();
 
-  // Merge / Flatten buttons (layer-panel footer) — full
+  // Merge / Flatten buttons (layer-panel footer) - full
   // implementation in editor/wire-merge-buttons.js.
   wireMergeButtons({
     saveState: _saveState,
@@ -3474,7 +3474,7 @@ function _buildEditor(container) {
     uiModule,
   });
 
-  // Capture-phase Escape interceptor — runs BEFORE any bubble-phase
+  // Capture-phase Escape interceptor - runs BEFORE any bubble-phase
   // handler (gallery, keyboard-shortcuts module, etc.) so cancelling a
   // crop / lasso / transform inside the editor can't ever bubble up and
   // accidentally close the gallery modal.
@@ -3491,7 +3491,7 @@ function _buildEditor(container) {
       return;
     }
     // Enter accepts an active crop (same as the Apply button). Skip when
-    // typing in a field — the crop W/H inputs handle their own Enter, and
+    // typing in a field - the crop W/H inputs handle their own Enter, and
     // we don't want to hijack Enter elsewhere.
     if (e.key === 'Enter' && state.cropRect && !state.cropping && !state.cropMoving) {
       const t = e.target;
@@ -3509,7 +3509,7 @@ function _buildEditor(container) {
     e.stopImmediatePropagation();
   }, true);
 
-  // Keyboard shortcuts — full implementation in
+  // Keyboard shortcuts - full implementation in
   // editor/keyboard-shortcuts.js.
   wireKeyboardShortcuts({
     toolbar, toolKeyMap: _toolKeyMap,
@@ -3534,7 +3534,7 @@ function _buildEditor(container) {
   });
   container.setAttribute('tabindex', '0');
 
-  // Paste + drag-and-drop image import — full implementation in
+  // Paste + drag-and-drop image import - full implementation in
   // editor/clipboard-and-drop.js.
   wireClipboardAndDrop({
     container,
@@ -3549,7 +3549,7 @@ function _buildEditor(container) {
 
 // ── Layer panel rendering ──
 
-// Layer-panel renderer — implementation in editor/layer-panel.js.
+// Layer-panel renderer - implementation in editor/layer-panel.js.
 // Wrap to the legacy name so the dozens of `_renderLayerPanel()` call
 // sites scattered across the file keep working unchanged.
 const _layerPanelRenderer = createLayerPanelRenderer({
@@ -3710,7 +3710,7 @@ export async function exportToGallery() {
     const sizeMB = blob ? ` (${(blob.size / 1024 / 1024).toFixed(1)}MB)` : '';
     let msg = e?.message || 'unknown';
     if (e?.name === 'TypeError' || /fetch|network|load failed/i.test(msg)) {
-      msg = `network dropped${sizeMB} — check connection`;
+      msg = `network dropped${sizeMB} - check connection`;
     } else {
       msg += sizeMB;
     }
@@ -3794,7 +3794,7 @@ async function _checkRembgInstalled() {
     const pkg = (data.packages || []).find(p => (p.name || '').toLowerCase() === 'rembg');
     state.rembgInstalledCache = pkg ? !!pkg.installed : null;
   } catch (e) {
-    state.rembgInstalledCache = null; // unknown — fall back to silent
+    state.rembgInstalledCache = null; // unknown - fall back to silent
   }
   if (state.rembgInstalledCache === false) {
     noticeEl.style.display = '';
@@ -3806,7 +3806,7 @@ async function _checkRembgInstalled() {
 }
 
 function _openCookbookForImg2img() {
-  // Try multiple openers in order — the sidebar button may be hidden on
+  // Try multiple openers in order - the sidebar button may be hidden on
   // mobile so we fall back to the rail button, then to modalManager.
   let opened = false;
   const btn = document.getElementById('tool-cookbook-btn');
@@ -3924,7 +3924,7 @@ function _loadProjectPrompt() {
 
 // ── Public API ──
 
-// Styled in-app prompt for canvas size — replaces the browser's
+// Styled in-app prompt for canvas size - replaces the browser's
 // native prompt() which doesn't follow the app theme. Returns a Promise
 // resolving to {w, h} on submit, or null on cancel. Optional opts:
 //   title, okLabel, initialW, initialH.
@@ -4008,9 +4008,9 @@ function _parseCanvasSizePrompt(widthText, heightText, initialW = 1024, initialH
 
 // imageUrl=null + presetSize={w,h} → skips the size prompt and creates a
 // blank canvas at the given dimensions (used by template tiles in the
-// gallery's Edit-tab landing). `displayName` is optional — when provided,
+// gallery's Edit-tab landing). `displayName` is optional - when provided,
 // the Edit tab in the gallery is renamed to "Edit: <name>".
-// Shared loading-overlay mount/unmount — used by the image-load path AND
+// Shared loading-overlay mount/unmount - used by the image-load path AND
 // the draft-restore paths so every "we're waiting on something" moment
 // in the editor surfaces the same whirlpool + label instead of a blank
 // canvas that looks broken.
@@ -4019,7 +4019,7 @@ function _mountEditorLoading(label, dims) {
   const area = state.container.querySelector('.ge-canvas-area');
   _unmountEditorLoading();
   // Cover the WHOLE editor (toolbar + canvas + panel), not just the canvas area
-  // — otherwise the toolbar/old content shows above the overlay at the top while
+  // - otherwise the toolbar/old content shows above the overlay at the top while
   // a past project loads, which looks half-rendered.
   const el = document.createElement('div');
   el.className = 'ge-loading-overlay ge-loading-overlay-full';
@@ -4044,7 +4044,7 @@ function _mountEditorLoading(label, dims) {
   inner.className = 'ge-loading-inner';
   inner.innerHTML = `<span class="ge-loading-text">${label || 'Loading…'}</span>`;
   el.appendChild(inner);
-  // Mount on the editor BODY (toolbar + canvas + panel) — it sits below the
+  // Mount on the editor BODY (toolbar + canvas + panel) - it sits below the
   // gallery's search/select bar, so the cover doesn't bleed up over those.
   const _mountTarget = state.container.querySelector('.ge-editor-body') || state.container;
   _mountTarget.appendChild(el);
@@ -4093,7 +4093,7 @@ export function openEditor(imageUrl, imageId, presetSize, displayName, draftId) 
 
   state.container = document.getElementById('gallery-editor-container');
   if (!state.container) {
-    console.error('[openEditor] #gallery-editor-container not found in DOM — editor cannot open');
+    console.error('[openEditor] #gallery-editor-container not found in DOM - editor cannot open');
     if (uiModule) uiModule.showError('Editor container missing');
     return;
   }
@@ -4119,11 +4119,11 @@ export function openEditor(imageUrl, imageId, presetSize, displayName, draftId) 
   }
 
   if (!imageUrl && draftId) {
-    // Re-open a saved draft by its server-side id — covers the
+    // Re-open a saved draft by its server-side id - covers the
     // "Resume" buttons on the Edit-tab landing.
     _mountEditorLoading('Loading draft…', presetSize || null);
     // Bail if the user closes the editor while the async load is in
-    // flight — without this guard, the .then() callbacks fire after
+    // flight - without this guard, the .then() callbacks fire after
     // closeEditor and re-mount the spinner / draw into a dead canvas,
     // leaving "stuck" preview artefacts on the next open.
     return _loadDraftById(draftId)
@@ -4160,13 +4160,13 @@ export function openEditor(imageUrl, imageId, presetSize, displayName, draftId) 
   }
 
   if (!imageUrl) {
-    // Empty canvas — use preset size if supplied, otherwise show the
+    // Empty canvas - use preset size if supplied, otherwise show the
     // styled prompt. Asynchronous: we promise-chain so callers can await
     // openEditor() and still rely on isEditorOpen() afterwards.
     const _finishBlank = (w, h) => {
       _initCanvas(w, h);
       // White-filled Background so the canvas is visible, then a separate
-      // transparent Edit layer on top — keeps user's work isolated from
+      // transparent Edit layer on top - keeps user's work isolated from
       // the underlying canvas, the standard editor pattern.
       const bgLayer = createLayer('Background', w, h);
       bgLayer.ctx.fillStyle = '#ffffff';
@@ -4191,7 +4191,7 @@ export function openEditor(imageUrl, imageId, presetSize, displayName, draftId) 
     });
   }
 
-  // Try to restore a previously-persisted draft for this image — that
+  // Try to restore a previously-persisted draft for this image - that
   // way closing the gallery / editor mid-edit doesn't lose progress.
   // (Server-backed: look up by source_image_id.)
   _mountEditorLoading('Looking up draft…');
@@ -4209,7 +4209,7 @@ export function openEditor(imageUrl, imageId, presetSize, displayName, draftId) 
       // this guard the editor would sit empty and the user would be
       // stuck with no way to recover.
       if (state.layers.length === 0) {
-        console.warn('[openEditor] draft restored but produced 0 layers — falling back to source image');
+        console.warn('[openEditor] draft restored but produced 0 layers - falling back to source image');
         return null;
       }
       composite();
@@ -4233,7 +4233,7 @@ export function openEditor(imageUrl, imageId, presetSize, displayName, draftId) 
   });
   function _loadSourceImage() {
 
-  // Loading overlay — whirlpool + "Loading" label while the source image
+  // Loading overlay - whirlpool + "Loading" label while the source image
   // downloads / decodes. Especially important for multi-MB photos where
   // the canvas would otherwise sit blank for several seconds with no
   // feedback. If a draft-lookup overlay is already mounted, reuse it.
@@ -4244,7 +4244,7 @@ export function openEditor(imageUrl, imageId, presetSize, displayName, draftId) 
   }
   const _removeLoading = () => _unmountEditorLoading();
 
-  // Load image — single layer named "Photo" (no extra Edit layer; the
+  // Load image - single layer named "Photo" (no extra Edit layer; the
   // user can add one manually if they want isolated edits).
   const img = new Image();
   img.crossOrigin = 'anonymous';
@@ -4263,7 +4263,7 @@ export function openEditor(imageUrl, imageId, presetSize, displayName, draftId) 
     _schedulePersist();
   };
   img.onerror = (e) => {
-    console.error('[_loadSourceImage] onerror — failed to load', imageUrl, e);
+    console.error('[_loadSourceImage] onerror - failed to load', imageUrl, e);
     _removeLoading();
     if (uiModule) uiModule.showToast('Failed to load image');
     closeEditor();

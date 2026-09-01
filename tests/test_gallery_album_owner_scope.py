@@ -1,10 +1,10 @@
-"""Issue #2754 — gallery owner-scoping.
+"""Issue #2754 - gallery owner-scoping.
 
 `patch_gallery_image` must validate that the *target album* belongs to the caller
 before moving an image into it (otherwise user B can file B's image into user A's
 album), and `list_albums` must owner-scope the per-album count + cover-fallback
-queries. The gallery route handlers are closures, so — matching the AST-assertion
-convention of test_gallery_image_privileges.py — we assert the guards are present
+queries. The gallery route handlers are closures, so - matching the AST-assertion
+convention of test_gallery_image_privileges.py - we assert the guards are present
 in the source.
 """
 import ast

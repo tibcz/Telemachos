@@ -201,7 +201,7 @@ class Session(TimestampMixin, Base):
     # Timestamps are provided by TimestampMixin
     last_accessed = Column(DateTime, default=func.now(), onupdate=func.now())
     # Timestamp of the last actual MESSAGE in this session. Set explicitly
-    # only when a message is persisted (NOT onupdate) — so it's a clean
+    # only when a message is persisted (NOT onupdate) - so it's a clean
     # "last conversation" signal, immune to renames / model swaps / merely
     # opening the chat (all of which bump updated_at and last_accessed).
     # The "Last active" sort uses this.
@@ -384,7 +384,7 @@ class GalleryImage(TimestampMixin, Base):
 
 
 class EmailAccount(TimestampMixin, Base):
-    """A configured IMAP/SMTP account. Supports multiple accounts per user —
+    """A configured IMAP/SMTP account. Supports multiple accounts per user -
     exactly one row per owner has is_default=True.
 
     Security note: imap_password / smtp_password are stored Fernet-encrypted
@@ -417,7 +417,7 @@ class EmailAccount(TimestampMixin, Base):
     smtp_password  = Column(String, default="")
 
     from_address   = Column(String, default="")
-    display_name   = Column(String, nullable=True)   # "Hriday Ranka" — used in From: header
+    display_name   = Column(String, nullable=True)   # "Hriday Ranka" - used in From: header
 
     # OAuth2 (Google / Google Workspace). Tokens stored encrypted via secret_storage.
     oauth_provider      = Column(String, nullable=True)   # "google" or None
@@ -544,7 +544,7 @@ class ModelEndpoint(TimestampMixin, Base):
     # can be toggled per-endpoint in the UI. NULL = unknown, falls
     # back to the model-name keyword heuristic in agent_loop.py.
     supports_tools = Column(Boolean, nullable=True, default=None)
-    # Per-user ownership. NULL = legacy/shared (visible to every user) — this
+    # Per-user ownership. NULL = legacy/shared (visible to every user) - this
     # is the historical default. When non-null, the model picker only shows
     # the endpoint to that user (admins always see everything).
     owner = Column(String, nullable=True, index=True)
@@ -728,7 +728,7 @@ class CrewMember(TimestampMixin, Base):
 
 
 class ScheduledTask(TimestampMixin, Base):
-    """A recurring or one-off task — LLM-powered or direct action, time or event triggered."""
+    """A recurring or one-off task - LLM-powered or direct action, time or event triggered."""
     __tablename__ = "scheduled_tasks"
 
     id             = Column(String, primary_key=True, index=True)
@@ -776,7 +776,7 @@ class ScheduledTask(TimestampMixin, Base):
 
 
 class EditorDraft(TimestampMixin, Base):
-    """Persisted in-progress gallery-editor session — layered project state
+    """Persisted in-progress gallery-editor session - layered project state
     that the user can close and reopen later. Stores the full layer payload
     as JSON (with base64-encoded PNG dataURLs per layer) plus a small
     thumbnail for the landing-screen list.
@@ -792,7 +792,7 @@ class EditorDraft(TimestampMixin, Base):
     source_image_id = Column(String, nullable=True, index=True)
     width           = Column(Integer, nullable=True)
     height          = Column(Integer, nullable=True)
-    # Full draft body — layer pixels (base64 PNG dataURLs), offsets,
+    # Full draft body - layer pixels (base64 PNG dataURLs), offsets,
     # opacities, visibility, active id, next id, etc. Kept as TEXT/JSON so
     # we don't have to re-shape the model every time the editor adds a
     # new piece of state.
@@ -1405,7 +1405,7 @@ def _migrate_assign_legacy_owner():
     import json as _json
 
     # Find admin user from auth.json. The auth schema uses `is_admin: True`,
-    # not `role: "admin"` — old code looked for the wrong field and silently
+    # not `role: "admin"` - old code looked for the wrong field and silently
     # fell through to "first user" every time.
     auth_path = os.path.join(os.path.dirname(DATABASE_URL.replace("sqlite:///", "")), "auth.json")
     if not os.path.isabs(auth_path):
@@ -1523,7 +1523,7 @@ def _migrate_backfill_document_owner_from_session():
     Must run AFTER the owner column is added and BEFORE the blanket
     legacy-owner sweep, so session-linked docs get their *true* owner
     while only genuinely orphaned (sessionless) docs fall through to the
-    admin assignment. Idempotent — only touches NULL-owner rows."""
+    admin assignment. Idempotent - only touches NULL-owner rows."""
     try:
         with engine.connect() as conn:
             cols = [r[1] for r in conn.execute(text("PRAGMA table_info(documents)"))]
@@ -1599,7 +1599,7 @@ def _migrate_add_task_automation_columns():
                 if col_name not in col_names:
                     conn.execute(text(f"ALTER TABLE scheduled_tasks ADD COLUMN {col_name} {col_def}"))
 
-            # Check if prompt/schedule/scheduled_time are still NOT NULL — need table rebuild
+            # Check if prompt/schedule/scheduled_time are still NOT NULL - need table rebuild
             notnull_map = {r[1]: r[3] for r in cols_info}
             needs_rebuild = (
                 notnull_map.get("prompt", 0) == 1 or
@@ -1825,7 +1825,7 @@ class Note(TimestampMixin, Base):
     sort_order = Column(Integer, default=0)
     image_url  = Column(String, nullable=True)      # uploaded image URL (relative path)
     repeat     = Column(String, default="none")     # none, daily, weekly, monthly, yearly
-    # Auto-AI fields — populated by /api/notes/{id}/classify. The classification
+    # Auto-AI fields - populated by /api/notes/{id}/classify. The classification
     # JSON shape is { kind, solvable, confidence, task_prompt, tools, items?: [...] }.
     # Content hash gates re-classification (avoid LLM spend on every save).
     ai_classification = Column(Text, nullable=True)
@@ -2065,7 +2065,7 @@ def init_db():
     """
     _migrate_model_endpoints()
     Base.metadata.create_all(bind=engine)
-    # Lock the DB file (and any SQLite sidecars) to 0o600 — it holds bearer-token
+    # Lock the DB file (and any SQLite sidecars) to 0o600 - it holds bearer-token
     # + bcrypt hashes and encrypted provider keys. POSIX only; safe_chmod no-ops
     # on Windows (ACL-restricted profile dir) and the path helper returns None for
     # Postgres / in-memory. Must stay AFTER create_all: the file is born here at
@@ -2088,7 +2088,7 @@ def init_db():
         # file's mode (now 0o600, since we set it first), and they're usually
         # absent here, but a stale -wal/-shm/-journal left by an older 0o644
         # install could still expose secret pages. Absent sidecars are the
-        # normal case, not an error — only a failed chmod warrants a warning.
+        # normal case, not an error - only a failed chmod warrants a warning.
         for suffix in _SQLITE_SIDECARS:
             sidecar = db_path + suffix
             if (
@@ -2154,7 +2154,7 @@ def _migrate_backfill_task_folders():
 
     Sessions created by the task scheduler (LLM tasks, action tasks, research
     runs) now set folder='Tasks' at creation time.  This migration tags any
-    older sessions that predate that assignment.  Idempotent — only touches
+    older sessions that predate that assignment.  Idempotent - only touches
     rows where folder is NULL or empty and the title matches known prefixes.
     """
     try:
@@ -2349,7 +2349,7 @@ def _migrate_encrypt_endpoint_keys():
 
 def _migrate_encrypt_signatures():
     """Encrypt any plaintext signature images still in the signatures table.
-    Idempotent — rows already prefixed with `enc:` are skipped. Uses raw SQL
+    Idempotent - rows already prefixed with `enc:` are skipped. Uses raw SQL
     so the EncryptedText type decorator isn't applied twice."""
     try:
         from src.secret_storage import encrypt, is_encrypted
@@ -2381,7 +2381,7 @@ def _migrate_encrypt_signatures():
 
 def _migrate_encrypt_email_passwords():
     """Encrypt any plaintext IMAP/SMTP passwords still in the email_accounts
-    table. Idempotent — rows already prefixed with `enc:` are skipped.
+    table. Idempotent - rows already prefixed with `enc:` are skipped.
     Safe to run on every startup."""
     try:
         from src.secret_storage import encrypt, is_encrypted
@@ -2681,7 +2681,7 @@ def set_session_mode(session_id: str, mode: str) -> bool:
 
     Routed through get_db_session() so a failure mid-write (e.g. a SQLite
     'database is locked' under concurrent streams) still returns the connection
-    to the pool instead of leaking it — repeated leaks would exhaust it."""
+    to the pool instead of leaking it - repeated leaks would exhaust it."""
     try:
         with get_db_session() as db:
             db.query(Session).filter(Session.id == session_id).update({"mode": mode})
@@ -2699,7 +2699,7 @@ def get_upcoming_events(owner, horizon_days: int = 60, limit: int = 40):
     """Upcoming, non-cancelled events as {uid, title, start} dicts, soonest first.
 
     owner=None means NO owner scoping (single-user / legacy). Multi-user callers
-    MUST pass the owning username — otherwise they read every tenant's events.
+    MUST pass the owning username - otherwise they read every tenant's events.
     The autonomous email->calendar pass relies on this to avoid disclosing (and
     acting on) other users' calendars."""
     from datetime import timedelta

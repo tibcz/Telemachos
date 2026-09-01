@@ -9,7 +9,7 @@
  *   _cancelTransform       restore via undo() + clear session state
  *
  * Handle-drag interactions on the CANVAS (corner / rotation grip) live
- * in `editor/tools/transform-drag.js` — those mutate the same staged
+ * in `editor/tools/transform-drag.js` - those mutate the same staged
  * `state.transformPending*` fields that the popup inputs do, so both
  * surfaces stay in sync via `_reapplyTransform()`.
  *
@@ -62,7 +62,7 @@ export function createTransformSession({
     state.transformOrigCanvas.getContext('2d').drawImage(layer.canvas, 0, 0);
     state.transformOrigOffset = { ...(state.layerOffsets.get(layer.id) || { x: 0, y: 0 }) };
     saveState();
-    // Fit canvas to viewport so the corner handles are visible —
+    // Fit canvas to viewport so the corner handles are visible -
     // without this, a layer larger than the viewport leaves the grab
     // markers off-screen.
     try { fitZoom(); } catch {}
@@ -78,7 +78,7 @@ export function createTransformSession({
     }
   }
 
-  // Floating Transform popup — horizontal layout, draggable via its
+  // Floating Transform popup - horizontal layout, draggable via its
   // header, anchored over the right panel (layers area) by default
   // so it doesn't cover the canvas. Lets the user type exact W/H/Rot
   // and flip via negative values.
@@ -173,7 +173,7 @@ export function createTransformSession({
     pop.querySelector('#ge-transform-apply').addEventListener('click', () => confirmTransform());
     pop.querySelector('#ge-transform-cancel').addEventListener('click', () => cancelTransform());
     pop.querySelector('#ge-transform-cancel-btn')?.addEventListener('click', () => cancelTransform());
-    // Minimise — collapses the body so only the header is visible.
+    // Minimise - collapses the body so only the header is visible.
     pop.querySelector('#ge-transform-min')?.addEventListener('click', (e) => {
       e.stopPropagation();
       pop.classList.toggle('ge-transform-popup-minimised');
@@ -311,7 +311,7 @@ export function createTransformSession({
   }
 
   // Re-derive the active layer's pixels from the original snapshot
-  // with the popup's current W/H/flip/rotation applied. Cheap —
+  // with the popup's current W/H/flip/rotation applied. Cheap -
   // paints into an off-screen canvas of the final size.
   function reapplyTransform() {
     const layer = state.transformLayer;
@@ -322,7 +322,7 @@ export function createTransformSession({
     const rotRad = (rotDeg * Math.PI) / 180;
     const cos = Math.abs(Math.cos(rotRad));
     const sin = Math.abs(Math.sin(rotRad));
-    // Bounding box of the rotated W×H — canvas grows so corners
+    // Bounding box of the rotated W×H - canvas grows so corners
     // don't clip.
     const finalW = Math.max(1, Math.round(w * cos + h * sin));
     const finalH = Math.max(1, Math.round(w * sin + h * cos));

@@ -3,7 +3,7 @@
  * layer's edge or the canvas centre/edges, gently lock the proposed
  * (nx, ny) to the nearest target within SNAP_PX.
  *
- * The implementation is pure — it takes the layer being moved + the
+ * The implementation is pure - it takes the layer being moved + the
  * trial offset + a context describing zoom + the other layers, and
  * returns the snapped position plus any guides to draw.
  *

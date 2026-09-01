@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# check-docker-gpu.sh — Diagnostic and optional setup helper for NVIDIA Docker GPU access.
+# check-docker-gpu.sh - Diagnostic and optional setup helper for NVIDIA Docker GPU access.
 #
-# Default mode is READ-ONLY — does not install packages, modify config, or restart Docker.
+# Default mode is READ-ONLY - does not install packages, modify config, or restart Docker.
 # The Telemachos app never calls this script automatically.
 #
 # USAGE
@@ -49,7 +49,7 @@ _usage() {
     cat <<'USAGE'
 Usage: scripts/check-docker-gpu.sh [OPTIONS]
 
-Read-only diagnostic (default — safe to run at any time, installs nothing):
+Read-only diagnostic (default - safe to run at any time, installs nothing):
   (no flags)                    Check host nvidia-smi, Docker daemon, and Docker
                                 GPU passthrough. Prints PASS/FAIL and next steps.
 
@@ -62,7 +62,7 @@ Informational:
 Opt-in .env update (requires .env or .env.example in the repo root):
   --enable-nvidia-overlay       Write COMPOSE_FILE=docker-compose.yml:docker/gpu.nvidia.yml
                                 into .env. Creates a timestamped backup first.
-                                Blocked if GPU passthrough is not working — fix
+                                Blocked if GPU passthrough is not working - fix
                                 passthrough first, then re-run. --yes does not
                                 override this gate.
                                 Never edits .env unless this flag is passed.
@@ -205,11 +205,11 @@ _check_nvidia_smi() {
             _pass "nvidia-smi is working. Detected GPUs:"
             nvidia-smi -L 2>/dev/null | sed 's/^/        /'
         else
-            _fail "nvidia-smi found but no GPUs listed — check your NVIDIA driver installation."
+            _fail "nvidia-smi found but no GPUs listed - check your NVIDIA driver installation."
         fi
     else
-        _fail "nvidia-smi not found — install the NVIDIA driver for your distribution."
-        _info "No NVIDIA GPU? Skip this script — the NVIDIA overlay is not needed for CPU-only use."
+        _fail "nvidia-smi not found - install the NVIDIA driver for your distribution."
+        _info "No NVIDIA GPU? Skip this script - the NVIDIA overlay is not needed for CPU-only use."
     fi
     echo
 }
@@ -234,7 +234,7 @@ _is_docker_snap() {
 _check_docker() {
     _info "Checking Docker..."
     if ! command -v docker >/dev/null 2>&1; then
-        _fail "docker not found — install Docker: https://docs.docker.com/engine/install/"
+        _fail "docker not found - install Docker: https://docs.docker.com/engine/install/"
         echo "Cannot continue without Docker."
         return 1
     fi
@@ -244,7 +244,7 @@ _check_docker() {
         _fail "Docker daemon is not running or current user lacks permission."
         _info "Try: sudo systemctl start docker"
         _info "Or add your user to the docker group: sudo usermod -aG docker \$USER"
-        echo "Cannot continue — GPU passthrough test requires a running Docker daemon."
+        echo "Cannot continue - GPU passthrough test requires a running Docker daemon."
         return 1
     fi
     echo
@@ -257,7 +257,7 @@ _check_gpu_passthrough() {
     if docker run --rm --gpus all nvidia/cuda:12.4.1-base-ubuntu22.04 nvidia-smi 2>&1; then
         echo
         _GPU_PASSTHROUGH_OK=1
-        _pass "GPU passthrough is working — the NVIDIA compose overlay should work."
+        _pass "GPU passthrough is working - the NVIDIA compose overlay should work."
         _info "Passthrough means Docker can see your GPU. It does NOT guarantee"
         _info "llama.cpp will use CUDA. If Cookbook logs show:"
         _info "  'Unable to find cudart library'"
@@ -280,7 +280,7 @@ _check_gpu_passthrough() {
             _warn "  snap confines Docker's mount namespace, so it cannot see the"
             _warn "  WSL2-injected GPU library at /usr/lib/wsl/lib/libdxcore.so even"
             _warn "  though the file exists on the host. Installing/reconfiguring"
-            _warn "  nvidia-container-toolkit will NOT fix this — the numbered"
+            _warn "  nvidia-container-toolkit will NOT fix this - the numbered"
             _warn "  steps below will not help until Docker itself is replaced."
             echo
             _info "Fix: remove snap Docker and install the official apt-based Docker"
@@ -309,7 +309,7 @@ _check_gpu_passthrough() {
         echo "  Then re-run this script to confirm."
         echo
         _warn "Without GPU passthrough, Cookbook will detect the iGPU, another card, or"
-        _warn "CPU instead of your NVIDIA GPU — model recommendations will use the wrong VRAM."
+        _warn "CPU instead of your NVIDIA GPU - model recommendations will use the wrong VRAM."
         _info "Run with --print-install-commands to see OS-specific commands."
         _info "Run with --install-nvidia-toolkit to install on Ubuntu/Debian."
     fi
@@ -345,7 +345,7 @@ _enable_nvidia_overlay() {
                 fi
                 _pass "Copied .env.example to .env."
             else
-                _fail ".env is required to set COMPOSE_FILE — aborted."
+                _fail ".env is required to set COMPOSE_FILE - aborted."
                 return 1
             fi
         else
@@ -361,7 +361,7 @@ _enable_nvidia_overlay() {
 
     # Idempotency check
     if echo "${_current_cf}" | grep -qF "${_overlay_fragment}"; then
-        _pass "COMPOSE_FILE already includes the NVIDIA overlay — nothing to change."
+        _pass "COMPOSE_FILE already includes the NVIDIA overlay - nothing to change."
         echo
         _info "Start or restart Telemachos to apply:"
         _info "  docker compose up -d --build"
@@ -371,21 +371,21 @@ _enable_nvidia_overlay() {
     # Back up .env before any edit
     local _backup="${_env_file}.bak.${_backup_ts}"
     if ! cp "${_env_file}" "${_backup}"; then
-        _fail "Failed to create backup of .env — aborting to avoid data loss."
+        _fail "Failed to create backup of .env - aborting to avoid data loss."
         return 1
     fi
     _info "Backup created: .env.bak.${_backup_ts}"
 
     local _new_cf=""
     if [ -z "${_current_cf}" ]; then
-        # No active COMPOSE_FILE line — append one
+        # No active COMPOSE_FILE line - append one
         _new_cf="docker-compose.yml:${_overlay_fragment}"
         if ! printf '\nCOMPOSE_FILE=%s\n' "${_new_cf}" >> "${_env_file}"; then
             _fail "Failed to write COMPOSE_FILE to .env."
             return 1
         fi
     else
-        # Existing COMPOSE_FILE — append the overlay to the existing value
+        # Existing COMPOSE_FILE - append the overlay to the existing value
         _new_cf="${_current_cf}:${_overlay_fragment}"
         local _tmp="${_env_file}.tmp"
         if ! sed "s|^COMPOSE_FILE=.*|COMPOSE_FILE=${_new_cf}|" "${_env_file}" > "${_tmp}"; then
@@ -422,8 +422,8 @@ _mode_check() {
         if [ "${_GPU_PASSTHROUGH_OK}" -eq 0 ]; then
             # Hard gate: broken passthrough blocks .env edits regardless of --yes.
             # Writing COMPOSE_FILE before passthrough works causes Telemachos to fail
-            # at startup, so this is not a prompt — it is a stop.
-            _fail "GPU passthrough is not working — .env will not be modified."
+            # at startup, so this is not a prompt - it is a stop.
+            _fail "GPU passthrough is not working - .env will not be modified."
             _info "Fix passthrough first, then re-run with --enable-nvidia-overlay:"
             _info "  Ubuntu/Debian: scripts/check-docker-gpu.sh --install-nvidia-toolkit"
             _info "  Other distros: scripts/check-docker-gpu.sh --print-install-commands"
@@ -440,20 +440,20 @@ _mode_check() {
 # ─── mode: --print-install-commands ──────────────────────────────────────────
 
 _mode_print() {
-    echo "=== NVIDIA Container Toolkit — install commands ==="
+    echo "=== NVIDIA Container Toolkit - install commands ==="
     echo
     _info "Detected system: $(_distro_label)"
     echo
 
     if _is_debian_family; then
-        _info "Ubuntu/Debian — recommended install commands:"
+        _info "Ubuntu/Debian - recommended install commands:"
         _debian_install_steps
         _info "After running these, re-run the diagnostic to confirm:"
         _info "  scripts/check-docker-gpu.sh"
     else
         case "${DISTRO_ID}" in
             fedora|rhel|centos|rocky|almalinux)
-                _info "Fedora/RHEL — install commands:"
+                _info "Fedora/RHEL - install commands:"
                 echo
                 echo "  sudo dnf install -y nvidia-container-toolkit"
                 echo "  sudo nvidia-ctk runtime configure --runtime=docker"
@@ -461,7 +461,7 @@ _mode_print() {
                 echo "  docker run --rm --gpus all nvidia/cuda:12.4.1-base-ubuntu22.04 nvidia-smi"
                 ;;
             opensuse*|sles)
-                _info "OpenSUSE/SLES — install commands:"
+                _info "OpenSUSE/SLES - install commands:"
                 echo
                 echo "  sudo zypper install nvidia-container-toolkit"
                 echo "  sudo nvidia-ctk runtime configure --runtime=docker"
@@ -469,7 +469,7 @@ _mode_print() {
                 echo "  docker run --rm --gpus all nvidia/cuda:12.4.1-base-ubuntu22.04 nvidia-smi"
                 ;;
             arch|manjaro|endeavouros)
-                _info "Arch Linux — install commands:"
+                _info "Arch Linux - install commands:"
                 echo
                 echo "  sudo pacman -S nvidia-container-toolkit"
                 echo "  sudo nvidia-ctk runtime configure --runtime=docker"
@@ -493,7 +493,7 @@ _mode_print() {
 # ─── mode: --install-nvidia-toolkit ──────────────────────────────────────────
 
 _mode_install() {
-    echo "=== NVIDIA Container Toolkit — interactive installer ==="
+    echo "=== NVIDIA Container Toolkit - interactive installer ==="
     echo
 
     if [ "$(uname -s)" != "Linux" ]; then
@@ -516,7 +516,7 @@ _mode_install() {
 
     if [ "${OPT_YES}" -eq 0 ]; then
         if ! _confirm "Proceed with the above steps?"; then
-            echo "Aborted — nothing was changed."
+            echo "Aborted - nothing was changed."
             exit 0
         fi
         echo
@@ -579,7 +579,7 @@ _mode_install() {
         if sudo systemctl restart docker; then
             _pass "Docker restarted."
         else
-            _fail "Docker restart failed — run: sudo systemctl restart docker"
+            _fail "Docker restart failed - run: sudo systemctl restart docker"
         fi
     fi
     echo
@@ -595,7 +595,7 @@ _mode_install() {
         if [ "${_GPU_PASSTHROUGH_OK}" -eq 1 ]; then
             _enable_nvidia_overlay
         else
-            _warn "GPU passthrough verification failed — skipping overlay setup."
+            _warn "GPU passthrough verification failed - skipping overlay setup."
             _warn "Fix the passthrough issue, then run:"
             _warn "  scripts/check-docker-gpu.sh --enable-nvidia-overlay"
             echo

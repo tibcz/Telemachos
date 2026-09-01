@@ -1,5 +1,5 @@
 /**
- * Calendar Module — CalDAV-backed month/week/year calendar.
+ * Calendar Module - CalDAV-backed month/week/year calendar.
  */
 
 import uiModule from './ui.js';
@@ -49,7 +49,7 @@ function _pickCalBgImage() {
 
 let _open = false;
 // Set when the calendar opens so the first month render scrolls today's
-// cell into view — the grid scrolls on mobile and today can sit below the
+// cell into view - the grid scrolls on mobile and today can sit below the
 // fold, so we always land on the current date.
 let _scrollToTodayOnOpen = false;
 let _currentDate = new Date();
@@ -59,7 +59,7 @@ let _fetchedRanges = [];
 let _calendars = [];
 let _hiddenCals = new Set();
 let _hiddenTypes = new Set();   // event_type values to hide
-// "Only important" filter — when true, only events with importance
+// "Only important" filter - when true, only events with importance
 // high/critical render, regardless of their category. Toggled via the "!"
 // chip; orthogonal to _hiddenTypes (which deals with event_type categories).
 let _onlyImportant = false;
@@ -137,13 +137,13 @@ async function _fetchEvents(start, end, force) {
       if (_open && hasCache) _render();
     })
     .catch(e => { console.error('Calendar: failed to fetch events', e); });
-  // If we have cache, don't block on fetch — return immediately so render is instant
+  // If we have cache, don't block on fetch - return immediately so render is instant
   if (hasCache) return;
-  // No cache — must await the fetch
+  // No cache - must await the fetch
   await fetchPromise;
 }
 
-// Prefetch surrounding months in background — fire-and-forget, no blocking
+// Prefetch surrounding months in background - fire-and-forget, no blocking
 function _prefetchAdjacent() {
   const ranges = [];
   if (_view === 'month' || _view === 'week') {
@@ -175,7 +175,7 @@ function _prefetchAdjacent() {
 }
 
 let _calendarsError = null;
-// Guard so we only trigger an on-open CalDAV pull once per page load —
+// Guard so we only trigger an on-open CalDAV pull once per page load -
 // every list/render path calls _fetchCalendars, but we only want to
 // hit the remote server lazily on the first user open.
 let _caldavSyncedOnce = false;
@@ -191,7 +191,7 @@ async function _fetchCalendars() {
     });
   } catch (e) { _calendars = []; _calendarsError = e.message || 'Connection failed'; }
 
-  // First open: fire a background CalDAV pull. We don't await — the
+  // First open: fire a background CalDAV pull. We don't await - the
   // initial render uses whatever's already cached locally, and the
   // sync's writes show up on the next paint after it resolves.
   if (!_caldavSyncedOnce) {
@@ -276,7 +276,7 @@ async function _updateEvent(uid, data) {
   const merged = { ...(_allEvents[uid] || {}), ...data };
   const _preMergeBackup = _allEvents[uid];
   _allEvents[uid] = _optimisticEvent(merged, uid);
-  // For recurring events the uid is a compound "{base_uid}::{date}" —
+  // For recurring events the uid is a compound "{base_uid}::{date}" -
   // the backend resolves it to the base series row. After the update,
   // other occurrences of the same series are stale. Wipe the cache so
   // a re-fetch picks up fresh data (next render + prefetch handles it).
@@ -305,7 +305,7 @@ async function _deleteEvent(uid, { scope = 'series' } = {}) {
   // Multiple "sibling" UIDs may need to vanish optimistically:
   //   1. The exact uid the user clicked.
   //   2. If the user clicked a RECURRING occurrence (uid contains "::"),
-  //      the server deletes the master + every occurrence — so we strip
+  //      the server deletes the master + every occurrence - so we strip
   //      the master uid AND every "master::*" expansion from the
   //      client-side caches too. Without this, deleting one day of a
   //      multi-day recurring task only removed THAT day visually; the
@@ -336,7 +336,7 @@ async function _deleteEvent(uid, { scope = 'series' } = {}) {
     method: 'DELETE', credentials: 'same-origin',
   }).then(r => {
     // 404 = the event was already deleted by another session/device. That's
-    // exactly the state we want, so treat it as success — don't restore the
+    // exactly the state we want, so treat it as success - don't restore the
     // row, otherwise the user can never clear stale cached events that were
     // deleted from desktop while mobile was open (and vice versa).
     if (!r.ok && r.status !== 404) throw new Error('HTTP ' + r.status);
@@ -347,7 +347,7 @@ async function _deleteEvent(uid, { scope = 'series' } = {}) {
       _saveCache && _saveCache();
     }
   }).catch((e) => {
-    // Server rejected — restore every uid we optimistically stripped.
+    // Server rejected - restore every uid we optimistically stripped.
     for (const [k, ev] of Object.entries(backups)) {
       _allEvents[k] = ev;
       if (Array.isArray(_events)) _events.push(ev);
@@ -582,7 +582,7 @@ async function _createEventReminder(ev, dueDate) {
     : new Date(ev.dtstart).toLocaleString([], { weekday:'short', month:'short', day:'numeric', hour:'numeric', minute:'2-digit' });
   const summary = ev.summary || '(no title)';
   const loc = ev.location ? ` @ ${ev.location}` : '';
-  const text = `${summary}${loc} — ${startFmt}`;
+  const text = `${summary}${loc} - ${startFmt}`;
   const payload = {
     title: `Reminder: ${summary}`,
     note_type: 'todo',
@@ -620,7 +620,7 @@ function _collapseSidebar() {
   if (sb && !sb.classList.contains('hidden')) {
     // Only remember the prior state on desktop. On mobile the sidebar is an
     // overlay that the user intentionally swipes/taps away when the tool
-    // opens — popping it back on close is unwanted.
+    // opens - popping it back on close is unwanted.
     if (window.innerWidth >= 700) _sidebarWasOpen = true;
     sb.classList.add('hidden');
     if (window.syncRailSide) window.syncRailSide();
@@ -682,7 +682,7 @@ function _getModal() {
   document.body.appendChild(_modal);
   _modal.querySelector('#cal-close').addEventListener('click', closeCalendar);
   _modal.addEventListener('click', (e) => { if (e.target === _modal) closeCalendar(); });
-  // Make draggable — replaced ~50 lines of inline drag/dock plumbing with
+  // Make draggable - replaced ~50 lines of inline drag/dock plumbing with
   // a single call to the shared helper. Calendar doesn't support fullscreen
   // snap so no fsClass / enter/exit callbacks here.
   {
@@ -697,7 +697,7 @@ function _getModal() {
 
 // ── Render dispatch ──
 
-// Quick-add hint examples — the placeholder cycles through these every few
+// Quick-add hint examples - the placeholder cycles through these every few
 // seconds so users see different prompt shapes (events, deadlines, recurring).
 const _QA_HINT_EXAMPLES = [
   'return home to Ithaca 1pm tmrw',
@@ -714,7 +714,7 @@ const _QA_HINT_EXAMPLES = [
 function _initQuickAddHintCycle() {
   const span = document.getElementById('qa-hint-example');
   if (!span) return;
-  // Pick one random example per calendar open — no interval cycling.
+  // Pick one random example per calendar open - no interval cycling.
   const idx = Math.floor(Math.random() * _QA_HINT_EXAMPLES.length);
   span.textContent = _QA_HINT_EXAMPLES[idx];
 }
@@ -735,7 +735,7 @@ function _saveQuickAddState() {
 
 // True while the user is actively in the quick-add field. On mobile a
 // programmatic re-focus after a DOM rebuild can't reopen the soft keyboard, so
-// we must NOT swap the calendar body out from under an active quick-add — we
+// we must NOT swap the calendar body out from under an active quick-add - we
 // defer the render and flush it on blur instead.
 let _renderPending = false;
 let _qaSubmitting = false;
@@ -781,7 +781,7 @@ function _updateDaySearchResults() {
   _wireQuickDelete(dayDetail);
 }
 
-// Step between calendar views by "zoom level" — pinch IN goes year→month→week,
+// Step between calendar views by "zoom level" - pinch IN goes year→month→week,
 // pinch OUT goes the other way. Agenda is its own thing so it's excluded.
 function _zoomView(direction) {
   const chain = ['year', 'month', 'week'];
@@ -801,7 +801,7 @@ let _renderToken = 0;
 function _isStaleRender(t) { return t !== _renderToken; }
 
 function _render() {
-  // Don't rebuild the DOM while the user is typing in quick-add — defer it.
+  // Don't rebuild the DOM while the user is typing in quick-add - defer it.
   if (_qaTyping()) { _renderPending = true; return; }
   // Empty state: no calendars configured or connection failed
   if (!_calendars.length) {
@@ -871,7 +871,7 @@ function _renderEmpty() {
   document.getElementById('cal-empty-caldav')?.addEventListener('click', (e) => {
     e.preventDefault();
     closeCalendar();
-    // Integrations is an admin tab — settingsModule.open() only sets
+    // Integrations is an admin tab - settingsModule.open() only sets
     // the .active class for admin tabs; the actual panel renders via
     // adminModule.open(). Without the admin-first branch the modal
     // appears with Integrations highlighted but showing the previous
@@ -933,7 +933,7 @@ function _headerHTML() {
       placeholder=" "
       autocomplete="off"
     />
-    <span class="cal-quickadd-hint" id="cal-quickadd-hint" aria-hidden="true"><span class="qa-hint-accent">Quick add</span> — <span class="qa-hint-example" id="qa-hint-example">return home to Ithaca 1pm tmrw</span> <svg class="qa-hint-enter" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 10 4 15 9 20"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/></svg></span>
+    <span class="cal-quickadd-hint" id="cal-quickadd-hint" aria-hidden="true"><span class="qa-hint-accent">Quick add</span> - <span class="qa-hint-example" id="qa-hint-example">return home to Ithaca 1pm tmrw</span> <svg class="qa-hint-enter" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 10 4 15 9 20"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/></svg></span>
     <span class="cal-quickadd-status" id="cal-quickadd-status"></span>
   </div>`;
 }
@@ -978,7 +978,7 @@ function _filtersToggleHTML() {
 }
 
 function _filtersRowHTML() {
-  // Chip row beneath the toolbar — empty when collapsed.
+  // Chip row beneath the toolbar - empty when collapsed.
   if (_filtersCollapsed) return '';
   const { calFilters, typeFilters } = _filtersData();
   if (!calFilters && !typeFilters) return '';
@@ -1039,7 +1039,7 @@ async function _renderMonth() {
   // every day it covers.
   for (let row = 0; row < 6; row++) {
     // Count how many multi-day bars overlap any column in this row so
-    // cells can reserve top padding for them — otherwise the bars
+    // cells can reserve top padding for them - otherwise the bars
     // (drawn as absolute overlays) sit on top of the day-number and
     // single-event rows below.
     const rowStartCd0 = new Date(gs); rowStartCd0.setDate(gs.getDate() + row * 7);
@@ -1060,7 +1060,7 @@ async function _renderMonth() {
       const isOther = cd.getMonth() !== m;
       const cls = 'cal-day' + (isOther ? ' cal-other' : '') + (d === today ? ' cal-today' : '') + (d === _selectedDay ? ' cal-selected' : '');
       h += `<div class="${cls}" data-date="${d}"><span class="cal-day-num">${cd.getDate()}</span>`;
-      // Single events — show up to 3 inline rows (multi-day events are
+      // Single events - show up to 3 inline rows (multi-day events are
       // drawn separately as an overlay below).
       const singles = _eventsForDay(d).filter(e => !multiUids.has(e.uid));
       if (singles.length) {
@@ -1139,7 +1139,7 @@ async function _renderMonth() {
   }
   h += '</div>';
   if (_selectedDay) h += _dayDetailHTML(_selectedDay);
-  // Capture the grid's scroll position before innerHTML wipes it —
+  // Capture the grid's scroll position before innerHTML wipes it -
   // selecting a day shouldn't jump the user back to the top of the
   // month, that hides the row they just clicked.
   const _prevGrid = body.querySelector('.cal-grid');
@@ -1180,7 +1180,7 @@ const WEEK_HOUR_END   = 24;
 const WK_DEFAULT_SCROLL_HOUR = 7;
 let _wkScrollY = null;       // remembered scroll position across renders
 let _wkScrolledOnce = false; // tracks the first auto-scroll-to-morning
-// pixel height per hour — user-zoomable, persisted in localStorage so the
+// pixel height per hour - user-zoomable, persisted in localStorage so the
 // preference sticks across reloads. Bounds keep the layout sane.
 const WK_PX_MIN = 28;
 const WK_PX_MAX = 120;
@@ -1191,7 +1191,7 @@ let WEEK_HOUR_PX = (() => {
 })();
 function _wkSetZoom(px) {
   // Capture the hour currently at the top of the viewport so the same
-  // hour stays put across the zoom-induced re-render — otherwise the
+  // hour stays put across the zoom-induced re-render - otherwise the
   // saved pixel scrollTop misaligns at the new px/hour.
   const wrap = document.querySelector('.cal-wk-wrap');
   let _hourAtTop = null;
@@ -1238,7 +1238,7 @@ function _wkEventTopHeight(ev, dayStr) {
       if (evDate > fallbackDate) return 24 * 60;       // event ends after today
       return mins;
     }
-    // All-day or date-only — treat as start of day.
+    // All-day or date-only - treat as start of day.
     return 0;
   };
   const startMin = _toMin(ev.dtstart, dayStr);
@@ -1274,7 +1274,7 @@ async function _renderWeek() {
   }
 
   // Hour rail on the left. The spacer up top hosts the zoom controls
-  // (toolbar is already crowded — this empty 56-px corner is a free home).
+  // (toolbar is already crowded - this empty 56-px corner is a free home).
   let railHtml = `<div class="cal-wk-rail">
     <div class="cal-wk-rail-spacer">
       <button class="cal-wk-zoom" id="cal-wk-zoom-out" title="Zoom out (–)" aria-label="Zoom out">−</button>
@@ -1413,7 +1413,7 @@ async function _renderWeek() {
         moved = true;
         // Pick the column under the cursor. If the cursor lands between
         // columns (gutter/border) or just outside the grid horizontally,
-        // snap to the nearest column instead of giving up — that's why
+        // snap to the nearest column instead of giving up - that's why
         // horizontal cross-day drag could feel stuck before.
         let cur = cols.find(c => {
           const r = c.getBoundingClientRect();
@@ -1455,7 +1455,7 @@ async function _renderWeek() {
         document.removeEventListener('mouseup', onUp);
         ghost.remove();
         block.style.opacity = '';
-        // Only suppress the trailing click-open if the user actually dragged —
+        // Only suppress the trailing click-open if the user actually dragged -
         // a plain click (no movement) must still open the event.
         if (moved) block.dataset.justResized = '1';
         // Decide whether anything actually moved.
@@ -1606,7 +1606,7 @@ async function _renderWeek() {
   document.getElementById('cal-wk-zoom-in')?.addEventListener('click', (e) => { e.stopPropagation(); _wkZoomBy(+12); });
   document.getElementById('cal-wk-zoom-out')?.addEventListener('click', (e) => { e.stopPropagation(); _wkZoomBy(-12); });
 
-  // Keyboard zoom (`+` / `-`), Ctrl/Cmd-wheel zoom — both only fire while
+  // Keyboard zoom (`+` / `-`), Ctrl/Cmd-wheel zoom - both only fire while
   // we're in week view and no text input has focus.
   if (!body._wkZoomKeysWired) {
     body._wkZoomKeysWired = true;
@@ -1749,7 +1749,7 @@ async function _renderAgenda() {
 async function _renderSearch() {
   const body = document.getElementById('cal-body');
   if (!body) return;
-  // Search across all events in pool (no fetch needed — use what we have)
+  // Search across all events in pool (no fetch needed - use what we have)
   const q = _searchQuery.toLowerCase();
   const results = Object.values(_allEvents)
     .filter(ev => !!_eventVisible(ev))
@@ -1862,7 +1862,7 @@ async function _renderYear() {
 
 function _dayDetailHTML(dateStr) {
   const isToday = dateStr === _today();
-  // Search lives inside the day panel now — typing filters the panel
+  // Search lives inside the day panel now - typing filters the panel
   // body to global search results instead of just this day's events.
   // Magnifying-glass icon inside the search field via a wrapper + padding-left.
   const searchInput = `<div class="cal-search-wrap">
@@ -1923,7 +1923,7 @@ function _wireAll(body) {
   // ── Day-detail splitter (drag to resize) ────────────────────────
   // Restores the saved height each render so the user's choice survives
   // navigation between months/weeks. Drag adjusts a single CSS variable
-  // on #cal-body — the grid clamps its height and the day-detail expands
+  // on #cal-body - the grid clamps its height and the day-detail expands
   // / contracts accordingly via CSS rules.
   try {
     const calBody = document.getElementById('cal-body');
@@ -2006,11 +2006,11 @@ function _wireAll(body) {
     const _submitQA = async () => {
       const text = _qaInput.value.trim();
       if (!text || _qaSubmitting) return;
-      // Use a flag rather than `disabled` to block double-submit — disabling
+      // Use a flag rather than `disabled` to block double-submit - disabling
       // the input blurs it, which would flush a deferred render and wipe the
       // spinner's container mid-parse.
       _qaSubmitting = true;
-      // Whirlpool spinner after the text — but only once parsing has run long
+      // Whirlpool spinner after the text - but only once parsing has run long
       // enough to be worth showing (~250ms), so fast parses don't flash it.
       let _qaSpin = null;
       let _qaSpinTimer = null;
@@ -2177,8 +2177,8 @@ function _wireAll(body) {
     else if (_view === 'week') _currentDate.setDate(_currentDate.getDate() - 7);
     else if (_view === 'agenda') _currentDate.setDate(_currentDate.getDate() - 30);
     else _currentDate = new Date(_currentDate.getFullYear(), _currentDate.getMonth() - 1, 1);
-    // Keep a day selected in month/week so the day-detail panel — which hosts
-    // the search box — stays available (otherwise browsing hides search).
+    // Keep a day selected in month/week so the day-detail panel - which hosts
+    // the search box - stays available (otherwise browsing hides search).
     _selectedDay = (_view === 'month' || _view === 'week') ? _ds(_currentDate) : null;
     _render();
   });
@@ -2207,7 +2207,7 @@ function _wireAll(body) {
     _fetchedRanges = [];
     localStorage.removeItem(LS_KEY);
 
-    // Compute the visible range and force-refetch — _render() kicks off
+    // Compute the visible range and force-refetch - _render() kicks off
     // a fetch internally but doesn't return a promise, so we await our
     // own one to actually serialize on the network.
     const _range = (_view === 'year')
@@ -2223,7 +2223,7 @@ function _wireAll(body) {
       window._calSyncing = false;
       // Flash a checkmark for ~900ms. Drive it through a flag the toolbar
       // template reads (not a one-off innerHTML on the button), so a stray
-      // _render() — the calendar re-renders mid-flow — can't wipe it. Same
+      // _render() - the calendar re-renders mid-flow - can't wipe it. Same
       // reason the spin is flag-driven.
       window._calSyncDone = true;
       _render();
@@ -2250,7 +2250,7 @@ function _wireAll(body) {
     }
   };
   // If the user typed in quick-add but pressed "+ New" instead of Enter, treat
-  // it as a quick-add (parse the text) rather than opening a blank event — a
+  // it as a quick-add (parse the text) rather than opening a blank event - a
   // common mix-up since the two controls sit side by side.
   const _tryQuickAddFromButton = () => {
     const qa = document.getElementById('cal-quickadd');
@@ -2262,11 +2262,11 @@ function _wireAll(body) {
   };
   document.getElementById('cal-add')?.addEventListener('click', (e) => _addClick(e, () => { if (!_tryQuickAddFromButton()) _showEventForm(null, _selectedDay || _today()); }));
   // Solo "+" on the day-detail header: no spin (the small round button
-  // doesn't look good rotating in place — open the form immediately).
+  // doesn't look good rotating in place - open the form immediately).
   document.getElementById('cal-add-day')?.addEventListener('click', () => { if (!_tryQuickAddFromButton()) _showEventForm(null, _selectedDay); });
 
   // Mobile: relocate the toolbar's +New pill so it sits NEXT TO the
-  // quick-add row (not inside it — the row has its own border/background
+  // quick-add row (not inside it - the row has its own border/background
   // that makes embedded buttons look like part of the input field).
   // Wrap the row and button in a flex container so they share one line.
   if (window.innerWidth <= 768) {
@@ -2284,7 +2284,7 @@ function _wireAll(body) {
     }
   }
 
-  // Search input — re-render rebuilds the day-detail DOM on each keystroke,
+  // Search input - re-render rebuilds the day-detail DOM on each keystroke,
   // so refocus and restore caret position to keep typing smooth.
   const searchInput = document.getElementById('cal-search');
   if (searchInput) {
@@ -2314,7 +2314,7 @@ function _wireAll(body) {
       if (!calBody) return;
       const vh = (window.visualViewport?.height) || window.innerHeight;
       const target = vh - 24;
-      // Skip if already expanded — every keystroke triggers a re-render
+      // Skip if already expanded - every keystroke triggers a re-render
       // which re-focuses the input. Re-running this on each keystroke
       // would shove the layout around as the user types.
       const cur = parseInt(calBody.style.getPropertyValue('--cal-detail-h'), 10) || 0;
@@ -2356,7 +2356,7 @@ function _wireAll(body) {
         }
       }
     } else if (type) {
-      // "!" chip toggles a separate "only important" axis — clicking it
+      // "!" chip toggles a separate "only important" axis - clicking it
       // doesn't solo-hide other categories the way a normal type chip does.
       if (type === '!') {
         _onlyImportant = !_onlyImportant;
@@ -2416,7 +2416,7 @@ function _wireAll(body) {
       body.querySelectorAll('.cal-drag-over').forEach(d => d.classList.remove('cal-drag-over'));
     });
   });
-  // Helper — find the day cell directly under the cursor at (x,y). Reading
+  // Helper - find the day cell directly under the cursor at (x,y). Reading
   // it from the cursor is more reliable than trusting whichever cell fired
   // the `drop` event: if the user releases over a nested event item or
   // multi-day bar, the drop fires on the inner element and the calling
@@ -2438,7 +2438,7 @@ function _wireAll(body) {
     cell.addEventListener('dragover', (e) => {
       if (!_dragUid) return;
       e.preventDefault();
-      // Only highlight the cell genuinely under the cursor — prevents two
+      // Only highlight the cell genuinely under the cursor - prevents two
       // adjacent cells flashing as the cursor crosses a border.
       const target = _cellAtPoint(e.clientX, e.clientY);
       body.querySelectorAll('.cal-drag-over').forEach(c => {
@@ -2448,7 +2448,7 @@ function _wireAll(body) {
     });
     cell.addEventListener('dragleave', (e) => {
       // Only clear if the cursor really left this cell (dragleave fires when
-      // entering a child too — that's the flicker bug).
+      // entering a child too - that's the flicker bug).
       const target = _cellAtPoint(e.clientX, e.clientY);
       if (target !== cell) cell.classList.remove('cal-drag-over');
     });
@@ -2493,7 +2493,7 @@ if (typeof window !== 'undefined' && !window._calUndoBound) {
   window._calUndoBound = true;
   document.addEventListener('keydown', (e) => {
     if (!(e.ctrlKey || e.metaKey) || e.key !== 'z' || e.shiftKey) return;
-    // Skip if the user's typing in a real field — let the browser's text undo run.
+    // Skip if the user's typing in a real field - let the browser's text undo run.
     const t = e.target;
     if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
     const modal = document.getElementById('calendar-modal');
@@ -2719,14 +2719,14 @@ async function _showCalSettings() {
     e.target.value = '';
   });
 
-  // Export chips — one per calendar; downloads that calendar's .ics.
+  // Export chips - one per calendar; downloads that calendar's .ics.
   overlay.querySelectorAll('.cal-s-export-chip').forEach(chip => {
     chip.addEventListener('click', () => {
       window.open(`${API_BASE}/api/calendar/export/${chip.dataset.id}`, '_blank');
     });
   });
 
-  // Sync now — fires the CalDAV pull synchronously so we can show the
+  // Sync now - fires the CalDAV pull synchronously so we can show the
   // result inline, then refreshes the panel + calendar grid.
   overlay.querySelector('#cal-settings-sync-now')?.addEventListener('click', async (e) => {
     const btn = e.currentTarget;
@@ -2740,7 +2740,7 @@ async function _showCalSettings() {
       const parts = [];
       if (data.events) parts.push(`${data.events} events`);
       if (data.deleted) parts.push(`${data.deleted} removed`);
-      status.textContent = parts.length ? `Synced — ${parts.join(', ')}` : 'Synced — no changes';
+      status.textContent = parts.length ? `Synced - ${parts.join(', ')}` : 'Synced - no changes';
       _allEvents = {}; _fetchedRanges = [];
       try { localStorage.removeItem(LS_KEY); } catch (_) {}
       await _fetchCalendars();
@@ -2753,7 +2753,7 @@ async function _showCalSettings() {
     btn.disabled = false;
   });
 
-  // Integrations link — close this overlay and open Settings → Integrations.
+  // Integrations link - close this overlay and open Settings → Integrations.
   overlay.querySelector('#cal-settings-open-caldav')?.addEventListener('click', (e) => {
     e.preventDefault();
     cleanup();
@@ -2776,7 +2776,7 @@ async function _showCalSettings() {
 // Returns {h, m} in 24h, or null when the title has no unambiguous time.
 function _parseTitleTime(text) {
   if (!text) return null;
-  // 12-hour with am/pm — "10am", "10:30 pm", "at 7 p.m."
+  // 12-hour with am/pm - "10am", "10:30 pm", "at 7 p.m."
   let m = text.match(/\b(\d{1,2})(?::(\d{2}))?\s*([ap])\.?\s*m\.?\b/i);
   if (m) {
     let h = parseInt(m[1], 10);
@@ -2787,7 +2787,7 @@ function _parseTitleTime(text) {
     if (!pm && h === 12) h = 0;
     return { h, m: mm };
   }
-  // 24-hour HH:MM — "15:00", "at 9:30" (needs the colon to avoid matching
+  // 24-hour HH:MM - "15:00", "at 9:30" (needs the colon to avoid matching
   // bare numbers like "room 5" or years).
   m = text.match(/\b([01]?\d|2[0-3]):([0-5]\d)\b/);
   if (m) return { h: parseInt(m[1], 10), m: parseInt(m[2], 10) };
@@ -2812,7 +2812,7 @@ function _showEventForm(existing, defaultDate, defaultEndDate) {
 
   // "Bespoke" event form: a big clock-face hero (time + date) and a single
   // title input. Everything else (location, description, recurrence,
-  // reminder, color, calendar) is folded behind a click — focusing the
+  // reminder, color, calendar) is folded behind a click - focusing the
   // title or clicking "Add details" reveals it. Empty drafts feel like a
   // sticky-note; full-detail editing is one keystroke away.
   const _hasDetails = !!(existing && (
@@ -2941,7 +2941,7 @@ function _showEventForm(existing, defaultDate, defaultEndDate) {
   document.getElementById('cal-f-allday')?.addEventListener('change', (e) => {
     document.getElementById('cal-time-row').style.display = e.target.checked ? 'none' : '';
   });
-  // Open-task back-link button — dynamically imports the tasks module
+  // Open-task back-link button - dynamically imports the tasks module
   // so the linkage works even if the user is opening the calendar
   // before they've touched the Tasks tab in this session.
   document.getElementById('cal-f-open-task')?.addEventListener('click', async (e) => {
@@ -2960,10 +2960,10 @@ function _showEventForm(existing, defaultDate, defaultEndDate) {
     const eEl = document.getElementById('cal-f-date-end');
     if (eEl && eEl.value < s) eEl.value = s;
   });
-  // Color dot picker — also live-tints the form card (border, focus
+  // Color dot picker - also live-tints the form card (border, focus
    // rings, primary button) so the user sees the choice immediately.
   const _formCard = document.querySelector('.cal-form-bespoke');
-  // Dismiss the keyboard by pressing Enter in a single-line text field — the
+  // Dismiss the keyboard by pressing Enter in a single-line text field - the
   // ↵ glyph next to the title hints at this.
   if (_formCard) {
     _formCard.querySelectorAll('input[type="text"]').forEach(inp => {
@@ -2979,7 +2979,7 @@ function _showEventForm(existing, defaultDate, defaultEndDate) {
     const _tintCalSel = () => {
       const c = _calendars.find(x => x.href === _calSel.value);
       const col = (c && c.color && !_isCalBgImage(c.color)) ? c.color : 'var(--accent, var(--red))';
-      // Soft full-width background tint only — no side bar/border highlight.
+      // Soft full-width background tint only - no side bar/border highlight.
       _calSel.style.background = `color-mix(in srgb, ${col} 16%, var(--bg))`;
     };
     _calSel.addEventListener('change', _tintCalSel);
@@ -3032,7 +3032,7 @@ function _showEventForm(existing, defaultDate, defaultEndDate) {
   // When the user changes the start time, shift the end time by the same
   // delta so the event keeps its original duration (or a 1-hour default if
   // start == end). Skipped if the user has already nudged the end input
-  // since opening the form — we don't want to clobber a deliberate edit.
+  // since opening the form - we don't want to clobber a deliberate edit.
   (function _wireStartShiftsEnd() {
     const startEl = document.getElementById('cal-f-start');
     const endEl = document.getElementById('cal-f-end');
@@ -3157,7 +3157,7 @@ function _showEventForm(existing, defaultDate, defaultEndDate) {
     const colorVal = activeDot?.dataset.color || '';
     // Append the user's current UTC offset so the backend stores events as
     // proper UTC instants (is_utc=True). Without this, naive "10:00" gets
-    // re-interpreted as local elsewhere — the timezone-misfire bug.
+    // re-interpreted as local elsewhere - the timezone-misfire bug.
     const _tz = _tzOffset();
     
     if (!isAD) {
@@ -3270,7 +3270,7 @@ function _showEventForm(existing, defaultDate, defaultEndDate) {
   locInput?.addEventListener('input', _syncLocMap);
   _syncLocMap();
 
-  // Hero is clickable — clicking the time or date opens the matching
+  // Hero is clickable - clicking the time or date opens the matching
   // native picker. Expands the details panel first so the input has been
   // laid out (showPicker fails on display:none / 0-height inputs in some
   // browsers).
@@ -3313,7 +3313,7 @@ function _showEventForm(existing, defaultDate, defaultEndDate) {
     _openPicker('cal-f-date');
   });
 
-  // Live hero clock — keep the big time/date in sync with the inputs the
+  // Live hero clock - keep the big time/date in sync with the inputs the
   // user can still tweak inside the details panel.
   const _syncHero = () => {
     const allday = document.getElementById('cal-f-allday')?.checked;
@@ -3332,7 +3332,7 @@ function _showEventForm(existing, defaultDate, defaultEndDate) {
   _syncHero();
 
   // New events: expand the details up front (don't rely on the title's focus
-  // event — programmatic .focus() is often a no-op on mobile, which would leave
+  // event - programmatic .focus() is often a no-op on mobile, which would leave
   // the form showing only the title + buttons), then focus the title.
   if (!isEdit) { setExpanded(true); titleInput?.focus(); }
 
@@ -3353,7 +3353,7 @@ function _showEventForm(existing, defaultDate, defaultEndDate) {
 
 function _fmtDate(s) { return new Date(s + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' }); }
 
-// Hero clock helpers — used by the bespoke event form.
+// Hero clock helpers - used by the bespoke event form.
 // _clockFace returns the colon-separated digits ("HH : MM"), _clockAmpm
 // returns "AM"/"PM"/"" (empty for all-day), _clockDate is a long form
 // "Sat · May 10, 2026". 24-h time stays without an AM/PM marker.
@@ -3362,7 +3362,7 @@ function _clockFace(hhmm) {
   // segment is individually clickable. The wrapping #cal-hero-clock has
   // its innerHTML re-set by _syncHero, so the spans round-trip cleanly.
   if (!hhmm) {
-    return '<span class="cal-hero-clock-hh" data-seg="hh">—</span><span class="cal-hero-sep"> : </span><span class="cal-hero-clock-mm" data-seg="mm">—</span>';
+    return '<span class="cal-hero-clock-hh" data-seg="hh">-</span><span class="cal-hero-sep"> : </span><span class="cal-hero-clock-mm" data-seg="mm">-</span>';
   }
   const [h, m] = hhmm.split(':');
   const use12 = (new Date()).toLocaleString().toLowerCase().match(/am|pm/);
@@ -3443,7 +3443,7 @@ function _locHTML(loc) {
       return `<a href="${safe}" target="_blank" rel="noopener" onclick="event.stopPropagation();">${safe}</a>`;
     }).replace(/\n/g, '<br>');
   }
-  // No URL — link the whole thing to OpenStreetMap.
+  // No URL - link the whole thing to OpenStreetMap.
   const mapUrl = 'https://www.openstreetmap.org/search?query=' + encodeURIComponent(loc);
   return `<a href="${mapUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation();" title="Open in OpenStreetMap">${_e(loc)}</a>`;
 }
@@ -3479,7 +3479,7 @@ function _wheelNav(e) {
 
 function openCalendar() {
   if (_open) return;
-  // If currently minimized — restore in place, preserve all state
+  // If currently minimized - restore in place, preserve all state
   if (Modals.isMinimized('calendar-modal')) {
     Modals.restore('calendar-modal');
     _open = true;
@@ -3572,7 +3572,7 @@ async function openCalendarTo(target) {
     if (isoMatch) {
       dt = new Date(targetStr);
     } else {
-      // Treat as an event uid — find it among loaded events.
+      // Treat as an event uid - find it among loaded events.
       const ev = Object.values(_allEvents || {}).find(e => e.uid === targetStr || (e.uid || '').startsWith(targetStr));
       if (ev && ev.dtstart) dt = new Date(ev.dtstart);
       if (ev) _highlightEventUid = ev.uid;
@@ -3596,7 +3596,7 @@ function _doCloseCalendar() {
     _modal.classList.add('hidden');
   }
   if (_escHandler) { document.removeEventListener('keydown', _escHandler); _escHandler = null; }
-  // Drop any pending undo — closures captured event uids/state that may
+  // Drop any pending undo - closures captured event uids/state that may
   // no longer be valid by the time the user reopens. A reopened calendar
   // starts with a clean slate.
   _calUndoStack.length = 0;
@@ -3641,7 +3641,7 @@ function _loadCache() {
     if (!data.ts || Date.now() - data.ts > LS_TTL) return false;
     if (data.calendars) _calendars = data.calendars;
     if (data.events) data.events.forEach(ev => { _allEvents[ev.uid] = ev; });
-    // Don't restore _fetchedRanges — always re-fetch from API to pick up
+    // Don't restore _fetchedRanges - always re-fetch from API to pick up
     // external changes (e.g. TimeTree sync adding events)
     return true;
   } catch (e) { return false; }
@@ -3680,7 +3680,7 @@ window.addEventListener('calendar-refresh', () => {
 // back, the mobile app comes to the foreground, or you switch back from
 // another browser session), drop the range cache and re-fetch. Without this,
 // a delete or add on desktop never propagates to the still-open mobile tab
-// until the user does a full reload — so stale events sit there undeletable
+// until the user does a full reload - so stale events sit there undeletable
 // (they 404 on the server). Triggers on every visibility change but the
 // fetch is cheap and already de-duped by _fetchPromise on line ~120.
 let _lastVisRefetchAt = 0;
@@ -3699,7 +3699,7 @@ document.addEventListener('visibilitychange', () => {
     .catch(() => {});
 });
 
-// Same idea for window-level focus — covers desktop alt-tabbing back to a
+// Same idea for window-level focus - covers desktop alt-tabbing back to a
 // browser that already had the tab visible (visibilitychange won't fire).
 window.addEventListener('focus', () => {
   const now = Date.now();

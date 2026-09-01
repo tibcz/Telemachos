@@ -1,5 +1,5 @@
 # services/youtube/__init__.py
-"""YouTube service — transcript extraction."""
+"""YouTube service - transcript extraction."""
 
 from .youtube_handler import (
     init_youtube,

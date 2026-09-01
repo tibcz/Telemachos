@@ -39,7 +39,7 @@ document.addEventListener('telemachos:tool-approval', () => {
 }, true);
 
 /**
- * Handle a ui_control SSE event — AI-driven UI manipulation.
+ * Handle a ui_control SSE event - AI-driven UI manipulation.
  * Extracted from the duplicated ui_control + tool_output.ui_event handlers.
  */
 export function handleUIControl(uiData) {
@@ -120,7 +120,7 @@ export function handleUIControl(uiData) {
           tm2.applyColors(colors2);
           tm2.save(name, colors2);
           // Background effects (animated pattern / frosted glass) the model
-          // optionally set — apply them live and persist with the theme so
+          // optionally set - apply them live and persist with the theme so
           // they survive re-applying it later.
           var bg = uiData.bg || null;
           var opts = {};
@@ -156,7 +156,7 @@ export function handleUIControl(uiData) {
       document.querySelectorAll('.telemachos-hl-label').forEach(function(e) { e.remove(); });
 
     } else if (uiEvent === 'research_started' || uiData.ui_event === 'research_started') {
-      // Agent kicked off deep research — adopt the session into the
+      // Agent kicked off deep research - adopt the session into the
       // sidebar immediately so the user sees it without waiting for
       // the 12s active-poll.
       var rsid = uiData.research_session_id || uiData.session_id;
@@ -167,7 +167,7 @@ export function handleUIControl(uiData) {
         }).catch(function(){});
         // The clickable "Open in Deep Research" link is now emitted by the
         // agent loop as a `#research-<id>` markdown anchor in the assistant's
-        // response text — it renders as a regular clickable chat link AND
+        // response text - it renders as a regular clickable chat link AND
         // persists across refresh (saved with the message). No ephemeral
         // chip injection needed here anymore.
       }
@@ -205,7 +205,7 @@ export function handleUIControl(uiData) {
           if (fn) fn();
         }).catch(function(){});
       } else if (panel === 'memories' || panel === 'skills' || panel === 'settings') {
-        // These live in the sidebar / settings drawer — most just need
+        // These live in the sidebar / settings drawer - most just need
         // an existing button click.
         var ids = { memories: 'tool-memory-btn', skills: 'skills-btn', settings: 'open-settings-btn' };
         var btn = document.getElementById(ids[panel]);
@@ -284,7 +284,7 @@ export function insertStreamDoneToast(sessionId, query) {
   div.innerHTML = '<div class="body">'
     + '<span class="stream-done-indicator">●</span>'
     + '<span>Response ready in <strong>' + (name || 'session').replace(/</g, '&lt;') + '</strong>'
-    + (preview ? ' &mdash; ' + preview.replace(/</g, '&lt;') : '')
+    + (preview ? ' - ' + preview.replace(/</g, '&lt;') : '')
     + '</span>'
     + '</div>';
   div.addEventListener('click', function() {

@@ -1,4 +1,4 @@
-"""Outgoing webhook manager — fires HTTP POSTs when events happen."""
+"""Outgoing webhook manager - fires HTTP POSTs when events happen."""
 
 import asyncio
 import hashlib
@@ -102,7 +102,7 @@ def _is_private_url(url: str) -> bool:
             return _ip_is_private(ipaddress.ip_address(hostname))
         except ValueError:
             pass
-        # DNS hostname — resolve and check every record.
+        # DNS hostname - resolve and check every record.
         addrs = _resolve_hostname_ips(hostname)
         if not addrs:
             # Couldn't resolve → fail closed; let validation reject the URL.
@@ -132,7 +132,7 @@ def _validated_public_ips(url: str) -> list:
     private/internal.
 
     ``validate_webhook_url`` resolves the host to decide accept/reject, but the
-    subsequent ``httpx`` connect re-resolves independently — so a DNS record
+    subsequent ``httpx`` connect re-resolves independently - so a DNS record
     that flips between the two lookups (rebinding) can slip an internal IP past
     the check. Callers pin the delivery connection to the IP this function
     returns, closing that TOCTOU. Fail closed: an unresolvable or partly-private
@@ -205,7 +205,7 @@ class _PinnedAsyncTransport(httpx.AsyncBaseTransport):
     Uses only public ``httpcore`` / ``httpx`` APIs. The request URL is passed
     through unchanged (Host + SNI stay the original hostname); only the socket
     destination is pinned, closing the DNS-rebinding TOCTOU between the SSRF
-    check and the connect. HTTP/1.1 only — webhook deliveries are small POSTs.
+    check and the connect. HTTP/1.1 only - webhook deliveries are small POSTs.
     """
 
     def __init__(self, ip: ipaddress._BaseAddress):
@@ -262,7 +262,7 @@ def validate_events(events_str: str) -> str:
 
 # Broad candidate matcher for the IP-redaction pass. Deliberately loose: a
 # bracketed host authority ([fe80::1%eth0]:8080 and friends) with an optional
-# :port, or a bare IPv6 run — hex groups joined by colons, an optional trailing
+# :port, or a bare IPv6 run - hex groups joined by colons, an optional trailing
 # dotted-quad for IPv4-mapped forms (::ffff:192.168.0.1), and an optional %zone.
 # It does NOT encode the IPv6 grammar; ipaddress.ip_address() is the real
 # validator (see _redact_ip_candidate), so any colon-bearing string it rejects
@@ -279,7 +279,7 @@ _IP_CANDIDATE = re.compile(
 def _redact_ip_candidate(match: re.Match) -> str:
     """Redact a candidate token that the stdlib confirms is an IP address.
 
-    A bare token is redacted only when it parses as IPv6 — bare IPv4 is left to
+    A bare token is redacted only when it parses as IPv6 - bare IPv4 is left to
     the dedicated IPv4 pass. A bracketed token is a host authority, so a v4 or v6
     literal inside [ ] is redacted as a whole. This keeps output consistent (one
     [redacted], never nested or partial) for scoped/mapped/ported forms.

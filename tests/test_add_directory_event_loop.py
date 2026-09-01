@@ -1,11 +1,11 @@
-"""Regression guard for #5558 — POST /api/personal/add_directory must not run
+"""Regression guard for #5558 - POST /api/personal/add_directory must not run
 the indexing job on the event loop.
 
 The handler is ``async def`` but called ``rag.index_personal_documents``
 (os.walk + file reads + per-chunk embedding + Chroma inserts) inline, so
 FastAPI ran the whole job on the event loop and every other request queued
 behind it: indexing a real directory froze the UI and API for 25+ minutes.
-``personal_docs_manager.add_directory`` sits in the same blocking section — it
+``personal_docs_manager.add_directory`` sits in the same blocking section - it
 triggers ``refresh_index()``, which re-extracts text across tracked dirs.
 
 These tests build the real router with fake managers and compare the thread
@@ -120,7 +120,7 @@ def test_indexing_runs_off_the_event_loop(tmp_path, monkeypatch):
 
     assert resp.status_code == 200
     assert record["index_thread"] != loop_thread, (
-        "index_personal_documents ran on the event loop thread — every other "
+        "index_personal_documents ran on the event loop thread - every other "
         "request queues behind the indexing job (#5558)"
     )
     assert record["bookkeeping_thread"] != loop_thread, (
@@ -174,7 +174,7 @@ async def test_concurrent_add_directory_requests_serialize_indexing(tmp_path, mo
 
     assert all(r.status_code == 200 for r in results)
     assert state["max_active"] == 1, (
-        f"{state['max_active']} index jobs ran in parallel — concurrent "
+        f"{state['max_active']} index jobs ran in parallel - concurrent "
         "add_directory requests must serialize"
     )
 
@@ -199,7 +199,7 @@ def test_failed_indexing_still_returns_500(tmp_path, monkeypatch):
 async def test_add_and_remove_serialize(tmp_path, monkeypatch):
     """#5634: remove must hold the SAME job lock as add. Otherwise a remove
     running while an add job is in flight races PersonalDocsManager's
-    unsynchronized list/index mutations — the inconsistent state the PR's
+    unsynchronized list/index mutations - the inconsistent state the PR's
     'add/remove are serialized' guarantee claims to prevent."""
     import time
 
@@ -228,14 +228,14 @@ async def test_add_and_remove_serialize(tmp_path, monkeypatch):
 
     assert all(r.status_code == 200 for r in results)
     assert state["max_active"] == 1, (
-        f"{state['max_active']} add/remove critical sections overlapped — "
+        f"{state['max_active']} add/remove critical sections overlapped - "
         "remove must hold the same index job lock as add"
     )
 
 
 async def test_add_and_upload_serialize(tmp_path, monkeypatch):
     """#5634 follow-up: POST /upload writes chunks into the vector store and then
-    calls personal_docs_manager.add_directory — the same vector/tracking state
+    calls personal_docs_manager.add_directory - the same vector/tracking state
     add_directory mutates. It must hold the SAME job lock, or an upload landing
     mid-add interleaves two writers over unsynchronized state."""
     import time
@@ -269,11 +269,11 @@ async def test_add_and_upload_serialize(tmp_path, monkeypatch):
     assert all(r.status_code == 200 for r in results)
     # The test coroutine runs on the event loop, so this IS the loop thread.
     assert record["add_document_thread"] != threading.get_ident(), (
-        "rag.add_document ran on the event loop thread — chunk writes block "
+        "rag.add_document ran on the event loop thread - chunk writes block "
         "every other request for the duration of the upload"
     )
     assert state["max_active"] == 1, (
-        f"{state['max_active']} add/upload critical sections overlapped — "
+        f"{state['max_active']} add/upload critical sections overlapped - "
         "upload must hold the same index job lock as add"
     )
 
@@ -355,7 +355,7 @@ async def test_add_and_delete_file_serialize(tmp_path, monkeypatch):
         "rag.delete_by_source ran on the event loop thread"
     )
     assert state["max_active"] == 1, (
-        f"{state['max_active']} add/delete critical sections overlapped — "
+        f"{state['max_active']} add/delete critical sections overlapped - "
         "delete must hold the same index job lock as add"
     )
 
@@ -389,6 +389,6 @@ async def test_reload_serializes_with_add(tmp_path, monkeypatch):
 
     assert all(r.status_code == 200 for r in results)
     assert state["max_active"] == 1, (
-        f"{state['max_active']} add/reload critical sections overlapped — "
+        f"{state['max_active']} add/reload critical sections overlapped - "
         "reload must hold the same index job lock as add"
     )

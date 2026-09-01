@@ -274,7 +274,7 @@ def test_route_data_flow_on_paper():
     })
     res = analyze_topics(sm, owner=None)
     assert res["topics"] == [], (
-        "analyze_topics(owner=None) returned cross-tenant data — "
+        "analyze_topics(owner=None) returned cross-tenant data - "
         "Finding A3.1 regression. Expected empty result."
     )
     assert res["total_topics"] == 0

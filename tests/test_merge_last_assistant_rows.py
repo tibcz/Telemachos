@@ -3,7 +3,7 @@
 The in-memory merge removes the second assistant message plus only the
 "continue" user message between the last two assistant replies. The DB path
 deleted the ENTIRE index range between them, destroying any tool/system/user
-rows in between — so on reload the DB lost messages the in-memory history
+rows in between - so on reload the DB lost messages the in-memory history
 kept (data loss + count desync). _merge_continue_rows_to_delete makes the DB
 deletion mirror the in-memory rule.
 """

@@ -26,7 +26,7 @@ def _stub_dns(monkeypatch):
 # ---------------------------------------------------------------------------
 
 class TestIsOllamaNativeUrlRejectsV1Paths:
-    """Port alone is not enough — /v1 paths are OpenAI-compatible."""
+    """Port alone is not enough - /v1 paths are OpenAI-compatible."""
 
     def test_localhost_v1(self):
         assert not llm_core._is_ollama_native_url("http://localhost:11434/v1")

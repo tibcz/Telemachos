@@ -1,11 +1,11 @@
 /**
- * Magic-wand tool — single-click flood-fill selection on the active
+ * Magic-wand tool - single-click flood-fill selection on the active
  * layer's pixels. Shift/Alt modifiers override the persistent mode
  * toggle for the duration of the click (add / subtract).
  *
  * Clicking inside an existing selection with no modifier deselects.
  *
- * Wand is selection-only — it doesn't mutate the layer until the user
+ * Wand is selection-only - it doesn't mutate the layer until the user
  * invokes an action (Erase / Copy / etc.) from the panel. That's why
  * it has just a `click` handler instead of begin/drag/end.
  *

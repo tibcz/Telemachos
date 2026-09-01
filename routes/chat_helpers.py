@@ -1,4 +1,4 @@
-"""Shared helpers for chat routes — context building, post-response tasks, auth resolution."""
+"""Shared helpers for chat routes - context building, post-response tasks, auth resolution."""
 
 import asyncio
 import json
@@ -207,7 +207,7 @@ def _enforce_chat_privileges(request, sess) -> None:
     privs = auth_manager.get_privileges(user) or {}
 
     # Explicit "block everything" sentinel takes precedence over the
-    # allowlist — it's the only way to distinguish "user clicked [None]"
+    # allowlist - it's the only way to distinguish "user clicked [None]"
     # (block all) from "user clicked [All]" (no restriction), since both
     # otherwise produce an empty `allowed_models` list.
     if privs.get("block_all_models"):
@@ -283,14 +283,14 @@ async def auto_name_session(session_manager, sess):
 
         # max_tokens big enough that reasoning models (Minimax M2,
         # DeepSeek R1, QwQ, etc.) have headroom for <think>…</think>
-        # plus the actual title — 200 used to clip them mid-reasoning
+        # plus the actual title - 200 used to clip them mid-reasoning
         # so strip_think left an empty string and no rename happened.
         # Timeout matches: 60s gives slow local reasoners room to finish.
         title = await llm_call_async(
             t_url,
             t_model,
             [
-                {"role": "system", "content": "Generate a short title (3-6 words, no quotes) for a conversation that starts with this message. Reply with ONLY the title, nothing else. Do NOT include any thinking, reasoning, or explanation — just the title."},
+                {"role": "system", "content": "Generate a short title (3-6 words, no quotes) for a conversation that starts with this message. Reply with ONLY the title, nothing else. Do NOT include any thinking, reasoning, or explanation - just the title."},
                 {"role": "user", "content": first_msg},
             ],
             temperature=0.3,
@@ -453,7 +453,7 @@ def _has_auth_keys(headers) -> bool:
 
 
 def resolve_session_auth(sess, session_id: str, owner: Optional[str] = None):
-    """Ensure session has auth headers — resolve from endpoint DB if missing."""
+    """Ensure session has auth headers - resolve from endpoint DB if missing."""
     try:
         from src.chatgpt_subscription import is_chatgpt_subscription_base
         is_chatgpt_subscription = is_chatgpt_subscription_base(getattr(sess, "endpoint_url", "") or "")
@@ -629,7 +629,7 @@ async def build_chat_context(
 ) -> ChatContext:
     """Build the full context (preface + messages) for an LLM call.
 
-    This is the shared logic between /chat and /chat_stream — preset extraction,
+    This is the shared logic between /chat and /chat_stream - preset extraction,
     message preprocessing, memory/RAG/web injection, compaction, normalization.
     """
     # Preset
@@ -762,7 +762,7 @@ async def build_chat_context(
     # stale normal session id. Only the ephemeral incognito transcript is safe.
     messages = preface + (_incognito_messages(session_id) if incognito else sess.get_context_messages())
 
-    # Current date/time — injected as a standalone *user*-role context message
+    # Current date/time - injected as a standalone *user*-role context message
     # placed immediately before the latest user turn, NOT folded into the
     # system prompt. Its text changes every minute, and local OpenAI-compatible
     # backends (llama.cpp / LM Studio) key their KV-cache prefix off the
@@ -940,7 +940,7 @@ def _normalize_thinking(text: str) -> str:
                 reply = '\n'.join(lines[i:])
                 return '<think>' + think + '</think>\n' + reply
 
-        # Try within-line split — model mashed thinking + reply on one line
+        # Try within-line split - model mashed thinking + reply on one line
         # Look for reply pattern after a period or sentence end
         for p in reply_starts:
             # Match: "...reasoning text.Reply text" or "...reasoning text. Reply text"
@@ -984,7 +984,7 @@ def _extract_thinking_meta(text: str) -> dict | None:
         reply = think_match.group(2).strip()
         # Only strip the thinking out into metadata when there's an actual reply
         # left over. If reply is empty (model hit max_tokens inside <think>, or
-        # the turn was reasoning-only), keep the raw text as content — otherwise
+        # the turn was reasoning-only), keep the raw text as content - otherwise
         # the saved message has empty content and the bubble looks blank on
         # reload. The renderer's processWithThinking still extracts the <think>
         # block visually at display time, so nothing changes for the normal case.
@@ -1091,7 +1091,7 @@ def save_assistant_response(
     session_manager.save_sessions()
 
     # Return the persisted message's DB id so the stream can wire it onto the
-    # freshly-rendered bubble — lets the user edit/delete a just-streamed reply
+    # freshly-rendered bubble - lets the user edit/delete a just-streamed reply
     # without reloading.
     try:
         _last = sess.history[-1]
@@ -1105,7 +1105,7 @@ def save_assistant_response(
 
 def _is_session_stream_active(session_id: str) -> bool:
     """Best-effort check for "is a chat completion currently streaming for
-    this session?" — used to keep background extraction from overlapping a
+    this session?" - used to keep background extraction from overlapping a
     main completion and competing for the local backend's processing slots
     (issue #2927). Lazily imports the route module's live registry to avoid
     a circular import (chat_routes imports this module at load time)."""
@@ -1130,7 +1130,7 @@ async def _run_extraction_jobs_sequentially(session_id: str, jobs: list, max_wai
     own conversation.
     """
     # Wait for the triggering turn's own stream to finish winding down (it
-    # almost always already has by the time this task gets scheduled — this
+    # almost always already has by the time this task gets scheduled - this
     # is a small safety margin, not the primary mechanism).
     waited = 0.0
     poll = 0.25
@@ -1176,20 +1176,20 @@ def run_post_response_tasks(
     """Fire background tasks after a completed response: memory extraction, webhooks, auto-name, skill extraction.
 
     Memory/skill extraction are queued to run *sequentially*, after the main
-    completion stream for this session has fully wound down — never
+    completion stream for this session has fully wound down - never
     concurrently with it or with each other. As diagnosed in issue #2927,
     firing these "side" LLM calls in parallel with the main chat completion
     makes them compete for the local backend's limited processing slots
     (llama.cpp defaults to 4), evicting the main conversation's cached
     checkpoint and forcing a full prompt re-evaluation on the next turn. By
     the time this function runs the main response is already saved, but the
-    extraction calls themselves are still async — queuing them through
+    extraction calls themselves are still async - queuing them through
     ``_queue_background_extraction`` keeps them from overlapping the *next*
     turn's request too.
     """
     _extraction_jobs: list = []
 
-    # Memory extraction — only every 4th message pair to avoid excess LLM calls
+    # Memory extraction - only every 4th message pair to avoid excess LLM calls
     _msg_count = len(sess.history) if hasattr(sess, 'history') else 0
     _should_extract = (_msg_count >= 4) and (_msg_count % 4 == 0)
     if allow_background_extraction and not incognito and not compare_mode and _should_extract and uprefs.get("auto_memory", True):
@@ -1204,10 +1204,10 @@ def run_post_response_tasks(
         )))
 
     # Skill extraction from complex agent runs. Only when the user actually
-    # chose agent mode — not a chat we auto-escalated for a notes/calendar
+    # chose agent mode - not a chat we auto-escalated for a notes/calendar
     # intent, and never in incognito/compare.
     auto_skills_enabled = bool(uprefs.get("auto_skills", True))
-    # Quiet by default — full gate/dispatch/start trace runs at DEBUG so
+    # Quiet by default - full gate/dispatch/start trace runs at DEBUG so
     # users can re-enable diagnostics with LOG_LEVEL=DEBUG when something
     # silently breaks. INFO-level only shows the outcome inside
     # maybe_extract_skill (Auto-extracted / dropped / failed).
@@ -1227,7 +1227,7 @@ def run_post_response_tasks(
     ):
         if skills_manager is None:
             logger.warning(
-                "[skill-extract] gate PASSED but skills_manager is None — "
+                "[skill-extract] gate PASSED but skills_manager is None - "
                 "extraction skipped. (Bug: caller didn't pass skills_manager.)"
             )
         else:

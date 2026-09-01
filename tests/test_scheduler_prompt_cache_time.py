@@ -1,4 +1,4 @@
-"""Regression tests for #4850 — scheduled-task system prompt must not embed
+"""Regression tests for #4850 - scheduled-task system prompt must not embed
 a minute-level timestamp that busts the Anthropic prompt cache.
 
 Three focused tests:
@@ -34,7 +34,7 @@ def _patch_scheduler_deps(monkeypatch):
 
 
 # ---------------------------------------------------------------------------
-# Test 1 — end-to-end: system is clean; agent-loop message ordering is correct
+# Test 1 - end-to-end: system is clean; agent-loop message ordering is correct
 # ---------------------------------------------------------------------------
 
 async def test_scheduler_agent_loop_path(monkeypatch):
@@ -115,12 +115,12 @@ async def test_scheduler_retires_unattended_exact_approval(monkeypatch):
 
 
 # ---------------------------------------------------------------------------
-# Test 2 — fallback path receives the same datetime context
+# Test 2 - fallback path receives the same datetime context
 # ---------------------------------------------------------------------------
 
 async def test_scheduler_fallback_path(monkeypatch):
     """When _run_agent_loop raises, task_llm_call_async must receive
-    [system, datetime user-context, task user-prompt] — the same ordering."""
+    [system, datetime user-context, task user-prompt] - the same ordering."""
     _patch_scheduler_deps(monkeypatch)
 
     captured = {}
@@ -151,7 +151,7 @@ async def test_scheduler_fallback_path(monkeypatch):
 
 
 # ---------------------------------------------------------------------------
-# Test 3 — current_datetime_context_message_for_tz() timezone resolution
+# Test 3 - current_datetime_context_message_for_tz() timezone resolution
 # ---------------------------------------------------------------------------
 
 def test_datetime_context_message_for_tz(monkeypatch):

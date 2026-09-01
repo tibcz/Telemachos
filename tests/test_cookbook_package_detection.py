@@ -1,4 +1,4 @@
-"""Local Cookbook dependency detection — distribution-name mapping (issue #1020).
+"""Local Cookbook dependency detection - distribution-name mapping (issue #1020).
 
 The Cookbook → Dependencies tab reported `llama-cpp-python[server]` as "not
 installed" even when it was installed. The local check looked up distribution

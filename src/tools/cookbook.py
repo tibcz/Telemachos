@@ -1,4 +1,4 @@
-"""Cookbook (model serving) tool domain — slice 1 (#4082/#4071).
+"""Cookbook (model serving) tool domain - slice 1 (#4082/#4071).
 
 Download, serve, list, stop, tail, search, adopt and cache HuggingFace / model
 serving operations, plus their private helpers. Extracted verbatim from
@@ -138,7 +138,7 @@ async def _resolve_cookbook_host(name_or_host: str) -> str:
     for h in servers.get("hosts") or []:
         if low and low in (h.get("name") or "").lower():
             return h.get("host") or ""
-    # No match — assume the caller passed a raw host/alias; return as-is
+    # No match - assume the caller passed a raw host/alias; return as-is
     # (ssh can resolve aliases from ~/.ssh/config).
     return val
 
@@ -317,7 +317,7 @@ async def _cookbook_register_task(
     if any(isinstance(t, dict) and t.get("sessionId") == session_id for t in tasks):
         return True
     display_name = model.split("/")[-1] if "/" in model else model
-    # Placeholder output — the cookbook UI's CSS hides empty <pre>
+    # Placeholder output - the cookbook UI's CSS hides empty <pre>
     # via `.cookbook-output-pre:empty { display: none }`, so an
     # empty-string output makes the expansion appear broken until the
     # frontend's reconnect-polling loop captures tmux output. A short
@@ -325,7 +325,7 @@ async def _cookbook_register_task(
     # replaced by real tmux output within a few seconds.
     target = f"{host}:" if host else "local:"
     placeholder = (
-        f"Launched via agent — waiting for tmux output…\n"
+        f"Launched via agent - waiting for tmux output…\n"
         f"  session: {session_id}\n"
         f"  target:  {target}{(cmd.split() or [''])[0] if cmd else ''}\n"
         f"  cmd:     {cmd[:200]}{'…' if len(cmd) > 200 else ''}"
@@ -571,7 +571,7 @@ def _scan_running_model_processes() -> List[Dict[str, Any]]:
             lower = cmdline.lower()
             for label, needles in _MODEL_PROCESS_PATTERNS:
                 if any(n.lower() in lower for n in needles):
-                    # Dedupe by (label, first-arg) — multi-worker servers
+                    # Dedupe by (label, first-arg) - multi-worker servers
                     # spawn N processes; only show one row per server.
                     key = (label, cmdline.split(" ")[0])
                     if key in seen_keys:
@@ -654,9 +654,9 @@ async def do_download_model(content: str, owner: Optional[str] = None) -> Dict:
                 cmd=(f"ollama pull {repo_id}" if backend == "ollama" else f"hf download {repo_id}"),
                 task_type="download",
             )
-            note = "" if registered else " (state-write failed — download may not show in UI)"
+            note = "" if registered else " (state-write failed - download may not show in UI)"
             where = host or "local"
-            default_note = " (defaulted to the cookbook's selected server — pass host= or local=true to override)" if _host_defaulted else ""
+            default_note = " (defaulted to the cookbook's selected server - pass host= or local=true to override)" if _host_defaulted else ""
             return {
                 "output": f"Download started: {repo_id} on {where} (session: {sid}){note}{default_note}",
                 "session_id": sid,
@@ -693,7 +693,7 @@ async def do_serve_model(content: str, owner: Optional[str] = None) -> Dict:
     if host:
         payload["remote_host"] = host
     # Resolve per-host env settings (venv/conda activate, gpus,
-    # hf_token, platform, ssh_port) from cookbook_state — same path
+    # hf_token, platform, ssh_port) from cookbook_state - same path
     # the UI uses. Without env_prefix, `vllm serve …` lands in a shell
     # without the user's venv and fails 'command not found'.
     env_cfg = await _cookbook_env_for_host(host)
@@ -746,7 +746,7 @@ async def do_serve_model(content: str, owner: Optional[str] = None) -> Dict:
                 host=host, cmd=cmd, task_type="serve",
                 endpoint_added=endpoint_added, endpoint_id=endpoint_id or "",
             )
-            note = "" if registered else " (state-write failed — task may not show in UI)"
+            note = "" if registered else " (state-write failed - task may not show in UI)"
             where = host or "local"
             log_path = f"/tmp/telemachos-tmux/{sid}.log"
             return {
@@ -775,7 +775,7 @@ async def do_serve_model(content: str, owner: Optional[str] = None) -> Dict:
         err_msg = data.get("error") or data.get("detail") or "Serve failed"
         hint = ""
         if isinstance(err_msg, str) and "cmd" in err_msg.lower():
-            hint = (" — the cmd must START with an allowlisted binary "
+            hint = (" - the cmd must START with an allowlisted binary "
                     "(vllm, python3, llama-server, ollama, sglang, mlx_lm, lmdeploy, node, npx). "
                     "Do NOT prefix with `cd …`, `source …`, or chain with `&&`. "
                     "env_prefix (e.g. `source ~/qwen35-env/bin/activate`) is added "
@@ -786,7 +786,7 @@ async def do_serve_model(content: str, owner: Optional[str] = None) -> Dict:
 
 
 async def do_list_served_models(content: str, owner: Optional[str] = None) -> Dict:
-    """List running model servers — merges cookbook-tracked tasks with
+    """List running model servers - merges cookbook-tracked tasks with
     a /proc scan for externally-launched LLM/diffusion processes
     (vLLM, sglang, llama.cpp, Ollama, ComfyUI, A1111, Fooocus, etc.)."""
     from src.tool_implementations import _internal_headers, _INTERNAL_BASE  # shared, lives in facade
@@ -804,7 +804,7 @@ async def do_list_served_models(content: str, owner: Optional[str] = None) -> Di
     except Exception as e:
         logger.debug(f"cookbook tasks/status fetch failed: {e}")
 
-    # Local process scan — runs in a worker thread so it doesn't block.
+    # Local process scan - runs in a worker thread so it doesn't block.
     external = await asyncio.to_thread(_scan_running_model_processes)
 
     merged: List[Dict[str, Any]] = []
@@ -826,7 +826,7 @@ async def do_list_served_models(content: str, owner: Optional[str] = None) -> Di
         }
 
     # Sort so the agent sees what's actually LIVE first. Stopped/error/
-    # completed tasks are mostly historical noise — they shouldn't lead
+    # completed tasks are mostly historical noise - they shouldn't lead
     # the list when something is genuinely serving.
     _ORDER = {
         "ready": 0, "running": 1, "loading": 1, "warming": 1,
@@ -879,7 +879,7 @@ async def do_list_served_models(content: str, owner: Optional[str] = None) -> Di
                 # Prefer a window around a Python traceback if one exists,
                 # falling back to the last 30 lines. The previous 6-line
                 # tail showed only the post-crash bash prompt / neofetch
-                # banner ("Locale: C / Ubuntu_Telemachos ❯") — useless for
+                # banner ("Locale: C / Ubuntu_Telemachos ❯") - useless for
                 # diagnosis. The traceback we want is usually 50-200 lines
                 # earlier in the buffer.
                 _tail_lines = tail.splitlines()
@@ -898,12 +898,12 @@ async def do_list_served_models(content: str, owner: Optional[str] = None) -> Di
 
 async def _cookbook_kill_session(session_id: str, *, remote_host: str = "",
                                  ssh_port: str = "", verb: str = "Stopped") -> Dict:
-    """Kill a cookbook tmux session — remote-aware — AND mark the task
+    """Kill a cookbook tmux session - remote-aware - AND mark the task
     stopped in cookbook_state.json. Shared by stop_served_model and
     cancel_download so both behave identically.
 
     Resolves the task's remote host from state when not passed in. A
-    local-only `tmux kill-session` silently no-ops for remote tasks —
+    local-only `tmux kill-session` silently no-ops for remote tasks -
     that's the bug where "stop the download" appeared to work but the
     download kept running on the remote host.
     """
@@ -966,7 +966,7 @@ async def _cookbook_kill_session(session_id: str, *, remote_host: str = "",
         kill_failed = isinstance(data, dict) and data.get("exit_code") not in (None, 0)
         kill_err = ((data.get("stderr") or data.get("error") or "").strip() if isinstance(data, dict) else "")
         # "no server running" / "can't find session" means it was already
-        # gone — treat as success (the goal is "not running").
+        # gone - treat as success (the goal is "not running").
         already_gone = any(s in kill_err.lower() for s in ("no server running", "can't find session", "session not found"))
         if kill_failed and not already_gone:
             return {"error": f"Failed to {verb.lower()} {target_label}: {kill_err or 'kill-session returned non-zero'}", "exit_code": 1}
@@ -1005,7 +1005,7 @@ async def do_stop_served_model(content: str, owner: Optional[str] = None) -> Dic
 
 
 async def do_tail_serve_output(content: str, owner: Optional[str] = None) -> Dict:
-    """Capture the last N lines of a cookbook task's tmux pane — remote-aware.
+    """Capture the last N lines of a cookbook task's tmux pane - remote-aware.
 
     Used by the agent to debug a failed/stuck serve: list_served_models tells
     you the task is `crashed`, this tool returns the actual stderr/traceback
@@ -1034,7 +1034,7 @@ async def do_tail_serve_output(content: str, owner: Optional[str] = None) -> Dic
     headers = _internal_headers()
     remote = _string_arg(args.get("remote_host") or args.get("host"))
     sport = _string_arg(args.get("ssh_port"))
-    # Resolve host from cookbook state if caller didn't pass one — same
+    # Resolve host from cookbook state if caller didn't pass one - same
     # lookup _cookbook_kill_session uses.
     if not remote:
         state: Dict[str, Any] = {}
@@ -1059,7 +1059,7 @@ async def do_tail_serve_output(content: str, owner: Optional[str] = None) -> Dic
 
     # Prefer the persisted /tmp/telemachos-tmux/SESSION.log file over the
     # live tmux pane. The pane is what the user would see scrolling on
-    # their screen — including the post-crash neofetch banner and the
+    # their screen - including the post-crash neofetch banner and the
     # idle bash prompt that overwrites the actual traceback the moment
     # vllm exits. The log file is the raw stdout/stderr of the wrapped
     # process and survives the crash unchanged. We only fall back to
@@ -1240,7 +1240,7 @@ async def do_adopt_served_model(content: str, owner: Optional[str] = None) -> Di
       model:         "cyankiwi/MiniMax-M2.7-AWQ-4bit" (HF repo or display name)
       port:          8000
       name:          optional display name (defaults to model basename)
-      add_endpoint:  bool (default true) — also register as a chat endpoint
+      add_endpoint:  bool (default true) - also register as a chat endpoint
     """
     from src.tool_implementations import _internal_headers, _INTERNAL_BASE  # shared, lives in facade
     import httpx
@@ -1283,7 +1283,7 @@ async def do_adopt_served_model(content: str, owner: Optional[str] = None) -> Di
     except Exception as e:
         return {"error": f"verify failed: {e}", "exit_code": 1}
 
-    # Best-effort health check — does port respond to /v1/models?
+    # Best-effort health check - does port respond to /v1/models?
     if host:
         health_cmd = f"ssh -o ConnectTimeout=5 {shlex.quote(host)} 'curl -s -m 3 http://localhost:{int(port)}/v1/models'"
     else:
@@ -1326,7 +1326,7 @@ async def do_adopt_served_model(content: str, owner: Optional[str] = None) -> Di
                 "Reconnect polling will start streaming tmux output shortly."
             ),
             "ts": int(_time.time() * 1000),
-            "payload": {"repo_id": model, "remote_host": host or "", "_cmd": "(adopted — launched outside cookbook)"},
+            "payload": {"repo_id": model, "remote_host": host or "", "_cmd": "(adopted - launched outside cookbook)"},
             "remoteHost": host or "",
             "sshPort": "",
             "platform": "linux",
@@ -1371,7 +1371,7 @@ async def do_adopt_served_model(content: str, owner: Optional[str] = None) -> Di
     return {
         "output": (
             f"Adopted session {sess!r} ({model}) on {host or 'local'}:{port}. "
-            + ("Already tracked — skipped state write. " if adopted_already else "Added to cookbook state. ")
+            + ("Already tracked - skipped state write. " if adopted_already else "Added to cookbook state. ")
             + ("Server responding. " if server_up else "Server not responding yet (still loading?). ")
             + endpoint_msg
         ).strip(),
@@ -1492,12 +1492,12 @@ async def do_serve_preset(content: str, owner: Optional[str] = None) -> Dict:
     cmd = (chosen.get("cmd") or "").strip()
     host = chosen.get("host") or chosen.get("remoteHost") or ""
     if not repo_id or not cmd:
-        return {"error": f"Preset {chosen.get('name')!r} is missing model or cmd — can't launch.", "exit_code": 1}
+        return {"error": f"Preset {chosen.get('name')!r} is missing model or cmd - can't launch.", "exit_code": 1}
 
     payload: Dict[str, Any] = {"repo_id": repo_id, "cmd": cmd}
     if host:
         payload["remote_host"] = host
-    # Resolve per-host env settings the same way the UI does — pulls
+    # Resolve per-host env settings the same way the UI does - pulls
     # env_prefix (source ~/vllm-env/bin/activate), gpus, hf_token,
     # etc. from cookbook_state.env so launches actually find vllm.
     env_cfg = await _cookbook_env_for_host(host)
@@ -1527,7 +1527,7 @@ async def do_serve_preset(content: str, owner: Optional[str] = None) -> Dict:
                 cmd=cmd, task_type="serve",
                 endpoint_added=endpoint_added, endpoint_id=endpoint_id or "",
             )
-            note = "" if registered else " (state-write failed — task may not show in UI)"
+            note = "" if registered else " (state-write failed - task may not show in UI)"
             return {"output": f"Launched preset {chosen.get('name')!r}: {repo_id} on {host or 'local'} (session: {sid}){note}", "session_id": sid, "host": host, "endpoint_id": endpoint_id, "exit_code": 0}
         return {"error": data.get("error", "Serve failed"), "exit_code": 1}
     except Exception as e:
@@ -1538,7 +1538,7 @@ async def do_list_cached_models(content: str, owner: Optional[str] = None) -> Di
     """List models already cached locally and/or on remote hosts.
 
     With no `host` arg, scans EVERY configured Cookbook server (and local)
-    and aggregates — so the agent sees the full inventory in one call
+    and aggregates - so the agent sees the full inventory in one call
     instead of having to query each server individually.
     """
     from src.tool_implementations import _internal_headers, _INTERNAL_BASE  # shared, lives in facade
@@ -1601,7 +1601,7 @@ async def do_list_cached_models(content: str, owner: Optional[str] = None) -> Di
         def _dirs_for(server_record: Dict[str, Any]) -> str:
             """Comma-joined modelDirs from a saved server record (Settings).
 
-            Filters out the HF cache (~/.cache/huggingface/hub) — the backend
+            Filters out the HF cache (~/.cache/huggingface/hub) - the backend
             scan script always scans it by default, so re-passing it as an
             extra model_dir is redundant AND confuses some path-handling
             edge cases where the extra dir suppresses the deeper scan.
@@ -1644,7 +1644,7 @@ async def do_list_cached_models(content: str, owner: Optional[str] = None) -> Di
                     model_dir=_dirs_for(s),
                 ))
             results = await asyncio.gather(*scans, return_exceptions=False)
-            # Dedupe by (host, repo_id) — same model could appear in both HF cache + Ollama list.
+            # Dedupe by (host, repo_id) - same model could appear in both HF cache + Ollama list.
             seen = set()
             models: list = []
             for batch in results:
@@ -1680,7 +1680,7 @@ async def do_list_cached_models(content: str, owner: Optional[str] = None) -> Di
             host_str = f" on {raw_host}" if raw_host else ""
             if downloaded:
                 lines = [f"No cache paths were detected{host_str}, but Cookbook has completed download task(s):"]
-                lines.extend(f"- {repo} — downloaded via Cookbook task" for repo in downloaded)
+                lines.extend(f"- {repo} - downloaded via Cookbook task" for repo in downloaded)
                 return {"output": "\n".join(lines), "models": [{"repo_id": repo, "source": "cookbook_task"} for repo in downloaded], "exit_code": 0}
             return {"output": f"No cached models found{host_str}.", "exit_code": 0}
         # Multi-host scan: group by host so the agent sees inventory per server.
@@ -1692,7 +1692,7 @@ async def do_list_cached_models(content: str, owner: Optional[str] = None) -> Di
                 sz = m.get("size") or (f"{m.get('size_bytes', 0) / (1024**3):.1f}GB" if m.get("size_bytes") else "")
                 inc = " (incomplete)" if m.get("has_incomplete") else ""
                 kind = " [diffusion]" if m.get("is_diffusion") else ""
-                lines.append(f"- {name}{kind} — {sz}{inc}")
+                lines.append(f"- {name}{kind} - {sz}{inc}")
         else:
             from collections import defaultdict as _dd
             by_host = _dd(list)
@@ -1707,7 +1707,7 @@ async def do_list_cached_models(content: str, owner: Optional[str] = None) -> Di
                     inc = " (incomplete)" if m.get("has_incomplete") else ""
                     kind = " [diffusion]" if m.get("is_diffusion") else ""
                     backend = f" ({m.get('backend')})" if m.get("backend") else ""
-                    lines.append(f"- {name}{kind}{backend} — {sz}{inc}")
+                    lines.append(f"- {name}{kind}{backend} - {sz}{inc}")
         return {"output": "\n".join(lines), "models": models, "exit_code": 0}
     except Exception as e:
         return {"error": str(e), "exit_code": 1}

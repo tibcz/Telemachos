@@ -1,4 +1,4 @@
-"""Issue #4592 — built-in MCP startup must not leak tasks or subprocesses.
+"""Issue #4592 - built-in MCP startup must not leak tasks or subprocesses.
 
 Two defects in src/builtin_mcp.py:
   * `register_builtin_servers` scheduled its python/npx connect coroutines with
@@ -57,7 +57,7 @@ async def test_spawn_bg_holds_strong_ref_until_task_finishes(monkeypatch):
     task = builtin_mcp._spawn_bg(work())
     await started.wait()
     # While the task is in flight it must be reachable from the module-level
-    # set — that strong reference is what keeps the GC from collecting it.
+    # set - that strong reference is what keeps the GC from collecting it.
     assert task in builtin_mcp._BG_TASKS
 
     release.set()

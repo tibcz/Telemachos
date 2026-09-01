@@ -1,7 +1,7 @@
 """Regression tests: OpenAI reasoning models reject a non-default temperature.
 
 o1/o3/o4/gpt-5 only accept the default temperature (1); sending an explicit
-value — even 0.0 — returns HTTP 400 "Only the default (1) value is supported".
+value - even 0.0 - returns HTTP 400 "Only the default (1) value is supported".
 The OpenAI-compatible payload builders must omit the temperature field for these
 models so chat (with a non-default preset) and endpoint probing don't break.
 """
@@ -109,7 +109,7 @@ def test_local_minimax_mlx_payload_gets_stability_defaults(monkeypatch):
 
 
 def test_chatgpt_subscription_payload_omits_max_output_tokens():
-    # ChatGPT Subscription Codex API does not support max_output_tokens —
+    # ChatGPT Subscription Codex API does not support max_output_tokens -
     # passing it returns HTTP 400 "Unsupported parameter: max_output_tokens".
     # The payload should NOT include max_output_tokens regardless of max_tokens.
     payload = llm_core._build_chatgpt_responses_payload(

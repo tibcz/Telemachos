@@ -22,8 +22,8 @@ final class EngineController: ObservableObject {
     }
 
     /// One engine per app. The SwiftUI scene and the application delegate both
-    /// need to reach it — the scene to drive it, the delegate to stop it on the
-    /// way out — and a second instance would mean a second orphaned process.
+    /// need to reach it - the scene to drive it, the delegate to stop it on the
+    /// way out - and a second instance would mean a second orphaned process.
     static let shared = EngineController()
 
     @Published private(set) var phase: Phase = .launching
@@ -63,7 +63,7 @@ final class EngineController: ObservableObject {
     ///
     /// A graceful stop matters: the engine's shutdown flushes the database and
     /// closes the built-in MCP servers. Those are stdio children, so they exit
-    /// on their own once the engine's pipes close — killing the engine is
+    /// on their own once the engine's pipes close - killing the engine is
     /// enough to bring the whole tree down.
     func shutdown() {
         supervisor?.cancel()
@@ -174,7 +174,7 @@ final class EngineController: ObservableObject {
             // Give a longer-running first launch some narration rather than a
             // motionless spinner.
             if elapsed > 20 {
-                status = "Still starting — first launch sets up your local database…"
+                status = "Still starting - first launch sets up your local database…"
             }
 
             try? await Task.sleep(nanoseconds: 400_000_000)

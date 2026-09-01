@@ -1,4 +1,4 @@
-"""Tests for email_health — probe logic, status classification, sanitization, and bounded timeout."""
+"""Tests for email_health - probe logic, status classification, sanitization, and bounded timeout."""
 import pytest
 
 from src import service_health as sh

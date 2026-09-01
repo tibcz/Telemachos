@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Build Telemachos.app — a self-contained macOS application for Apple Silicon.
+# Build Telemachos.app - a self-contained macOS application for Apple Silicon.
 #
 #   ./packaging/macos/build.sh
 #
@@ -121,7 +121,7 @@ LLAMA_BIN=""
 if [ "${TELEMACHOS_SKIP_LLAMA:-0}" = "1" ]; then
   echo "  skipped (TELEMACHOS_SKIP_LLAMA=1)"
 elif ! command -v cmake >/dev/null; then
-  echo "  warning: cmake not found — local model serving will be unavailable"
+  echo "  warning: cmake not found - local model serving will be unavailable"
 else
   (
     set -e
@@ -147,7 +147,7 @@ else
     echo "  built: $(du -h "$LLAMA_BIN" | cut -f1)"
   else
     LLAMA_BIN=""
-    echo "  warning: llama.cpp did not build — local model serving will be unavailable"
+    echo "  warning: llama.cpp did not build - local model serving will be unavailable"
     tail -5 "$BUILD/llama-build.log" 2>/dev/null | sed 's/^/    /'
   fi
 fi
@@ -224,7 +224,7 @@ PLIST
 # Ad-hoc signature, inside out. Every Mach-O inside a bundle must be signed
 # before the bundle that contains it, or the outer signature seals a payload
 # that no longer matches. Apple Silicon refuses to execute unsigned code
-# outright, so this is what makes the app runnable at all — not a formality.
+# outright, so this is what makes the app runnable at all - not a formality.
 step "Signing (ad-hoc)"
 while IFS= read -r -d '' macho; do
   codesign --force --sign - --timestamp=none "$macho" 2>/dev/null || true

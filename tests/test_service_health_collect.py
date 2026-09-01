@@ -111,7 +111,7 @@ def test_collect_runs_subsystems_concurrently(monkeypatch):
 def test_collect_aggregate_deadline_yields_controlled_result(monkeypatch):
     # If the gather overruns the aggregate ceiling, the response is still a
     # controlled {overall, services, timestamp} with each network subsystem
-    # marked down/timeout — never a hang or a raised exception.
+    # marked down/timeout - never a hang or a raised exception.
     import asyncio
     import time
     monkeypatch.setattr(sh, "_AGGREGATE_DEADLINE", 0.5)

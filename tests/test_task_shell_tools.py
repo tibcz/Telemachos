@@ -3,7 +3,7 @@
 Regression for #4163: the task runner built `relevant_tools` from RAG output
 plus ASSISTANT_ALWAYS_AVAILABLE, neither of which includes bash/python. On a
 host with an empty/degraded tool-embedding index, RAG returns nothing, so a
-task agent never received the shell — even for an admin owner. The fix offers
+task agent never received the shell - even for an admin owner. The fix offers
 the shell/file group by default and lets stream_agent_loop's owner gate decide
 who actually keeps it.
 """
@@ -45,7 +45,7 @@ def test_assistant_and_rag_tools_preserved():
 def test_crew_allowlist_restriction_still_honored():
     # A crew that defines enabled_tools yields a `disabled_tools` set
     # (all_tools - enabled). Anything it disables must stay disabled, including
-    # the shell defaults — the task owner explicitly scoped the tools.
+    # the shell defaults - the task owner explicitly scoped the tools.
     disabled = {"bash", "python", "edit_file"}
     tools = compose_task_relevant_tools(set(), ASSISTANT_ALWAYS_AVAILABLE, disabled)
     assert "bash" not in tools
@@ -58,7 +58,7 @@ def test_crew_allowlist_restriction_still_honored():
 def test_offered_shell_maps_to_real_schemas_for_admin():
     # End-to-end with the real schema list: the names we add are actual
     # function schemas, so an admin/single-user task (nothing in disabled_tools)
-    # really does get bash/python offered to the model — not just named in prose.
+    # really does get bash/python offered to the model - not just named in prose.
     from src.agent_loop import FUNCTION_TOOL_SCHEMAS
 
     schema_names = {s["function"]["name"] for s in FUNCTION_TOOL_SCHEMAS}
@@ -86,7 +86,7 @@ def test_non_admin_owner_block_strips_shell_end_to_end():
 async def test_scheduled_task_honors_global_disabled_tools(monkeypatch):
     # RaresKeY review on #4398: the runner offers the shell/file group by
     # default, but the scheduled-task path only built disabled_tools from the
-    # crew allowlist — it never merged the operator's global disabled_tools
+    # crew allowlist - it never merged the operator's global disabled_tools
     # setting. So an admin / AUTH_ENABLED=false task could still see and call
     # bash/python after the operator turned them off globally, because the
     # downstream prompt/schema/execution gates only enforce what is passed in.

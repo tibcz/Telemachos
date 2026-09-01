@@ -99,7 +99,7 @@ def test_grep_skips_case_variant_sensitive_files_rg(repo):
     id_rsa, Known_Hosts vs known_hosts) points at the same secret on a
     case-insensitive filesystem, so grep must not return its contents. The
     Python fallback already folds case via _is_sensitive_path; a plain --glob
-    exclusion is case-sensitive, so it would leak these — this pins the rg path.
+    exclusion is case-sensitive, so it would leak these - this pins the rg path.
     """
     token = "GREPSECRET_TOKEN_ZZZ"
     with open(os.path.join(repo, "notes.txt"), "w") as f:
@@ -150,10 +150,10 @@ def test_glob_multi_segment_single_star(repo):
 
 
 def test_glob_star_does_not_cross_slash(repo):
-    """src/*.py must NOT match src/a/b/x.py — * is single-segment only."""
+    """src/*.py must NOT match src/a/b/x.py - * is single-segment only."""
     r = _run("glob", f'{{"pattern": "sub/*.py", "path": "{repo}"}}')
     assert r["exit_code"] == 0
-    # sub/ has no .py directly, only sub/deep/c.py — should NOT match
+    # sub/ has no .py directly, only sub/deep/c.py - should NOT match
     assert "No files matching" in r["output"]
 
 

@@ -14,7 +14,7 @@ from typing import Any
 # without it; calling these functions without PyMuPDF raises a clear error.
 # See requirements-optional.txt.
 try:
-    import fitz  # PyMuPDF — optional, AGPL-3.0
+    import fitz  # PyMuPDF - optional, AGPL-3.0
 except ImportError:  # pragma: no cover
     fitz = None
 
@@ -47,13 +47,13 @@ def _widget_type_names() -> dict:
 
 # Text widgets that are really signature placeholders. Covers DocuSign-style
 # "_es_:signature" and the bare "signed N" / "Signature" patterns common in
-# UK conveyancing forms (TA6, TA10). Uses substring match deliberately —
+# UK conveyancing forms (TA6, TA10). Uses substring match deliberately -
 # false positives like "assigned" are rare in form-field names.
 _SIGNATURE_NAME_RE = re.compile(r'sign(?:ed|ature)', re.IGNORECASE)
 
 
 def has_form_fields(path: str) -> bool:
-    """Return True if the PDF looks like a *fillable form* — not just a
+    """Return True if the PDF looks like a *fillable form* - not just a
     content PDF that happens to carry a stray widget.
 
     Excel-exported PDFs (Japanese estimates, invoices, etc.) often ship with
@@ -61,7 +61,7 @@ def has_form_fields(path: str) -> bool:
     text field from the source template) even when they're really
     content-only documents. Treating those as forms routes them through the
     form-fill chat prompt that ASKS the user which field to edit instead of
-    discussing the content — which is exactly the bug we're trying to avoid.
+    discussing the content - which is exactly the bug we're trying to avoid.
 
     Heuristic: require at least 3 non-signature widgets. Signature-only
     PDFs (e.g. a contract with one sign-here box) read as content, and tiny
@@ -139,7 +139,7 @@ def extract_fields(path: str) -> list[dict[str, Any]]:
     """Enumerate form fields, one entry per unique field name.
 
     Multiple checkbox widgets sharing a field name are treated as a single
-    "choice" field whose options are each widget's on-state — that's the
+    "choice" field whose options are each widget's on-state - that's the
     PDF idiom for radio-style "Included / Excluded / None" rows.
 
     Returns dicts with: name, type, label, value, options, page (1-indexed),
@@ -295,7 +295,7 @@ def stamp_annotations(
                         continue
                     line_height = float(ann.get("line_height") or 1.3)
                     lines = value.split("\n")
-                    # Fixed point size — keeps text consistent across boxes
+                    # Fixed point size - keeps text consistent across boxes
                     # regardless of how each was resized. Per HTML metrics the
                     # baseline of a line box sits at fontsize × (lh + 0.6) / 2
                     # from the line-box top (half the leading above the glyph,
@@ -307,7 +307,7 @@ def stamp_annotations(
                     # Letter), so its rows are spaced wider than 11 × lh on
                     # the page. Multiply the export stride to compensate.
                     line_box = fontsize * line_height * 1.2
-                    # First baseline at one ascent below the box top — closest
+                    # First baseline at one ascent below the box top - closest
                     # match to where the editor's first line of text appears.
                     yy = y + fontsize * 0.85
                     # Match the textarea's 4px left padding (~3 PDF points).

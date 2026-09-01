@@ -1,7 +1,7 @@
 // static/js/search.js
 
 /**
- * Search settings management — reads active provider from admin settings.
+ * Search settings management - reads active provider from admin settings.
  */
 
 import { getSettings, invalidateSettings } from './appConfig.js';

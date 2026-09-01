@@ -1,5 +1,5 @@
 /**
- * Panel loader registry — imports the modules behind a feature panel the
+ * Panel loader registry - imports the modules behind a feature panel the
  * first time that panel is actually used.
  *
  * The panels already populate themselves on open (each fetches its own data).
@@ -11,7 +11,7 @@
  * added one panel at a time, not in bulk.
  *
  * Note the service worker still precaches these modules (PANEL_PRECACHE in
- * sw.js) — they are off the critical path, not off the offline manifest.
+ * sw.js) - they are off the critical path, not off the offline manifest.
  */
 
 const LOADERS = {
@@ -29,7 +29,7 @@ export function createPanelLoader(loaders) {
     if (cached) return cached;
     const loader = loaders[name];
     if (!loader) throw new Error(`loadPanel: unknown panel "${name}"`);
-    // A failed load (offline, 404, syntax error) is not memoised — caching the
+    // A failed load (offline, 404, syntax error) is not memoised - caching the
     // rejection would leave the panel broken for the rest of the session even
     // after the network came back.
     const pending = Promise.resolve().then(loader).catch((err) => {
@@ -47,7 +47,7 @@ export function createPanelLoader(loaders) {
  */
 export const loadPanel = createPanelLoader(LOADERS);
 
-/** Registered panel names — the registry is the list, not a second copy of it. */
+/** Registered panel names - the registry is the list, not a second copy of it. */
 export function panelNames() {
   return Object.keys(LOADERS);
 }

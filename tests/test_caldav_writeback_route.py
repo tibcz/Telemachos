@@ -1,10 +1,10 @@
-"""Issue #800 — the calendar write handlers actually trigger CalDAV write-back.
+"""Issue #800 - the calendar write handlers actually trigger CalDAV write-back.
 
 Route-level: proves POST/DELETE /api/calendar/events fire writeback_event for a
 CalDAV-backed calendar and not for a local one.
 
 Calls the async route handlers DIRECTLY (extracted from the router) rather than
-through Starlette's TestClient — the TestClient middleware-app + threadpool could
+through Starlette's TestClient - the TestClient middleware-app + threadpool could
 hang in some environments; a direct call with a minimal fake request keeps the
 same coverage and completes reliably.
 """

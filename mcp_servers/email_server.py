@@ -329,7 +329,7 @@ def _load_config(account: str | None = None) -> dict:
         cfg["imap_port"] = int(row["imap_port"] or cfg["imap_port"])
         cfg["imap_user"] = row["imap_user"] or cfg["imap_user"]
         # Passwords in email_accounts are stored encrypted via
-        # src.secret_storage.encrypt — decrypt before handing to IMAP
+        # src.secret_storage.encrypt - decrypt before handing to IMAP
         # (same path email_helpers.py:369 uses). Falling back to the raw
         # ciphertext is what produced AUTHENTICATIONFAILED previously.
         try:
@@ -988,12 +988,12 @@ def _list_emails(folder="INBOX", max_results=20, unresponded_only=False,
         elif unread_only:
             status, data = conn.uid("SEARCH", None, "(UNSEEN)")
         elif unresponded_only:
-            # Was missing — unresponded_only=True (without unread_only) fell through
+            # Was missing - unresponded_only=True (without unread_only) fell through
             # to "ALL" and returned answered mail too, despite the documented
             # "emails without replies" behaviour.
             status, data = conn.uid("SEARCH", None, "(UNANSWERED)")
         else:
-            # Include read too — IMAP search "ALL" returns the entire folder
+            # Include read too - IMAP search "ALL" returns the entire folder
             status, data = conn.uid("SEARCH", None, "ALL")
 
         if status != "OK" or not data[0]:
@@ -1381,7 +1381,7 @@ def _smtp_connect(account=None, cfg=None):
 def _read_agent_email_confirm_setting() -> bool:
     """True if the user wants agent send_email/reply_to_email calls to be
     queued for manual approval instead of SMTPed immediately. Defaults to
-    True so a fresh install is safe — agents have been observed inventing
+    True so a fresh install is safe - agents have been observed inventing
     signatures and sending to real recipients without the user's review."""
     try:
         from src.settings import get_setting
@@ -1460,7 +1460,7 @@ def _stash_agent_draft(*, to, subject, body, in_reply_to=None, references=None,
         "subject": subject or "",
         "body": body or "",
         "message": (
-            "✋ Draft staged for your approval — nothing has been sent yet.\n"
+            "✋ Draft staged for your approval - nothing has been sent yet.\n"
             "Review the To/Subject/Body above. Reply 'send' to deliver, or "
             "'cancel' to discard."
         ),
@@ -1471,7 +1471,7 @@ def _send_email(to, subject, body, in_reply_to=None, references=None, cc=None, b
     """Send an email via SMTP. Returns dict with status.
 
     When the `agent_email_confirm` setting is on (the default), the email
-    is NOT SMTPed — instead it lands in scheduled_emails as an
+    is NOT SMTPed - instead it lands in scheduled_emails as an
     `agent_draft` row and the user reviews + approves it from the chat
     UI. This closes the auto-send hole that let earlier models invent
     signatures and ship them to real recipients without confirmation."""
@@ -2088,7 +2088,7 @@ def _download_attachment(uid, index, folder="INBOX", account=None):
 @server.list_tools()
 async def list_tools() -> list[Tool]:
     # The user may have multiple IMAP accounts configured. Every tool accepts an
-    # optional `account` param — match by name (e.g. "work"), email address,
+    # optional `account` param - match by name (e.g. "work"), email address,
     # or account id. Leave it out to use the default account.
     ACCOUNT_PROP = {
         "account": {
@@ -2357,7 +2357,7 @@ async def list_tools() -> list[Tool]:
         Tool(
             name="bulk_email",
             description=(
-                "Perform one action on MANY emails at once — the efficient way to "
+                "Perform one action on MANY emails at once - the efficient way to "
                 "'mark all as read', 'archive these', 'delete all spam', etc. Select "
                 "messages either by an explicit `uids` list OR by `all_unread: true` "
                 "(operates on every unread message in the folder). Far better than "
@@ -2394,7 +2394,7 @@ async def list_tools() -> list[Tool]:
                 "Search emails by free-text query (sender, subject, or body). "
                 "Walks INBOX + Sent + Archive by default so older threads are findable, "
                 "not just recent unread. Use this whenever the user names a person or "
-                "topic that isn't in the most recent inbox slice — e.g. 'Sara Sotheby's', "
+                "topic that isn't in the most recent inbox slice - e.g. 'Sara Sotheby's', "
                 "'invoice from EY', 'last email about the property'. Returns matching "
                 "emails with their UIDs so you can read_email or reply_to_email."
             ),
@@ -2888,7 +2888,7 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
             if changed_n <= 0:
                 return [TextContent(type="text", text=f"No matching UIDs found in {folder}; 0 of {requested_n} email(s) {verb}.")]
             suffix = "" if changed_n == requested_n else f" ({changed_n} of {requested_n} requested UIDs matched)"
-            return [TextContent(type="text", text=f"Done — {changed_n} email(s) {verb}{suffix}.")]
+            return [TextContent(type="text", text=f"Done - {changed_n} email(s) {verb}{suffix}.")]
 
         else:
             return [TextContent(type="text", text=f"Unknown tool: {name}")]

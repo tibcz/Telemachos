@@ -3,9 +3,9 @@
 Both had two adjacent `\\s`-matching quantifiers that backtrack O(n^2) when the
 rest of the pattern fails on a whitespace flood:
 
-  * `routes/skills_routes.py` `_VERDICT_PROSE_RE` — `["\\'\\s:]*\\s*` (the class
+  * `routes/skills_routes.py` `_VERDICT_PROSE_RE` - `["\\'\\s:]*\\s*` (the class
     already matches `\\s`) over a teacher/verifier model's prose verdict.
-  * `src/agent_loop.py` `_EXPLICIT_CONTINUATION_RE` — `\\s*[.!?]*\\s*$` over a
+  * `src/agent_loop.py` `_EXPLICIT_CONTINUATION_RE` - `\\s*[.!?]*\\s*$` over a
     user's terse reply.
 
 Each is rewritten to drop the adjacency while keeping the exact match set. The
@@ -37,7 +37,7 @@ def _timed(fn, *args):
     ("verdict needs_work", "needs_work"),
     ("Verdict:   inconclusive", "inconclusive"),
     ("verdict\t\t'pass'", "pass"),
-    ("verdictpass", "pass"),  # all separators optional — keyword may abut, as before
+    ("verdictpass", "pass"),  # all separators optional - keyword may abut, as before
     ("the verdict is: pass overall", None),  # intervening "is" breaks the run
     ("no clear decision here", None),
 ])

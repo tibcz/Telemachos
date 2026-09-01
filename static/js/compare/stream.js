@@ -1,4 +1,4 @@
-// compare/stream.js — SSE streaming to panes
+// compare/stream.js - SSE streaming to panes
 import state from './state.js';
 import { addFinishBadge } from './vote.js';
 import { getModelCost, renderAskUserCard, safeDisplayImageSrc } from '../chatRenderer.js?v=20260819approvalcontrol1';
@@ -95,7 +95,7 @@ function _restorePaneAskUserCard(paneIdx, sessionId, submission, originControlle
   if (uiModule) {
     uiModule.showError(
       restored
-        ? 'This pane is still streaming — choose again once it settles.'
+        ? 'This pane is still streaming - choose again once it settles.'
         : 'Compare pane is still streaming; the choice was not sent.',
     );
   }
@@ -218,7 +218,7 @@ function _renderSearchResults(data) {
   return container;
 }
 
-/** Run synthesis for a search pane — sends search results to an LLM for analysis. */
+/** Run synthesis for a search pane - sends search results to an LLM for analysis. */
 async function _runSynthForPane(modelToUse, synthPrompt, synthBody, spinner, hist) {
   // Create temp session for synthesis
   const fd = new FormData();
@@ -312,7 +312,7 @@ async function streamToPane(paneIdx, sessionId, message, aiMsgEl, opts) {
   let streamOk = false;
   let awaitingChoice = false;
   let currentToolBlock = null;  // track active agent tool block
-  // Idle timeout — abort only if no data is received for this many seconds.
+  // Idle timeout - abort only if no data is received for this many seconds.
   // Long generations (SVG, big code) are fine as long as the stream stays
   // active. opts.timeout may still tighten this for specific paths.
   const effectiveTimeout = opts.timeout || state._timeout;
@@ -336,7 +336,7 @@ async function streamToPane(paneIdx, sessionId, message, aiMsgEl, opts) {
   }
   _rafId = requestAnimationFrame(_tickTimer);
 
-  // Throttled markdown render — re-rendering the entire growing buffer on
+  // Throttled markdown render - re-rendering the entire growing buffer on
   // every token is O(n²) total work. Coalesce updates so we paint at most
   // every ~80ms. The final render still runs at end-of-stream for quality.
   let _renderPending = false;
@@ -383,9 +383,9 @@ async function streamToPane(paneIdx, sessionId, message, aiMsgEl, opts) {
     } else if (isResearch) {
       fd.append('use_research', 'true');
     } else {
-      // Chat/Image: pure chat only — no tools, no search, no bash, no RAG.
+      // Chat/Image: pure chat only - no tools, no search, no bash, no RAG.
       // Explicitly send mode='chat' so the backend's compare_mode strip
-      // (chat_routes.py line 385) actually triggers — otherwise the form
+      // (chat_routes.py line 385) actually triggers - otherwise the form
       // field was missing and chat_mode defaulted to "", which meant
       // bash/python/web_search were never added to disabled_tools and
       // models would still attempt to run Python.
@@ -399,7 +399,7 @@ async function streamToPane(paneIdx, sessionId, message, aiMsgEl, opts) {
     // Disable document tool and memory injection in compare mode
     fd.append('no_documents', 'true');
     fd.append('no_memory', 'true');
-    // Tell backend this is compare mode — strip all non-toggled tools
+    // Tell backend this is compare mode - strip all non-toggled tools
     fd.append('compare_mode', 'true');
     // Forward preset if selected
     if (presetsModule && presetsModule.getSelectedPreset()) {
@@ -532,7 +532,7 @@ async function streamToPane(paneIdx, sessionId, message, aiMsgEl, opts) {
               aiMsgEl._imgSpinner = imgSpinner;
               currentToolBlock = null;
             } else {
-              // Agent thread node — matches main chat style
+              // Agent thread node - matches main chat style
               const _toolLabels = { bash: 'Terminal', python: 'Python', web_search: 'Web Search', read_file: 'Read File', write_file: 'Write File' };
               const toolLabel = _toolLabels[toolName.toLowerCase()] || toolName;
               const cmdHtml = cmd ? `<pre class="agent-thread-cmd">${escapeHtml(cmd)}</pre>` : '';
@@ -709,7 +709,7 @@ async function streamToPane(paneIdx, sessionId, message, aiMsgEl, opts) {
 
       footer.appendChild(actions);
 
-      // Metrics — hide in blind mode to avoid revealing model identity
+      // Metrics - hide in blind mode to avoid revealing model identity
       if (!state._blindMode) {
         const span = document.createElement('span');
         span.className = 'response-metrics';
@@ -818,7 +818,7 @@ async function streamToPane(paneIdx, sessionId, message, aiMsgEl, opts) {
     // Show final time with TTFT
     const _totalMs = performance.now() - _timerStart;
     if (_timerEl) {
-      // TTFT removed from the header per user request — just show total time.
+      // TTFT removed from the header per user request - just show total time.
       _timerEl.textContent = _formatMs(_totalMs);
     }
     if (state._abortControllers[paneIdx] === ac) {
@@ -859,12 +859,12 @@ async function streamToPane(paneIdx, sessionId, message, aiMsgEl, opts) {
           }
         }
       } else {
-        // Timed out or errored — show failed badge
+        // Timed out or errored - show failed badge
         const badge = document.getElementById('cmp-badge-' + paneIdx);
         if (badge) { badge.textContent = timedOut ? 'Timeout' : 'Failed'; badge.style.color = 'var(--color-error)'; }
       }
     }
-    // Auto-grade against expected answer — stamps ✓ or ✗ on the pane header.
+    // Auto-grade against expected answer - stamps ✓ or ✗ on the pane header.
     if (streamOk && !awaitingChoice && state._expectedAnswer) {
       _stampGradeBadge(paneIdx, accumulated, state._expectedAnswer);
     }
@@ -890,7 +890,7 @@ function _stampGradeBadge(paneIdx, response, expected) {
 
   let pass = r.includes(e);
   if (!pass) {
-    // Numeric fallback — find first number in expected, look for it standalone in response
+    // Numeric fallback - find first number in expected, look for it standalone in response
     const m = expected.match(/-?\d[\d,]*(?:\.\d+)?/);
     if (m) {
       const n = m[0].replace(/,/g, '');

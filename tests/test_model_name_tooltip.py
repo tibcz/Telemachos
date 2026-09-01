@@ -1,4 +1,4 @@
-"""Regression for issue #1982 — long model names are clipped with ellipsis in
+"""Regression for issue #1982 - long model names are clipped with ellipsis in
 two surfaces (the model-picker dropdown items and the chat-header model
 indicator) with no tooltip, so the suffix/variant tag is undiscoverable.
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""telemachos — one entrypoint for every telemachos-* CLI.
+"""telemachos - one entrypoint for every telemachos-* CLI.
 
 Discovers `scripts/telemachos-<name>` siblings and dispatches to them, the
 same way `git` finds `git-foo`. Pure passthrough: any flags after the
@@ -62,9 +62,9 @@ def _short_help(path: Path) -> str:
     body = m.group(1).strip()
     if not body:
         return ""
-    # First non-blank line, strip the leading "name — " noise.
+    # First non-blank line, strip the leading "name - " noise.
     first = next((ln for ln in body.splitlines() if ln.strip()), "")
-    first = re.sub(r"^telemachos-\w+\s*—\s*", "", first).strip()
+    first = re.sub(r"^telemachos-\w+\s*-\s*", "", first).strip()
     return first
 
 
@@ -73,8 +73,8 @@ def _is_runnable_subcommand(path: Path) -> bool:
 
 
 def _print_listing() -> None:
-    """`telemachos` with no args (or `telemachos help`) — print the table."""
-    sys.stdout.write(f"telemachos {VERSION} — every feature, on the shell.\n\n")
+    """`telemachos` with no args (or `telemachos help`) - print the table."""
+    sys.stdout.write(f"telemachos {VERSION} - every feature, on the shell.\n\n")
     sys.stdout.write("Usage:  telemachos <subcommand> [args...]\n\n")
     sys.stdout.write("Available subcommands:\n")
     subs = _list_subcommands()
@@ -121,7 +121,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     # Run the subcommand with the project's venv Python so dependencies
     # (bcrypt, sqlalchemy, fastapi, ...) resolve. Fall back to whatever
-    # `python` is on PATH if no venv is found — useful in container
+    # `python` is on PATH if no venv is found - useful in container
     # installs that wire the deps system-wide.
     repo_root = SCRIPTS_DIR.parent
     venv_python = repo_root / "venv" / "bin" / "python"

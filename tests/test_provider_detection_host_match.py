@@ -1,9 +1,9 @@
-"""Provider detection tests — hostname matching helpers (re: #768).
+"""Provider detection tests - hostname matching helpers (re: #768).
 
 These import the *real* helpers from ``src.llm_core`` (not local copies) so a
 regression in hostname matching is actually caught. The point of the change
 under test is that provider detection keys off the URL's *hostname*, not a
-substring of the whole URL — so a domain appearing in a path/query, or a
+substring of the whole URL - so a domain appearing in a path/query, or a
 look-alike host, must not be misclassified.
 """
 from src import llm_core

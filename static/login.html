@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-visual">
-<title>Telemachos — Login</title>
+<title>Telemachos - Login</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 4L16 22L6 22Z' fill='%23e06c75'/%3E%3Cpath d='M16 8L16 22L24 22Z' fill='%23e06c75' opacity='0.6'/%3E%3Cpath d='M4 24Q10 20 16 24Q22 28 28 24' stroke='%23e06c75' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="manifest" href="static/manifest.json">
 <link rel="apple-touch-icon" href="static/icons/icon-192.png">
@@ -28,7 +28,7 @@
     }
     return appBasePath + normalizedPath;
   };
-  // Per-theme bg-effect defaults — mirrors THEME_DEFAULT_* maps in
+  // Per-theme bg-effect defaults - mirrors THEME_DEFAULT_* maps in
   // static/js/theme.js so login picks the same default pattern as the
   // main app for users who never explicitly chose one.
   var THEME_DEFAULT_PATTERN = {
@@ -54,7 +54,7 @@
       if (c.red) s.setProperty('--red', c.red);
       if (c.green) s.setProperty('--green', c.green);
       // Advanced overrides (sidebar logo color, input bg, send-button bg, etc.)
-      // — mirrors ADV_KEYS in static/js/theme.js so the login page picks up
+      // - mirrors ADV_KEYS in static/js/theme.js so the login page picks up
       // every customization the user has on their theme instead of falling
       // back to defaults that didn't match the main app.
       var a = c.advanced || {};
@@ -75,14 +75,14 @@
       };
       for (var k in ADV) { if (a[k]) s.setProperty(ADV[k], a[k]); }
     }
-    // Background effect — pick ONE at random from the main app's 8
+    // Background effect - pick ONE at random from the main app's 8
     // patterns each load (matches the old login behavior, but uses the
     // same effect implementations the main theme system exposes so the
     // login feels consistent with the rest of the app). Per-theme
     // bgEffectColor/Intensity defaults still apply so the random
     // pattern picks up theme-appropriate tinting.
     var name = (t && t.name) || '';
-    // perlin-flow excluded — too visually intense for a login screen.
+    // perlin-flow excluded - too visually intense for a login screen.
     var PATTERNS = ['dots','synapse','rain','constellations','petals','sparkles','embers'];
     var pattern = PATTERNS[Math.floor(Math.random() * PATTERNS.length)];
     var effColor = (t && t.bgEffectColor) || THEME_DEFAULT_EFFECT_COLOR[name] || '';
@@ -107,15 +107,15 @@
   @font-face { font-family: 'Fira Code'; font-weight: 400; font-style: normal; font-display: swap; src: url('static/fonts/FiraCode-Regular.woff2') format('woff2'); }
   @font-face { font-family: 'Fira Code'; font-weight: 600; font-style: normal; font-display: swap; src: url('static/fonts/FiraCode-SemiBold.woff2') format('woff2'); }
   /* Mirror the main app's :root defaults (static/style.css ~line 18) so an
-     uncustomized theme — or a fresh browser with no `telemachos-theme` in
-     localStorage — renders the login page in the same palette as the rest
+     uncustomized theme - or a fresh browser with no `telemachos-theme` in
+     localStorage - renders the login page in the same palette as the rest
      of the app instead of a different greys+offwhite scheme. */
   :root {
     --bg: #282c34; --fg: #9cdef2; --panel: #111; --border: #355a66;
     --red: #e06c75; --green: #50fa7b;
     --bg-effect-intensity: 1;
   }
-  /* Background patterns — mirrors static/style.css "Background Patterns"
+  /* Background patterns - mirrors static/style.css "Background Patterns"
      block so the theme's chosen bgPattern renders on login too. The
      canvas-based effects (rain, constellations, perlin-flow, petals,
      sparkles, embers) are spawned by the deferred theme.js import below;
@@ -255,7 +255,7 @@
     pointer-events: none; user-select: none;
   }
   /* Whirlpool-style spinner shown in the submit button while login /
-     account-creation work is in flight — replaces the previous "Loading…"
+     account-creation work is in flight - replaces the previous "Loading…"
      text. Two-color ring (muted base + accent arc) rotates continuously. */
   .login-spinner {
     display: inline-block;
@@ -356,7 +356,7 @@
     mode = m;
     errEl.style.display = 'none';
     if (m === 'setup') {
-      setupNote.textContent = 'First-time setup — create your admin account';
+      setupNote.textContent = 'First-time setup - create your admin account';
       setupNote.style.display = 'block';
       confirmGroup.style.display = 'block';
       submitBtn.textContent = 'Create Admin Account';
@@ -521,7 +521,7 @@
     }
     try {
       let data = await doLogin();
-      // 2FA required — show TOTP input
+      // 2FA required - show TOTP input
       if (data.requires_totp) {
         submitBtn.disabled = false;
         // Only add TOTP input once

@@ -2,7 +2,7 @@
 
 `email_accounts` is the one owner-scoped table left out of the legacy-owner
 migration backfill (core/database.py), so rows with owner NULL/"" persist on a
-multi-user deploy — e.g. an account configured while auth was disabled, or an
+multi-user deploy - e.g. an account configured while auth was disabled, or an
 imported legacy row. The HTTP route guards (`_assert_owns_account` and the
 explicit-account_id path in `_get_email_config`) must scope such rows to a
 mailbox match, exactly like the `_owner_or_matching_legacy_account` fallback and

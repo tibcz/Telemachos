@@ -5,7 +5,7 @@ full Vitest/Jest setup (same spirit as test_reply_recipients_js.py). Skips when
 `node` is not installed rather than failing.
 
 The module source is inlined into the eval'd module body (rather than imported
-by path) so the test runs identically on Windows and POSIX — the repo has no
+by path) so the test runs identically on Windows and POSIX - the repo has no
 `"type": "module"` in package.json, so a path import of a `.js` file is treated
 as CommonJS by node and rejects the ES `export`s. escMenuStack.js has no
 imports of its own, so inlining is exact.

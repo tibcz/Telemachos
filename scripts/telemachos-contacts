@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""telemachos-contacts — Unix-style CLI for the contacts feature.
+"""telemachos-contacts - Unix-style CLI for the contacts feature.
 
 Talks to the same CardDAV server the web UI does, using credentials
 from `data/settings.json` (set via the Settings → Connections panel).

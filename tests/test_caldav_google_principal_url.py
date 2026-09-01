@@ -3,7 +3,7 @@
 Google's CalDAV principal lives at ``.../caldav/v2/<id>/user`` but events are
 served from ``.../caldav/v2/<id>/events``. When the `caldav` library's
 principal discovery yields no calendars for Google's ``/user`` endpoint,
-``_sync_blocking`` fell back to ``client.calendar(url=url)`` — i.e. it queried
+``_sync_blocking`` fell back to ``client.calendar(url=url)`` - i.e. it queried
 the principal URL itself, which returns a clean but empty 200 for every date
 range. Auth succeeded, the calendar stayed empty.
 

@@ -5,7 +5,7 @@ invoked with the raw body as the argument (`to=python` + bare source), while
 custom functions use `to=functions.NAME` + JSON. Exposing our own tool under a
 built-in's name makes the model answer with the built-in convention: it emits
 raw code, the server tries to parse it as JSON, and the request dies with
-"error parsing tool call: raw='import sys, ...'". Streaming is worse — Ollama
+"error parsing tool call: raw='import sys, ...'". Streaming is worse - Ollama
 truncates the stream instead of reporting it, so the turn looks like an empty
 response and the agent loop reads it as a stall.
 

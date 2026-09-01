@@ -4,7 +4,7 @@ RFC 6350 property groups (the default emitted by Apple Contacts.app / iCloud and
 many CardDAV servers) prefix the property name with a group token, e.g.
 `item1.EMAIL;type=pref:jane@example.com`. The parser matched property names with
 a bare `line.startswith("EMAIL")` / `"TEL"` / `"FN:"`, so grouped lines never
-matched and the email / phone were silently dropped — breaking contact search by
+matched and the email / phone were silently dropped - breaking contact search by
 email, the email-composer autocomplete, and vCard/CSV export round-trips for any
 address book synced from Apple.
 """

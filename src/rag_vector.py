@@ -342,7 +342,7 @@ class VectorRAG:
         }
 
     # ------------------------------------------------------------------
-    # Search — hybrid: vector similarity + keyword overlap
+    # Search - hybrid: vector similarity + keyword overlap
     # ------------------------------------------------------------------
 
     def search(self, query: str, k: int = 5, owner: Optional[str] = None) -> List[Dict[str, Any]]:
@@ -562,7 +562,7 @@ class VectorRAG:
         ``source`` full path, NOT a Chroma metadata ``where`` filter. No Chroma
         metadata operator selects a scalar string by path prefix (``$contains``
         targets document content / list membership, not a ``source`` substring),
-        and a plain substring would over-delete siblings — removing ``/docs``
+        and a plain substring would over-delete siblings - removing ``/docs``
         must not touch ``/docs2`` or ``/docs_personal``. We therefore match
         ``source == directory`` or ``source`` startswith ``directory + os.sep``,
         the same boundary rule add_directory uses for exclusions. ``directory``

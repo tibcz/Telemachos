@@ -1,7 +1,7 @@
 """Pin the null-owner-bypass fixes so they don't regress.
 
 The same legacy `if row.owner and row.owner != user` / `(owner == user) |
-(owner == None)` pattern has regressed THREE times across reviews —
+(owner == None)` pattern has regressed THREE times across reviews -
 once in gallery, once in calendar, once in notes/daily-brief. Without
 tests it'll keep coming back. These tests exercise the small helper
 functions directly against MagicMock'd model rows.
@@ -22,7 +22,7 @@ from tests.helpers.calendar_routes import import_calendar_routes
 
 # `tests/conftest.py` stubs the heavy optional deps. We additionally
 # stub `core.database` here because the real module instantiates
-# SQLAlchemy declarative classes at import-time — which blows up under
+# SQLAlchemy declarative classes at import-time - which blows up under
 # the conftest's `sqlalchemy.*` MagicMock stubs ("metaclass conflict").
 # Stub also a handful of route modules each of these targeted modules
 # happens to drag in at import-time.
@@ -125,7 +125,7 @@ def test_document_owner_filter_rejects_anonymous():
     from routes.document_routes import _owner_session_filter
     fake_q = MagicMock()
     out = _owner_session_filter(fake_q, user=None)
-    # The fix should call .filter(False) — fake_q.filter was invoked once
+    # The fix should call .filter(False) - fake_q.filter was invoked once
     fake_q.filter.assert_called_once()
     # And the resulting query is whatever the chained mock returns.
     assert out is fake_q.filter.return_value
@@ -320,7 +320,7 @@ def test_sync_chat_fallback_skips_disabled_owned_endpoint():
 
 def test_sync_chat_fallback_null_owner_uses_shared_rows_only():
     # When no token owner is known, only null-owner (shared) endpoints are
-    # visible — private endpoints of any user must not be returned.
+    # visible - private endpoints of any user must not be returned.
     rows = [_ep("bob-private", "bob"), _ep("shared", None)]
     ep = _select(rows, None)
     assert ep is not None and ep.name == "shared"

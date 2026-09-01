@@ -161,7 +161,7 @@ def test_detached_resume_surfaces_fallback_then_provider_alias_before_reload():
             {"requested": "selected-model", "actual": "fallback-model"},
             {"requested": "selected-model", "actual": "provider/fallback-alias"},
         ],
-        "toasts": ["Fallback: selected-model failed — answered by fallback-model"],
+        "toasts": ["Fallback: selected-model failed - answered by fallback-model"],
         "selectCalls": 1,
         "holderCount": 0,
     }

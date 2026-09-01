@@ -7,8 +7,8 @@ name: Consolidate to a single main branch
 # Renaming the default branch needs admin rights, and a workflow's GITHUB_TOKEN
 # cannot hold them (`administration` is not a grantable workflow permission).
 # So this tries the rename, and when GitHub refuses it does everything that
-# does not need admin — creates main at the current commit and deletes every
-# other non-default branch — then says plainly which single click is left.
+# does not need admin - creates main at the current commit and deletes every
+# other non-default branch - then says plainly which single click is left.
 #
 # Delete this file once it has run.
 
@@ -81,6 +81,6 @@ jobs:
             echo ""
             echo "  1. Open https://github.com/$REPO/settings"
             echo "  2. Under 'Default branch', switch it to: main"
-            echo "  3. Re-run this workflow — it will then delete the old branch"
+            echo "  3. Re-run this workflow - it will then delete the old branch"
             echo "=============================================================="
           fi

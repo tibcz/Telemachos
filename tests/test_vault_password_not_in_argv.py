@@ -1,14 +1,14 @@
 """Pin the vault master-password handling so it never regresses into argv.
 
 `routes.vault_routes._run_bw` launches the Bitwarden CLI with
-``asyncio.create_subprocess_exec(bw_path, *args)`` — every element of ``args``
+``asyncio.create_subprocess_exec(bw_path, *args)`` - every element of ``args``
 becomes a process argument, which is world-readable through ``ps`` /
 ``/proc/<pid>/cmdline``. The master password therefore must be handed to ``bw``
 out-of-band (stdin or ``--passwordenv BW_PASSWORD``), and never as a positional
 argv element.
 
 The /unlock route previously did ``_run_bw(["unlock", req.master_password,
-"--raw"])`` — leaking the Bitwarden master password (which decrypts the whole
+"--raw"])`` - leaking the Bitwarden master password (which decrypts the whole
 vault) to any local user for the lifetime of the unlock subprocess.
 """
 

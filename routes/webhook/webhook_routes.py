@@ -28,12 +28,12 @@ from core.middleware import require_admin as _require_admin
 
 
 def _select_api_chat_fallback_endpoint(db, token_owner: Optional[str]):
-    """First enabled ModelEndpoint visible to token_owner — their own rows plus
+    """First enabled ModelEndpoint visible to token_owner - their own rows plus
     legacy null-owner ("shared") rows. Owner-scoped: an unscoped .first() would
     let a chat-scoped token fall back onto another user's private endpoint and
     silently spend that owner's API key/quota. Prefer owner rows before shared
     rows. Fails closed to null-owner rows only when token_owner is absent.
-    Does not validate base_url — admin-configured local/LAN endpoints remain allowed.
+    Does not validate base_url - admin-configured local/LAN endpoints remain allowed.
     """
     query = db.query(ModelEndpoint).filter(ModelEndpoint.is_enabled == True)  # noqa: E712
     if token_owner:
@@ -49,7 +49,7 @@ def _caller_owns_session(sess_owner, caller) -> bool:
     Mirrors ``_verify_session_owner`` in session_routes.py and the null-owner
     gates in notes/calendar/gallery: a caller may resume a session ONLY when
     its owner matches them exactly. A null/empty session owner (legacy or
-    migrated rows) is deliberately NOT resumable by an arbitrary token — the
+    migrated rows) is deliberately NOT resumable by an arbitrary token - the
     old ``sess_owner and sess_owner != caller`` form skipped the check whenever
     ``sess_owner`` was falsy, so any chat-scoped token (e.g. a paired mobile
     device) could resume such a session, inject a message, and read back its
@@ -184,7 +184,7 @@ def setup_webhook_routes(
     # Sync Chat Endpoint (for n8n / Make / Activepieces)
     # ================================================================
 
-    # Known provider base URLs — auto-resolved from api_key prefix or model name
+    # Known provider base URLs - auto-resolved from api_key prefix or model name
     KNOWN_PROVIDERS = {
         "deepseek": "https://api.deepseek.com/v1",
         "openai": "https://api.openai.com/v1",
@@ -260,7 +260,7 @@ def setup_webhook_routes(
                 sess = session_manager.get_session(session_id)
             except (KeyError, Exception):
                 raise HTTPException(404, "Session not found")
-            # SECURITY: verify the API-token's user owns this session — without
+            # SECURITY: verify the API-token's user owns this session - without
             # this any token holder could resume any user's chat by passing its
             # ID. The token's user is on request.state.user (set by API-token
             # middleware); fall back to require_user if not present.

@@ -81,7 +81,7 @@ NON_ADMIN_BLOCKED_TOOLS = BUILTIN_EMAIL_TOOLS | {
 # Plan mode: the agent may investigate but must not mutate anything. Only these
 # read-only/inspection tools stay enabled; everything else (writes, sends,
 # manage_*, model serving, MCP, etc.) is blocked. Allowlist rather than blocklist
-# so any newly added tool defaults to BLOCKED in plan mode — fail safe.
+# so any newly added tool defaults to BLOCKED in plan mode - fail safe.
 #
 # bash/python are deliberately NOT here: the shell can mutate (write files, hit
 # the network) and can't be constrained to read-only at the tool layer, so plan
@@ -102,7 +102,7 @@ PLAN_MODE_READONLY_TOOLS = {
     # Read-only email tools. list_email_accounts must be here because the
     # bare/qualified alias gate in execute_tool_block works both ways: it has
     # a native function schema, so plan mode's schema-derived bare denylist
-    # contains it — and without this allowlist entry that bare entry would
+    # contains it - and without this allowlist entry that bare entry would
     # also block the qualified mcp__email__list_email_accounts call that the
     # MCP read-only filter deliberately allows.
     "list_email_accounts",
@@ -110,7 +110,7 @@ PLAN_MODE_READONLY_TOOLS = {
     "read_email",
     # Explicitly read-only rather than allowed-by-omission: this PR makes
     # every BUILTIN_EMAIL_TOOLS name fence-taggable, so each one must be
-    # classified — see the plan-mode partition test in
+    # classified - see the plan-mode partition test in
     # tests/test_email_registry_sync.py.
     "search_emails",
     "scan_email_unsubscribes",
@@ -127,7 +127,7 @@ PLAN_MODE_READONLY_TOOLS = {
 
 
 # The agent's tool gate is a DENYLIST: execute_tool_block blocks any tool whose
-# name is in `disabled_tools`. Plan mode's policy is the opposite — an allowlist
+# name is in `disabled_tools`. Plan mode's policy is the opposite - an allowlist
 # (PLAN_MODE_READONLY_TOOLS). To apply an allowlist through a denylist, plan mode
 # returns the inverse: every known tool name minus the allowlist.
 #
@@ -137,7 +137,7 @@ PLAN_MODE_READONLY_TOOLS = {
 # tool from the subtraction and silently leave it enabled. This set is the static
 # backstop for both: union it in so known mutators are always subtracted, and so a
 # failed import still blocks them (fail closed, never open). Only mutators belong
-# here — read-only tools are covered by the allowlist. Keep in sync when adding
+# here - read-only tools are covered by the allowlist. Keep in sync when adding
 # new mutating tools.
 _PLAN_MODE_KNOWN_MUTATORS = {
     "write_file", "edit_file", "apply_patch", "todowrite",
@@ -150,7 +150,7 @@ _PLAN_MODE_KNOWN_MUTATORS = {
     "send_email", "reply_to_email", "bulk_email", "delete_email",
     "archive_email", "mark_email_read", "unsubscribe_email",
     # The draft tools create documents and download_attachment writes to
-    # disk — mutating. They have no native schemas (yet), so without these
+    # disk - mutating. They have no native schemas (yet), so without these
     # static entries plan-mode safety for their bare fence tags would depend
     # entirely on the MCP read-only inventory being present and current.
     "draft_email", "draft_email_reply", "ai_draft_email_reply",
@@ -173,13 +173,13 @@ def plan_mode_disabled_tools() -> Set[str]:
     return the inverse: every known tool name minus the allowlist. Known names
     come from the function-tool schemas, backstopped by _PLAN_MODE_KNOWN_MUTATORS
     (see above) so XML-only tools and a failed schema import can't leave a mutator
-    enabled. MCP tools are handled separately — the loop drops the MCP manager
+    enabled. MCP tools are handled separately - the loop drops the MCP manager
     entirely in plan mode."""
     try:
         # agent_tools / tool_parsing / tool_schemas form a mutually-circular
         # cluster that only resolves cleanly when entered via agent_tools.
         # Import it first so the lazy schema import works even from a cold
-        # import (e.g. tests) — not just after the app has wired everything up.
+        # import (e.g. tests) - not just after the app has wired everything up.
         import src.agent_tools  # noqa: F401
         from src.tool_schemas import FUNCTION_TOOL_SCHEMAS
 
@@ -202,7 +202,7 @@ def email_tool_policy_names(tool_name: str) -> frozenset:
 
     A bare built-in email tool name and its MCP-qualified mcp__email__<name>
     form dispatch to the same email server tool, but policy sources spell
-    them either way — plan mode and the MCP settings toggle write qualified
+    them either way - plan mode and the MCP settings toggle write qualified
     names into denylists, chat-level toggles write bare ones. Every gate must
     match against the full alias set, or a call in one spelling slips past a
     denylist entry written in the other. Non-email names alias only to
@@ -238,7 +238,7 @@ def owner_is_admin_or_single_user(owner: Optional[str]) -> bool:
     """Return True for admins, or in intentional single-user mode.
 
     Single-user mode means the operator explicitly disabled auth
-    (``AUTH_ENABLED=false``) — the local/self-host default where the owner has
+    (``AUTH_ENABLED=false``) - the local/self-host default where the owner has
     full access to their own box.
 
     The pre-setup window (auth ENABLED but no admin created yet) is treated as

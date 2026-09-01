@@ -1,6 +1,6 @@
 // ============================================
-// Telemachos UI — Main Application Orchestrator
-// ES6 module — entry point, no exports (wires all modules together)
+// Telemachos UI - Main Application Orchestrator
+// ES6 module - entry point, no exports (wires all modules together)
 // ============================================
 import Storage from './js/storage.js';
 import uiModule from './js/ui.js';
@@ -8,6 +8,7 @@ import workspaceModule from './js/workspace.js';
 import fileHandlerModule from './js/fileHandler.js';
 import modelsModule from './js/models.js?v=20260715startupcalm2';
 import ragModule from './js/rag.js';
+import { initLocalModels } from './js/localModels.js';
 import presetsModule from './js/presets.js';
 import searchModule from './js/search.js';
 import chatModule from './js/chat.js?v=20260819approvalcontrol1';
@@ -36,10 +37,10 @@ import adminModule from './js/admin.js?v=20260716openrouter3';
 import settingsModule from './js/settings.js?v=20260815approvalsave1';
 // Eagerly bind unified minimize/restore behavior across all tool modals.
 import './js/modalManager.js?v=20260723compareicon2';
-// Desktop window tiling — drag a modal near an edge/corner to snap.
+// Desktop window tiling - drag a modal near an edge/corner to snap.
 import './js/tileManager.js';
 import themeModule from './js/theme.js';
-// IMPORTANT: import cookbook.js with NO ?v= query — the same plain specifier
+// IMPORTANT: import cookbook.js with NO ?v= query - the same plain specifier
 // every other importer (cookbook-hwfit.js / cookbook-diagnosis.js) uses. A query
 // mismatch makes the browser load cookbook.js twice as separate modules (two
 // _envState objects), which broke server selection. Keep all cookbook imports
@@ -208,7 +209,7 @@ window.fetch = async function(...args) {
 
 const el = uiModule.el;
 
-// Default chat config — refreshed on every new-chat action so settings
+// Default chat config - refreshed on every new-chat action so settings
 // changes take effect immediately (previously cached once at page load and
 // went stale when the user changed their default model).
 let _defaultChat = null;
@@ -304,7 +305,7 @@ function initializeEventListeners() {
     if (changed) fileHandlerModule.renderAttachStrip();
   });
 
-  // Message count in the header — recount on any DOM change in
+  // Message count in the header - recount on any DOM change in
   // #chat-history and write "· N msgs" next to the title. Counts top-
   // level .msg elements (one per user/assistant turn); excludes the
   // welcome screen since it isn't inside chat-history.
@@ -365,11 +366,11 @@ function initializeEventListeners() {
   const exportDlBtn = el('export-dl-btn');
   // ── Unified popup dismissal ──
   // Lightweight popups (header dropdowns, kebab menus, pickers) should vanish
-  // on any "other action" — opening the sidebar, opening a tool window, etc.
+  // on any "other action" - opening the sidebar, opening a tool window, etc.
   // Each popup used to wire its own outside-click/Escape close but missed
   // non-click actions. closeAllPopups() centralizes it: toggled menus drop
   // their `.open`; ephemeral body-appended menus are removed. Full modals/
-  // windows are deliberately NOT touched here — those close via their own
+  // windows are deliberately NOT touched here - those close via their own
   // controls.
   window.closeAllPopups = function closeAllPopups(except) {
     document.querySelectorAll(
@@ -380,7 +381,7 @@ function initializeEventListeners() {
     ).forEach(m => { if (m !== except) m.remove(); });
   };
   // Window-opening / nav controls (rail buttons, sidebar tool rows + session
-  // rows, section headers) count as "other actions" — dismiss popups when one
+  // rows, section headers) count as "other actions" - dismiss popups when one
   // is clicked. Bubble phase so it runs after the control's own handler (the
   // window is already opening; we just clear stray popups). Popup triggers
   // themselves aren't these selectors, so toggles aren't broken.
@@ -489,7 +490,7 @@ function initializeEventListeners() {
       e.stopPropagation();
       exportMenu.classList.remove('open');
       const transcript = _serializeChatTranscript();
-      // A new/empty chat has nothing to copy — don't write an empty string and
+      // A new/empty chat has nothing to copy - don't write an empty string and
       // falsely report "Copied".
       if (!transcript.trim()) { uiModule.showToast('Nothing to copy yet'); return; }
       await uiModule.copyToClipboard(transcript);
@@ -581,7 +582,7 @@ function initializeEventListeners() {
       e.stopPropagation();
       exportMenu.classList.remove('open');
       let sid = sessionModule.getCurrentSessionId();
-      // A brand-new chat has no session id yet — still allow renaming if there's
+      // A brand-new chat has no session id yet - still allow renaming if there's
       // a pending chat (we materialize it on commit so the name sticks).
       const hasPending = sessionModule.hasPendingChat && sessionModule.hasPendingChat();
       if (!sid && !hasPending) return;
@@ -649,14 +650,14 @@ function initializeEventListeners() {
 
   if (saveCustomPreset) {
     saveCustomPreset.addEventListener('click', async () => {
-      // Skip character save when Group tab is active — group.js handles it
+      // Skip character save when Group tab is active - group.js handles it
       const activeTab = document.querySelector('.preset-tab.active');
       if (activeTab && activeTab.dataset.chartab === 'group') return;
       await presetsModule.saveCustomPreset(uiModule.showToast, uiModule.showError);
     });
   }
 
-  // Settings dropdown removed — items are now inline in sidebar section
+  // Settings dropdown removed - items are now inline in sidebar section
 
   
 
@@ -679,7 +680,7 @@ function initializeEventListeners() {
       // so a window stacked on another (e.g. scoreboard over compare) only
       // dismisses the top one, not both.
 
-      // Scoreboard sits on top of the compare window — close it first.
+      // Scoreboard sits on top of the compare window - close it first.
       const scoreboardOverlay = document.getElementById('scoreboard-overlay');
       if (scoreboardOverlay) {
         scoreboardOverlay.remove();
@@ -714,7 +715,7 @@ function initializeEventListeners() {
         return;
       }
 
-      // Model picker popup — close before opening any modals
+      // Model picker popup - close before opening any modals
       const modelPickerMenu = document.getElementById('model-picker-menu');
       if (modelPickerMenu && modelPickerMenu.classList.contains('open')) {
         modelPickerMenu.classList.remove('open');
@@ -759,9 +760,9 @@ function initializeEventListeners() {
         }
       }
 
-      // No modals/popups open — minimize the document panel if open.
+      // No modals/popups open - minimize the document panel if open.
       // Esc should tab the doc down to a dock chip (same as the chevron),
-      // NOT fully close it — closePanel('down') registers the chip +
+      // NOT fully close it - closePanel('down') registers the chip +
       // Modals.minimize so the doc is preserved and restorable.
       if (documentModule && documentModule.isPanelOpen()) {
         // If there's a text selection in the document editor, let Escape clear that first
@@ -849,7 +850,7 @@ function initializeEventListeners() {
     // Close document panel if open
     if (documentModule && documentModule.closePanel) documentModule.closePanel();
     if (researchPanelModule && researchPanelModule.isOpen()) researchPanelModule.closePanel();
-    // Reset research overflow dot (but don't touch research state — caller manages that)
+    // Reset research overflow dot (but don't touch research state - caller manages that)
     const _overflowRes = el('overflow-research-btn');
     if (_overflowRes) _overflowRes.classList.remove('active');
     if (typeof updatePlusDot === 'function') updatePlusDot();
@@ -990,7 +991,7 @@ function initializeEventListeners() {
     toolCompareBtn.addEventListener('click', () => {
       if (compareModule) {
         if (compareModule.isActive()) {
-          // Already active — toggle off
+          // Already active - toggle off
           compareModule.toggleMode();
           return;
         }
@@ -1100,7 +1101,7 @@ function initializeEventListeners() {
     setInterval(() => notesModule.refreshDueBadge(), 5 * 60 * 1000);
   }
 
-  // URL-based panel routing — bookmark /calendar, /notes, /cookbook etc
+  // URL-based panel routing - bookmark /calendar, /notes, /cookbook etc
   // and the matching tool opens automatically on page load.
   const urlPath = window.location.pathname;
   // Current width of the always-visible icon rail. The rail is resizable
@@ -1114,7 +1115,7 @@ function initializeEventListeners() {
     return Math.round(r.getBoundingClientRect().width);
   };
   // Collapse the wide sidebar so the icon rail (48px mini sidebar) shows
-  // in its place. The two are mutually exclusive — sidebar-layout.js:57
+  // in its place. The two are mutually exclusive - sidebar-layout.js:57
   // only displays the rail when `.sidebar.hidden` is set. Used by /email
   // and /notes route openers so those fullscreen views keep the rail
   // visible as the user's navigation strip. Records the prior state on
@@ -1150,7 +1151,7 @@ function initializeEventListeners() {
   // needing to import app.js directly.
   window._restoreSidebarIfRouteCollapsed = _restoreSidebarIfRouteCollapsed;
   // Clear the marker the moment the sidebar becomes visible again (user
-  // hamburger click, or our own _restoreSidebarIfRouteCollapsed call —
+  // hamburger click, or our own _restoreSidebarIfRouteCollapsed call -
   // both endpoints are the same observable state change).
   {
     const sb = document.getElementById('sidebar');
@@ -1205,7 +1206,7 @@ function initializeEventListeners() {
       // single frame later it's in the DOM and ready to be flagged.
       // Fullscreen leaves the icon-rail visible on the left so navigation
       // stays one click away (per #93). Width = viewport minus rail.
-      // Just add the class — the CSS rule for .email-lib-fullscreen .modal-content
+      // Just add the class - the CSS rule for .email-lib-fullscreen .modal-content
       // owns all the positioning (with !important so it beats openEmailLibrary's
       // post-mount centering rAF) and reads the rail width from --icon-rail-w.
       const _goFullscreen = () => {
@@ -1225,11 +1226,11 @@ function initializeEventListeners() {
     '/library':  () => sessionModule && sessionModule.openLibrary && sessionModule.openLibrary(),
   };
   const _opener = _routeOpen[urlPath];
-  // Defer the opener — at this point in init, the modules whose handlers we
+  // Defer the opener - at this point in init, the modules whose handlers we
   // trigger (#rail-new-session click handler, the email-section header click
   // handler in emailInbox, sessionModule) are still being wired up further
   // down in this same function. startupShell decides when it can run: as soon
-  // as wiring completes, or — for the routes that read the session list —
+  // as wiring completes, or - for the routes that read the session list -
   // once /api/sessions has settled.
   deferRouteOpener(urlPath, _opener);
 
@@ -1258,7 +1259,7 @@ function initializeEventListeners() {
     });
   }
 
-  // Manage Chats — opens Full Library modal (decoupled from Chats accordion toggle)
+  // Manage Chats - opens Full Library modal (decoupled from Chats accordion toggle)
   const chatsLibraryBtn = el('chats-library-btn');
   if (chatsLibraryBtn) {
     chatsLibraryBtn.addEventListener('click', (e) => {
@@ -1291,7 +1292,7 @@ function initializeEventListeners() {
     });
   }
 
-  // Sidebar user bar — settings, admin, profile
+  // Sidebar user bar - settings, admin, profile
   const userBarSettings = el('user-bar-settings');
   const userBarProfile = el('user-bar-profile');
   const userBarAdmin = el('user-bar-admin');
@@ -1308,7 +1309,7 @@ function initializeEventListeners() {
     userBarAdmin.addEventListener('click', () => adminModule.open());
   }
 
-  // Fetch auth status — populate user bar and show admin button if admin
+  // Fetch auth status - populate user bar and show admin button if admin
   fetch(`${API_BASE}/api/auth/status`, { credentials: 'same-origin' })
     .then(r => r.json())
     .then(d => {
@@ -1373,7 +1374,7 @@ function initializeEventListeners() {
     document.addEventListener('click', () => { sortDropdown.style.display = 'none'; });
     sortDropdown.addEventListener('click', (e) => e.stopPropagation());
 
-    // Sort mode options (newest, oldest, last active) — toggleable
+    // Sort mode options (newest, oldest, last active) - toggleable
     sortDropdown.querySelectorAll('.sort-option').forEach(opt => {
       opt.addEventListener('click', () => {
         const mode = opt.dataset.sort;
@@ -1409,7 +1410,7 @@ function initializeEventListeners() {
     sortBtn.addEventListener('click', _syncSortChecks);
     _syncSortChecks();
 
-    // AI auto-sort — spinner on the sort button itself. Used by both
+    // AI auto-sort - spinner on the sort button itself. Used by both
     // the main "★ Tidy" button (AI) and the sub-row "Tidy" button
     // (no AI, Phase 1 cleanup only) via the skipLlm flag.
     async function _runTidy(skipLlm) {
@@ -1427,7 +1428,7 @@ function initializeEventListeners() {
         const data = await res.json();
         if (!res.ok) throw new Error(data.detail || 'Auto-sort failed');
         if (data.status === 'ok') {
-          sessionModule.setSortMode(null); // clear sort — tidy creates manual folder order
+          sessionModule.setSortMode(null); // clear sort - tidy creates manual folder order
           _syncSortChecks();
           if (skipLlm) {
             // No-AI path: just report what got cleaned. No "unfiled
@@ -1442,9 +1443,9 @@ function initializeEventListeners() {
             let msg;
             if (data.updated > 0) {
               msg = `Sorted ${data.updated} into ${data.folders.length} folder${data.folders.length === 1 ? '' : 's'}`;
-              if (remaining > 0) msg += ` — ${remaining} unfiled left, hit Group again`;
+              if (remaining > 0) msg += ` - ${remaining} unfiled left, hit Group again`;
             } else if (remaining > 0) {
-              msg = `${remaining} unfiled chats — hit Group again`;
+              msg = `${remaining} unfiled chats - hit Group again`;
             } else {
               msg = 'All sorted';
             }
@@ -1490,7 +1491,7 @@ function initializeEventListeners() {
 
 
 
-  // Feature visibility — hide admin-disabled features
+  // Feature visibility - hide admin-disabled features
   // Use prefetched data from login page if available
   const _prefetchedFeatures = sessionStorage.getItem('ody-prefetch-features');
   sessionStorage.removeItem('ody-prefetch-features');
@@ -1510,7 +1511,7 @@ function initializeEventListeners() {
         }
       });
       // Re-apply the user's Appearance UI-vis preferences after the
-      // features fetch finishes hiding things — otherwise an admin-
+      // features fetch finishes hiding things - otherwise an admin-
       // disabled feature leaves the sidebar entry hidden even when the
       // user's "Show in sidebar" toggle is on. The user has to toggle
       // off then on to trigger applyUIVis a second time, which is the
@@ -1524,7 +1525,7 @@ function initializeEventListeners() {
   // that asks for settings this load gets the same snapshot without a request.
   window._initSettingsReady = getSettings()
     .then(settings => {
-      // NOTE: image_gen_enabled only governs *generating* images in chat — the
+      // NOTE: image_gen_enabled only governs *generating* images in chat - the
       // tool is blocked server-side (chat_routes / agent_loop). The Gallery
       // holds uploads and past images too, so it stays visible regardless;
       // use the `gallery` feature flag to hide the Gallery entirely.
@@ -1713,7 +1714,7 @@ function initializeEventListeners() {
 
 // Voice recording is handled by the dual-purpose send/mic button (see below)
 
-  // ── Toggle persistence — delegates to Storage module ──
+  // ── Toggle persistence - delegates to Storage module ──
   function loadToggleState() {
     return Storage.loadToggleState();
   }
@@ -1955,7 +1956,7 @@ function initializeEventListeners() {
       saveToolPref(stateKey, curMode, chk.checked);
       showToolToggleToast(stateKey, chk.checked);
       if (chk.checked) _showToolSplash(stateKey);
-      // Web search and Research are mutually exclusive — Research takes priority
+      // Web search and Research are mutually exclusive - Research takes priority
       if (stateKey === 'web' && chk.checked) {
         const resChk = el('research-toggle');
         if (resChk && resChk.checked) {
@@ -2040,8 +2041,8 @@ function initializeEventListeners() {
   window._syncRagIndicator = _syncRagIndicator;
   window._syncResearchIndicator = _syncResearchIndicator;
   // Must be assigned at module level (not inside the function body) so the very
-  // first external caller — group.js / sessions.js fire it before it has ever
-  // run locally — finds it instead of silently no-op'ing (the "group indicator
+  // first external caller - group.js / sessions.js fire it before it has ever
+  // run locally - finds it instead of silently no-op'ing (the "group indicator
   // sometimes doesn't appear" bug).
   window._syncGroupIndicator = _syncGroupIndicator;
   // Init RAG state on load
@@ -2070,11 +2071,11 @@ function initializeEventListeners() {
     let _refocusOnBlur = false;
     function _flagRefocus(e) {
       if (e.target.closest('textarea, input')) return;
-      // Don't refocus for attach — file picker needs full focus control
+      // Don't refocus for attach - file picker needs full focus control
       if (e.target.closest('#overflow-attach-btn')) return;
-      // Don't refocus for model picker button — focus should go to picker search input
+      // Don't refocus for model picker button - focus should go to picker search input
       if (e.target.closest('.model-picker-btn')) return;
-      // Don't refocus when tapping the +/chevron tools button — the user
+      // Don't refocus when tapping the +/chevron tools button - the user
       // is explicitly trying to dismiss the keyboard and open the tools
       // menu. Without this, the textarea blurs (keyboard down), then this
       // handler re-focuses it (keyboard bounces back up).
@@ -2082,7 +2083,7 @@ function initializeEventListeners() {
       if (document.activeElement === _msgTextarea) _refocusOnBlur = true;
     }
     chatInputBar.addEventListener('touchstart', _flagRefocus, { passive: true });
-    // Overflow menu is position:fixed — may not bubble through chatInputBar on mobile
+    // Overflow menu is position:fixed - may not bubble through chatInputBar on mobile
     const _overflowMenu = el('overflow-menu');
     if (_overflowMenu) _overflowMenu.addEventListener('touchstart', _flagRefocus, { passive: true });
     // Model picker menu too
@@ -2107,7 +2108,7 @@ function initializeEventListeners() {
     if (!plusBtn || !menu) return;
 
     // `.chat-input-bar` has `container-type: inline-size`, which makes it the
-    // containing block for `position: fixed` descendants — so this menu gets
+    // containing block for `position: fixed` descendants - so this menu gets
     // trapped in the composer's stacking context and renders BEHIND the
     // attach-strip (worse the more files you add). Portal it to <body> while
     // open so its fixed position + z-index apply against the viewport, then
@@ -2141,7 +2142,7 @@ function initializeEventListeners() {
     plusBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       // Closing path needs to play the fold-in animation, not just flip
-      // .hidden — route through closeOverflowMenu so the second-click
+      // .hidden - route through closeOverflowMenu so the second-click
       // close looks the same as click-outside / Escape / item-pick.
       const isOpen = !menu.classList.contains('hidden') && !menu.classList.contains('closing');
       if (isOpen) {
@@ -2188,7 +2189,7 @@ function initializeEventListeners() {
     }
     // Close menu when clicking any item inside it. preventDefault on pointerdown
     // so tapping an item (e.g. Attach files) doesn't steal focus from the message
-    // box — keeps the mobile keyboard up.
+    // box - keeps the mobile keyboard up.
     menu.querySelectorAll('.overflow-menu-item').forEach(item => {
       item.addEventListener('pointerdown', (e) => { e.preventDefault(); });
       item.addEventListener('click', () => closeOverflowMenu());
@@ -2230,7 +2231,7 @@ function initializeEventListeners() {
         _syncResearchIndicator(turningOn);
         if (turningOn) {
           _showToolSplash('research');
-          // Clear character — mutually exclusive with research
+          // Clear character - mutually exclusive with research
           if (presetsModule && presetsModule.deactivateCharacter) presetsModule.deactivateCharacter();
           // Research and Web search are mutually exclusive
           const webChk = el('web-toggle');
@@ -2240,7 +2241,7 @@ function initializeEventListeners() {
             if (webBtn) webBtn.classList.remove('active');
             saveToolPref('web', (loadToggleState().mode || 'chat'), false);
           }
-          // Research requires chat mode — force switch from agent
+          // Research requires chat mode - force switch from agent
           const rs = loadToggleState();
           if (rs.mode === 'agent') {
             rs.mode = 'chat';
@@ -2264,7 +2265,7 @@ function initializeEventListeners() {
     const overflowWrapper = document.querySelector('.overflow-wrapper');
     if (!inputLeft || !overflowMenu || !overflowWrapper) return;
 
-    // Buttons that can be collapsed (in reverse priority — last collapsed first)
+    // Buttons that can be collapsed (in reverse priority - last collapsed first)
     const collapsibleIds = ['bash-toggle-btn', 'web-toggle-btn'];
     const collapsibleBtns = collapsibleIds.map(id => el(id)).filter(Boolean);
     // Map of toolbar btn id → overflow mirror element (created dynamically)
@@ -2437,7 +2438,7 @@ function initializeEventListeners() {
 	      // Keep a prompt inside the composer even when the picker crowds the row.
 	      // A blank placeholder makes the mobile/compact empty state feel broken.
 	      setComposerPlaceholder(w);
-      // Hide entire bottom toolbar (tools, mode toggle) — only send button remains
+      // Hide entire bottom toolbar (tools, mode toggle) - only send button remains
       if (inputBottom) {
         inputBottom.classList.toggle('toolbar-auto-hidden', w < TOOLBAR_HIDE_WIDTH);
       }
@@ -2505,7 +2506,7 @@ function initializeEventListeners() {
       _syncResearchIndicator(turningOn);
       if (turningOn) {
         _showToolSplash('research');
-        // Clear character — mutually exclusive with research
+        // Clear character - mutually exclusive with research
         if (presetsModule && presetsModule.deactivateCharacter) presetsModule.deactivateCharacter();
         // Mutual exclusion with web search
         const webChk = el('web-toggle');
@@ -2548,13 +2549,13 @@ function initializeEventListeners() {
           // Also hide welcome screen
           if (chatModule && chatModule.hideWelcomeScreen) chatModule.hideWelcomeScreen();
         }
-        // Start group — create participant sessions immediately
+        // Start group - create participant sessions immediately
         const sid = sessionModule.getCurrentSessionId() || 'group-' + Date.now();
         await groupModule.startGroup(picked, sid);
         // Re-hide picker after everything settles
         const _mpw = el('model-picker-wrap');
         if (_mpw) _mpw.style.display = 'none';
-        uiModule.showToast(`Group chat ready — ${picked.length} models`);
+        uiModule.showToast(`Group chat ready - ${picked.length} models`);
       } else {
         _syncGroupIndicator(false);
         groupModule.stopGroup();
@@ -2565,7 +2566,7 @@ function initializeEventListeners() {
     });
   }
 
-  // ── Group toggle button (chatbox indicator) — click to deactivate ──
+  // ── Group toggle button (chatbox indicator) - click to deactivate ──
   const groupToggleBtn = el('group-toggle-btn');
   if (groupToggleBtn) {
     groupToggleBtn.addEventListener('click', () => {
@@ -2592,14 +2593,14 @@ function initializeEventListeners() {
   if (incognitoBtn) {
     incognitoBtn.addEventListener('mousedown', (e) => e.preventDefault());
     incognitoBtn.addEventListener('click', () => {
-      // Don't toggle mid-chat — incognito only changeable from welcome screen
+      // Don't toggle mid-chat - incognito only changeable from welcome screen
       const ws = el('welcome-screen');
       if (ws && ws.classList.contains('hidden')) return;
       const chk = el('incognito-toggle');
       chk.checked = !chk.checked;
       incognitoBtn.classList.toggle('active', chk.checked);
       const tipEl = el('welcome-tip');
-      incognitoBtn.title = chk.checked ? 'Disable Nobody mode' : 'Enable Nobody mode — no memory, no history saved';
+      incognitoBtn.title = chk.checked ? 'Disable Nobody mode' : 'Enable Nobody mode - no memory, no history saved';
       const welcomeName = document.querySelector('.welcome-name');
       if (chk.checked) {
         try {
@@ -2627,7 +2628,7 @@ function initializeEventListeners() {
         // Default to plain chat: disable tools visually, switch to chat mode.
         // IMPORTANT: don't overwrite the user's persisted per-mode tool prefs
         // (`web_agent`, `bash_agent`, `web_chat`, `bash_chat`). Nobody mode is
-        // ephemeral — their agent-mode defaults must come back on toggle-off.
+        // ephemeral - their agent-mode defaults must come back on toggle-off.
         const beforeNobody = Storage.getJSON(Storage.KEYS.TOGGLES, {}) || {};
         if (!beforeNobody.nobody_prev_mode) beforeNobody.nobody_prev_mode = beforeNobody.mode || 'agent';
         Storage.setJSON(Storage.KEYS.TOGGLES, beforeNobody);
@@ -2702,7 +2703,7 @@ function initializeEventListeners() {
     });
   }
 
-  // Incognito indicator click — deactivate incognito
+  // Incognito indicator click - deactivate incognito
   const incognitoIndicator = el('incognito-indicator');
   if (incognitoIndicator) {
     incognitoIndicator.addEventListener('click', () => {
@@ -2776,14 +2777,14 @@ function initializeEventListeners() {
       applyUIVis(state);
       syncRearrangeChecks();
       uiModule.showToast(!wasOn ? 'Rearrange enabled' : 'Rearrange disabled');
-      // Close the dropdown the toggle lives in — the sort dropdown's own
+      // Close the dropdown the toggle lives in - the sort dropdown's own
       // click-stopPropagation means it won't close on its own.
       const dd = toggle.closest('[id$="-sort-dropdown"]');
       if (dd) dd.style.display = 'none';
     });
   });
 
-  // Esc exits rearrange mode (no matter where focus/mouse is) — matches the
+  // Esc exits rearrange mode (no matter where focus/mouse is) - matches the
   // global Esc-cancels-select pattern. Capture phase so a sort dropdown that
   // happens to be open doesn't swallow it first.
   document.addEventListener('keydown', (e) => {
@@ -2922,7 +2923,7 @@ function initializeEventListeners() {
   /** Walk all text nodes inside an element and replace emojis with text descriptions */
   function deEmojify(root) {
     if (!root || !root.querySelectorAll) return;
-    // Monochrome SVG spans from svgifyEmoji — Unicode lives in aria-label only
+    // Monochrome SVG spans from svgifyEmoji - Unicode lives in aria-label only
     root.querySelectorAll('.emoji[aria-label]').forEach((span) => {
       if (span.closest(_DEOJ_SKIP)) return;
       const label = span.getAttribute('aria-label') || '';
@@ -2949,7 +2950,7 @@ function initializeEventListeners() {
     }
   }
 
-  // Observe chat history for new/changed messages — de-emojify on the fly
+  // Observe chat history for new/changed messages - de-emojify on the fly
   let _deEmojifyTimer = null;
   const _chatObs = new MutationObserver(() => {
     if (!document.body.classList.contains('text-emojis')) return;
@@ -3232,7 +3233,7 @@ function initializeEventListeners() {
 
   // Mobile: horizontal swipe on a tabbed window switches tabs. Works for any
   // tab bar whose buttons are siblings and switch on click (Prompt, Library,
-  // Brain, Theme) — we just click the prev/next tab so the existing switch
+  // Brain, Theme) - we just click the prev/next tab so the existing switch
   // logic runs. Swipes that start on interactive controls (sliders, inputs,
   // the chip dock) are ignored so they don't fight text selection / dragging.
   (function initTabSwipe() {
@@ -3283,7 +3284,7 @@ function initializeEventListeners() {
     }, { passive: true });
   })();
 
-  // Elastic overscroll (rubber-band bounce) — desktop wheel only, on chat-history not container
+  // Elastic overscroll (rubber-band bounce) - desktop wheel only, on chat-history not container
   (function initElasticScroll() {
     const hist = el('chat-history');
     if (!hist) return;
@@ -3320,7 +3321,7 @@ function initializeEventListeners() {
       const _resChk = el('research-toggle');
       if (_resChk && _resChk.checked) _syncResearchIndicator(false);
       if (preferModel && await _createDirectChatFromPreferredModel()) return;
-      // No models at all — show welcome screen
+      // No models at all - show welcome screen
       _startFreshChat();
       const docBtn3 = el('overflow-doc-btn');
       if (docBtn3) docBtn3.classList.remove('active', 'has-docs');
@@ -3340,7 +3341,7 @@ function initializeEventListeners() {
     });
   }
 
-  // Mobile new chat button — always go to blank welcome screen.
+  // Mobile new chat button - always go to blank welcome screen.
   // The send path at chat.js:354 will auto-create a session using /api/default-chat
   // on first submit, so users can start typing before models finish loading and
   // the default model attaches when they hit send.
@@ -3354,7 +3355,7 @@ function initializeEventListeners() {
       document.querySelectorAll('.session-item.active').forEach(s => s.classList.remove('active'));
       // Focus the composer synchronously so mobile keyboards pop open.
       // iOS Safari only honours programmatic focus inside the original click
-      // callback — a setTimeout breaks the user-gesture chain.
+      // callback - a setTimeout breaks the user-gesture chain.
       const _input = el('message-input');
       if (_input) { try { _input.focus(); } catch (_) {} }
     });
@@ -3673,7 +3674,7 @@ function startTelemachosApp() {
   document.documentElement.style.setProperty('--line-height', '20px');
   initRailHoverLabels();
 
-  // Smooth keyboard open/close on mobile — keep chat scrolled to bottom
+  // Smooth keyboard open/close on mobile - keep chat scrolled to bottom
   if (window.visualViewport && 'ontouchstart' in window) {
     let _prevVPH = visualViewport.height;
     visualViewport.addEventListener('resize', () => {
@@ -3727,7 +3728,7 @@ function startTelemachosApp() {
     searchChatModule.init(API_BASE);
   }
 
-  // Search buttons — icon rail + sidebar
+  // Search buttons - icon rail + sidebar
   const railSearchBtn = el('rail-search-btn');
   if (railSearchBtn) {
     railSearchBtn.addEventListener('click', () => {
@@ -3735,7 +3736,7 @@ function startTelemachosApp() {
     });
   }
 
-  // Rail tool buttons — delegate to sidebar tool buttons
+  // Rail tool buttons - delegate to sidebar tool buttons
   const _railToolMap = {
     'rail-compare':   'tool-compare-btn',
     'rail-research':  'tool-research-btn',
@@ -3759,7 +3760,7 @@ function startTelemachosApp() {
     }
   });
 
-  // Rail chats — click to open the completed background session
+  // Rail chats - click to open the completed background session
   const _railChatsBtn = el('rail-chats');
   if (_railChatsBtn) {
     _railChatsBtn.addEventListener('click', () => {
@@ -3767,14 +3768,14 @@ function startTelemachosApp() {
       if (targetSid && window.sessionModule) {
         window.sessionModule.selectSession(targetSid);
       }
-      // Clear notification — session will call clearStreamComplete on load
+      // Clear notification - session will call clearStreamComplete on load
       _railChatsBtn.classList.remove('rail-notify', 'rail-notify-success');
       delete _railChatsBtn.dataset.targetSession;
       _syncRailDynamic();
     });
   }
 
-  // Rail documents — toggle doc panel on/off (not library)
+  // Rail documents - toggle doc panel on/off (not library)
   const _railDocsBtn = el('rail-documents');
   if (_railDocsBtn) {
     _railDocsBtn.addEventListener('click', () => {
@@ -3952,7 +3953,7 @@ function startTelemachosApp() {
       // Check if we're already on a fresh empty session (welcome screen visible)
       const isEmptySession = document.getElementById('chat-container')?.classList.contains('welcome-active');
       if (isEmptySession) {
-        // Already on new chat — show arrow in muted style (ready to type)
+        // Already on new chat - show arrow in muted style (ready to type)
         sendBtn.innerHTML = _sendIcon;
         sendBtn.title = 'Send message';
         newMode = 'idle';
@@ -3965,7 +3966,7 @@ function startTelemachosApp() {
         newMode = 'newchat';
         sendBtn.classList.add('newchat-mode');
         sendBtn.classList.remove('mic-mode');
-        // The button stays a 32px compact icon (no auto-expand to label —
+        // The button stays a 32px compact icon (no auto-expand to label -
         // the "+ New" label inside is for screen readers only; sighted users
         // see the spinning + on hover + the title tooltip).
         clearTimeout(sendBtn._expandTimer);
@@ -3995,12 +3996,12 @@ function startTelemachosApp() {
         sendBtn.classList.remove('mic-mode', 'newchat-mode', 'newchat-expanded', 'anim-spin', 'anim-launch', 'anim-land');
       }
     }
-    // Animate icon spin — when switching TO newchat or mic (the + or mic
+    // Animate icon spin - when switching TO newchat or mic (the + or mic
     // appearing). The previous `prevMode && ...` guard skipped this after
     // streaming ended (dataset.mode is reset to '' there, an empty falsy
     // string), which let the lingering anim-land class from the stop icon's
     // entry replay on the +, making it look like the + comes from below.
-    // Never animate into send mode (arrow) — it should just appear instantly.
+    // Never animate into send mode (arrow) - it should just appear instantly.
     if (newMode !== prevMode && (newMode === 'newchat' || newMode === 'mic')) {
       if (!sendBtn.classList.contains('anim-spin')) {
         sendBtn.classList.remove('anim-launch', 'anim-land');
@@ -4030,7 +4031,7 @@ function startTelemachosApp() {
         return;
       }
 
-      // New chat mode — empty input, no attachments, no STT
+      // New chat mode - empty input, no attachments, no STT
       if (!hasText && !hasFiles && sendBtn.dataset.mode === 'newchat') {
         if (sessionModule) {
           const sessions = sessionModule.getSessions();
@@ -4282,7 +4283,7 @@ function startTelemachosApp() {
   // Load initial data
   presetsModule.loadPresets(uiModule.showError);
 
-  // Core wiring is complete for this turn — reveal the shell independently of
+  // Core wiring is complete for this turn - reveal the shell independently of
   // the session-list request.
   revealApplicationShellAfterPaint();
 
@@ -4503,7 +4504,7 @@ function startTelemachosApp() {
         e.preventDefault();
         _sidebarTouchMoved = false;
       }
-    }, true); // capture phase — intercepts before any child handlers
+    }, true); // capture phase - intercepts before any child handlers
   }
 
   // Section collapse/expand + drag reorder (extracted to js/section-management.js)
@@ -4567,6 +4568,10 @@ function startTelemachosApp() {
   }
   
 
+
+  // The local-model picker. Guarded because a failure here must not take the
+  // rest of the start-up down with it.
+  try { initLocalModels(); } catch (e) { console.error('initLocalModels failed:', e); }
 
   if (window.hljs) {
     console.log('Highlighting all code blocks on page load');

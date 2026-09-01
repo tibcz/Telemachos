@@ -1,5 +1,5 @@
 """
-Authentication module — multi-user password hashing, session tokens, config persistence.
+Authentication module - multi-user password hashing, session tokens, config persistence.
 Config stored in data/auth.json. Uses bcrypt directly.
 """
 
@@ -33,7 +33,7 @@ DEFAULT_PRIVILEGES = {
     "allowed_models": [],
     "allowed_models_restricted": False,
     # Explicit "block every model" sentinel. An empty `allowed_models` list is
-    # ambiguous — it's also what gets sent when the admin clicks "[All]" — so
+    # ambiguous - it's also what gets sent when the admin clicks "[All]" - so
     # we need a dedicated flag to express "this user may use no models at all"
     # distinctly from "this user has no restriction".
     "block_all_models": False,
@@ -42,7 +42,7 @@ DEFAULT_PRIVILEGES = {
 # Admins get everything
 ADMIN_PRIVILEGES = {k: (True if isinstance(v, bool) else (0 if isinstance(v, int) else [])) for k, v in DEFAULT_PRIVILEGES.items()}
 ADMIN_PRIVILEGES["allowed_models_restricted"] = False
-# Admins must never be blocked from using models — the generic dict
+# Admins must never be blocked from using models - the generic dict
 # comprehension above flips every boolean default to True, which would be
 # backwards for this sentinel.
 ADMIN_PRIVILEGES["block_all_models"] = False
@@ -128,7 +128,7 @@ class AuthManager:
                 logger.info("Auth config loaded")
             else:
                 self._config = {}
-                logger.info("No auth config found — first-run setup required")
+                logger.info("No auth config found - first-run setup required")
         except Exception as e:
             logger.error(f"Failed to load auth config: {e}")
             self._config = {}
@@ -410,7 +410,7 @@ class AuthManager:
         be locked out of admin access; self-demotion is allowed as long as
         another admin remains. Admin status is re-checked live on every
         request, so unlike delete/rename no session or token revocation is
-        needed — a demoted admin simply fails the next is_admin() gate.
+        needed - a demoted admin simply fails the next is_admin() gate.
 
         Promotion stashes the user's current privilege map and demotion
         restores it, so a temporary admin stint can't silently broaden a
@@ -438,7 +438,7 @@ class AuthManager:
                     return SetAdminResult.LAST_ADMIN
             # Write order matters for lock-free readers: get_privileges()
             # reads without _config_lock and trusts is_admin, so the admin
-            # flag must be flipped while the stored map is safe to expose —
+            # flag must be flipped while the stored map is safe to expose -
             # before writing admin privileges on promote, after restoring
             # the pre-admin map on demote.
             if is_admin:
@@ -454,7 +454,7 @@ class AuthManager:
             else:
                 # Restore the stashed pre-admin map. Fall back to defaults for
                 # users created as admins (their stored map is ADMIN_PRIVILEGES,
-                # which must not leak past demotion — e.g. can_use_bash) and
+                # which must not leak past demotion - e.g. can_use_bash) and
                 # for admins promoted before the stash existed.
                 target["privileges"] = dict(
                     target.pop("privileges_before_admin", None)
@@ -532,7 +532,7 @@ class AuthManager:
         secret = user.get("totp_secret")
         if not secret:
             # 2FA is enabled but no secret is stored (corrupt/partially-written
-            # auth.json). Fail closed — returning True here bypassed the second
+            # auth.json). Fail closed - returning True here bypassed the second
             # factor entirely.
             return False
         # Check backup codes first
@@ -635,7 +635,7 @@ class AuthManager:
                 expired = True
             else:
                 _u = session["username"]
-                # SECURITY: orphan check — same rationale as validate_token.
+                # SECURITY: orphan check - same rationale as validate_token.
                 if _u not in self.users:
                     self._sessions.pop(token, None)
                     deleted_user = True

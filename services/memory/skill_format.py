@@ -73,7 +73,7 @@ def slugify(text: str, fallback: str = "skill") -> str:
 
 
 # ---------------------------------------------------------------------------
-# Frontmatter (minimal YAML — we don't pull in PyYAML for one feature)
+# Frontmatter (minimal YAML - we don't pull in PyYAML for one feature)
 # ---------------------------------------------------------------------------
 
 # We accept a tiny subset of YAML: scalar `key: value`, inline lists `[a, b]`,

@@ -60,7 +60,7 @@ def test_expand_rrule_with_utc_until_keeps_all_occurrences():
 
     results = cal._expand_rrule(ev, datetime(2024, 1, 1), datetime(2024, 1, 10))
 
-    # Jan 1, 2, 3, 4, 5 — five daily occurrences up to and including UNTIL.
+    # Jan 1, 2, 3, 4, 5 - five daily occurrences up to and including UNTIL.
     assert len(results) == 5, (
         f"Expected 5 daily occurrences bounded by UTC UNTIL, got "
         f"{len(results)}: {[r['uid'] for r in results]}"

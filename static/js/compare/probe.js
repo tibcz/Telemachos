@@ -1,4 +1,4 @@
-// compare/probe.js — model probe/check system
+// compare/probe.js - model probe/check system
 import state from './state.js';
 import { WAVE_FRAMES } from './icons.js';
 import uiModule from '../ui.js';
@@ -30,7 +30,7 @@ async function _checkUnprobed() {
     } catch (_) { /* spinner best-effort */ }
   }
 
-  // Quick inline probe — show toast with results
+  // Quick inline probe - show toast with results
   const isBlind = state._blindMode;
   let ok = 0, fail = 0;
   try {

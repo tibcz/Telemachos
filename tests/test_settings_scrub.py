@@ -2,7 +2,7 @@
 
 The /settings endpoint is auth-exempt (the frontend + the pre-login page read it
 for keybinds / TTS prefs), so non-admin and unauthenticated callers receive a
-*scrubbed* copy. Secrets must never leak to them — load-bearing when the app is
+*scrubbed* copy. Secrets must never leak to them - load-bearing when the app is
 reachable over a Cloudflare tunnel / reverse proxy. These pin the scrub: deep
 (nested), broad secret-key coverage, and no collateral damage to real prefs.
 

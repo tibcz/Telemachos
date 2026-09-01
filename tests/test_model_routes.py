@@ -1,4 +1,4 @@
-"""Tests for model route helper functions — pure logic, no server needed."""
+"""Tests for model route helper functions - pure logic, no server needed."""
 import asyncio
 import json
 import sys
@@ -189,7 +189,7 @@ def test_default_assignment_when_none_configured():
 def test_default_assignment_when_current_default_disabled():
     # #3586: the configured default points at an endpoint that is no longer
     # enabled (the user disabled it). Adding a new endpoint must reassign the
-    # default — otherwise Memory → Tidy keeps failing with "No default model
+    # default - otherwise Memory → Tidy keeps failing with "No default model
     # configured" even though an enabled endpoint exists.
     assert _default_endpoint_needs_assignment("disabled-ep", {"new-ep"}) is True
 
@@ -563,7 +563,7 @@ class TestClassifyEndpoint:
         ]
 
     def test_ping_endpoint_no_models_fallback_on_auth_failure(self, monkeypatch):
-        """401/403 are definitive — don't probe /models."""
+        """401/403 are definitive - don't probe /models."""
         monkeypatch.setattr(endpoint_resolver, "resolve_url", lambda url: url, raising=False)
         seen = []
 
@@ -578,7 +578,7 @@ class TestClassifyEndpoint:
 
         assert result["reachable"] is False
         assert result["status_code"] == 401
-        # Should NOT have tried /models — 401 is definitive
+        # Should NOT have tried /models - 401 is definitive
         assert len(seen) == 1
 
 

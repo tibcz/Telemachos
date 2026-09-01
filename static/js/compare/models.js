@@ -1,4 +1,4 @@
-// compare/models.js — model classification, fetching, display names, persistence
+// compare/models.js - model classification, fetching, display names, persistence
 import Storage from '../storage.js';
 import state from './state.js';
 import uiModule from '../ui.js';

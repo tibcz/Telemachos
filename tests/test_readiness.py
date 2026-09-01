@@ -22,6 +22,6 @@ def test_local_first_check_is_informational_never_fatal():
     result = check_readiness()
     lf = result["checks"]["local_first"]
     # local_first reports whether storage stays on-host but must never gate
-    # readiness — a remote database is a valid deployment.
+    # readiness - a remote database is a valid deployment.
     assert lf["ok"] is True
     assert "local" in lf

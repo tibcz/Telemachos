@@ -1,5 +1,5 @@
 /**
- * FX / adjustment-popup machinery — the per-layer Brightness/Contrast,
+ * FX / adjustment-popup machinery - the per-layer Brightness/Contrast,
  * Hue/Saturation, Levels, and Color-Balance editor.
  *
  * Self-contained subsystem with three external touchpoints:
@@ -78,7 +78,7 @@ export function createAdjPopupSystem({ composite, saveState, renderLayerPanel })
     return a;
   }
 
-  // Floating dock for minimised FX popups — lives at bottom-right.
+  // Floating dock for minimised FX popups - lives at bottom-right.
   function ensureFxDock() {
     let dock = document.getElementById('ge-fx-dock');
     if (!dock) {
@@ -333,7 +333,7 @@ export function createAdjPopupSystem({ composite, saveState, renderLayerPanel })
 
     pop.querySelector('.ge-adj-close')?.addEventListener('click', closeAdjPopup);
     pop.querySelector('.ge-adj-min')?.addEventListener('click', () => minimiseAdjPopup(pop));
-    // Drag by head — anywhere except buttons. Mobile pins via !important
+    // Drag by head - anywhere except buttons. Mobile pins via !important
     // rules; setProperty with 'important' lets inline styles win during drag.
     const head = pop.querySelector('[data-adj-drag]');
     if (head) {
@@ -469,9 +469,9 @@ export function createAdjPopupSystem({ composite, saveState, renderLayerPanel })
         <div class="ge-adj-hist-wrap">
           <canvas class="ge-adj-histogram" width="280" height="80"></canvas>
           <div class="ge-adj-hist-handles">
-            <div class="ge-adj-hist-handle hist-h-black"  data-handle="inBlack"  title="Input black — drag"></div>
-            <div class="ge-adj-hist-handle hist-h-gamma"  data-handle="gamma"    title="Gamma — drag"></div>
-            <div class="ge-adj-hist-handle hist-h-white"  data-handle="inWhite"  title="Input white — drag"></div>
+            <div class="ge-adj-hist-handle hist-h-black"  data-handle="inBlack"  title="Input black - drag"></div>
+            <div class="ge-adj-hist-handle hist-h-gamma"  data-handle="gamma"    title="Gamma - drag"></div>
+            <div class="ge-adj-hist-handle hist-h-white"  data-handle="inWhite"  title="Input white - drag"></div>
           </div>
         </div>
       </details>
@@ -663,7 +663,7 @@ export function createAdjPopupSystem({ composite, saveState, renderLayerPanel })
     });
   }
 
-  // Legacy sidebar-FX panel sync — FX now lives in a per-layer popup;
+  // Legacy sidebar-FX panel sync - FX now lives in a per-layer popup;
   // stubbed so any stale callers don't error.
   function syncFxPanelToActiveLayerIfPresent() { /* no-op */ }
 

@@ -12,7 +12,7 @@ import { portOf, nextFreePort } from './cookbookPorts.js';
 import { topPortalZ } from './toolWindowZOrder.js';
 
 // Human-friendly badge label for a task's internal status. Avoids surfacing
-// the word "error" in the sidebar — a server the user stopped or one that
+// the word "error" in the sidebar - a server the user stopped or one that
 // quit cleanly reads as "stopped", not "error".
 function _statusLabel(status, type) {
   if (status === 'running' && type === 'download') return 'downloading';
@@ -35,7 +35,7 @@ function _downloadBadgeText(progress) {
 
 // Single source of truth for what a task's status badge shows + its style class.
 // Crucially, a serve task that's still coming up shows its live phase
-// ("loading 45%", "warming up", …) rather than the generic "running" — they're
+// ("loading 45%", "warming up", …) rather than the generic "running" - they're
 // the same state, so the badge shouldn't flip between two different labels on
 // every re-render. Returns { text, cls } where cls is appended after
 // "cookbook-task-status" ('' = the neutral loading style).
@@ -45,7 +45,7 @@ function _taskBadge(task) {
     return { text: _downloadBadgeText(task.progress), cls: 'cookbook-task-downloading' };
   }
   if (task.type === 'serve' && task.status === 'running' && task.progress) {
-    // Same green "running" pill — just with dynamic phase text, so it doesn't
+    // Same green "running" pill - just with dynamic phase text, so it doesn't
     // read as a different status while the server is coming up.
     return { text: task.progress, cls: 'cookbook-task-running' };
   }
@@ -112,7 +112,7 @@ function _downloadServeFields(task) {
 }
 
 // A download task whose tmux output still shows an active per-shard line
-// (e.g. "model-00012-of-00082.safetensors: 56%|") is NOT actually finished —
+// (e.g. "model-00012-of-00082.safetensors: 56%|") is NOT actually finished -
 // the cookbook just lost track. The clear pill becomes a "reconnect" affordance
 // in that case (click → revive the row + reattach the poll loop).
 function _downloadOutputLooksActive(task) {
@@ -130,7 +130,7 @@ function _canClearTask(task) {
   if (!task || task.status === 'running') return false;
   if (task.type === 'serve' && (task.status === 'ready' || (!['error', 'crashed', 'failed', 'completed'].includes(task.status) && _serveOutputLooksReady(task)))) return false;
   // If the tmux output still shows an in-flight download, the task isn't
-  // actually finished — hide the clear/check pill so it doesn't show on a
+  // actually finished - hide the clear/check pill so it doesn't show on a
   // task that's still doing work. (The next render will reflect this and
   // ideally the self-heal flips status back to running.)
   if (_downloadOutputLooksActive(task)) return false;
@@ -151,7 +151,7 @@ function _venvRootFromPath(path) {
 
 // A pip dependency/driver install (payload._dep) reports success with the
 // runner's "=== Process exited with code 0 ===" sentinel and pip's
-// "Successfully installed" line — never the HuggingFace download markers
+// "Successfully installed" line - never the HuggingFace download markers
 // (DONE / 100% / /snapshots/ / DOWNLOAD_OK) that the download heuristics look
 // for. Without this, a clean install whose tmux pane has already gone away is
 // misread as crashed/stopped even though pip exited 0. Prefer the authoritative
@@ -225,14 +225,14 @@ function _terminalServeDiagnosis(task, outputText) {
   const out = String(outputText || task?.output || '');
   if (!task || task.type !== 'serve' || !['stopped', 'error', 'crashed', 'failed'].includes(task.status) || !out.trim()) return null;
   // Suppress the crash diagnosis when the output proves the server
-  // actually became reachable — e.g. an early `exit 127` from a failed
+  // actually became reachable - e.g. an early `exit 127` from a failed
   // build attempt was followed by the shim/Python fallback successfully
   // starting Uvicorn. Without this, the user sees a confusing "build
   // stopped before the server became reachable" toast while the server
   // is right there serving requests.
   if (_serveOutputLooksReady(task)) return null;
   // Pip tasks (Reinstall vLLM, Upgrade torch, etc.) ride on the serve task
-  // type so they get a tmux session + show up in Running tab — but they are
+  // type so they get a tmux session + show up in Running tab - but they are
   // NOT serve invocations. Their output is pip's own; the generic
   // "Serve stopped before the model became reachable" message + Edit-serve
   // fix make no sense. Bail so the panel just shows pip's output.
@@ -449,7 +449,7 @@ export function _parseServePhase(snapshot) {
   // "Avg generation throughput: X tokens/s, Running: N reqs"
   const tpsMatches = [...flat.matchAll(/(?:Avg )?generation throughput:\s*([\d.]+)\s*tokens\/s.*?Running:\s*(\d+)\s*reqs/g)];
 
-  // Throughput FIRST — its log line contains "GPU KV cache usage" which would
+  // Throughput FIRST - its log line contains "GPU KV cache usage" which would
   // otherwise false-match the warmup check
   if (tpsMatches.length) {
     const m = tpsMatches[tpsMatches.length - 1];
@@ -492,7 +492,7 @@ export function _parseServePhase(snapshot) {
   if (flat.includes('Loading weights took')) {
     return { phase: 'initializing', status: 'running' };
   }
-  // "GPU KV cache" alone (during allocation) — not "GPU KV cache usage" (runtime log)
+  // "GPU KV cache" alone (during allocation) - not "GPU KV cache usage" (runtime log)
   if (flat.includes('GPU KV cache') && !flat.includes('GPU KV cache usage')) {
     return { phase: 'warming up', status: 'running' };
   }
@@ -657,7 +657,7 @@ function _isImageServeTask(task) {
   return cmd.includes('diffusion_server') || cmd.includes('mlx_image_server');
 }
 
-// ── Download queue — runs one at a time per server ──
+// ── Download queue - runs one at a time per server ──
 
 function _processQueue() {
   const tasks = _loadPrunedTasks();
@@ -682,7 +682,7 @@ async function _startQueuedDownload(task) {
     return;
   }
   // Flip to 'running' SYNCHRONOUSLY (before the async POST) so a concurrent
-  // _processQueue — or a second "Start now" — can't see it as still 'queued' and
+  // _processQueue - or a second "Start now" - can't see it as still 'queued' and
   // launch the same download a second time. Without this, finishing another
   // download mid-POST re-queued this one into a duplicate task.
   {
@@ -754,7 +754,7 @@ function _serveOutputLooksReady(task) {
 function _normalizeTaskForDisplay(task) {
   if (!task || typeof task !== 'object') return task;
   // Pip tasks (Reinstall vLLM / Upgrade torch / etc.) ride on the serve task
-  // type so they get tmux + the Running tab. They are NOT serves — their
+  // type so they get tmux + the Running tab. They are NOT serves - their
   // "ready" markers are pip's `Successfully installed` / `Requirement already
   // satisfied`, not "Application startup complete".
   const _isPipTask = ((task.payload?.repo_id || '').startsWith('pip-'))
@@ -764,7 +764,7 @@ function _normalizeTaskForDisplay(task) {
     // success markers gets displayed as `done` regardless of what's in
     // localStorage. Old pre-fix runs landed in error/stopped state and
     // stuck there even after we taught the rest of the flow about pip
-    // tasks — this is the catch-all that flips them to Finished on render.
+    // tasks - this is the catch-all that flips them to Finished on render.
     const out = String(task.output || '');
     const ranOk = /Successfully installed|Requirement already (?:satisfied|up-to-date)/i.test(out)
       && !/error:|ERROR:/.test(out.slice(-1024));
@@ -832,7 +832,7 @@ function _loadPrunedTasks() {
 }
 
 // Tombstones for removed tasks. Without these, removing a task only deletes it
-// locally — but the server still has it (its own POST guard even re-preserves
+// locally - but the server still has it (its own POST guard even re-preserves
 // recently-added ones), so the next sync/poll merges it right back ("I removed
 // it and it came back"). A tombstone makes the removal stick: merges skip any
 // id the user removed, until the entry expires.
@@ -878,7 +878,7 @@ function _redactStoredText(value) {
 
 function _isServeOutputPlaceholder(value) {
   const text = String(value || '').trim();
-  return !text || /^Launched via agent\s+—\s+waiting for tmux output/i.test(text);
+  return !text || /^Launched via agent\s+-\s+waiting for tmux output/i.test(text);
 }
 
 function _redactTaskForStorage(task) {
@@ -918,7 +918,7 @@ export function _addTask(sessionId, name, type, payload) {
   const remoteServerName = (payload && payload.remote_server_name) || '';
   const sshPort = (payload && payload.ssh_port) || _getPort(remoteServerKey || remoteHost) || '';
   const platform = (payload && payload.platform) || _getPlatform(remoteServerKey || remoteHost) || '';
-  // Serving a model supersedes its finished download — clear the matching
+  // Serving a model supersedes its finished download - clear the matching
   // finished download card (covers serving directly from the Serve tab, not just
   // via the download card's "Serve →" button).
   if (type === 'serve' && payload && payload.repo_id) {
@@ -938,7 +938,7 @@ export function _addTask(sessionId, name, type, payload) {
   // New action → collapse all other cards, leave only this one open.
   _soloExpandTaskId = sessionId;
   _renderRunningTab();
-  // Always start the background monitor when a task is added — works even
+  // Always start the background monitor when a task is added - works even
   // when modal is closed and ensures the sidebar shows live status immediately
   _startBackgroundMonitor();
   // Switch to Running tab
@@ -986,7 +986,7 @@ export function _removeTask(sessionId) {
   _renderRunningTab();
 }
 
-// Fade/slide the task card out, then remove it — so the smooth exit is the same
+// Fade/slide the task card out, then remove it - so the smooth exit is the same
 // whether a task auto-stops or the user removes/kills it manually.
 function _animateOutThenRemove(el, sessionId) {
   if (!el || !el.style) { _removeTask(sessionId); return; }
@@ -1080,7 +1080,7 @@ export function _tmuxGracefulKill(task) {
 
 // Force-kill escalation: SIGKILL the tmux pane's owning PID and any children,
 // then nuke the session. Use AFTER the graceful kill when the process is
-// still detected — vLLM sometimes ignores SIGINT during model init, and a
+// still detected - vLLM sometimes ignores SIGINT during model init, and a
 // stuck CUDA context can survive `tmux kill-session` alone.
 export function _tmuxForceKill(task) {
   if (_isWindows(task)) {
@@ -1110,7 +1110,7 @@ export function _tmuxForceKill(task) {
 // Used by the Stop-all escalation to decide whether to force-kill.
 export function _tmuxIsAliveCheck(task) {
   if (_isWindows(task)) {
-    // Skip the check on Windows — the graceful path already force-kills.
+    // Skip the check on Windows - the graceful path already force-kills.
     return null;
   }
   const sid = task.sessionId;
@@ -1222,7 +1222,7 @@ export function _clearCookbookNotif() {
 
 // ── Presets helper (for save-from-task) ──
 
-// A preset must carry the venv + activated GPUs, not just the command — without
+// A preset must carry the venv + activated GPUs, not just the command - without
 // them a relaunch has no environment activated and no GPU pinning, so a config
 // that worked when saved fails on reload. Pull them from the launch payload
 // (_env/_envPath/_gpus, captured by _launchServeTask) and fold them into the
@@ -1294,7 +1294,7 @@ function _autoSaveWorkingConfig(task) {
   if (!task || task.type !== 'serve' || !task.payload?._cmd) return;
   if (task._autoSaved) return;
   const cmd = task.payload._cmd;
-  // Diffusion/image servers aren't vLLM presets — skip them.
+  // Diffusion/image servers aren't vLLM presets - skip them.
   if (cmd.includes('diffusion_server') || cmd.includes('mlx_image_server')) { task._autoSaved = true; return; }
   const model = task.payload.repo_id || task.name;
   const presets = _loadPresets();
@@ -1331,7 +1331,7 @@ function _syncToServer() {
     try {
       // Don't push a not-yet-hydrated state. A legit state always has at
       // least the "Local" server, so an empty servers list means we loaded
-      // before GET /state populated _envState — syncing it would wipe the
+      // before GET /state populated _envState - syncing it would wipe the
       // saved servers. (The server has an anti-wipe guard too; this avoids
       // the needless round-trip.)
       if (!_envState || !Array.isArray(_envState.servers) || _envState.servers.length === 0) return;
@@ -1415,7 +1415,7 @@ export async function _syncFromServer() {
     if (state.env) {
       // The active server selection (remoteHost + its env/path/platform) is a
       // per-device, live choice. NEVER let the server's stored copy overwrite
-      // it here — doing so silently snapped the active host back to whatever was
+      // it here - doing so silently snapped the active host back to whatever was
       // saved server-side, so downloads/scans ignored what the user just
       // picked. Sync only the shared non-secret settings (servers list, gpus, paths).
       const { remoteHost: _rh, env: _e, envPath: _ep, platform: _pf, ...settings } = state.env;
@@ -1452,7 +1452,7 @@ export async function _syncFromServer() {
 
 // ── Retry download ──
 
-// Bounded auto-retry counter for downloads, keyed by model — network blips on
+// Bounded auto-retry counter for downloads, keyed by model - network blips on
 // big multi-file downloads are common and HF resumes from the .incomplete parts.
 const _dlRetryCount = new Map();
 const _DL_MAX_AUTO_RETRY = 2;
@@ -1475,7 +1475,7 @@ async function _retryTask(el, task) {
       _removeTask(task.sessionId);
       _launchServeTask(task.name, task.payload.repo_id, task.payload._cmd, task.payload._fields, task.remoteHost || '');
     } else {
-      uiModule.showToast('Retrying download — progress may look reset while HuggingFace checks cached files, then it should resume.', 7000);
+      uiModule.showToast('Retrying download - progress may look reset while HuggingFace checks cached files, then it should resume.', 7000);
       _updateTask(task.sessionId, {
         status: 'running',
         output: `${task.output || ''}\n\n[telemachos] Retrying download. Progress may briefly look like a fresh download while HuggingFace checks cached/incomplete files; cached partial files will be reused when available.`.trim(),
@@ -1488,7 +1488,7 @@ async function _retryTask(el, task) {
 
 async function _retryDownload(name, payload, replaceSessionId = '') {
   try {
-    // A retry means the fast hf_transfer path already failed once — fall back to
+    // A retry means the fast hf_transfer path already failed once - fall back to
     // the plain, reliable downloader for this and any further attempt (it resumes
     // from the cached .incomplete files, so no progress is lost).
     const _payload = { ...(payload || {}), disable_hf_transfer: true };
@@ -1541,8 +1541,8 @@ async function _retryDownload(name, payload, replaceSessionId = '') {
 
 // Block stacked retries: once any "Retry with X" is clicked for a task, ignore
 // every further retry click for it. Each retry fires its own _launchServeTask,
-// so clicking several options — or one repeatedly during the fade-out / while a
-// relaunch was loading — used to stack up multiple servers (e.g. 6 launches).
+// so clicking several options - or one repeatedly during the fade-out / while a
+// relaunch was loading - used to stack up multiple servers (e.g. 6 launches).
 // The flag rides on the card element (removed right after), so it can't re-arm.
 function _guardServeRetry(panel, taskEl) {
   if (!taskEl || taskEl.dataset.retrying) return false;
@@ -1584,13 +1584,13 @@ export async function _serveAutoFix(panel, envVar) {
     uiModule.showToast(`Retrying with ${envVar}...`);
     await _launchServeTask(task.name, task.payload.repo_id, newCmd);
   } finally {
-    // Always restore — otherwise a thrown launch leaves the global host stuck
+    // Always restore - otherwise a thrown launch leaves the global host stuck
     // on this serve task, so later downloads/scans hit it.
     _envState.remoteHost = origHost;
   }
 }
 
-// Open the Serve panel pre-filled for a task — the same flow as the task's
+// Open the Serve panel pre-filled for a task - the same flow as the task's
 // Edit button, but optionally with a modified command (used by the diagnosis
 // "Retry with X" buttons so a retry lands in the editable Serve panel with the
 // adjusted setting, instead of blindly relaunching).
@@ -1936,7 +1936,7 @@ export async function _launchServeTask(shortName, repo, cmd, fields, hostOverrid
       }
     } catch {}
   }
-  // Replace any serve already targeting this same host:port — you can't run two
+  // Replace any serve already targeting this same host:port - you can't run two
   // servers on one port, so re-serving (or retrying) should stop & remove the
   // old one instead of leaving a dead duplicate behind. (The retry buttons
   // already removed their own task, so this is a no-op for them.)
@@ -1962,7 +1962,7 @@ export async function _launchServeTask(shortName, repo, cmd, fields, hostOverrid
   } catch {}
   // Capture the env + GPU pin used for THIS launch BEFORE building the request.
   // The serve panel sets _envState.env/envPath/gpus, calls us, then restores them
-  // synchronously — and our payload is built after an `await`, so reading
+  // synchronously - and our payload is built after an `await`, so reading
   // _envState there would see the restored (wrong) values. Persisting these lets
   // a saved preset relaunch with the same venv + GPUs (otherwise a confirmed
   // working config fails: no venv activation, no GPU pinning).
@@ -1999,7 +1999,7 @@ export async function _launchServeTask(shortName, repo, cmd, fields, hostOverrid
   try {
     const _preflightOk = await _confirmGpuPreflight(reqBody, shortName, repo, cmd);
     if (!_preflightOk) {
-      uiModule.showToast('Launch cancelled — GPU is already in use');
+      uiModule.showToast('Launch cancelled - GPU is already in use');
       return;
     }
     const res = await fetch('/api/model/serve', {
@@ -2062,7 +2062,7 @@ export function _renderRunningTab() {
     if (wrap.classList.contains('cookbook-task-collapsed')) _collapsedTaskIds.add(id);
     else _expandedTaskIds.add(id);
   });
-  // A new action was just started — collapse every existing card and open only
+  // A new action was just started - collapse every existing card and open only
   // the new one (works on both desktop and the mobile collapse-by-default path).
   if (_soloExpandTaskId) {
     const _allIds = new Set([..._collapsedTaskIds, ..._expandedTaskIds]);
@@ -2072,7 +2072,7 @@ export function _renderRunningTab() {
     _expandedTaskIds.add(_soloExpandTaskId);
     _soloExpandTaskId = null;
   }
-  // On mobile, task outputs start COLLAPSED — having every running window
+  // On mobile, task outputs start COLLAPSED - having every running window
   // expanded on entry meant a lot of tapping to collapse them. User-expanded
   // ones are re-opened from _expandedTaskIds below.
   const _mobileCollapseDefault = window.innerWidth <= 768;
@@ -2130,7 +2130,7 @@ export function _renderRunningTab() {
     group = document.createElement('div');
     group.className = 'cookbook-group hidden';
     group.dataset.backendGroup = 'Running';
-    // No `flex:1` on the card — with overflow:visible (forced via #cookbook-modal
+    // No `flex:1` on the card - with overflow:visible (forced via #cookbook-modal
     // .cookbook-group > .admin-card), flex:1 collapsed the card to body height
     // and the body's scrollHeight stopped tracking the overflowing children.
     // Sized-to-content means cookbook-body's overflow-y:auto kicks in naturally.
@@ -2241,11 +2241,11 @@ export function _renderRunningTab() {
       const toRemove = allTasks.filter(t => _taskServerKey(t) === host && _canClearTask(t));
       // Bail with a clear message instead of silently doing nothing when
       // every task on this server is still running (nothing finished to
-      // clear yet) — the previous behavior looked like the button was dead.
+      // clear yet) - the previous behavior looked like the button was dead.
       if (!toRemove.length) {
         const stillRunning = allTasks.filter(t => _taskServerKey(t) === host && t.status === 'running').length;
         const _msg = stillRunning
-          ? `No finished tasks on ${_serverName(host)} — ${stillRunning} still running. Stop them first to clear.`
+          ? `No finished tasks on ${_serverName(host)} - ${stillRunning} still running. Stop them first to clear.`
           : `No finished tasks on ${_serverName(host)}.`;
         if (window.uiModule?.showToast) window.uiModule.showToast(_msg);
         else alert(_msg);
@@ -2280,7 +2280,7 @@ export function _renderRunningTab() {
     });
   });
 
-  // Wire "Stop all" buttons — stop every running task on that server.
+  // Wire "Stop all" buttons - stop every running task on that server.
   group.querySelectorAll('[data-stop-server]').forEach(btn => {
     if (btn._bound) return;
     btn._bound = true;
@@ -2331,11 +2331,11 @@ export function _renderRunningTab() {
     if (task) {
       el.dataset.status = task.status;
       const isDone = task.status === 'done';
-      // Type chip doubles as the "finished" badge once a task completes — both
+      // Type chip doubles as the "finished" badge once a task completes - both
       // download and serve show the same green FINISHED chip.
       const typeChip = el.querySelector('.cookbook-task-type');
       if (typeChip) {
-        // Only DOWNLOAD tasks flip to "finished" when done — serve tasks keep
+        // Only DOWNLOAD tasks flip to "finished" when done - serve tasks keep
         // saying "serve" because the model is still running on that port.
         const isDoneDl = isDone && task.type === 'download';
         typeChip.textContent = isDoneDl ? 'finished' : task.type;
@@ -2371,7 +2371,7 @@ export function _renderRunningTab() {
       } else {
         const existingDiag = el.querySelector('.cookbook-diagnosis');
         // Keep diagnosis for failed tasks even if output was cleared and we
-        // can no longer re-derive the exact message — removing it would hide
+        // can no longer re-derive the exact message - removing it would hide
         // the crash reason from the user.
         if (existingDiag && !['stopped', 'error', 'crashed', 'failed'].includes(task.status)) {
           existingDiag.remove();
@@ -2395,7 +2395,7 @@ export function _renderRunningTab() {
     el.dataset.type = task.type || '';
 
     const _bdg = _taskBadge(task);
-    const _bdgTitle = (task._unreachable && task.status === 'running') ? ' title="Server not responding — it may have crashed"' : '';
+    const _bdgTitle = (task._unreachable && task.status === 'running') ? ' title="Server not responding - it may have crashed"' : '';
     const displayName = _taskDisplayName(task);
     const logoName = task.type === 'download' ? (task.payload?.repo_id || task.name) : task.name;
     el.innerHTML = `
@@ -2432,7 +2432,7 @@ export function _renderRunningTab() {
         const _timer = h > 0
           ? `${_prefix}: ${h}h ${String(m).padStart(2,'0')}m`
           : `${_prefix}: ${m}m ${String(s).padStart(2,'0')}s`;
-        // ETA — only for downloads, only when we have a meaningful overall %.
+        // ETA - only for downloads, only when we have a meaningful overall %.
         // Reads the badge text (which already shows the true overall % we
         // compute in the live-polling block) and back-derives a remaining-time
         // estimate from elapsed/done. Hidden until pct >= 3% so the early-job
@@ -2479,7 +2479,7 @@ export function _renderRunningTab() {
           try {
             const { openServePanelForRepo } = await import('./cookbookServe.js');
             await openServePanelForRepo(repo, _downloadServeFields(task));
-            // Serving it supersedes the finished download — clear the card from
+            // Serving it supersedes the finished download - clear the card from
             // the Running tab (smooth exit) now that we've jumped to Serve.
             _animateOutThenRemove(el, task.sessionId);
           } catch (err) { uiModule.showToast('Could not open Serve: ' + err.message); }
@@ -2487,7 +2487,7 @@ export function _renderRunningTab() {
       }
     }
 
-    // Finished tasks show a green check — make it click-to-clear so the user can
+    // Finished tasks show a green check - make it click-to-clear so the user can
     // dismiss a completed download/update (we no longer auto-remove them). It
     // morphs to a red ✕ on hover (see CSS).
     const _clearChk = el.querySelector('.cookbook-task-check');
@@ -2495,7 +2495,7 @@ export function _renderRunningTab() {
       _clearChk.addEventListener('click', (e) => {
         e.stopPropagation();
         // If the output still shows an active shard line, the task isn't
-        // actually finished — clicking is "reconnect" (flip back to running
+        // actually finished - clicking is "reconnect" (flip back to running
         // + let _reconnectTask reattach to the live tmux session), not
         // "clear". The pill label already reflects this via _clearPillLabel.
         if (_downloadOutputLooksActive(task)) {
@@ -2506,7 +2506,7 @@ export function _renderRunningTab() {
             _ft._selfHealed = true;
             _saveTasks(_fresh);
           }
-          // Visually flip without waiting for a full re-render — same path the
+          // Visually flip without waiting for a full re-render - same path the
           // self-heal uses on cookbook open.
           const _chk = el.querySelector('.cookbook-task-check');
           if (_chk) _chk.style.display = 'none';
@@ -2589,7 +2589,7 @@ export function _renderRunningTab() {
       };
       el.addEventListener('touchstart', (e) => {
         // Skip if the user is starting touch on a button / link inside the
-        // card — those already have their own tap handlers.
+        // card - those already have their own tap handlers.
         if (e.target.closest('button, a, input, textarea, .cookbook-task-dropdown')) return;
         _lpStart(e);
       }, { passive: true });
@@ -2628,12 +2628,12 @@ export function _renderRunningTab() {
         }
         items.push({ group: 'run', label: 'Restart', action: 'retry' });
         // ── Edit section ────────────────────────────────────────────
-        // Merged "Edit & relaunch" — opens the structured serve panel
+        // Merged "Edit & relaunch" - opens the structured serve panel
         // pre-filled with this task's config. The old standalone "Edit
         // cmd & relaunch" raw-text dialog is now reachable from inside
         // that panel (Show command). Single entry-point per task.
         if (task.type === 'serve' && task.payload?.repo_id) {
-          items.push({ group: 'edit', label: 'Edit & relaunch', action: 'edit-panel', tooltip: 'Open the Serve config panel pre-filled with this task — pick a different backend, change GPUs, edit env vars or the raw cmd, then Launch.', custom: () => _openEdit() });
+          items.push({ group: 'edit', label: 'Edit & relaunch', action: 'edit-panel', tooltip: 'Open the Serve config panel pre-filled with this task - pick a different backend, change GPUs, edit env vars or the raw cmd, then Launch.', custom: () => _openEdit() });
         }
         if (task.type === 'serve' && task.payload?._cmd) {
           items.push({ group: 'edit', label: 'Save serve', action: 'save', custom: () => {
@@ -2643,7 +2643,7 @@ export function _renderRunningTab() {
           }});
         }
         // ── Endpoint section ────────────────────────────────────────
-        // Manual endpoint registration — fallback for when auto-add fails
+        // Manual endpoint registration - fallback for when auto-add fails
         // (e.g. probe timeout on a remote that's slow). Forces adding this
         // serve to the model-endpoints list regardless of prior flag state.
         if (task.type === 'serve' && task.payload?._cmd) {
@@ -2653,7 +2653,7 @@ export function _renderRunningTab() {
             const port = portMatch ? portMatch[1] : '8000';
             const baseUrl = `http://${host}:${port}/v1`;
             try {
-              // Check existing first — offer to overwrite if present
+              // Check existing first - offer to overwrite if present
               const eps = await (await fetch('/api/model-endpoints', { credentials: 'same-origin' })).json();
               const existing = eps.find(e => e.base_url === baseUrl);
               if (existing) {
@@ -2703,7 +2703,7 @@ export function _renderRunningTab() {
             _copyText(logCmd);
           }});
         } else {
-          // Just the tmux command itself — no ssh wrapper.
+          // Just the tmux command itself - no ssh wrapper.
           const tmuxAttach = `tmux attach -t ${task.sessionId}`;
           items.push({ group: 'copy', label: 'Copy tmux', action: 'copy-tmux', custom: () => {
             _copyText(tmuxAttach);
@@ -2727,7 +2727,7 @@ export function _renderRunningTab() {
           _copyText(last);
           uiModule.showToast('Copied last 50 lines');
         }});
-        // Label matches behavior — the kill handler ALWAYS first kills
+        // Label matches behavior - the kill handler ALWAYS first kills
         // the live tmux session and (for serve tasks) deletes the
         // matching model-endpoint, THEN animates the task card out.
         // Just "Remove" hid that it stops the live serve too.
@@ -2818,7 +2818,7 @@ export function _renderRunningTab() {
             _cleanup();
           }
         };
-        // Close on scroll too — once the page scrolls, the dropdown's
+        // Close on scroll too - once the page scrolls, the dropdown's
         // fixed position no longer matches the originating ⋮ button, so
         // it visually drifts. Matches the email kebab behaviour.
         const scrollClose = () => _cleanup();
@@ -2900,12 +2900,12 @@ export function _renderRunningTab() {
           body: JSON.stringify({ command: _tmuxGracefulKill(task) }),
         });
       } catch {}
-      // ...then smoothly fade/slide the card out and auto-remove it — no manual
+      // ...then smoothly fade/slide the card out and auto-remove it - no manual
       // ⋮ → Remove needed.
       _animateOutThenRemove(el, task.sessionId);
     });
 
-    // Wire kill — awaits the SSH/tmux kill and verifies the session is
+    // Wire kill - awaits the SSH/tmux kill and verifies the session is
     // actually gone before removing the row. Previously fire-and-forget,
     // which meant a failed kill (wrong remoteHost, SSH error, tmux server
     // already exited) silently left the live serve running while the
@@ -2932,7 +2932,7 @@ export function _renderRunningTab() {
         });
         if (r.ok) {
           const out = await r.json();
-          // Don't trust exit_code alone — tmux kill returns 0 even when
+          // Don't trust exit_code alone - tmux kill returns 0 even when
           // there was nothing to kill. Verify the session is actually gone.
           if (task.sessionId && isLive) {
             try {
@@ -2953,7 +2953,7 @@ export function _renderRunningTab() {
         }
       } catch (_) { killOk = false; }
       if (!killOk) {
-        try { uiModule.showToast('Kill failed — session may still be running. Check `tmux ls` on the server.', 'error'); } catch (_) {}
+        try { uiModule.showToast('Kill failed - session may still be running. Check `tmux ls` on the server.', 'error'); } catch (_) {}
         return;  // leave the row so the user can retry
       }
       if (task.type === 'serve' && task.payload) {
@@ -2999,7 +2999,7 @@ export function _renderRunningTab() {
     else group.appendChild(el);
 
     // Auto-attach the tmux output stream for any task whose underlying
-    // session could still be alive — not just 'running'. Scheduler-
+    // session could still be alive - not just 'running'. Scheduler-
     // launched serves transition to 'ready' as soon as /v1/models
     // responds; without this, the user opens the Running tab and sees
     // only the placeholder ("Launched by scheduled task …") because
@@ -3113,7 +3113,7 @@ async function _reconnectTask(el, task) {
             && (lastOutput.includes('DONE') || lastOutput.includes('100%') || lastOutput.includes('/snapshots/') || lastOutput.includes('Download complete') || lastOutput.includes('DOWNLOAD_OK'));
           // Pip install / reinstall tasks are launched via _launchServeTask (so
           // they show up in the Running tab + use tmux) but they aren't real
-          // serves — the cmd is `python3 -m pip ...` and the success markers
+          // serves - the cmd is `python3 -m pip ...` and the success markers
           // are pip's own. Without this branch, a successful reinstall ends
           // with no "Uvicorn running on" line and gets mis-flagged as a crashed
           // serve.
@@ -3124,7 +3124,7 @@ async function _reconnectTask(el, task) {
             && !/error:|ERROR:/.test(lastOutput.slice(-1024));
           const serveLooksReady = task.type === 'serve' && _serveOutputLooksReady({ ...task, output: lastOutput });
           // Dependency installs are tracked as download tasks but finish with a
-          // pip exit-0 sentinel, not HF download markers — check that too.
+          // pip exit-0 sentinel, not HF download markers - check that too.
           // Standalone pip-* serves finish with pip's own success line, not
           // HF or "Uvicorn running on".
           const depInstallSucceeded = !!task.payload?._dep && _depInstallSucceeded(lastOutput);
@@ -3171,7 +3171,7 @@ async function _reconnectTask(el, task) {
               const progressMatch = String(lastOutput || '').match(/(\d+)%\|/);
               const nearDone = progressMatch && Number(progressMatch[1]) >= 80;
               // Reconnect: most "crashed" downloads near the end are actually
-              // finished — we just missed the DOWNLOAD_OK / /snapshots/ marker
+              // finished - we just missed the DOWNLOAD_OK / /snapshots/ marker
               // because output rolled over, or the tmux session ended a tick
               // before we polled. Probing has-session and re-attaching to
               // capture-pane lets the existing _reconnectTask flow pick up
@@ -3201,8 +3201,8 @@ async function _reconnectTask(el, task) {
                 suggestion: isDisk
                   ? 'Suggested action: free disk space, then retry the download. HuggingFace resumes incomplete files when possible.'
                   : nearDone
-                  ? 'Suggested action: hit Reconnect first — the download may have finished after the output buffer rolled over. Retry only if reconnect cannot recover.'
-                  : 'Suggested action: hit Reconnect to re-attach to the tmux session. If that fails, retry — HuggingFace resumes incomplete files when possible.',
+                  ? 'Suggested action: hit Reconnect first - the download may have finished after the output buffer rolled over. Retry only if reconnect cannot recover.'
+                  : 'Suggested action: hit Reconnect to re-attach to the tmux session. If that fails, retry - HuggingFace resumes incomplete files when possible.',
                 fixes: isDisk
                   ? [
                       { label: 'Retry download', action: () => _retryTask(el, task) },
@@ -3229,11 +3229,11 @@ async function _reconnectTask(el, task) {
             }
             _showCookbookNotif(true);
           } else {
-            // Strong completion markers — `DOWNLOAD_OK` is emitted by our
+            // Strong completion markers - `DOWNLOAD_OK` is emitted by our
             // downloader wrapper AFTER the model snapshot is on disk, and
             // `/snapshots/` only appears once HF has resolved the cached
             // tree. Either is conclusive. Finalize as done immediately, skip
-            // the 30s debounce — the debounce only exists to guard against
+            // the 30s debounce - the debounce only exists to guard against
             // ambiguous markers (bare "100%" / "Download complete") which can
             // appear mid-stream during multi-file downloads.
             const _strongDone = task.type === 'download'
@@ -3275,7 +3275,7 @@ async function _reconnectTask(el, task) {
                     });
                     const pData = await probe.json();
                     stillAlive = pData.exit_code === 0;
-                  } catch { /* network blip — treat as inconclusive, prefer running */ stillAlive = true; }
+                  } catch { /* network blip - treat as inconclusive, prefer running */ stillAlive = true; }
                   if (stillAlive) {
                     _updateTask(task.sessionId, { status: 'running', _doneConfirmAt: null, _lastStatusFlipAt: Date.now() });
                     const _el = document.querySelector(`.cookbook-task[data-task-id="${task.sessionId}"]`);
@@ -3303,7 +3303,7 @@ async function _reconnectTask(el, task) {
                   _refreshDepsAfterInstall(task);
                   _renderRunningTab();
                   _processQueue();
-                } catch { /* swallow — next polling cycle will retry */ }
+                } catch { /* swallow - next polling cycle will retry */ }
               }, 30000);
             }
           }
@@ -3336,7 +3336,7 @@ async function _reconnectTask(el, task) {
             const speedMatch = [...snapshot.matchAll(/([\d.]+)(?:MB|GB)\/s/g)];
             const lastSpeed = speedMatch.length ? speedMatch[speedMatch.length - 1][0] : null;
             // hf_transfer prints "Downloading (incomplete total...): 73% | 1.81G/2.49G"
-            // — the real aggregate byte progress. The "Fetching N files" line (often
+            // - the real aggregate byte progress. The "Fetching N files" line (often
             // last in the output) sits at 0%, so lastPct/_fetchPct can read 0 even at
             // 73% done. Prefer this aggregate when present.
             const _dlAggMatches = [...snapshot.matchAll(/Downloading\s*\(incomplete[^)]*\):\s*(\d+)%/g)];
@@ -3347,14 +3347,14 @@ async function _reconnectTask(el, task) {
             // progress signal: it climbs continuously while transferring (even when
             // the % plateaus during a big hf_transfer chunk) and FREEZES when stuck.
             // The % alone plateaus (false stall), and a frozen frame still shows a
-            // stale speed/ETA — so keying off speed masked real stalls (that's why a
+            // stale speed/ETA - so keying off speed masked real stalls (that's why a
             // 97%-stuck download went undetected). Bytes are the honest signal; fall
             // back to %/aggregate only when no byte counter is present.
             const _byteMatches = [...snapshot.matchAll(/([\d.]+\s?[KMGT])B?\s*\/\s*[\d.]+\s?[KMGT]B?/gi)];
             const _bytes = _byteMatches.length ? _byteMatches[_byteMatches.length - 1][1].replace(/\s/g, '') : null;
             // When there's no byte counter (pip resolve / native build phase of a
             // dependency install), key off the output tail so new build lines count
-            // as progress — otherwise a long quiet build is falsely declared stale
+            // as progress - otherwise a long quiet build is falsely declared stale
             // and restarted mid-build, looping forever (#1568).
             const curProgress = computeProgressSignal(_bytes, _dlAgg, lastPct, snapshot);
             const _fetchPctMatches = [...snapshot.matchAll(/Fetching\s+\d+\s+files:\s*(\d+)%/g)];
@@ -3368,12 +3368,12 @@ async function _reconnectTask(el, task) {
               el._lastProgressTime = Date.now();
             } else if (!isPipDep && Date.now() - (el._lastProgressTime || 0) > _STALE_TIMEOUT && task._autoRestarted) {
               const mins = Math.floor((Date.now() - (el._lastProgressTime || 0)) / 60000);
-              // Already auto-restarted once and stalled again — make the badge a
+              // Already auto-restarted once and stalled again - make the badge a
               // one-click retry (resumes from the cached partial files) so the
               // user doesn't have to dig into the ⋮ menu.
               badge.textContent = `stalled ${mins}m ↻`;
               badge.className = 'cookbook-task-status cookbook-task-error';
-              badge.title = 'Click to retry — resumes where it stopped';
+              badge.title = 'Click to retry - resumes where it stopped';
               badge.style.cursor = 'pointer';
               if (!badge._retryBound) {
                 badge._retryBound = true;
@@ -3382,7 +3382,7 @@ async function _reconnectTask(el, task) {
             } else if (!isPipDep && Date.now() - (el._lastProgressTime || 0) > _STALE_TIMEOUT && !task._autoRestarted) {
               task._autoRestarted = true;
               _updateTask(task.sessionId, { _autoRestarted: true });
-              badge.textContent = _startupStalled ? '0% stall — retrying' : 'stale — restarting';
+              badge.textContent = _startupStalled ? '0% stall - retrying' : 'stale - restarting';
               badge.className = 'cookbook-task-status cookbook-task-error';
               _showCookbookNotif(true);
               try {
@@ -3394,14 +3394,14 @@ async function _reconnectTask(el, task) {
               } catch {}
               try {
                 // Reuse original payload so the full repo_id (e.g. "Qwen/Qwen3.5-...")
-                // is preserved — rebuilding from task.repo/task.name drops the org prefix.
+                // is preserved - rebuilding from task.repo/task.name drops the org prefix.
                 const dlPayload = task.payload
                   ? { ...task.payload }
                   : { repo_id: task.repo || task.name, remote_host: task.remoteHost || '' };
                 if (_envState.hfToken) dlPayload.hf_token = _envState.hfToken;
-                // Stalled with hf_transfer — restart on the reliable downloader.
+                // Stalled with hf_transfer - restart on the reliable downloader.
                 dlPayload.disable_hf_transfer = true;
-                // Don't overwrite env_prefix — task.payload already has the correct
+                // Don't overwrite env_prefix - task.payload already has the correct
                 // "source <path>" form. The bare envPath would miss the `source` and
                 // the venv never activates (so hf CLI falls off PATH).
                 const res = await fetch('/api/model/download', {
@@ -3420,7 +3420,7 @@ async function _reconnectTask(el, task) {
                   continue;
                 }
               } catch {}
-              badge.textContent = 'stale — restart failed';
+              badge.textContent = 'stale - restart failed';
               badge.className = 'cookbook-task-status cookbook-task-error';
               _showCookbookNotif(true);
               break;
@@ -3439,7 +3439,7 @@ async function _reconnectTask(el, task) {
             const _useShardAgg = _curShardNum && _totalShards && _totalShards > 1;
 
             // HF's own "Fetching N files: X%" aggregate counts ALL files,
-            // including ones already finished in a previous session (resume) —
+            // including ones already finished in a previous session (resume) -
             // so on a resumed download it reflects the true overall progress,
             // whereas completed/totalFiles only see this session's files (→ 0%).
             // Take the higher of the two so resume doesn't read as 0%.
@@ -3457,7 +3457,7 @@ async function _reconnectTask(el, task) {
               badge.textContent = text;
               badge.className = 'cookbook-task-status cookbook-task-running';
             } else if (_dlAgg != null) {
-              // Real aggregate byte progress — most accurate; take the max of all signals.
+              // Real aggregate byte progress - most accurate; take the max of all signals.
               let pct = _dlAgg;
               if (_fetchPct != null) pct = Math.max(pct, _fetchPct);
               let text = `${pct}%`;
@@ -3484,10 +3484,10 @@ async function _reconnectTask(el, task) {
             }
             if (snapshot.includes('DOWNLOAD_FAILED')) {
               // The wrapper prints DOWNLOAD_FAILED but exits 0, and per-file
-              // "Download complete"/"100%" lines make it look successful — so
+              // "Download complete"/"100%" lines make it look successful - so
               // catch the explicit failure marker and handle it.
               // A gated/auth failure can NEVER be fixed by retrying (the HF token
-              // is sent, but its account isn't approved for this repo) — skip the
+              // is sent, but its account isn't approved for this repo) - skip the
               // auto-retries and surface the gated diagnosis straight away.
               const _accessDenied = /Access to model.*is restricted|gated repo|GatedRepoError|401 Unauthorized|403 Forbidden|not in the authorized list|awaiting a review|must (?:be authenticated|have access)/i.test(snapshot);
               const _dlKey = task.payload?.repo_id || task.name;
@@ -3498,7 +3498,7 @@ async function _reconnectTask(el, task) {
                 _dlRetryCount.set(_dlKey, _dlN + 1);
                 badge.textContent = `retrying (${_dlN + 1}/${_DL_MAX_AUTO_RETRY})…`;
                 badge.className = 'cookbook-task-status cookbook-task-running';
-                uiModule.showToast(`Download interrupted — retrying (${_dlN + 1}/${_DL_MAX_AUTO_RETRY}), resumes where it stopped…`, 6000);
+                uiModule.showToast(`Download interrupted - retrying (${_dlN + 1}/${_DL_MAX_AUTO_RETRY}), resumes where it stopped…`, 6000);
                 const _p = task.payload, _nm = task.name;
                 try {
                   await fetch('/api/shell/exec', {
@@ -3511,14 +3511,14 @@ async function _reconnectTask(el, task) {
                 setTimeout(() => { _retryDownload(_nm, _p); }, 8000);
                 break;
               }
-              // Out of auto-retries (or not a download) — surface the error; the
+              // Out of auto-retries (or not a download) - surface the error; the
               // card's Retry button stays available to resume manually.
               badge.textContent = _statusLabel('error', task.type);
               badge.className = 'cookbook-task-status cookbook-task-error';
               _updateTask(task.sessionId, { status: 'error' });
               el.dataset.status = 'error';
               // Explain a gated/access failure with actionable buttons (request
-              // access on HF, check token) — otherwise it's just raw red text.
+              // access on HF, check token) - otherwise it's just raw red text.
               if (_accessDenied) {
                 const _diag = _diagnose(snapshot);
                 if (_diag) {
@@ -3554,7 +3554,7 @@ async function _reconnectTask(el, task) {
           }
         }
 
-        // Live status parsing for serve tasks — uses shared _parseServePhase
+        // Live status parsing for serve tasks - uses shared _parseServePhase
         if (task.type === 'serve') {
           const badge = el.querySelector('.cookbook-task-status');
           if (badge) {
@@ -3570,10 +3570,10 @@ async function _reconnectTask(el, task) {
             }
             if (info.phase) {
               badge.textContent = info.phase;
-              // Always the green "running" style — loading/warming is the same
+              // Always the green "running" style - loading/warming is the same
               // state, just with dynamic text (don't switch to a neutral style).
               badge.className = 'cookbook-task-status cookbook-task-running';
-              // Live output reporting 'ready' is direct proof the server is up —
+              // Live output reporting 'ready' is direct proof the server is up -
               // clear a stale "unreachable" flag here too. The HTTP probe can lag,
               // miss a remote endpoint, or cache a down result, leaving the card
               // stuck red even after the server recovered ("doesn't recheck").
@@ -3606,7 +3606,7 @@ async function _reconnectTask(el, task) {
           }
           _showDiagnosis(el, diag, snapshot);
         }
-        // Detect serve ready — auto-add to model endpoints. Don't flip
+        // Detect serve ready - auto-add to model endpoints. Don't flip
         // `_endpointAdded` until the POST succeeds; otherwise a transient
         // error silently prevents any future retry. An in-flight guard
         // prevents a second poll from firing a duplicate POST before the
@@ -3630,11 +3630,11 @@ async function _reconnectTask(el, task) {
           fetch('/api/model-endpoints', { credentials: 'same-origin' })
             .then(r => r.json())
             .then(async (eps) => {
-              // Match only exact base_url — don't dedup by friendly name,
+              // Match only exact base_url - don't dedup by friendly name,
               // because other endpoints may happen to share a model name.
               const exists = eps.some(e => e.base_url === baseUrl);
               if (exists) {
-                // Already registered — e.g. the backend pre-registers diffusion
+                // Already registered - e.g. the backend pre-registers diffusion
                 // endpoints server-side. Mark so we don't retry, but STILL
                 // refresh the picker (and probe until online) so the new model
                 // shows up without the user having to manually refresh.
@@ -3716,7 +3716,7 @@ async function _reconnectTask(el, task) {
         if (snapshot.includes('=== Process exited with code')) {
           const codeMatch = snapshot.match(/=== Process exited with code (\d+)/);
           const code = codeMatch ? parseInt(codeMatch[1]) : -1;
-          // Serve tasks that exit without reaching ready state are always errors —
+          // Serve tasks that exit without reaching ready state are always errors -
           // a serve process should run indefinitely
           const status = (task.type === 'serve' && !task._serveReady) ? 'error'
             : (code === 0 ? 'done' : 'error');
@@ -3811,7 +3811,7 @@ function _canBackgroundPoll() {
 
 // Reachability check for running serve tasks. The tmux pane can stay alive
 // while the model server inside it has crashed (so no "Process exited" line
-// ever appears) — leaving the card showing "running" forever. So we actively
+// ever appears) - leaving the card showing "running" forever. So we actively
 // probe the registered endpoint (same /probe-local the model picker uses) and
 // flag the card "unreachable" (red) when the server stops answering.
 let _serveReachabilityInFlight = false;
@@ -3848,13 +3848,13 @@ async function _checkServeReachability() {
       const port = portMatch ? portMatch[1] : '8000';
       const baseUrl = `http://${host}:${port}/v1`;
       const ep = (eps || []).find(e => e.base_url === baseUrl);
-      if (!ep) continue;                       // not registered yet — can't judge
+      if (!ep) continue;                       // not registered yet - can't judge
       const pr = probe[ep.id];
-      if (!pr || pr.alive === undefined) continue;  // not probed (non-local) — skip
+      if (!pr || pr.alive === undefined) continue;  // not probed (non-local) - skip
       // Record the first time it actually answers. Until then the server is still
       // LOADING/warming (the endpoint can get registered on the 300s timeout for a
       // big model that hasn't finished loading), and a not-yet-answering server is
-      // not "unreachable" — flagging it as such while you're launching is a false
+      // not "unreachable" - flagging it as such while you're launching is a false
       // alarm. Only treat it as unreachable once it has been reachable at least once.
       if (pr.alive === true && !task._everReachable) {
         task._everReachable = true;
@@ -3873,9 +3873,9 @@ async function _checkServeReachability() {
           if (unreachable) {
             badge.textContent = 'unreachable';
             badge.className = 'cookbook-task-status cookbook-task-error';
-            badge.title = pr.error || 'Server not responding — it may have crashed';
+            badge.title = pr.error || 'Server not responding - it may have crashed';
           } else if (badge.textContent === 'unreachable') {
-            // Recovered — restore the normal running label.
+            // Recovered - restore the normal running label.
             badge.textContent = _statusLabel('running', task.type);
             badge.className = 'cookbook-task-status cookbook-task-running';
             badge.title = '';
@@ -3960,9 +3960,9 @@ function _refreshServerDots() {
 }
 
 // Self-heal: scan persisted download tasks marked done/error/crashed and
-// check whether their tmux session is still alive on the host. If yes —
+// check whether their tmux session is still alive on the host. If yes -
 // the task isn't actually finished, the cookbook just lost the in-flight
-// status during restart — flip status back to 'running' so _reconnectTask
+// status during restart - flip status back to 'running' so _reconnectTask
 // picks it up. The one-shot guard is enforced by callers (open path) or
 // time-throttled inside (background-monitor path).
 let _selfHealRan = false;
@@ -3986,7 +3986,7 @@ export async function _selfHealStaleTasks(opts = {}) {
     if (!['done', 'error', 'crashed', 'stopped'].includes(t.status)) return false;
     if (!t.sessionId || String(t.sessionId).startsWith('queue-')) return false;
     // Finished downloads with strong completion markers (DOWNLOAD_OK or HF
-    // /snapshots/ resolution) are demonstrably done — do not flip them back
+    // /snapshots/ resolution) are demonstrably done - do not flip them back
     // to running just because the tmux session is still alive (e.g., a
     // long-lived shell that hosted the download or a flapping SSH that
     // reports the session as up). This was the main source of finished↔
@@ -4030,7 +4030,7 @@ export async function _selfHealStaleTasks(opts = {}) {
           }
         }
       }
-    } catch { /* network blip — skip this one */ }
+    } catch { /* network blip - skip this one */ }
   }
   if (flipped) {
     console.log(`[cookbook] auto-reconnect: revived ${flipped} task(s) whose tmux session was still alive`);
@@ -4086,7 +4086,7 @@ async function _probeEndpointUntilOnline(epId, host, port) {
     await new Promise(r => setTimeout(r, interval));
     if (!_isCookbookVisible() || _foregroundChatBusy()) return;
     try {
-      // Hit the probe endpoint — it re-probes server-side and updates
+      // Hit the probe endpoint - it re-probes server-side and updates
       // cached_models. We consume (and discard) the SSE stream.
       const probeRes = await fetch(`/api/model-endpoints/${epId}/probe`, { credentials: 'same-origin' }).catch(() => null);
       if (probeRes && probeRes.status === 404) return;
@@ -4192,8 +4192,8 @@ async function _pollBackgroundStatus() {
         const depDone = !!task.payload?._dep && _depInstallSucceeded(combinedOutput);
         // A finished model download whose tmux pane is gone is also reported
         // "stopped" (the dead-session check can miss the landed snapshot).
-        // Recover "done" from the terminal `DOWNLOAD_OK` sentinel — emitted
-        // only after the runner exits 0 — so a completed download isn't
+        // Recover "done" from the terminal `DOWNLOAD_OK` sentinel - emitted
+        // only after the runner exits 0 - so a completed download isn't
         // downgraded to crashed. This background poll runs blind (no live
         // stream to debounce against), so unlike the reconnect loop it keys
         // off the conclusive exit sentinel only, never the `/snapshots/` path,
@@ -4306,7 +4306,7 @@ async function _pollBackgroundStatus() {
               return null;
             }
             _updateTask(t.session_id, { _endpointAdded: true });
-            // Already registered — but it may be showing offline because
+            // Already registered - but it may be showing offline because
             // it was added while the server was still warming. Kick a
             // re-probe so it flips online without manual toggle.
             if (!(existing.models || []).length) _probeEndpointUntilOnline(existing.id, host, port);
@@ -4329,7 +4329,7 @@ async function _pollBackgroundStatus() {
             const data = await res.json().catch(() => ({}));
             // A just-started server often can't answer the 1s add-time
             // probe, so it lands "offline". Retry-probe in the background
-            // until /v1/models responds — no manual enable/disable needed.
+            // until /v1/models responds - no manual enable/disable needed.
             if (data && data.id) _probeEndpointUntilOnline(data.id, host, port);
             if (window.modelsModule?.refreshModels) await window.modelsModule.refreshModels(false);
             if (window.sessionModule?.updateModelPicker) window.sessionModule.updateModelPicker();

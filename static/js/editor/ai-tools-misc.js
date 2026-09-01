@@ -1,5 +1,5 @@
 /**
- * Misc AI-tool wiring — the three AI tools that don't share the
+ * Misc AI-tool wiring - the three AI tools that don't share the
  * inpaint pipeline:
  *
  *   Harmonize: Reinhard color transfer on a body mask (no AI redraw)
@@ -36,7 +36,7 @@ export function wireAIToolsMisc({
   flatten, saveState, fitZoom, composite, createLayer, renderLayerPanel,
   spinnerModule, uiModule,
 }) {
-  // ── Harmonize sliders — Color match + Seam fix ──
+  // ── Harmonize sliders - Color match + Seam fix ──
   const harmColorPrev = document.getElementById('ge-harmonize-color-preview');
   const harmSeamPrev = document.getElementById('ge-harmonize-seam-preview');
   document.getElementById('ge-harmonize-color')?.addEventListener('input', (e) => {
@@ -48,7 +48,7 @@ export function wireAIToolsMisc({
     if (harmSeamPrev) harmSeamPrev.style.opacity = (parseInt(e.target.value, 10) / 100).toFixed(2);
   });
 
-  // Harmonize button — two-stage:
+  // Harmonize button - two-stage:
   //   1) Reinhard color transfer on body mask (no AI redraw)
   //   2) Optional narrow inpaint on seam mask (if seam_fix > 0)
   document.getElementById('ge-harmonize-run')?.addEventListener('click', () => {
@@ -61,10 +61,10 @@ export function wireAIToolsMisc({
     const seam_mask = seam_fix > 0.01 ? buildSeamMask(seamFeather) : null;
     // Harmonize needs a non-base layer to color-match against the
     // background. Without one, the server would fall back to legacy
-    // whole-image img2img — i.e. regenerate the whole photo. Block
+    // whole-image img2img - i.e. regenerate the whole photo. Block
     // that and tell the user what's missing.
     if (!body_mask) {
-      if (uiModule) uiModule.showToast('Harmonize needs a second layer pasted/imported over the base photo — nothing to color-match against.', 6000);
+      if (uiModule) uiModule.showToast('Harmonize needs a second layer pasted/imported over the base photo - nothing to color-match against.', 6000);
       return;
     }
     const payload = { prompt, color_match, seam_fix, body_mask };

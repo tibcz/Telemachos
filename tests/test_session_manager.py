@@ -1,4 +1,4 @@
-"""Tests for SessionManager — session isolation and data integrity.
+"""Tests for SessionManager - session isolation and data integrity.
 
 These tests prove the chat context drifting bug (#135) exists and verify fixes.
 Uses mocked DB to test in-memory session management logic in isolation.
@@ -80,7 +80,7 @@ class TestSessionIsolation:
         old_history_ref = s.history
         s.add_message(ChatMessage("user", "second message"))
 
-        # .history is the authoritative mutable list — old ref sees the append
+        # .history is the authoritative mutable list - old ref sees the append
         assert len(old_history_ref) == 2, (
             f"Old history ref has {len(old_history_ref)} items, expected 2"
         )
@@ -107,7 +107,7 @@ class TestSessionIsolation:
         # Note: In production, delete_session also deletes from DB.
         # In this unit test without real DB, the cache entry is cleaned
         # by the method's DB-query path. If that path fails, the session
-        # stays in cache — this is the pre-existing behavior.
+        # stays in cache - this is the pre-existing behavior.
         # The real fix is to always delete from cache regardless of DB result.
         pass
 

@@ -32,7 +32,7 @@ _OWNER_SCOPE_ERROR = (
     "Set TELEMACHOS_MCP_MEMORY_OWNER for this server or use the owner-aware native memory tool."
 )
 _UNREADABLE_STORE_ERROR = (
-    "Error: Memory store is temporarily unreadable — nothing was saved. "
+    "Error: Memory store is temporarily unreadable - nothing was saved. "
     "Repair or restore memory.json, then retry."
 )
 
@@ -62,7 +62,7 @@ def _scope_entries(for_update: bool = False) -> tuple[str | None, list[dict], li
 
     ``for_update=True`` is for read-modify-write callers. They save the ``all
     entries`` list back, so an unreadable store must be reported as an error
-    instead of degrading to ``[]`` — otherwise the save writes their one new
+    instead of degrading to ``[]`` - otherwise the save writes their one new
     entry over the whole store (issue #5673).
     """
     if for_update:
@@ -171,7 +171,7 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
             text = m.get("text", "")
             if len(text) > 150:
                 text = text[:150] + "..."
-            lines.append(f"- [{cat}] `{mid}` — {text}")
+            lines.append(f"- [{cat}] `{mid}` - {text}")
         return _text_result("\n".join(lines))
 
     elif action == "add":
@@ -269,7 +269,7 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
             cat = m.get("category", "fact")
             mid = m.get("id", "?")[:8]
             text = m.get("text", "")
-            lines.append(f"- [{cat}] `{mid}` — {text}")
+            lines.append(f"- [{cat}] `{mid}` - {text}")
         return _text_result("\n".join(lines))
 
     else:

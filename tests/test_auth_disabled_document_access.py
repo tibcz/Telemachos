@@ -107,7 +107,7 @@ async def test_list_documents_allows_none_user_when_auth_disabled(monkeypatch):
         list_docs = _endpoint("GET", "/api/documents/{session_id}")
         session_id, doc_id = _seed()
 
-        # Must succeed — this is the bug fix.
+        # Must succeed - this is the bug fix.
         rows = await list_docs(_req(None), session_id)
         ids = [row["id"] for row in rows]
         assert doc_id in ids, "own doc must be visible in auth-disabled mode"
@@ -124,7 +124,7 @@ async def test_get_document_allows_none_user_when_auth_disabled(monkeypatch):
         get_doc = _endpoint("GET", "/api/document/{doc_id}")
         _session_id, doc_id = _seed()
 
-        # Must succeed — _verify_doc_owner bypasses when auth is disabled.
+        # Must succeed - _verify_doc_owner bypasses when auth is disabled.
         result = await get_doc(_req(None), doc_id)
         assert result["id"] == doc_id
     finally:
@@ -138,7 +138,7 @@ def test_verify_doc_owner_allows_none_user_when_auth_disabled(monkeypatch):
     db = _TS()
     try:
         doc = db.query(Document).filter(Document.id == doc_id).first()
-        # Must NOT raise — the bypass allows single-user access.
+        # Must NOT raise - the bypass allows single-user access.
         _verify_doc_owner(db, doc, None)
     finally:
         db.close()

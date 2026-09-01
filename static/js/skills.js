@@ -1,4 +1,4 @@
-// skills.js — Skills tab in the Memory modal.
+// skills.js - Skills tab in the Memory modal.
 //
 // Skills are SKILL.md files (frontmatter + body) under data/skills/.
 // This UI supports: list, search, view (read SKILL.md), edit (replace
@@ -83,7 +83,7 @@ export async function loadSkills(cascade = false) {
   // Play the domino-in entrance on this load (set when the tab is opened,
   // not for the silent re-loads after an edit/delete).
   if (cascade) _cascadeNext = true;
-  // Always re-fetch when the tab is explicitly opened — the cascade
+  // Always re-fetch when the tab is explicitly opened - the cascade
   // animation is handled inside renderSkillsList() via _cascadeNext.
   // Skipping the fetch here caused stale data on panel close/reopen (#5870).
   if (_loadPromise) return _loadPromise;
@@ -91,7 +91,7 @@ export async function loadSkills(cascade = false) {
   try {
     const res = await fetch(`${API}/api/skills`);
     const data = await res.json();
-    // Dedupe by name (case-insensitive) — the API has occasionally
+    // Dedupe by name (case-insensitive) - the API has occasionally
     // returned the same skill twice (built-in shadow + user copy, or
     // a write-then-read race), and rendering both made the duplicate
     // detector mark BOTH entries as the "recommended" keeper.
@@ -361,7 +361,7 @@ function _auditMarks(sk) {
   return html;
 }
 
-// Audit verdict dot — removed at user request. The ✓ check-mark next to the
+// Audit verdict dot - removed at user request. The ✓ check-mark next to the
 // confidence % still indicates a pass. Stub returns empty so the surrounding
 // header HTML still composes without changing other layout.
 function _auditDot(sk) { return ''; }
@@ -388,7 +388,7 @@ function _svg(paths, { fill = 'none', size = 13 } = {}) {
   return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${fill}" ${stroke} style="vertical-align:-2px;flex-shrink:0;">${paths}</svg>`;
 }
 
-// Kebab dropdown for a collapsed skill card — same actions + icons as the
+// Kebab dropdown for a collapsed skill card - same actions + icons as the
 // expanded footer (Publish/Unpublish · Edit · Delete).
 function _openSkillMenu(btn, card, sk, name, isPublished) {
   document.querySelectorAll('.skill-kebab-menu').forEach(dismissOrRemove);
@@ -403,7 +403,7 @@ function _openSkillMenu(btn, card, sk, name, isPublished) {
   };
   if (isPublished) mk(_ICON.unpublish, 'Unpublish', {}, () => _setSkillStatus(name, 'draft'));
   else mk(_ICON.approve, 'Publish', {}, () => _setSkillStatus(name, 'published'));
-  // Select — moved up to 2nd so it sits next to Publish/Unpublish
+  // Select - moved up to 2nd so it sits next to Publish/Unpublish
   // (bulk actions cluster at the top of the menu).
   const selItem = document.createElement('button');
   selItem.className = 'skill-kebab-item';
@@ -426,7 +426,7 @@ function _openSkillMenu(btn, card, sk, name, isPublished) {
   mk(_ICON.test, 'Audit', {}, () => _auditAllSkills());
   mk(_ICON.del, 'Delete', { danger: true }, () => _deleteSkill(name, card));
 
-  // Mobile-only Cancel — mirrors the email/documents/brain popup pattern.
+  // Mobile-only Cancel - mirrors the email/documents/brain popup pattern.
   // CSS hides `.dropdown-cancel-mobile` on desktop where outside-click
   // already dismisses cleanly.
   const cancelItem = document.createElement('button');
@@ -488,10 +488,10 @@ function _buildBuiltinCards() {
 
     const preview = document.createElement('div');
     preview.className = 'doclib-card-preview skill-card-preview';
-    // Warning banner — editing a built-in changes how the assistant uses a native tool.
+    // Warning banner - editing a built-in changes how the assistant uses a native tool.
     const warn = document.createElement('div');
     warn.className = 'skill-builtin-warn';
-    warn.innerHTML = '⚠ This is a built-in capability. Editing changes how the assistant is instructed to use this native tool — it can break or alter core behaviour. Use Revert to restore the shipped default.';
+    warn.innerHTML = '⚠ This is a built-in capability. Editing changes how the assistant is instructed to use this native tool - it can break or alter core behaviour. Use Revert to restore the shipped default.';
     preview.appendChild(warn);
     const pre = document.createElement('pre');
     pre.className = 'skill-md-pre';
@@ -615,7 +615,7 @@ function _getFilteredSkills() {
     filtered = filtered.filter(sk => (sk.status || 'draft') === 'published');
   }
   if (_confMax != null) {
-    // "≤ X%" — surface the lower-confidence skills that may need review.
+    // "≤ X%" - surface the lower-confidence skills that may need review.
     filtered = filtered.filter(sk => Math.round((sk.confidence || 0) * 100) <= _confMax);
   }
   return _sortSkills(filtered);
@@ -719,7 +719,7 @@ function renderSkillsList() {
       _openSkillMenu(e.currentTarget, card, sk, name, isPublished);
     });
 
-    // Preview (hidden until expanded) — SKILL.md goes here + footer.
+    // Preview (hidden until expanded) - SKILL.md goes here + footer.
     const preview = document.createElement('div');
     preview.className = 'doclib-card-preview skill-card-preview';
     const pre = document.createElement('pre');
@@ -749,22 +749,22 @@ function renderSkillsList() {
       pubBtn.addEventListener('click', (e) => { e.stopPropagation(); _setSkillStatus(name, 'draft'); });
     } else {
       pubBtn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Publish';
-      pubBtn.title = 'Publish — appears in the skills index';
+      pubBtn.title = 'Publish - appears in the skills index';
       pubBtn.style.color = 'var(--color-success, #4caf50)';
       pubBtn.addEventListener('click', (e) => { e.stopPropagation(); _setSkillStatus(name, 'published'); });
     }
 
-    // Test/audit this one skill — same action that's in the kebab, surfaced in
+    // Test/audit this one skill - same action that's in the kebab, surfaced in
     // the footer too so it's not buried under the "⋯" menu.
     const testBtn = document.createElement('button');
     testBtn.className = 'doclib-card-text-btn doclib-card-action-btn';
     testBtn.innerHTML = _svg(_ICON.test, { size: 11 }) + 'Test';
-    testBtn.title = 'Test this skill — run it + AI judge';
+    testBtn.title = 'Test this skill - run it + AI judge';
     testBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       // Immediate visual feedback: previously the click looked like nothing
       // happened because _testSkill awaits a status fetch before overwriting
-      // the preview — so users would tap a second time. Mark the button as
+      // the preview - so users would tap a second time. Mark the button as
       // pending right away so the first tap is obviously registered.
       if (testBtn.dataset.busy === '1') return;  // also dedupe rapid double-tap
       testBtn.dataset.busy = '1';
@@ -802,7 +802,7 @@ function renderSkillsList() {
       if (card._suppressNextClick) { card._suppressNextClick = false; return; }
       if (e.target.closest('button, input, textarea')) return;
       // While editing, a click on the card body (outside the textarea) must
-      // NOT collapse the card — that silently discards unsaved edits. Only
+      // NOT collapse the card - that silently discards unsaved edits. Only
       // Save/Cancel exit edit mode.
       if (card.querySelector('.skill-md-editor')) return;
       if (_selectMode) {
@@ -813,7 +813,7 @@ function renderSkillsList() {
       _expandSkillCard(card, name);
     });
 
-    // Long-press anywhere on the card opens the kebab dropdown — mirrors the
+    // Long-press anywhere on the card opens the kebab dropdown - mirrors the
     // documents library + brain memory pattern. Skip when touch starts on a
     // button/input so per-control handlers keep working.
     {
@@ -844,10 +844,10 @@ function renderSkillsList() {
   }
   container.innerHTML = '';
 
-  // Two collapsible sections — "Your skills" and "Built-in". Headers and
+  // Two collapsible sections - "Your skills" and "Built-in". Headers and
   // cards are all DIRECT children of the grid (cards tagged with
-  // data-skill-section) so the global expand rule — which hides sibling
-  // .doclib-card elements by direct-child selector — keeps working.
+  // data-skill-section) so the global expand rule - which hides sibling
+  // .doclib-card elements by direct-child selector - keeps working.
   // Collapse just toggles display on the tagged cards.
   const _mkSectionHeader = (sectionId, title, count) => {
     const collapsed = _collapsedSections.has(sectionId);
@@ -867,14 +867,14 @@ function renderSkillsList() {
     return hdr;
   };
 
-  // "Your skills" section — show the header only when there's also a
+  // "Your skills" section - show the header only when there's also a
   // built-in section to distinguish from (otherwise it's just the list).
   if (cards.length) {
     if (showBuiltin) container.appendChild(_mkSectionHeader('user', 'Your skills', cards.length));
     cards.forEach(c => { c.dataset.skillSection = 'user'; container.appendChild(c); });
   }
 
-  // Built-in capabilities — read-only cards (the agent's native tools).
+  // Built-in capabilities - read-only cards (the agent's native tools).
   if (showBuiltin) {
     const builtinCards = _buildBuiltinCards();
     container.appendChild(_mkSectionHeader('builtin', 'Built-in capabilities', builtinCards.length));
@@ -883,7 +883,7 @@ function renderSkillsList() {
 
   _applySectionCollapse(container);
 
-  // Domino-in cascade when the Skills tab is (re)opened — same sleek
+  // Domino-in cascade when the Skills tab is (re)opened - same sleek
   // staggered entrance the document/chat library uses (.doclib-just-opened
   // → section-domino-in on each .doclib-card child). Only consumes the flag
   // set on tab-open, so search/sort/edit re-renders stay instant.
@@ -940,7 +940,7 @@ async function _expandSkillCard(card, name) {
     return;
   }
   // Were we already showing another expanded card? If so this is a SWITCH,
-  // not a fresh open — skip the fade-in. The fade reveals the previous card
+  // not a fresh open - skip the fade-in. The fade reveals the previous card
   // collapsing behind the new (semi-transparent) one, which read as a jump.
   const switching = !!(grid && grid.querySelector('.doclib-card-expanded'));
   // Collapse any other expanded sibling (full cleanup, not just the class).
@@ -968,7 +968,7 @@ async function _expandSkillCard(card, name) {
 
     // The px-pinning is ONLY for the mobile layout (position:absolute fill,
     // where Firefox won't propagate a definite height). On desktop the card
-    // expands via normal flex/flow — pinning measured heights there just
+    // expands via normal flex/flow - pinning measured heights there just
     // under-sizes it. So bail on desktop and let the CSS handle it.
     if (!window.matchMedia('(max-width: 768px)').matches) return;
 
@@ -982,7 +982,7 @@ async function _expandSkillCard(card, name) {
     const cardPad = px(card, 'paddingTop') + px(card, 'paddingBottom');
     const previewH = Math.max(0, cardH - headerH - cardPad);
     // Force the preview to an explicit height (flex:none so nothing fights it).
-    // A max-height (~335px, resolved from a % rule) was capping it — clear it.
+    // A max-height (~335px, resolved from a % rule) was capping it - clear it.
     preview.style.setProperty('flex', '0 0 auto', 'important');
     preview.style.setProperty('max-height', 'none', 'important');
     preview.style.setProperty('height', previewH + 'px', 'important');
@@ -1001,7 +1001,7 @@ async function _expandSkillCard(card, name) {
   };
   // Size SYNCHRONOUSLY (not in rAF) so the pinned heights are in place before
   // the browser's first paint of the expanded card. Running it a frame later
-  // let the first frame paint at content-height, then snap — the "explosion"
+  // let the first frame paint at content-height, then snap - the "explosion"
   // that showed on the first expand (when the SKILL.md was still loading).
   card._fillH();
   window.addEventListener('resize', card._fillH);
@@ -1009,7 +1009,7 @@ async function _expandSkillCard(card, name) {
   const pre = card.querySelector('.skill-md-pre');
   if (pre && !card._mdLoaded) {
     // Use the cache when available (the bg preload usually has it already),
-    // so the content is in place synchronously — no async settle/jump.
+    // so the content is in place synchronously - no async settle/jump.
     if (_mdCache.has(name)) {
       const md = _mdCache.get(name);
       pre.textContent = md || '(empty)';
@@ -1036,7 +1036,7 @@ function _toggleSkillEdit(card, name) {
   if (!preview) return;
   const existing = preview.querySelector('.skill-md-editor');
   if (existing) {
-    // Already editing — treat Edit as Save.
+    // Already editing - treat Edit as Save.
     _saveSkillEdit(card, name);
     return;
   }
@@ -1125,7 +1125,7 @@ function _renderTestLog(logEl, verdictEl, job, card, name) {
   const add = (txt, cls) => { const d = document.createElement('div'); if (cls) d.className = cls; d.textContent = txt; logEl.appendChild(d); };
   for (const ev of (job.log || [])) {
     if (ev.type === 'skill_test_start') { add('Task: ' + ev.task, 'skill-test-task'); add('Model: ' + ev.model, 'skill-test-meta'); }
-    else if (ev.type === 'agent_step') add('— round ' + ev.round + ' —', 'skill-test-round');
+    else if (ev.type === 'agent_step') add('- round ' + ev.round + ' -', 'skill-test-round');
     else if (ev.type === 'tool_start') add('▸ ' + ev.tool + '  ' + String(ev.command || '').slice(0, 200), 'skill-test-tool');
     else if (ev.type === 'tool_output') add(String(ev.output || '').slice(0, 500), 'skill-test-out');
     else if (ev.type === 'approval_granted' || ev.type === 'approval_denied') add(ev.text || '', 'skill-test-meta');
@@ -1189,7 +1189,7 @@ function _renderTestLog(logEl, verdictEl, job, card, name) {
     box.appendChild(actions);
     logEl.appendChild(box);
   }
-  if (job.status === 'running') add('…running (you can close this — it keeps going)', 'skill-test-meta');
+  if (job.status === 'running') add('…running (you can close this - it keeps going)', 'skill-test-meta');
   logEl.scrollTop = logEl.scrollHeight;
   if (job.status === 'done' && job.verdict) _renderTestVerdict(verdictEl, job.verdict, card, name);
   else if (verdictEl) verdictEl.innerHTML = '';
@@ -1265,7 +1265,7 @@ function _setCardRunning(card, on) {
     const wp = spinnerModule.createWhirlpool(12);
     wp.element.style.cssText = 'display:inline-flex;width:12px;height:12px;margin:0 0 0 7px;vertical-align:middle;flex-shrink:0;';
     // Append INSIDE the <code> name (inline-flow), not after it. The textcol
-    // is a flex column, so a sibling-after lands on its own line — putting
+    // is a flex column, so a sibling-after lands on its own line - putting
     // the spinner inside the inline code keeps it on the title row.
     nameEl.appendChild(wp.element);
     card._testSpinner = wp;
@@ -1290,7 +1290,7 @@ function _applyVerdictToHeader(card, verdict) {
     inconclusive: 'var(--color-warning, #f0ad4e)',
     fail: 'var(--color-danger, #e06c75)',
   }[verdict];
-  // Audit dot removed at user request — strip any pre-existing one so the
+  // Audit dot removed at user request - strip any pre-existing one so the
   // post-audit live update doesn't leave a stale dot from an old render.
   const header = card.querySelector('.skill-card-header');
   if (header) {
@@ -1302,12 +1302,12 @@ function _applyVerdictToHeader(card, verdict) {
     const confEl = statsEl.querySelector('.skill-conf');
     if (confEl) { confEl.textContent = newConf + '%'; confEl.style.color = _confColor(newConf); }
   }
-  // Fold the verdict into the status (draft / published) pill — colour the
+  // Fold the verdict into the status (draft / published) pill - colour the
   // pill itself and append a tiny check/warn/cross glyph so the audit result
   // lives next to the label instead of dangling in the stats row.
   const pill = card.querySelector('.skill-status-pill');
   if (pill) {
-    // Inline glyphs for the per-verdict pill — appear next to the "checked"
+    // Inline glyphs for the per-verdict pill - appear next to the "checked"
     // label so the verdict reads as a real badge.
     const ICON = {
       pass: '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:3px;"><polyline points="20 6 9 17 4 12"/></svg>',
@@ -1323,7 +1323,7 @@ function _applyVerdictToHeader(card, verdict) {
       inconclusive: { bg: 'color-mix(in srgb, var(--color-warning, #f0ad4e) 30%, transparent)', fg: 'var(--color-warning, #f0ad4e)' },
       fail:       { bg: 'color-mix(in srgb, var(--color-danger, #e06c75) 30%, transparent)',  fg: 'var(--color-danger, #e06c75)' },
     }[verdict];
-    // The status pill (draft / published) keeps its own colours now — the
+    // The status pill (draft / published) keeps its own colours now - the
     // verdict lives in a separate "checked" pill that's inserted next to it.
     // Remove any prior audit glyph (was previously inserted inside the pill;
     // now scrub both the in-pill and sibling locations on every refresh).
@@ -1332,7 +1332,7 @@ function _applyVerdictToHeader(card, verdict) {
       pill.parentElement.querySelectorAll(':scope > .skill-pill-verdict').forEach(n => n.remove());
     }
     if (ICON) {
-      // Full "checked" pill badge — sits LEFT of the draft/published pill,
+      // Full "checked" pill badge - sits LEFT of the draft/published pill,
       // styled like the other memory-cat-badges so it reads as a real chip.
       const span = document.createElement('span');
       span.className = 'memory-cat-badge skill-pill-verdict';
@@ -1350,7 +1350,7 @@ function _applyVerdictToHeader(card, verdict) {
     }
   }
   // Old free-floating .skill-verified check (next to confidence %) is no
-  // longer added — the pill carries the verdict glyph now. Remove a stale
+  // longer added - the pill carries the verdict glyph now. Remove a stale
   // one in case the card was rendered by an earlier build.
   card.querySelectorAll('.skill-verified').forEach(n => n.remove());
 }
@@ -1367,7 +1367,7 @@ function _renderTestVerdict(el, v, card, name) {
   const isPub = card && card.dataset && card.dataset.skillStatus === 'published';
   const approveLabel = isPub ? 'Approved' : 'Approve';
   const approveCls = 'skill-eval-approve' + (isPub ? ' is-approved' : (verdict === 'pass' ? ' suggested' : ''));
-  const approveTitle = isPub ? 'Already approved — click to unpublish' : 'Publish — appears in the skills index';
+  const approveTitle = isPub ? 'Already approved - click to unpublish' : 'Publish - appears in the skills index';
   el.innerHTML =
     '<div class="skill-eval-head"><span class="skill-eval-badge skill-eval-' + cls + '">' + label + (conf ? ' · ' + conf : '') + '</span>' +
     '<span class="skill-eval-summary">' + esc((v && v.summary) || '') + '</span></div>' +
@@ -1392,7 +1392,7 @@ function _renderTestVerdict(el, v, card, name) {
     if (btn) {
       const pub = card.dataset.skillStatus === 'published';
       btn.textContent = pub ? 'Approved' : 'Approve';
-      btn.title = pub ? 'Already approved — click to unpublish' : 'Publish — appears in the skills index';
+      btn.title = pub ? 'Already approved - click to unpublish' : 'Publish - appears in the skills index';
       btn.classList.toggle('is-approved', pub);
       btn.classList.toggle('suggested', !pub && verdict === 'pass');
     }
@@ -1619,10 +1619,10 @@ function _renderAuditPanel(panel, st) {
   const running = st.status === 'running';
   const cancelled = st.status === 'cancelled';
   const head = running
-    ? `Auditing ${done}/${total}${st.current ? ' — ' + esc(st.current) : ''}`
+    ? `Auditing ${done}/${total}${st.current ? ' - ' + esc(st.current) : ''}`
     : cancelled
-      ? `Audit cancelled — ${done}/${total}`
-    : `Audit complete — ${total} skill${total === 1 ? '' : 's'}`;
+      ? `Audit cancelled - ${done}/${total}`
+    : `Audit complete - ${total} skill${total === 1 ? '' : 's'}`;
   panel.innerHTML =
     '<div class="skills-audit-head">' +
       '<span class="skills-audit-title-wrap" style="display:inline-flex;align-items:center;gap:8px;">' +
@@ -1857,14 +1857,14 @@ async function _showSkillSource(name) {
     return;
   }
 
-  // Lightweight modal — reuses the .modal CSS the rest of the app uses.
+  // Lightweight modal - reuses the .modal CSS the rest of the app uses.
   const wrap = document.createElement('div');
   wrap.className = 'modal';
   wrap.style.display = 'block';
   wrap.innerHTML = `
     <div class="modal-content" style="max-width:760px;display:flex;flex-direction:column">
       <div class="modal-header">
-        <h4>SKILL.md — <code>${esc(name)}</code></h4>
+        <h4>SKILL.md - <code>${esc(name)}</code></h4>
         <span style="flex:1"></span>
         <button class="memory-toolbar-btn" id="skill-save-btn">Save</button>
         <button class="close-btn" id="skill-md-close">✖</button>
@@ -1883,7 +1883,7 @@ async function _showSkillSource(name) {
   wrap.querySelector('#skill-save-btn').addEventListener('click', async () => {
     try {
       // We use the manage_skills-style edit by going through PUT with a
-      // single 'content' field. The route doesn't accept that yet — use the
+      // single 'content' field. The route doesn't accept that yet - use the
       // tool call instead. We have a /api/skills/{name} PUT for fields, but
       // a full SKILL.md replace is simpler via the parsed-then-PUT approach
       // below: parse client-side by uploading via the tool route.
@@ -2021,5 +2021,5 @@ document.addEventListener('DOMContentLoaded', () => {
 export default { loadSkills, openSkill };
 
 // Populate the Skills badge on first load so the count is right before the
-// user clicks into the tab. Cheap fetch — same as the lazy path.
+// user clicks into the tab. Cheap fetch - same as the lazy path.
 document.addEventListener('DOMContentLoaded', () => { loadSkills(); });

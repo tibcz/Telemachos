@@ -3,7 +3,7 @@ commit succeeds.
 
 delete_gallery_image() removed the on-disk file first and only then set
 is_active=False and committed. If that commit failed and rolled back, the record
-stayed active but its file was already gone — a broken, unviewable image (data
+stayed active but its file was already gone - a broken, unviewable image (data
 loss). The file is now removed only after the soft-delete commit succeeds, and
 best-effort so a missing/locked file can't fail an otherwise-successful delete.
 """
@@ -60,7 +60,7 @@ def test_file_kept_when_commit_fails(tmp_path, monkeypatch):
     with pytest.raises(HTTPException):
         asyncio.run(delete(Request(scope={"type": "http"}), "img-1"))
 
-    # File must survive a failed commit — the record is still active after rollback.
+    # File must survive a failed commit - the record is still active after rollback.
     assert (tmp_path / "data" / "generated_images" / "x.png").exists()
     check = SessionLocal()
     row = check.query(GalleryImage).filter(GalleryImage.id == "img-1").first()

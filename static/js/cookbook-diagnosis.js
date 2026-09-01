@@ -19,12 +19,12 @@ import {
   _serveAutoRetryReplace,
   _serveAutoRetryRemove,
   _serveAutoFix,
-  // Plain specifier (no ?v=) — must match every other cookbook.js importer so the
+  // Plain specifier (no ?v=) - must match every other cookbook.js importer so the
   // browser loads it once. See cookbook-hwfit.js.
 } from './cookbook.js';
 import uiModule from './ui.js';
 
-// Tiny HTML-escape — keeps the file standalone instead of leaning on a
+// Tiny HTML-escape - keeps the file standalone instead of leaning on a
 // shared helper that may not be exported from this module's import surface.
 function _diagEsc(s) {
   return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -418,7 +418,7 @@ export const ERROR_PATTERNS = [
   },
   {
     pattern: /403 Forbidden|401 Unauthorized|Access to model.*is restricted|gated repo|not in the authorized list|awaiting a review/i,
-    message: 'Gated model. Your HF token IS being sent — but its account must be granted access first: open the model page, accept the license, and wait for approval (Meta models can take a while).',
+    message: 'Gated model. Your HF token IS being sent - but its account must be granted access first: open the model page, accept the license, and wait for approval (Meta models can take a while).',
     // Extract repo name from error text to build HF link
     _repoPattern: /Access to model\s+(\S+)\s+is restricted|gated repo.*?huggingface\.co\/([^\s/]+\/[^\s/]+)/i,
     fixes: [
@@ -436,7 +436,7 @@ export const ERROR_PATTERNS = [
   },
   {
     pattern: /Weights for this component appear to be missing|load the component before passing/i,
-    message: 'Single-file checkpoint needs a base model for missing components (text encoder, VAE). The base model may be gated — accept the license and set your HF token.',
+    message: 'Single-file checkpoint needs a base model for missing components (text encoder, VAE). The base model may be gated - accept the license and set your HF token.',
     fixes: [
       { label: 'Request access to base model', action: (panel, _text) => {
         const gated = _text && _text.match(/Access to model\s+(\S+)\s+is restricted/i);
@@ -672,14 +672,14 @@ export const ERROR_PATTERNS = [
   // System build deps must be checked BEFORE the llama-server catch-all:
   // a `cmake: command not found` failure ALSO produces `llama-server:
   // command not found` later in the script (the build aborts then the
-  // run line fails) — pattern order is first-match-wins, so without
+  // run line fails) - pattern order is first-match-wins, so without
   // these specific entries the user gets the misleading "install
   // llama-cpp-python[server]" suggestion when the actual blocker is a
   // missing OS-package toolchain that pip can't ship.
   {
     pattern: /cmake: command not found|cmake.*not found.*Could not/i,
     message: 'cmake is required to compile llama.cpp from source, but it is not installed on this server.',
-    suggestion: 'Suggested action: install cmake via the OS package manager — apt: cmake build-essential / pacman: cmake base-devel / dnf: cmake gcc-c++ make / brew: cmake. Cookbook can do this automatically on the next launch if your user has passwordless sudo for apt/pacman/dnf.',
+    suggestion: 'Suggested action: install cmake via the OS package manager - apt: cmake build-essential / pacman: cmake base-devel / dnf: cmake gcc-c++ make / brew: cmake. Cookbook can do this automatically on the next launch if your user has passwordless sudo for apt/pacman/dnf.',
     fixes: [
       { label: 'Open Dependencies', action: () => _openCookbookDependencies('llama_cpp') },
       { label: 'Copy apt install', action: () => _copyText('sudo apt install -y cmake build-essential git') },
@@ -739,7 +739,7 @@ export const ERROR_PATTERNS = [
   },
   {
     pattern: /Triton kernels.*Failed to import|cannot import name '\w+' from 'triton_kernels/i,
-    message: 'Triton kernels version mismatch. Non-fatal warning — model will still run, just without optimized MoE kernels.',
+    message: 'Triton kernels version mismatch. Non-fatal warning - model will still run, just without optimized MoE kernels.',
     fixes: [
       { label: 'Update triton on server', action: () => {
         const _vp = (_envState.env === 'venv' && _envState.envPath)
@@ -779,9 +779,9 @@ export const ERROR_PATTERNS = [
     // target sm_89/sm_90 (Ada/Hopper), and the engine workers die before
     // they can report a useful traceback. Two quick paths out: pick a
     // non-flashinfer attention backend, or set CUDACXX to a newer nvcc
-    // (vLLM installs nvidia-cuda-nvcc into the venv — point at that).
+    // (vLLM installs nvidia-cuda-nvcc into the venv - point at that).
     pattern: /nvcc fatal\s+:\s+Unsupported gpu architecture 'compute_\d+'/i,
-    message: 'FlashInfer is JIT-compiling sampling kernels with an nvcc too old for this GPU (no sm_89 / sm_90 support — pre-CUDA 11.8). Changing the attention backend does not help — flashinfer JITs the SAMPLER too. The clean fix is to set VLLM_USE_FLASHINFER_SAMPLER=0 so vLLM uses its native sampler instead.',
+    message: 'FlashInfer is JIT-compiling sampling kernels with an nvcc too old for this GPU (no sm_89 / sm_90 support - pre-CUDA 11.8). Changing the attention backend does not help - flashinfer JITs the SAMPLER too. The clean fix is to set VLLM_USE_FLASHINFER_SAMPLER=0 so vLLM uses its native sampler instead.',
     suggestion: 'Suggested action: relaunch with VLLM_USE_FLASHINFER_SAMPLER=0 prepended. (Confirmed on the QuantTrio/Qwen3.5 model card as the canonical workaround.)',
     fixes: [
       { label: 'Retry with VLLM_USE_FLASHINFER_SAMPLER=0', action: (panel) => _serveAutoRetryReplace(panel, '', 'VLLM_USE_FLASHINFER_SAMPLER=0 ', { prepend: true }) },
@@ -806,7 +806,7 @@ export const ERROR_PATTERNS = [
     message: 'vLLM was built against a newer torch than what is installed. Reinstall vLLM so pip pulls a compatible torch (or upgrade torch directly).',
     fixes: [
       { label: 'Reinstall vLLM (pulls matching torch)', action: () => {
-        // Absolute path to the venv's python3 — bare `python3` lands in the
+        // Absolute path to the venv's python3 - bare `python3` lands in the
         // wrong site-packages over SSH when ~/.local/bin precedes the venv.
         const _vp = (_envState.env === 'venv' && _envState.envPath)
           ? `${_envState.envPath.replace(/\/+$/, '')}/bin/python3` : 'python3';
@@ -820,18 +820,18 @@ export const ERROR_PATTERNS = [
     ],
   },
   {
-    // Dependency-install (pip) build failure — a required package failed to
+    // Dependency-install (pip) build failure - a required package failed to
     // build its wheel (common when an old sdist's setup.py breaks on a newer
     // Python, e.g. basicsr on 3.13). This is an install problem, NOT a serve
     // problem, so it must never suggest killing vLLM.
     match: (text) => {
       const TAIL = text.slice(-6000);
-      // A serve script can run a fallback build and then start serving fine —
+      // A serve script can run a fallback build and then start serving fine -
       // don't flag a stale build error once the server is up.
       if (/Application startup complete|"(?:GET|POST)\s+\/v1\/[^"]+ HTTP\/[\d.]+"\s*2\d\d|Uvicorn running on|server is listening on https?:\/\//i.test(TAIL)) return false;
       return /Failed to build\b|subprocess-exited-with-error|Could not build wheels|metadata-generation-failed/i.test(TAIL);
     },
-    message: 'A dependency failed to build during install — usually an older package whose build breaks on this Python version, not a server problem. The install did not finish.',
+    message: 'A dependency failed to build during install - usually an older package whose build breaks on this Python version, not a server problem. The install did not finish.',
     suggestion: 'Suggested action: check the captured output for the package that failed to build; it may need a newer release or a patch to install on this Python version.',
     fixes: [],
   },
@@ -860,7 +860,7 @@ export const ERROR_PATTERNS = [
       if (/Application startup complete|"GET \/v1\/[^"]+ HTTP\/[\d.]+" 2\d\d|Uvicorn running on/i.test(TAIL)) return false;
       return true;
     },
-    message: 'Python traceback detected — check the captured output below for the underlying error.',
+    message: 'Python traceback detected - check the captured output below for the underlying error.',
     suggestion: 'Suggested action: read the captured output for the failing step; copy the troubleshooting bundle if you need help.',
     fixes: [],
   },
@@ -924,7 +924,7 @@ export function _showDiagnosis(panel, diagnosis, sourceText) {
   panel._diagCollapsed = false;
 
   // Top-right toolbar: Copy bundle + × dismiss. Restored after user feedback
-  // — without them there's no way to quietly close a stale diagnosis or grab
+  // - without them there's no way to quietly close a stale diagnosis or grab
   // the full error+context for a forum/discord paste.
   const toolbar = document.createElement('div');
   toolbar.className = 'cookbook-diag-toolbar';
@@ -957,7 +957,7 @@ export function _showDiagnosis(panel, diagnosis, sourceText) {
     e.stopPropagation();
     const bundle = _diagnosisCopyBundle(task, diagnosis, sourceText, suggestionText);
     // Use the shared helper which falls back to execCommand('copy') on
-    // non-HTTPS origins (Tailscale IPs, LAN IPs, etc.) — navigator.clipboard
+    // non-HTTPS origins (Tailscale IPs, LAN IPs, etc.) - navigator.clipboard
     // is silently a no-op on those, which is why the button appeared dead
     // for users on http://100.113.161.2:7011 over Tailscale/mobile.
     const ok = await _copyText(bundle);
@@ -1012,7 +1012,7 @@ export function _showDiagnosis(panel, diagnosis, sourceText) {
 
   if (fixes.length) {
     // Always render fixes as inline buttons. The old "Actions ▾" dropdown
-    // (for >3 fixes) was broken — the menu wouldn't open in some panels and
+    // (for >3 fixes) was broken - the menu wouldn't open in some panels and
     // hid useful actions behind a non-working affordance. Inline buttons wrap
     // naturally in `.cookbook-diag-fixes` (flex-wrap) so a long list reflows
     // onto multiple rows instead of getting collapsed.

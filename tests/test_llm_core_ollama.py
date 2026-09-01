@@ -203,7 +203,7 @@ def test_ollama_payload_tolerates_malformed_arguments():
 # Ollama defaults num_ctx to 2048 when the option is omitted, so prompts
 # going to any Ollama backend are silently truncated there regardless of
 # the model's actual capability. The builder must accept a discovered
-# context length and emit options.num_ctx — but only when the value is
+# context length and emit options.num_ctx - but only when the value is
 # trusted and larger than 2048.
 # ---------------------------------------------------------------------------
 

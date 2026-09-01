@@ -1,11 +1,11 @@
 // static/js/emailLibrary/utils.js
 //
 // Pure helpers extracted from emailLibrary.js. No DOM state, no fetch,
-// no shared mutable references — safe to import anywhere.
+// no shared mutable references - safe to import anywhere.
 
 // ── Talon-inspired multilingual quote-detection regexes ───────────
 // Borrowed (loosely) from Mailgun's `talon` library. These are partial
-// regex source strings — combined with surrounding patterns by callers.
+// regex source strings - combined with surrounding patterns by callers.
 // Multilingual on purpose: a typed "wrote:" line is locale-bound, and
 // people forward / reply across language settings all the time.
 
@@ -18,7 +18,7 @@ export const _TALON_TO   = '(?:To|Till|An|À|A|Voor|Para|Naar|Кому|Do|宛先
 export const _TALON_ORIG_RE = /(?:^|\n)[\s>]*[-_=]{3,}\s*(?:Original\s+Message|Forwarded\s+message|Ursprüngliche\s+Nachricht|Mensaje\s+original|Messaggio\s+originale|Message\s+d['’]origine|Oorspronkelijk\s+bericht|Original\s+meddelande|Vor[ ]asal[a]\s+meddelande|原文|原始邮件|転送)\s*[-_=]{3,}/i;
 
 // Minimum plain-text length of a "signature" before we bother folding it.
-// Short closings ("Cheers, John") stay inline — folding them would add
+// Short closings ("Cheers, John") stay inline - folding them would add
 // a click for two bytes of saving.
 export const _SIG_BLOAT_MIN_CHARS = 200;
 
@@ -127,7 +127,7 @@ export function _formatBubbleDate(iso) {
 }
 
 // Format a raw "to" address string ("Foo <foo@x.com>, bar@y.com") into a
-// short, readable list — display names when present, just the local part
+// short, readable list - display names when present, just the local part
 // of the email otherwise, and ", +N" once there are more than 2 recipients.
 export function _formatRecipients(raw) {
   if (!raw) return '';

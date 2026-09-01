@@ -54,7 +54,7 @@ def test_prompt_cache_busted_after_disconnect_same_tool_count():
     desc_a = mgr.get_tool_descriptions_for_prompt()
     assert "tool_alpha" in desc_a
 
-    # Disconnect A — same tool count (1) as what follows
+    # Disconnect A - same tool count (1) as what follows
     asyncio.run(mgr.disconnect_server("srv_a"))  # bumps _generation
 
     # Connect server B with a *different* tool but same count (1)

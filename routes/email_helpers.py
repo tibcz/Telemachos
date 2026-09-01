@@ -54,8 +54,8 @@ def _xoauth2_raw(user: str, access_token: str) -> str:
     """The SASL XOAUTH2 initial-response string (unencoded).
 
     Both smtplib.SMTP.auth() and imaplib.IMAP4.authenticate() base64-encode
-    the value their callback returns, so callers pass this raw form — never
-    pre-encoded — to avoid double base64.
+    the value their callback returns, so callers pass this raw form - never
+    pre-encoded - to avoid double base64.
     """
     return f"user={user}\x01auth=Bearer {access_token}\x01\x01"
 
@@ -171,7 +171,7 @@ def _send_smtp_message(cfg: dict, from_addr: str, recipients: list[str], message
         if cfg.get("oauth_provider") == "google":
             token = _get_valid_google_token(cfg.get("account_id"), cfg)
             if not token:
-                raise RuntimeError("Google OAuth token unavailable — reconnect the account")
+                raise RuntimeError("Google OAuth token unavailable - reconnect the account")
             smtp.ehlo()
             smtp.auth("XOAUTH2", lambda challenge=None: _xoauth2_raw(user, token), initial_response_ok=True)
         elif user and password:
@@ -225,7 +225,7 @@ def _friendly_email_auth_error(protocol: str, host: str, error: object) -> str:
 
 
 def _strip_think(text: str) -> str:
-    """Email-flavored think strip — thin wrapper over the central helper.
+    """Email-flavored think strip - thin wrapper over the central helper.
 
     Email AI features get the prose-strip extension because their outputs
     are short LLM-only generations (replies, summaries, calendar extraction,
@@ -259,7 +259,7 @@ def _extract_reply(text: str) -> str:
     can never clip a legit reply that merely opens reflectively.
 
     Fallbacks when the markers are absent (older/weaker models): we just run the
-    usual think-strip on the whole text — strictly no worse than before. A
+    usual think-strip on the whole text - strictly no worse than before. A
     second think-strip pass always runs on the extracted body too, in case the
     model also reasoned *inside* the markers.
     """
@@ -402,7 +402,7 @@ def _apply_email_style_mechanics(text: str) -> str:
     if not text:
         return ""
     return (
-        text.replace("—", "--")
+        text.replace("\u2014", "--")
         .replace("–", "--")
         .replace("’", "'")
         .replace("‘", "'")
@@ -461,7 +461,7 @@ def _assert_owns_account(account_id: str, owner: str) -> None:
     `id == account_id`, letting a multi-user deploy enumerate / operate
     against any other user's IMAP/SMTP mailbox. Call this *before* opening
     the IMAP connection or reading creds. `owner == ""` is the unconfigured /
-    single-user case — accept any account."""
+    single-user case - accept any account."""
     if not account_id or not owner:
         return
     try:
@@ -479,7 +479,7 @@ def _assert_owns_account(account_id: str, owner: str) -> None:
     except HTTPException:
         raise
     except Exception as e:
-        # Fail closed — a DB hiccup must not let cross-tenant access slip
+        # Fail closed - a DB hiccup must not let cross-tenant access slip
         # through. 503 tells the caller to retry; logs preserve detail.
         logger.error(f"Account-owner check failed: {e}")
         raise HTTPException(503, "Account check failed")
@@ -493,7 +493,7 @@ def _account_visible_to_owner(row, owner: str) -> bool:
     legacy owner-less account (owner NULL/"") only when its own mailbox
     (`imap_user` / `from_address`) is the caller's. `email_accounts` is the one
     owner-scoped table deliberately left out of the legacy-owner migration
-    backfill, so ownerless rows persist on multi-user deploys — making this the
+    backfill, so ownerless rows persist on multi-user deploys - making this the
     gate that keeps one tenant off another's imported mailbox and its decrypted
     IMAP/SMTP credentials."""
     row_owner = getattr(row, "owner", None) or ""
@@ -829,7 +829,7 @@ def _init_scheduled_db():
             conn.execute("DROP TABLE email_tags")
             conn.execute("ALTER TABLE email_tags__new RENAME TO email_tags")
     except Exception as _mig_e:
-        # Best-effort — log via the module logger if available
+        # Best-effort - log via the module logger if available
         import logging as _lg
         _lg.getLogger(__name__).warning(f"email_tags owner-migration skipped: {_mig_e}")
     _ensure_owner_scoped_email_cache_table(conn, "email_calendar_extractions", """
@@ -926,7 +926,7 @@ def _init_scheduled_db():
             PRIMARY KEY (owner, account_key, folder, uid)
         )
     """)
-    # Boundary cache — LLM-detected sig/quote start positions in the body.
+    # Boundary cache - LLM-detected sig/quote start positions in the body.
     # Stored as char offsets (-1 = no boundary found). Once cached, the
     # client uses these to fold without ever re-calling the LLM.
     conn.execute("""
@@ -1023,7 +1023,7 @@ def _get_email_config(account_id: str | None = None, owner: str = "") -> dict:
     added so callers can stamp derivative records (email_ai_replies etc.).
 
     SECURITY: without `owner`, the fallback queries (is_default, first-enabled)
-    don't filter by user — so on a multi-user deploy a brand-new account would
+    don't filter by user - so on a multi-user deploy a brand-new account would
     inherit whoever else's IMAP/SMTP creds happened to be the default. Pass
     `owner` from the route's auth dependency to scope the lookup.
     """
@@ -1047,13 +1047,13 @@ def _get_email_config(account_id: str | None = None, owner: str = "") -> dict:
                 row = db.query(_EA).filter(_EA.id == account_id, _EA.enabled == True).first()  # noqa: E712
                 # If the resolved row isn't visible to this owner, treat as
                 # not-found rather than silently serving it. This is a defense
-                # in depth — `require_owner` already calls `_assert_owns_account`
+                # in depth - `require_owner` already calls `_assert_owns_account`
                 # for query-param account_ids, but other callers (cookbook
                 # rules, scheduled poller) may not. Ownerless legacy rows are
                 # only visible on a mailbox match, same as the fallback below.
                 if row is not None and owner and not _account_visible_to_owner(row, owner):
                     row = None
-            # Fallback path — restrict to this owner's accounts so we don't
+            # Fallback path - restrict to this owner's accounts so we don't
             # leak another user's default mailbox to an unconfigured user.
             if row is None:
                 q = db.query(_EA).filter(_EA.is_default == True, _EA.enabled == True)  # noqa: E712
@@ -1096,7 +1096,7 @@ def _get_email_config(account_id: str | None = None, owner: str = "") -> dict:
     except Exception as e:
         logger.debug(f"email_accounts lookup failed, falling back to settings.json: {e}")
 
-    # Legacy fallback — flat keys in settings.json / env vars
+    # Legacy fallback - flat keys in settings.json / env vars
     settings = _load_settings()
     cfg = {
         "account_id": resolved_id,
@@ -1117,9 +1117,9 @@ def _get_email_config(account_id: str | None = None, owner: str = "") -> dict:
         "from_address": settings.get("email_from", os.environ.get("EMAIL_FROM", "")),
     }
     if not (cfg["smtp_host"] and cfg["smtp_user"] and cfg["smtp_password"]):
-        logger.warning("SMTP not configured — add an Email Account in Settings or set env vars")
+        logger.warning("SMTP not configured - add an Email Account in Settings or set env vars")
     if not (cfg["imap_host"] and cfg["imap_user"] and cfg["imap_password"]):
-        logger.warning("IMAP not configured — add an Email Account in Settings or set env vars")
+        logger.warning("IMAP not configured - add an Email Account in Settings or set env vars")
     return cfg
 
 
@@ -1208,7 +1208,7 @@ def _imap_connect(account_id: str | None = None, owner: str = "",
     cfg = _get_email_config(account_id, owner=owner)
     # Send-only (SMTP-only) account: no IMAP host means there is no inbox to
     # read. Bail out with a clear, typed error instead of handing an empty
-    # host to imaplib — IMAP4("", 993) silently dials localhost:993 and fails
+    # host to imaplib - IMAP4("", 993) silently dials localhost:993 and fails
     # with a confusing "[Errno 111] Connection refused" on every inbox poll.
     if not cfg.get("imap_host"):
         raise EmailNotConfiguredError(
@@ -1231,7 +1231,7 @@ def _imap_connect(account_id: str | None = None, owner: str = "",
         if cfg.get("oauth_provider") == "google":
             token = _get_valid_google_token(cfg.get("account_id"), cfg)
             if not token:
-                raise RuntimeError("Google OAuth token unavailable — reconnect the account in Settings → Integrations")
+                raise RuntimeError("Google OAuth token unavailable - reconnect the account in Settings → Integrations")
             conn.authenticate("XOAUTH2", lambda x: _xoauth2_bytes(cfg["imap_user"], token))
         else:
             conn.login(cfg["imap_user"], cfg["imap_password"])
@@ -1278,7 +1278,7 @@ def _imap(account_id: str | None = None, owner: str = ""):
         try:
             conn, _reused = pool_connect(account_id, owner=owner)
         except TypeError:
-            # Older hook signature without owner — fall back transparently.
+            # Older hook signature without owner - fall back transparently.
             conn, _reused = pool_connect(account_id)
         ok = True
         try:
@@ -1450,7 +1450,7 @@ def _imap_move(uid, dest, src="INBOX", account_id: str | None = None, owner: str
 
 
 def _extract_attachment_text(msg, max_chars: int = 6000) -> str:
-    """Pull readable text out of an email's attachments — PDF (via PyMuPDF),
+    """Pull readable text out of an email's attachments - PDF (via PyMuPDF),
     plain text, markdown, csv, log. Caps total at `max_chars`. Returns a
     formatted string with `[Attachment: filename]\\n<content>` blocks
     separated by `---`. Empty string if there's nothing useful.
@@ -1762,7 +1762,7 @@ def _fetch_sender_thread_context(sender_addr: str,
                 if not body_text and not atts_text:
                     continue
 
-                lines = [f"— {folder} · {date_hdr} · Subject: {subj}"]
+                lines = [f"- {folder} · {date_hdr} · Subject: {subj}"]
                 if body_text:
                     lines.append(body_text)
                 if atts_text:
@@ -1849,7 +1849,7 @@ def _pre_retrieve_context(
             except Exception:
                 pass
         if not is_known:
-            logger.info(f"Pre-retrieval skipped — unknown sender {sender_addr}")
+            logger.info(f"Pre-retrieval skipped - unknown sender {sender_addr}")
             return [], []
 
         seen = set()
@@ -1951,10 +1951,10 @@ _EMAIL_REPLY_SYS_PROMPT_BASE = (
     "If the saved style says to use a greeting/sign-off, include them. For English replies, "
     "default to 'Hi [Name]' rather than 'Hey'. Be direct and concise. Match the tone of the "
     "original email without violating the saved style.\n\n"
-    "MECHANICAL STYLE RULES — CRITICAL: Never use an em dash or en dash; use -- instead. "
+    "MECHANICAL STYLE RULES - CRITICAL: Never use an em dash or en dash; use -- instead. "
     "Never use curly apostrophes; write I'm, don't, we'll with straight '. Do not start "
     "with 'Hey' unless the saved style explicitly requests it.\n\n"
-    "IDENTITY RULE — CRITICAL: write as the user/mailbox owner only. NEVER sign as, "
+    "IDENTITY RULE - CRITICAL: write as the user/mailbox owner only. NEVER sign as, "
     "speak as, or imply you are the recipient, original sender, quoted sender, spouse, "
     "assistant, company, or any third party. Do not copy a name from the quoted thread "
     "into the sign-off. If a writing style below names a signature, use only that "
@@ -1962,17 +1962,17 @@ _EMAIL_REPLY_SYS_PROMPT_BASE = (
     "CRITICAL RULE: NEVER invent facts, names, dates, phone numbers, emails, addresses, "
     "or any specifics not explicitly present in the RELEVANT CONTEXT section below or "
     "the original email itself. If the sender asks for information you don't have in "
-    "the context, say plainly that you don't have it on hand — do NOT guess or fabricate. "
+    "the context, say plainly that you don't have it on hand - do NOT guess or fabricate. "
     "Do not promise to 'look it up' or 'get back to you soon' as a way to pad the reply. "
     "If you have no real information to offer, write a short honest reply (2-4 sentences max).\n\n"
-    "OUTPUT FORMAT — IMPORTANT: Put ONLY the final email reply between these exact markers, "
+    "OUTPUT FORMAT - IMPORTANT: Put ONLY the final email reply between these exact markers, "
     "each on its own line:\n"
     "<<<REPLY>>>\n"
     "(the reply body goes here)\n"
     "<<<END>>>\n"
     "Any reasoning, planning, or notes-to-self must come BEFORE the <<<REPLY>>> marker "
     "(ideally wrapped in <think>...</think>). Only the text between <<<REPLY>>> and <<<END>>> "
-    "is sent as the email — nothing else is shown to anyone."
+    "is sent as the email - nothing else is shown to anyone."
 )
 
 

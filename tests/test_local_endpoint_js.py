@@ -6,7 +6,7 @@ rates against the substring-matched MODEL_PRICING table. Cloud FQDNs must stay
 billable.
 
 Driven through `node --input-type=module` against the real function (extracted
-from source — chatRenderer.js can't be imported standalone since it pulls in
+from source - chatRenderer.js can't be imported standalone since it pulls in
 browser-only modules), same spirit as test_reply_recipients_js.py. Skips when
 `node` is not installed rather than failing.
 """

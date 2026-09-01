@@ -1,14 +1,14 @@
 /**
- * Image-import wiring — covers all four entry points that drop an
+ * Image-import wiring - covers all four entry points that drop an
  * image as a new layer:
  *
  *   #ge-import-topbar    topbar "+ Import" button
  *   #ge-import-file      File button in the Import section
  *   #ge-import-paste     Clipboard button (uses async clipboard API)
- *   #ge-import-gallery   Gallery picker — fetches /api/gallery/library
+ *   #ge-import-gallery   Gallery picker - fetches /api/gallery/library
  *                        and shows a thumbnail grid overlay
  *
- * Plus the shared `handleImportedImage(img)` sink — scales to canvas,
+ * Plus the shared `handleImportedImage(img)` sink - scales to canvas,
  * centres, creates a new layer, switches to Move tool, hides the
  * import section, refreshes the panel. Returned so the drag-and-drop
  * + paste paths (wired in editor/clipboard-and-drop.js) can use the
@@ -63,7 +63,7 @@ export function wireImport({ container, saveState, createLayer, composite, rende
     if (importSec) importSec.style.display = 'none';
     composite();
     renderLayerPanel();
-    if (uiModule) uiModule.showToast('Image imported — drag to position');
+    if (uiModule) uiModule.showToast('Image imported - drag to position');
   }
 
   importFileInput.addEventListener('change', (e) => {
@@ -101,7 +101,7 @@ export function wireImport({ container, saveState, createLayer, composite, rende
     }
   });
 
-  // Import from Gallery — fetch /api/gallery/library and show a
+  // Import from Gallery - fetch /api/gallery/library and show a
   // thumbnail-grid picker overlay.
   document.getElementById('ge-import-gallery')?.addEventListener('click', async () => {
     try {

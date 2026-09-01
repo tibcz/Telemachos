@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""telemachos-theme — shell wrapper for the theme system.
+"""telemachos-theme - shell wrapper for the theme system.
 
 Built-in preset definitions live in `static/js/theme.js` (the `THEMES`
 export). Each user's chosen preset + custom-color overrides persist
@@ -12,7 +12,7 @@ themes from the shell without needing the browser.
     telemachos-theme set --user alice@example.com --preset chatgpt
     telemachos-theme export --user alice@example.com --pretty > theme.json
 
-`set --preset NAME` clears any custom-color overrides — pass
+`set --preset NAME` clears any custom-color overrides - pass
 `--keep-colors` to preserve them (useful when switching presets but
 keeping your manual tweaks).
 """

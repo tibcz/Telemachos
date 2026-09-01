@@ -1,10 +1,10 @@
-"""Regression guard for issue #4002 — clicking the card body outside the
+"""Regression guard for issue #4002 - clicking the card body outside the
 edit textarea collapsed the skill card and silently discarded unsaved edits.
 
 In Brain > Skills, the card's click handler toggles expand/collapse. The
 edit <textarea> stops propagation only for clicks landing ON the textarea,
 so a click on the surrounding card padding bubbled up to the card handler
-and collapsed the card mid-edit — losing the user's changes. The fix bails
+and collapsed the card mid-edit - losing the user's changes. The fix bails
 out of the card click handler while a `.skill-md-editor` is present, so the
 card only leaves edit mode via Save (or the Cancel button added in #3580).
 

@@ -3,7 +3,7 @@ touch list. Driven through `node --input-type=module` (same approach as
 tests/test_markdown_table_row_js.py); skips when `node` is missing.
 
 Regression: a touch event whose `touches` list is present but EMPTY (a
-real mobile race — the finger is already lifted when the handler runs)
+real mobile race - the finger is already lifted when the handler runs)
 made `e.touches[0].clientX` throw \"Cannot read properties of undefined\".
 The guard falls back to the event's own clientX/clientY in that case.
 """

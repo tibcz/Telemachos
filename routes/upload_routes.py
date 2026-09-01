@@ -269,7 +269,7 @@ def setup_upload_routes(upload_handler):
         client_ip = request.client.host if request.client else "unknown"
         out = []
 
-        # Limit concurrent uploads per IP. Count genuine recent upload events —
+        # Limit concurrent uploads per IP. Count genuine recent upload events -
         # NOT the number of files in this batch. The previous check summed over
         # `files`, so a single multi-file request counted itself as N concurrent
         # uploads and tripped the limit (issue #1346: "attach more than one file
@@ -379,7 +379,7 @@ def setup_upload_routes(upload_handler):
         path = _resolve_upload_path(file_id)
         mime = (info or {}).get("mime") or _mt.guess_type(path)[0] or "application/octet-stream"
         from fastapi.responses import FileResponse
-        # Downscaled thumbnail for image previews — generated once and cached.
+        # Downscaled thumbnail for image previews - generated once and cached.
         if thumb and mime.startswith("image/"):
             try:
                 from PIL import Image, ImageOps
@@ -451,7 +451,7 @@ def setup_upload_routes(upload_handler):
     @router.get("/{file_id}/vision")
     async def get_vision_text(request: Request, file_id: str, force: int = 0):
         """Return the vision-model OCR/description for an uploaded image.
-        Cached under UPLOAD_DIR/.vision/{file_id}.txt — first call computes,
+        Cached under UPLOAD_DIR/.vision/{file_id}.txt - first call computes,
         subsequent loads are instant. Pass force=1 to recompute."""
         if not upload_handler.validate_upload_id(file_id):
             raise HTTPException(400, "Invalid file ID")

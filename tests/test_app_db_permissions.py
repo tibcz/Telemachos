@@ -11,11 +11,11 @@ import pytest
     reason="POSIX mode bits (0o600) don't exist on Windows; safe_chmod no-ops there.",
 )
 def test_app_db_created_with_0600(tmp_path):
-    """app.db holds secrets — it must not be world-readable.
+    """app.db holds secrets - it must not be world-readable.
 
     Note: under umask 077 a fresh sqlite file is born 0600 and this would pass
     even without the chmod; dev/CI umask is 022, where the chmod is what makes
-    it pass. No umask machinery needed — just don't read a green here as proof
+    it pass. No umask machinery needed - just don't read a green here as proof
     on a 077 box.
 
     A subprocess (not in-process patching) is used deliberately: the engine
@@ -63,7 +63,7 @@ def test_sqlite_db_path_handles_driver_and_query_forms():
     """The path fed to chmod must come from SQLAlchemy's parsed URL, not a naive
     replace("sqlite:///"). A driver-qualified URL (sqlite+pysqlite://) or one
     carrying query args (?cache=shared) would otherwise resolve to the wrong
-    path and leave the real file world-readable. Pure logic — runs everywhere.
+    path and leave the real file world-readable. Pure logic - runs everywhere.
     """
     from sqlalchemy.engine import make_url
 
@@ -89,7 +89,7 @@ def test_sqlite_db_path_handles_driver_and_query_forms():
 )
 def test_app_db_sidecars_relocked(tmp_path):
     """Stale SQLite sidecars (-wal/-shm) left by an older 0o644 install hold
-    copies of DB pages, so startup must re-lock them too — not just app.db.
+    copies of DB pages, so startup must re-lock them too - not just app.db.
 
     The default -journal is transient (SQLite deletes it after the create_all
     commit), so it isn't asserted on here; -wal/-shm persist and are the real

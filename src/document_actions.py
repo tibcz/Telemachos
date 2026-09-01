@@ -29,8 +29,8 @@ def _norm_title(t: str) -> str:
 def _content_fingerprint(content: str) -> str:
     """A stable fingerprint of document content for duplicate detection.
 
-    Strips bits that differ between otherwise-identical copies — chiefly the
-    `upload_id` of a re-imported PDF and the random `id=` of annotations — so
+    Strips bits that differ between otherwise-identical copies - chiefly the
+    `upload_id` of a re-imported PDF and the random `id=` of annotations - so
     that N imports of the same file collapse to one fingerprint. Whitespace is
     collapsed and the result lowercased.
     """
@@ -42,7 +42,7 @@ def _content_fingerprint(content: str) -> str:
 
 
 def _real_len(content: str) -> int:
-    """Length of content with markdown noise stripped — a 'completeness' proxy."""
+    """Length of content with markdown noise stripped - a 'completeness' proxy."""
     content = content if isinstance(content, str) else ""
     stripped = re.sub(r"^#{1,6}\s+", "", content, flags=re.MULTILINE)
     stripped = re.sub(r"[*_`>\-=]+", "", stripped)
@@ -53,7 +53,7 @@ def _real_len(content: str) -> int:
 async def run_document_tidy(owner: str) -> str:
     """Remove clearly-junk documents and redundant duplicates for an owner.
 
-    Conservative rules (no length-based deletion — short notes are valid):
+    Conservative rules (no length-based deletion - short notes are valid):
     - Empty / whitespace-only / placeholder ("# Untitled")
     - Title is a throwaway name (test, asdf, …) or the content itself is one
     - Email reply-chain with no original content

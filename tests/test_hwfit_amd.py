@@ -1,7 +1,7 @@
 """AMD ROCm support for Cookbook hardware-fit.
 
 Consumer AMD Radeon (RDNA: gfx10/11/12) can realistically only serve GGUF via
-llama.cpp — vLLM/SGLang on ROCm are validated for datacenter Instinct (CDNA,
+llama.cpp - vLLM/SGLang on ROCm are validated for datacenter Instinct (CDNA,
 gfx9xx), not consumer cards, where AWQ kernels are largely unsupported and FP8
 needs out-of-tree patches. These tests lock in that consumer RDNA is treated
 like Apple Silicon (GGUF-only recommendations) while datacenter CDNA and
@@ -36,7 +36,7 @@ def _cuda_system():
 
 def test_only_gguf_models_recommended_on_consumer_rdna():
     """llama.cpp (GGUF) is the servable path on consumer Radeon, so every model
-    recommended on RDNA must ship a real GGUF — no vLLM-only AWQ/GPTQ/FP8."""
+    recommended on RDNA must ship a real GGUF - no vLLM-only AWQ/GPTQ/FP8."""
     catalog = {m["name"]: m for m in get_models()}
     unservable = [
         r["name"] for r in rank_models(_rocm_system(family="rdna"), limit=900)
@@ -48,14 +48,14 @@ def test_only_gguf_models_recommended_on_consumer_rdna():
 
 def test_safetensors_models_still_recommended_on_cdna():
     """Datacenter Instinct (CDNA) runs vLLM/SGLang on ROCm fine, so non-GGUF
-    repos must NOT be filtered there — the GGUF-only rule is consumer-RDNA only."""
+    repos must NOT be filtered there - the GGUF-only rule is consumer-RDNA only."""
     names = {r["name"] for r in rank_models(_rocm_system(family="cdna"), limit=900)}
     assert "microsoft/Phi-mini-MoE-instruct" in names
 
 
 def test_unknown_amd_family_not_filtered():
     """When rocminfo is unavailable (family 'unknown'), don't hide non-GGUF
-    models — a possibly-capable Instinct box shouldn't lose models on misdetect."""
+    models - a possibly-capable Instinct box shouldn't lose models on misdetect."""
     names = {r["name"] for r in rank_models(_rocm_system(family="unknown"), limit=900)}
     assert "microsoft/Phi-mini-MoE-instruct" in names
 
@@ -152,7 +152,7 @@ def test_9060xt_speed_estimate_is_realistic():
 
 def test_offload_is_slower_than_full_gpu():
     """Partial CPU offload must estimate slower than the same model fully on GPU,
-    and heavier offload slower than lighter — the blend model, not a flat halving."""
+    and heavier offload slower than lighter - the blend model, not a flat halving."""
     from services.hwfit.fit import _estimate_speed
     model = {"name": "X", "parameter_count": "35B", "is_moe": True,
              "active_parameters": 3_000_000_000}
@@ -183,7 +183,7 @@ def test_sort_by_newest_orders_by_release_date():
 
 def test_no_vendor_specific_formats_on_consumer_rdna():
     """Consumer Radeon can't run NVIDIA NVFP4, Apple MLX, or vLLM-only FP8/AWQ/
-    GPTQ builds — none should be recommended on RDNA even though such repos DO
+    GPTQ builds - none should be recommended on RDNA even though such repos DO
     exist in the catalog. Guards the format filter directly (not just is_gguf)."""
     import re
     bad = re.compile(r"NVFP4|FP8|FP4|-MLX-|\bMLX\b|AWQ|GPTQ", re.IGNORECASE)
@@ -192,4 +192,4 @@ def test_no_vendor_specific_formats_on_consumer_rdna():
     assert offenders == [], f"non-runnable formats recommended on RDNA: {offenders[:5]}"
     # Guard against a vacuous test: such formats must actually be in the catalog.
     assert any(bad.search(m["name"]) for m in get_models()), \
-        "catalog has no NVFP4/MLX/FP8 repos — test would be vacuous"
+        "catalog has no NVFP4/MLX/FP8 repos - test would be vacuous"

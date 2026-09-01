@@ -18,7 +18,7 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock
 
 # Stub `core.database` / `core.auth` before the route modules import them.
-# (Same trick as test_null_owner_gates.py — the real modules instantiate
+# (Same trick as test_null_owner_gates.py - the real modules instantiate
 # SQLAlchemy declarative classes at import-time which blow up under the
 # conftest's `sqlalchemy.*` MagicMock stubs.)
 def _ensure_stub(name: str, **attrs):
@@ -34,7 +34,7 @@ def _ensure_stub(name: str, **attrs):
     `AttributeError`."""
     # Stub the parent package first if not already loaded. We point
     # `__path__` at the real on-disk directory so submodules NOT
-    # stubbed here can still resolve via normal import machinery —
+    # stubbed here can still resolve via normal import machinery -
     # but `core/__init__.py` is bypassed because the package is
     # already in `sys.modules`, which is exactly what we want.
     if "." in name:
@@ -169,7 +169,7 @@ def test_set_signup_enabled_requires_admin():
     assert auth.signup_enabled is False
 
 # ---------------------------------------------------------------------------
-# Research endpoints — `_require_user` rejects anonymous
+# Research endpoints - `_require_user` rejects anonymous
 # ---------------------------------------------------------------------------
 
 def _build_research_router():
@@ -186,11 +186,11 @@ def _build_research_router():
 
 
 def _fake_request(user=None):
-    """Cheap stand-in for fastapi.Request — only `request.state.current_user`
+    """Cheap stand-in for fastapi.Request - only `request.state.current_user`
     matters to `get_current_user`."""
     req = SimpleNamespace()
     req.state = SimpleNamespace(current_user=user)
-    # Some endpoints touch .client too — provide a benign default.
+    # Some endpoints touch .client too - provide a benign default.
     req.client = SimpleNamespace(host="127.0.0.1")
     return req
 
@@ -254,7 +254,7 @@ def test_research_delete_rejects_anonymous():
     target = next(r.endpoint for r in router.routes if getattr(r, "path", "") == "/api/research/{session_id}")
     # Note: `target` here is the most-recently registered route on this
     # path which is the DELETE. Either /detail or /delete both match
-    # other paths — the {session_id} bare path is DELETE.
+    # other paths - the {session_id} bare path is DELETE.
     with pytest.raises(HTTPException) as exc:
         asyncio.run(target(session_id="x", request=_fake_request(user=None)))
     assert exc.value.status_code == 401
@@ -301,7 +301,7 @@ def test_pop_notifications_owner_filtered():
     # the filter logic.
     import sys, types
     from unittest.mock import MagicMock as _MM
-    # `task_scheduler` pulls in lots of helpers — stub the ones it uses.
+    # `task_scheduler` pulls in lots of helpers - stub the ones it uses.
     for s in ["src.builtin_actions", "src.ai_interaction", "src.endpoint_resolver",
               "src.agent_loop", "src.session_manager"]:
         if s not in sys.modules:

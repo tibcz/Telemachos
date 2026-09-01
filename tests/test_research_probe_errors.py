@@ -35,7 +35,7 @@ def test_probe_failure_keeps_api_key_guidance():
 def test_probe_failure_keeps_reachability_guidance_for_plain_errors():
     msg = _format_probe_failure("local-model", RuntimeError("connection refused"))
 
-    assert msg == "Cannot reach model 'local-model' — connection refused"
+    assert msg == "Cannot reach model 'local-model' - connection refused"
 
 
 @pytest.mark.asyncio

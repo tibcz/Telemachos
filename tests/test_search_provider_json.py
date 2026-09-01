@@ -3,7 +3,7 @@
 `brave_search` already wraps `response.json()` in its own try/except that catches
 `json.JSONDecodeError` and returns []. The Tavily, Serper, and Google PSE
 providers parsed JSON inside the network try block, which only caught
-`httpx.RequestError`/`RateLimitError` — so a provider returning a non-JSON body
+`httpx.RequestError`/`RateLimitError` - so a provider returning a non-JSON body
 (an HTML error page, a truncated/empty body, a gateway error) raised an
 UNCAUGHT `json.JSONDecodeError` that aborted the search in the background. These
 pin that all four providers degrade to [] on malformed JSON, matching brave.
@@ -55,5 +55,5 @@ def test_google_pse_malformed_json_returns_empty():
 
 
 def test_brave_malformed_json_returns_empty():
-    # Already correct on main — guards against regressing the reference behaviour.
+    # Already correct on main - guards against regressing the reference behaviour.
     assert providers.brave_search("hello") == []

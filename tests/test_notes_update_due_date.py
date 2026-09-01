@@ -3,7 +3,7 @@
 The `add` action runs due_date through `parse_due_for_user` (natural language
 like "tomorrow at 9am", plus user-tz anchoring for naive ISO). The `update`
 action stored the raw value verbatim, so a reminder edited with natural language
-was saved as an unparseable literal the frontend's `new Date()` can't read — and
+was saved as an unparseable literal the frontend's `new Date()` can't read - and
 the reminder never fired. Both actions must route due_date through the parser.
 """
 import asyncio

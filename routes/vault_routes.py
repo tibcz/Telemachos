@@ -1,4 +1,4 @@
-"""Backward-compat shim — canonical location is routes/vault/vault_routes.py.
+"""Backward-compat shim - canonical location is routes/vault/vault_routes.py.
 
 This module is replaced in ``sys.modules`` by the canonical module object so
 that ``import routes.vault_routes``, ``from routes.vault_routes import X``,

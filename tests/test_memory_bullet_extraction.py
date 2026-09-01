@@ -2,7 +2,7 @@
 
 The fallback memory extractor (invoked by routes/memory_routes.py when the LLM
 extractor fails) matched list items with ``r'^[-*•]|\\d+\\.\\s*(.*)'``. Because
-of alternation precedence that pattern is ``(^[-*•]) | (\\d+\\.\\s*(.*))`` — the
+of alternation precedence that pattern is ``(^[-*•]) | (\\d+\\.\\s*(.*))`` - the
 capture group lives only in the numbered-list branch. A bullet line ("- ...")
 matches the first branch, so ``group(1)`` is ``None`` and ``.strip()`` raised
 ``AttributeError``, crashing extraction for any assistant message that contains

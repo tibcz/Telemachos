@@ -17,7 +17,7 @@
 //   update(value)  queue `value`; schedule a commit if one is not already pending
 //   flush()        commit any pending value NOW and drop the timer; returns whether
 //                  a commit happened, so a clean flush cannot duplicate a commit
-//   cancel()       drop the timer AND the pending value — nothing lands later
+//   cancel()       drop the timer AND the pending value - nothing lands later
 //
 // `cancel()` is what stops a finished (or backgrounded) stream from mutating a
 // view the user has since navigated away to.

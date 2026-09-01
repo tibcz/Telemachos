@@ -1,7 +1,7 @@
 """
 vault_routes.py
 
-Vaultwarden / Bitwarden CLI integration — config and unlock endpoints.
+Vaultwarden / Bitwarden CLI integration - config and unlock endpoints.
 Stores the BW_SESSION key in data/vault.json with restrictive permissions.
 """
 
@@ -83,7 +83,7 @@ async def _run_bw(args: list, session: str = None, input_text: str = None,
     env.update(os.environ)
     if session:
         env["BW_SESSION"] = session
-    # Secrets must never be passed as argv — process arguments are world-readable
+    # Secrets must never be passed as argv - process arguments are world-readable
     # via `ps` / `/proc/<pid>/cmdline` to any local user. Keep --passwordenv
     # support for bw commands that need it; unlock/login callers should prefer
     # stdin so the master password is not left in the child environment either.

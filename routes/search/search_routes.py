@@ -1,4 +1,4 @@
-"""Search routes — /api/search/config GET, /api/search POST."""
+"""Search routes - /api/search/config GET, /api/search POST."""
 
 import logging
 from typing import Dict, Any
@@ -45,7 +45,7 @@ def setup_search_routes(config) -> APIRouter:
 
     @router.post("/api/search")
     async def do_web_search(request: Request) -> Dict[str, Any]:
-        """Standalone web search — returns context string + source list.
+        """Standalone web search - returns context string + source list.
 
         Used by Compare mode to pre-search once and share results across panes.
         """

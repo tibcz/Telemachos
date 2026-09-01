@@ -107,11 +107,11 @@ def _run_markdown_case(markdown: str, render_expr: str = "mod.mdToHtml(input)", 
 def test_ordered_lists_render_as_one_unwrapped_ol(node_available):
     html = _run_markdown_case(
         "Before\n\n"
-        "1. **Check against the home page** — that's the visual reference for how things should feel.\n"
-        "2. **Open DevTools** and inspect the element — check fonts, colors, and spacing against this guide.\n"
-        "3. **Flag it** — note the page, the section, what's wrong, and what CSS rule you suspect.\n"
-        "4. **Small fixes** — if you know the fix (e.g. wrong CSS variable, wrong font), go ahead and change it in the CSS Module file.\n"
-        "5. **Big changes** — Talk it through before making wide changes across many pages.\n\n"
+        "1. **Check against the home page** - that's the visual reference for how things should feel.\n"
+        "2. **Open DevTools** and inspect the element - check fonts, colors, and spacing against this guide.\n"
+        "3. **Flag it** - note the page, the section, what's wrong, and what CSS rule you suspect.\n"
+        "4. **Small fixes** - if you know the fix (e.g. wrong CSS variable, wrong font), go ahead and change it in the CSS Module file.\n"
+        "5. **Big changes** - Talk it through before making wide changes across many pages.\n\n"
         "After"
     )
 
@@ -218,7 +218,7 @@ def test_fenced_code_keeps_dollar_ampersand(node_available):
     # Issue #5663: the block-restore pass used a string replacement, so `$&` in a
     # restored block was read as "the matched text" and re-inserted the
     # placeholder. `perl -pe 's/world/$& again/'` rendered as
-    # "s/world/___CODE_BLOCK_0___amp; again/" — the trailing "amp;" is the orphan
+    # "s/world/___CODE_BLOCK_0___amp; again/" - the trailing "amp;" is the orphan
     # left behind after `$&` consumed the `$&` of the escaped `$&amp;`.
     html = _run_markdown_case(
         "```sh\necho \"hello world\" | perl -pe 's/world/$& again/'\n```"
@@ -231,8 +231,8 @@ def test_fenced_code_keeps_dollar_ampersand(node_available):
 
 def test_fenced_code_keeps_dollar_backtick_and_quote(node_available):
     # `` $` `` and `$'` splice the text before/after the placeholder into the
-    # block. Unlike `$&` these leave no placeholder behind — the characters just
-    # vanish — so assert the content survives verbatim.
+    # block. Unlike `$&` these leave no placeholder behind - the characters just
+    # vanish - so assert the content survives verbatim.
     html = _run_markdown_case("```sh\nsed \"s/$`/x/\" && sed \"s/$'/y/\"\n```")
 
     assert "___CODE_BLOCK_" not in html

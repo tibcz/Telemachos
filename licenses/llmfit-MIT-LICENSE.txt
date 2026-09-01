@@ -1,4 +1,4 @@
-llmfit — https://github.com/AlexsJones/llmfit
+llmfit - https://github.com/AlexsJones/llmfit
 Adapted in: services/hwfit/, routes/cookbook_*.py, routes/hwfit_routes.py,
 static/js/cookbook*.js, scripts/odysseus-cookbook
 

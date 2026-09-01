@@ -1,5 +1,5 @@
 /**
- * Tasks Module — scheduled recurring LLM prompts.
+ * Tasks Module - scheduled recurring LLM prompts.
  */
 
 import uiModule from './ui.js';
@@ -16,7 +16,7 @@ const API_BASE = window.location.origin;
 let _open = false;
 let _tasksCascadeNext = false;   // play the domino-in entrance on the next render
 let _tasks = [];
-let _tasksFetched = false;   // first-fetch sentinel — `false` → show loading row instead of "No tasks yet"
+let _tasksFetched = false;   // first-fetch sentinel - `false` → show loading row instead of "No tasks yet"
 let _escHandler = null;
 let _viewingRuns = null; // task id when viewing run history
 let _clockInterval = null;
@@ -152,7 +152,7 @@ async function _runNow(id, force = false) {
     method: 'POST', credentials: 'same-origin',
   });
   if (!res.ok) {
-    // Surface the backend's actual reason — 409 means "already running",
+    // Surface the backend's actual reason - 409 means "already running",
     // 404 task missing, etc. Previously every error rendered as the same
     // generic "Failed to trigger task", which hid the cause.
     let msg = `Failed to trigger task (${res.status})`;
@@ -234,7 +234,7 @@ async function _saveUrgentEmailSettings(prompt) {
       }),
     });
   } finally {
-    // The shared snapshot still carries the old prompt — drop it so the next
+    // The shared snapshot still carries the old prompt - drop it so the next
     // read (here or in any other module) sees what was just written. In a
     // `finally` because a request that throws on the way back may still have
     // been applied.
@@ -373,7 +373,7 @@ function _scheduleLabel(task) {
     const suffix = ordinalSuffix(d);
     return `Monthly on ${d}${suffix} at ${localTime}`;
   }
-  return task.schedule || '—';
+  return task.schedule || '-';
 }
 
 function _utcTimeToLocal(hhmm) {
@@ -413,7 +413,7 @@ function _relativeTime(iso) {
   return past ? `${days}d ago` : `in ${days}d`;
 }
 
-// Absolute local time — unique per second. Used in run history so clustered
+// Absolute local time - unique per second. Used in run history so clustered
 // runs don't all read as "just now".
 function _absoluteTime(iso) {
   if (!iso) return '';
@@ -649,7 +649,7 @@ const _CATEGORY_ICONS = {
   Skills:    '<path d="M9 11l3 3L22 4"/><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v15H6.5A2.5 2.5 0 0 0 4 19.5z"/>',
   Assistant: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M7 18a5 5 0 0 1 10 0"/>',
   System:    '<rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>',
-  // Cookbook icon — matches the recipe-book glyph used on the sidebar.
+  // Cookbook icon - matches the recipe-book glyph used on the sidebar.
   Cookbook:  '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>',
   Other:     '<circle cx="12" cy="12" r="3"/>',
 };
@@ -758,7 +758,7 @@ async function _taskBulkDelete() {
   }
 }
 
-// Category filter chips (library-style tags) — solo-select: click one to
+// Category filter chips (library-style tags) - solo-select: click one to
 // show only that category, click it again to clear. Hidden if ≤1 category.
 function _renderTaskChips() {
   const bar = document.getElementById('tasks-filter-chips');
@@ -863,7 +863,7 @@ function _renderList() {
         ? `<button type="button" class="task-status-badge task-state-badge task-active-badge" data-task-status-action="pause" title="Active - click to pause" style="position:relative;top:4px;"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="7 4 19 12 7 20 7 4"/></svg><span class="task-state-label">active</span></button>`
         : '';
     const builtinBadge = task.is_builtin
-      ? `<span class="task-builtin-badge${task.is_modified ? ' modified' : ''}" title="${task.is_modified ? 'Built-in task — edited from its default' : 'Built-in task'}">built-in${task.is_modified ? ' · edited' : ''}</span>`
+      ? `<span class="task-builtin-badge${task.is_modified ? ' modified' : ''}" title="${task.is_modified ? 'Built-in task - edited from its default' : 'Built-in task'}">built-in${task.is_modified ? ' · edited' : ''}</span>`
       : '';
     titleRow.innerHTML = `${_taskIcon(task)}<span class="memory-item-title">${_esc(task.name)}</span>${_taskAiMark(task)}${builtinBadge}<span style="flex:1;"></span>${statusBadge}`;
 
@@ -923,7 +923,7 @@ function _renderList() {
       });
     }
 
-    // Expandable detail (revealed on click) — like the library doc/chat cards:
+    // Expandable detail (revealed on click) - like the library doc/chat cards:
     // extra meta + last-run result + description.
     const detail = document.createElement('div');
     detail.style.cssText = 'display:none;margin-top:7px;padding:8px 0 2px;border-top:1px solid var(--border);position:relative;';
@@ -978,7 +978,7 @@ function _renderList() {
       desc.style.cssText = 'font-size:11px;opacity:0.6;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word;';
       if (taskType === 'action') {
         const am = (_builtinActions || []).find(a => a.name === task.action);
-        desc.textContent = am?.description || task.action || '—';
+        desc.textContent = am?.description || task.action || '-';
       } else {
         desc.textContent = p;
       }
@@ -1026,12 +1026,12 @@ function _renderList() {
     card.appendChild(content);
     list.appendChild(card);
   }
-  // Domino-in cascade on the first render-with-cards after opening — same
+  // Domino-in cascade on the first render-with-cards after opening - same
   // staggered entrance the gallery / document library uses. We consume the
   // flag here OR in the early-return branches above so subsequent re-renders
   // (search, filter, edit) don't replay it. Note: opening with 0 tasks AND
   // hitting the early-return ALSO clears the flag, so creating a first task
-  // afterwards won't replay the cascade — keeps the entrance scoped to the
+  // afterwards won't replay the cascade - keeps the entrance scoped to the
   // very first render of the panel.
   if (_tasksCascadeNext && list.children.length) {
     list.classList.remove('tasks-just-opened');
@@ -1124,7 +1124,7 @@ function _showTaskDropdown(anchor, items) {
   const close = bindMenuDismiss(dd, () => { dd.remove(); }, (ev) => {
     // Ignore any clicks that occur within 250ms of the open (covers touch
     // "ghost click" duplicates that were firing right after pointerup and
-    // removing the dropdown before the user could see it) — treat as inside.
+    // removing the dropdown before the user could see it) - treat as inside.
     if (performance.now() - openedAt < 250) return false;
     return !dd.contains(ev.target);
   });
@@ -1169,7 +1169,7 @@ function _showPresetPicker() {
   // right edge. margin-left:-4px nudges the compose row 4px into the
   // description bar above so the input lines up with it visually.
   html += '<div class="task-ai-compose" style="display:flex;gap:6px;margin:6px 0 10px -4px;flex-wrap:wrap;align-items:center;">'
-    + '<input type="text" id="task-ai-input" class="memory-search-input" style="flex:1 1 220px;min-width:0;" placeholder="Describe a task — e.g. &quot;every weekday 7am summarize my unread email&quot;" />'
+    + '<input type="text" id="task-ai-input" class="memory-search-input" style="flex:1 1 220px;min-width:0;" placeholder="Describe a task - e.g. &quot;every weekday 7am summarize my unread email&quot;" />'
     + '<button class="memory-toolbar-btn active" id="task-ai-btn" title="Draft a task with AI" style="white-space:nowrap;height:28px;flex:0 0 auto;"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-1px;margin-right:3px;"><path d="M12 0L14.59 8.41L23 12L14.59 15.59L12 24L9.41 15.59L1 12L9.41 8.41Z"/></svg>Draft with AI</button>'
     + '</div>';
   html += '<div class="memory-list" style="max-height:none;flex:1;gap:0px;margin-top:2px;padding-right:8px;">';
@@ -1247,7 +1247,7 @@ function _showForm(existing, initTaskType, initTriggerType) {
       </select>
       <div id="task-form-output-extra"></div>
 
-      <label class="task-form-label">Model <span style="opacity:0.5;font-weight:normal;font-size:10px;">(optional — overrides session default)</span></label>
+      <label class="task-form-label">Model <span style="opacity:0.5;font-weight:normal;font-size:10px;">(optional - overrides session default)</span></label>
       <select id="task-form-model" class="task-form-input">
         <option value="">Use session default</option>
       </select>
@@ -1298,7 +1298,7 @@ function _showForm(existing, initTaskType, initTriggerType) {
         <label class="task-form-label">${taskType === 'research' ? 'Research question' : 'Prompt'}</label>
         <textarea id="task-form-prompt" class="task-form-input task-form-textarea" rows="4" placeholder="${placeholder}">${existing?.prompt || ''}</textarea>
 
-        <label class="task-form-label">Persona <span style="opacity:0.5;font-weight:normal;font-size:10px;">(optional — biases the output voice)</span></label>
+        <label class="task-form-label">Persona <span style="opacity:0.5;font-weight:normal;font-size:10px;">(optional - biases the output voice)</span></label>
         <select id="task-form-persona" class="task-form-input">${_personaOptsHtml}</select>
       `;
     } else {
@@ -1343,7 +1343,7 @@ function _showForm(existing, initTaskType, initTriggerType) {
         for (const a of actions) {
           const opt = document.createElement('option');
           opt.value = a.name;
-          opt.textContent = `${a.name} — ${a.description}`;
+          opt.textContent = `${a.name} - ${a.description}`;
           if (existing?.action === a.name) opt.selected = true;
           sel.appendChild(opt);
         }
@@ -1457,7 +1457,7 @@ function _showForm(existing, initTaskType, initTriggerType) {
           schedOpts.appendChild(inp);
           const hint = document.createElement('div');
           hint.style.cssText = 'font-size:10px;opacity:0.4;margin-top:2px;';
-          hint.textContent = 'min hour day month weekday — e.g. "0 */2 * * *" = every 2 hours';
+          hint.textContent = 'min hour day month weekday - e.g. "0 */2 * * *" = every 2 hours';
           schedOpts.appendChild(hint);
         }
       }
@@ -1480,7 +1480,7 @@ function _showForm(existing, initTaskType, initTriggerType) {
         for (const ev of events) {
           const opt = document.createElement('option');
           opt.value = ev.name;
-          opt.textContent = `${ev.name} — ${ev.description}`;
+          opt.textContent = `${ev.name} - ${ev.description}`;
           if (existing?.trigger_event === ev.name) opt.selected = true;
           sel.appendChild(opt);
         }
@@ -1633,19 +1633,19 @@ function _showForm(existing, initTaskType, initTriggerType) {
     }
   }
 
-  // Cancel — return to the Tasks tab (keeps the active-tab highlight in sync)
+  // Cancel - return to the Tasks tab (keeps the active-tab highlight in sync)
   document.getElementById('task-form-cancel').addEventListener('click', () => {
     _switchTab('tasks');
   });
 
   // Esc on the form goes back to the Add tab's preset picker (not the Tasks
-  // tab — Cancel handles that). Capture-phase + stopImmediatePropagation so
+  // tab - Cancel handles that). Capture-phase + stopImmediatePropagation so
   // app.js's generic modal-dismiss doesn't close the whole Tasks window first.
   if (window._tasksFormEsc) document.removeEventListener('keydown', window._tasksFormEsc, true);
   window._tasksFormEsc = (e) => {
     if (e.key !== 'Escape') return;
     if (!document.getElementById('task-form-save')) {
-      // Form is no longer in the DOM — detach to stop leaking.
+      // Form is no longer in the DOM - detach to stop leaking.
       document.removeEventListener('keydown', window._tasksFormEsc, true);
       window._tasksFormEsc = null;
       return;
@@ -1698,7 +1698,7 @@ function _showForm(existing, initTaskType, initTriggerType) {
     const chainVal = document.getElementById('task-form-chain')?.value;
     payload.then_task_id = chainVal || '';
 
-    // Notifications toggle — defaults to true if absent.
+    // Notifications toggle - defaults to true if absent.
     const notifEl = document.getElementById('task-form-notif');
     if (notifEl) payload.notifications_enabled = !!notifEl.checked;
 
@@ -1808,7 +1808,7 @@ async function _showRunHistory(taskId, taskName) {
 
   let html = `<div class="task-history-header">
     <button id="task-history-back" class="task-btn">← Back</button>
-    <span style="font-size:13px;opacity:0.7;">${_esc(taskName)} — Run history</span>
+    <span style="font-size:13px;opacity:0.7;">${_esc(taskName)} - Run history</span>
   </div>`;
 
   if (runs.length === 0) {
@@ -1824,7 +1824,7 @@ async function _showRunHistory(taskId, taskName) {
           ${run.model ? `<span class="task-run-model" style="font-size:10px;opacity:0.5;">${_esc(run.model.split('/').pop())}</span>` : ''}
           <span class="task-run-time" title="${run.started_at ? _esc(_relativeTime(run.started_at)) : ''}">${run.started_at ? _absoluteTime(run.started_at) : ''}</span>
         </div>
-        <div class="task-run-result">${_esc(run.result ? (run.result.length > 300 ? run.result.slice(0, 300) + '…' : run.result) : run.error || '—')}</div>
+        <div class="task-run-result">${_esc(run.result ? (run.result.length > 300 ? run.result.slice(0, 300) + '…' : run.result) : run.error || '-')}</div>
       </div>`;
     }
     html += '</div>';
@@ -1877,7 +1877,7 @@ async function _doRunNow(id, force = false) {
     if (uiModule) uiModule.showToast(force ? 'Task triggered in parallel' : 'Task triggered');
   } catch (e) {
     // Mirror the polling notification surface so the user sees the same kind
-    // of feedback they get for finished/failed tasks — a real browser
+    // of feedback they get for finished/failed tasks - a real browser
     // Notification when permission is granted, toast fallback otherwise.
     const msg = e.message || 'Failed to trigger task';
     let fired = false;
@@ -1969,7 +1969,7 @@ async function _doToggleAll() {
   }
   if (uiModule) {
     if (fails.length === 0) uiModule.showToast(`${verb}d all ${ok} task(s)`);
-    else uiModule.showError(`${verb}d ${ok}/${targets.length} — failed: ${fails.slice(0, 3).join(', ')}`);
+    else uiModule.showError(`${verb}d ${ok}/${targets.length} - failed: ${fails.slice(0, 3).join(', ')}`);
   }
   await _fetchTasks();
   _renderMainView();
@@ -2021,7 +2021,7 @@ function _switchTab(tab) {
 function _runToActivityEntry(r) {
   let resultText = r.result || r.error || '';
   if (!resultText) {
-    if (r.status === 'queued')  resultText = '_Queued — waiting for a free slot…_';
+    if (r.status === 'queued')  resultText = '_Queued - waiting for a free slot…_';
     if (r.status === 'running') resultText = '_Running…_';
   }
   return {
@@ -2136,7 +2136,7 @@ async function _renderActivityView() {
   const _isNotification = (e) => e.output_target === 'notification';
 
   const _matchesSolo = (e) => {
-    // Notification rows are intentionally hidden from the default "All" view —
+    // Notification rows are intentionally hidden from the default "All" view -
     // they're surfaced via the dedicated "notifications" chip so the noisy
     // alert stream doesn't drown the rest of the activity.
     if (!_solo) return !_isNotification(e);
@@ -2177,7 +2177,7 @@ async function _renderActivityView() {
   const _buildChips = () => {
     const chipBar = document.getElementById('tasks-activity-chips');
     if (!chipBar) return;
-    // Distinct categories present (excluding notifications — those have their
+    // Distinct categories present (excluding notifications - those have their
     // own chip and are hidden from the default view).
     const cats = [];
     for (const e of _activityEntries) {
@@ -2186,7 +2186,7 @@ async function _renderActivityView() {
       if (!cats.includes(c)) cats.push(c);
     }
     const hasErrors = _activityEntries.some(e => !_isNotification(e) && _entryStatus(e) === 'error');
-    // Count notifications that would actually display under the chip — applies
+    // Count notifications that would actually display under the chip - applies
     // the active search query so the badge matches what you'd see, not a
     // misleading total.
     const _q = _afQuery.trim().toLowerCase();
@@ -2275,7 +2275,7 @@ function _stackActivityEntries(entries) {
   const normalizeResult = (entry) => {
     const text = (entry.result || '').trim();
     if (/^Email\b/i.test(entry.taskName || '')) {
-      if (/^skipped\s*[—-]/i.test(text) || /\bNo recent emails\b/i.test(text)) {
+      if (/^skipped\s*[--]/i.test(text) || /\bNo recent emails\b/i.test(text)) {
         return text.replace(/\d+/g, '#');
       }
       return '__email_run__';
@@ -2309,7 +2309,7 @@ function _stackActivityEntries(entries) {
   return out;
 }
 
-// "5s" / "1m 23s" / "2h 14m" — same compact ladder the activity timestamps use.
+// "5s" / "1m 23s" / "2h 14m" - same compact ladder the activity timestamps use.
 function _fmtElapsed(ms) {
   const s = Math.max(0, Math.floor(ms / 1000));
   if (s < 60) return s + 's';
@@ -2329,7 +2329,7 @@ function _startActivityTimers(root) {
   if (_activityTimerInterval) return;
   _activityTimerInterval = setInterval(() => {
     if (!_tickActivityTimers(document)) {
-      // No live rows anymore — stop the interval to avoid burning a tick.
+      // No live rows anymore - stop the interval to avoid burning a tick.
       clearInterval(_activityTimerInterval);
       _activityTimerInterval = null;
     }
@@ -2354,7 +2354,7 @@ function _wireActivityRows(list) {
   list.querySelectorAll('[data-spin-here]').forEach(slot => {
     try {
       const wp = spinnerModule.createWhirlpool(12);
-      // Right-side placement (next to the "Running" label) — small left
+      // Right-side placement (next to the "Running" label) - small left
       // margin to separate from the text, no right margin so the spinner
       // sits flush with the row's right edge.
       wp.element.style.cssText = 'display:inline-flex;width:12px;height:12px;margin:0 0 0 6px;vertical-align:middle;';
@@ -2363,7 +2363,7 @@ function _wireActivityRows(list) {
       slot.textContent = '…';
     }
   });
-  // Kick the live elapsed-timer interval (running rows only — queued has no
+  // Kick the live elapsed-timer interval (running rows only - queued has no
   // counter). No-op when there's nothing to tick.
   _startActivityTimers(list);
   list.querySelectorAll('.task-log-row').forEach(row => {
@@ -2531,7 +2531,7 @@ async function _openResultInChat(entry) {
       if (match) { url = match.url; model = entry.model; epId = match.endpoint_id || ''; }
       else if (entry.endpointUrl) {
         // Endpoint known but not in the live list (e.g. cookbook model
-        // not currently served) — try it anyway with skip_validation.
+        // not currently served) - try it anyway with skip_validation.
         url = entry.endpointUrl; model = entry.model;
       }
     }
@@ -2545,7 +2545,7 @@ async function _openResultInChat(entry) {
       } catch (_) {}
     }
     if (!url) {
-      // Skip embedding/tts/whisper/moderation/image models — they can't chat,
+      // Skip embedding/tts/whisper/moderation/image models - they can't chat,
       // and an endpoint may list one first (e.g. text-embedding-ada-002).
       const _isChatModel = (m) => {
         const l = (m || '').toLowerCase();
@@ -2603,13 +2603,13 @@ function _classifyResult(text) {
 // hue derived from the task name's hash, so a recurring custom task keeps
 // the same color from one run to the next.
 const _CATEGORY_HUES = [
-  { hue: 210, kw: /\b(email|inbox|mail|smtp|imap|reply|summary|spam|urgency)\b/i },     // blue   — email
-  { hue: 280, kw: /\b(research|web ?search|deep[-_ ]research|sources?|investigate)\b/i },// purple — research
-  { hue:  35, kw: /\b(cookbook|model[-_ ]?(serve|download)|hf|huggingface|vllm|llama|ollama)\b/i }, // amber — cookbook
-  { hue: 150, kw: /\b(calendar|event|meeting|appointment|schedule)\b/i },                // green  — calendar
-  { hue: 330, kw: /\b(reminder|note|notify|alert)\b/i },                                 // pink   — reminders
-  { hue:  10, kw: /\b(check[-_ ]?in|morning|evening|daily|standup)\b/i },                // red    — check-ins
-  { hue: 190, kw: /\b(memory|memories|remember|recall)\b/i },                            // teal   — memory
+  { hue: 210, kw: /\b(email|inbox|mail|smtp|imap|reply|summary|spam|urgency)\b/i },     // blue   - email
+  { hue: 280, kw: /\b(research|web ?search|deep[-_ ]research|sources?|investigate)\b/i },// purple - research
+  { hue:  35, kw: /\b(cookbook|model[-_ ]?(serve|download)|hf|huggingface|vllm|llama|ollama)\b/i }, // amber - cookbook
+  { hue: 150, kw: /\b(calendar|event|meeting|appointment|schedule)\b/i },                // green  - calendar
+  { hue: 330, kw: /\b(reminder|note|notify|alert)\b/i },                                 // pink   - reminders
+  { hue:  10, kw: /\b(check[-_ ]?in|morning|evening|daily|standup)\b/i },                // red    - check-ins
+  { hue: 190, kw: /\b(memory|memories|remember|recall)\b/i },                            // teal   - memory
 ];
 
 function _hashHue(s) {
@@ -2619,7 +2619,7 @@ function _hashHue(s) {
 }
 
 function _categoryHue(taskName, kind) {
-  if (kind === 'you') return 220;          // user message — neutral blue-grey
+  if (kind === 'you') return 220;          // user message - neutral blue-grey
   const t = (taskName || '').toLowerCase();
   for (const c of _CATEGORY_HUES) {
     if (c.kw.test(t)) return c.hue;
@@ -2646,7 +2646,7 @@ function _categoryLabel(taskName) {
 
 function _renderActivityEntry(entry, opts = {}) {
   // Canonical index into _activityEntries (map() passes the FILTERED
-  // index, which would be wrong) — used by the Open-in-chat handler.
+  // index, which would be wrong) - used by the Open-in-chat handler.
   const entryIdx = Number.isInteger(entry.sourceIdx) ? entry.sourceIdx : _activityEntries.indexOf(entry);
   const repeatBadge = entry.repeatCount > 1
     ? `<span class="task-log-repeat" title="${entry.repeatCount} similar activity rows">+${entry.repeatCount - 1} repeats</span>`
@@ -2673,8 +2673,8 @@ function _renderActivityEntry(entry, opts = {}) {
   // Render the result through markdown so code blocks, lists, links look right.
   let resultHtml;
   const _isRunning = entry.status === 'running' || entry.status === 'queued';
-  // Skipped (noop) rows: render as a slim, dimmed one-liner — no body, no
-  // actions, just `· name · skipped — reason · time`. CSS via .is-skipped.
+  // Skipped (noop) rows: render as a slim, dimmed one-liner - no body, no
+  // actions, just `· name · skipped - reason · time`. CSS via .is-skipped.
   const _isSkipped = entry.status === 'skipped';
   if (_isRunning && !(entry.result || '').trim()) {
     resultHtml = '';
@@ -2685,7 +2685,7 @@ function _renderActivityEntry(entry, opts = {}) {
       resultHtml = `<pre style="white-space:pre-wrap;word-break:break-word;">${_escHtml(entry.result || '')}</pre>`;
     }
   }
-  // Bracketed prefixes like "[Default] No recent emails" — the fan-out across
+  // Bracketed prefixes like "[Default] No recent emails" - the fan-out across
   // accounts joins per-account results. Style them as compact accent tags so
   // the activity row reads as "<tag> message" instead of a wall of brackets.
   // Skip <pre>/<code> blocks: bash output / tracebacks / numbered lists often
@@ -2717,7 +2717,7 @@ function _renderActivityEntry(entry, opts = {}) {
   const hasRunningProgress = !!(entry.result && entry.result.trim() && !_runningPlaceholder && (entry.status === 'running' || entry.status === 'queued'));
   // "Open in chat" only makes sense for runs whose result is a real assistant
   // message (Prompt / Research tasks). Action/event runs are just log lines
-  // (e.g. "No recent emails", "Tidied N memories") — for those, replace the
+  // (e.g. "No recent emails", "Tidied N memories") - for those, replace the
   // button with "Copy log" so you can grab the text without spawning a chat
   // with nothing useful in it.
   const _isChatWorthy = entry.kind === 'llm' || entry.kind === 'research';
@@ -2753,7 +2753,7 @@ function _renderActivityEntry(entry, opts = {}) {
        </button>`;
   }
   // Running rows replace the relative-time on the right with "Running NN" + a
-  // live whirlpool spinner. Queued shows "Queued" the same way (no timer —
+  // live whirlpool spinner. Queued shows "Queued" the same way (no timer -
   // hasn't actually started yet). The elapsed counter ticks every second via
   // `_startActivityTimers` after the row is in the DOM.
   let rightHtml;
@@ -2771,7 +2771,7 @@ function _renderActivityEntry(entry, opts = {}) {
     rightHtml = `<span class="task-log-time" title="${_escHtml(tsAbs)}">${_escHtml(tsLabel)}</span>`;
   }
 
-  // Slim variant for skipped (noop) rows — single line, no body, no actions,
+  // Slim variant for skipped (noop) rows - single line, no body, no actions,
   // dimmed. The reason (entry.result, e.g. "no pings due") sits inline so
   // users can see *why* the row was skipped without expanding anything.
   if (_isSkipped) {
@@ -2783,7 +2783,7 @@ function _renderActivityEntry(entry, opts = {}) {
           <span class="task-log-task-icon">${_taskIcon({ action: entry.action, task_type: entry.kind })}</span>
           <span class="task-log-name">${_escHtml(entry.taskName)}</span>${_taskAiMark(entry)}
           ${repeatBadge}
-          <span class="task-log-skipped-reason">skipped${reason ? ' — ' + _escHtml(reason) : ''}</span>
+          <span class="task-log-skipped-reason">skipped${reason ? ' - ' + _escHtml(reason) : ''}</span>
           <span class="task-log-time" title="${_escHtml(tsAbs)}">${_escHtml(tsLabel)}</span>
         </div>
       </div>
@@ -2817,7 +2817,7 @@ function _escHtml(s) {
 
 // ---- Main view ----
 
-// Tasks list view state — search query + active category tag + select mode.
+// Tasks list view state - search query + active category tag + select mode.
 let _taskSearch = '';
 let _taskFilter = null;
 let _taskSort = 'recent';
@@ -2941,7 +2941,7 @@ export function openTasks(focusId, opts) {
   _setTaskFailurePending(false);
   _setTaskCompletionPending(false);
   if (_open) {
-    // Already open — just focus the requested task / apply filter.
+    // Already open - just focus the requested task / apply filter.
     if (openActivityForFailure) _switchTab('activity');
     else if (openCompletedForNotification) _switchTab('completed');
     if (o.filter !== undefined) { _taskFilter = o.filter; _renderList(); }
@@ -3009,7 +3009,7 @@ export function openTasks(focusId, opts) {
   _tickClock();
   _clockInterval = setInterval(_tickClock, 1000);
 
-  // Make draggable — shared helper handles drag + L/R dock + (none) fs.
+  // Make draggable - shared helper handles drag + L/R dock + (none) fs.
   {
     const content = modal.querySelector('.modal-content');
     const header = modal.querySelector('.modal-header');
@@ -3051,7 +3051,7 @@ export function openTasks(focusId, opts) {
 
   // Paint the scaffolding immediately so the modal-enter animation reveals a
   // populated shell (header/search/sort/empty list with a spinner row) instead
-  // of an empty modal-body that fills in after the fetch resolves — that delay
+  // of an empty modal-body that fills in after the fetch resolves - that delay
   // was visible as a "flicker" right after opening.
   _activeTab = 'tasks';
   _switchTab(openActivityForFailure ? 'activity' : openCompletedForNotification ? 'completed' : 'tasks');
@@ -3140,7 +3140,7 @@ async function _pollTaskNotifications() {
         }
       }
       // Tasks with output_target='notification' carry the result text in `body`
-      // — show it as a real browser Notification (richer than a toast). Falls
+      // - show it as a real browser Notification (richer than a toast). Falls
       // back to a toast when permission is denied or unavailable.
       if (ok && n.body) {
         const title = n.task_name || 'Task';
@@ -3166,7 +3166,7 @@ async function _pollTaskNotifications() {
       }
     }
   } catch (e) {
-    // Silently ignore — server may be unreachable
+    // Silently ignore - server may be unreachable
   }
 }
 

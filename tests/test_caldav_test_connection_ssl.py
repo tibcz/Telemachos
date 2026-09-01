@@ -7,7 +7,7 @@ rejected by the test with CERTIFICATE_VERIFY_FAILED.
 
 These tests exercise the *route handler* directly (via ASGI TestClient)
 and capture the verify= kwarg passed to httpx.AsyncClient, ensuring the
-route code — not a test-side duplicate — builds the SSL context correctly.
+route code - not a test-side duplicate - builds the SSL context correctly.
 """
 import os
 import ssl
@@ -19,7 +19,7 @@ import pytest
 
 # No module-level sys.modules stubbing here: conftest pre-imports the real
 # sqlalchemy/core.database, and stubbing extras (e.g. caldav) at collection
-# time leaks MagicMocks into later tests in the same process — it made
+# time leaks MagicMocks into later tests in the same process - it made
 # test_caldav_redirect_hardening's real DAVClient a mock that never sent
 # the PROPFIND. The route's lazy imports are patched per-request instead.
 

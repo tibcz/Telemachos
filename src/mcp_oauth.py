@@ -1,4 +1,4 @@
-"""mcp_oauth.py — generic OAuth for remote (Streamable HTTP) MCP servers.
+"""mcp_oauth.py - generic OAuth for remote (Streamable HTTP) MCP servers.
 
 Bridges the mcp SDK's OAuthClientProvider (RFC 9728 discovery, Dynamic Client
 Registration, authorization-code + PKCE, token refresh) to Telemachos's web
@@ -22,7 +22,7 @@ def _resolve_redirect_base() -> str:
     Falls back to the port the app binds natively (APP_PORT, read the same way
     by app.py and launcher.py) rather than a fixed 7000: the macOS launcher
     defaults to 7860, and a callback on the wrong port reaches nothing. The
-    hostname stays `localhost` rather than internal_api_base()'s 127.0.0.1 —
+    hostname stays `localhost` rather than internal_api_base()'s 127.0.0.1 -
     this URI is registered with the authorization server (via DCR, or by hand
     for Google clients), so changing the host invalidates registrations that
     already exist.
@@ -37,8 +37,8 @@ def _resolve_redirect_base() -> str:
 # OAuth redirect URI registered with every authorization server via DCR. Loopback
 # is allowed for native/desktop clients (RFC 8252); remote users finish via the
 # paste-back flow. Deployments whose externally reachable origin differs from the
-# port Telemachos binds — reverse proxy, public domain, or Docker, whose host port
-# map is invisible inside the container — must set OAUTH_REDIRECT_BASE_URL (or
+# port Telemachos binds - reverse proxy, public domain, or Docker, whose host port
+# map is invisible inside the container - must set OAUTH_REDIRECT_BASE_URL (or
 # APP_PUBLIC_URL), otherwise the redirect never lands back on Telemachos.
 _REDIRECT_BASE = _resolve_redirect_base()
 REDIRECT_URI = f"{_REDIRECT_BASE}/api/mcp/oauth/callback"

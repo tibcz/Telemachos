@@ -1,13 +1,13 @@
 """Regression guard: Opus 4.7+ rejects the temperature field entirely.
 
 Anthropic removed the sampling parameters (temperature, top_p, top_k) starting
-with Claude Opus 4.7 — sending `temperature` at all, even 0.0, returns HTTP 400.
+with Claude Opus 4.7 - sending `temperature` at all, even 0.0, returns HTTP 400.
 This broke every native-Anthropic call to Opus 4.7/4.8, including the research
 endpoint probe (temperature=0) and all DeepResearcher LLM calls, because
 _build_anthropic_payload sent `temperature` unconditionally.
 
 Earlier Claude models (Opus 4.6 and below, every Sonnet/Haiku) still accept
-temperature in [0.0, 1.0], so the omission is version-gated — the clamp-to-[0,1]
+temperature in [0.0, 1.0], so the omission is version-gated - the clamp-to-[0,1]
 behavior for those models (test_llm_core_anthropic_temp_clamp.py) is unchanged.
 """
 import os
@@ -25,7 +25,7 @@ from src.llm_core import _anthropic_rejects_temperature, _build_anthropic_payloa
         "claude-opus-4-7",
         "claude-opus-4-8",
         "claude-opus-4-8-20260101",  # tolerate a dated snapshot suffix
-        "claude-opus-4-7-20260201",  # dated 4.7 snapshot — explicit minor, still >= 4.7
+        "claude-opus-4-7-20260201",  # dated 4.7 snapshot - explicit minor, still >= 4.7
         "anthropic/claude-opus-4-7",  # tolerate a provider-prefixed id
         "claude-opus-4-10",  # future minor still >= 4.7
         "claude-opus-5-0",  # future major
@@ -49,19 +49,19 @@ def test_opus_47_plus_rejects_temperature(model):
         "claude-opus-4-5",
         "claude-opus-4-1",
         "claude-opus-4-0",
-        "claude-opus-4",  # bare major (no minor) — kept
-        "claude-opus-4-20250514",  # Opus 4.0 dated id — the date must NOT read as a 4.7+ minor
-        "claude-opus-4-1-20250805",  # Opus 4.1 dated id — explicit minor before the date
-        "claude-opus-4-6-20251201",  # dated 4.6 snapshot — older, still keeps temperature
+        "claude-opus-4",  # bare major (no minor) - kept
+        "claude-opus-4-20250514",  # Opus 4.0 dated id - the date must NOT read as a 4.7+ minor
+        "claude-opus-4-1-20250805",  # Opus 4.1 dated id - explicit minor before the date
+        "claude-opus-4-6-20251201",  # dated 4.6 snapshot - older, still keeps temperature
         "claude-sonnet-4-6",
         "claude-3-5-sonnet",
-        "claude-3-opus-20240229",  # legacy Claude 3 Opus — date directly after
+        "claude-3-opus-20240229",  # legacy Claude 3 Opus - date directly after
         # "opus-", so the major must not swallow it as version 20240229 (that is
         # what makes capping the major at 1-2 digits necessary once the minor
         # became optional in #5753).
         "claude-haiku-4-5",
         "claude-x",
-        "octopus-4-8",  # "opus" only as a substring of another word — must not match
+        "octopus-4-8",  # "opus" only as a substring of another word - must not match
         "myproxy/octopus-4-8",  # same, behind a provider prefix
         "",
         None,

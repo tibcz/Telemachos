@@ -1,4 +1,4 @@
-// compare/selector.js — model selection modal
+// compare/selector.js - model selection modal
 import state from './state.js';
 import Storage from '../storage.js';
 import { fetchModels, _persistSelections, getExcludedModels } from './models.js';
@@ -21,8 +21,8 @@ function _slotChar(i) { return state._parallel ? String.fromCharCode(65 + i) : S
 
 /** Sync the Compare toolbar indicator button state. */
 function _syncToolbarIndicator(active) {
-  // The old red-accent "Compare active — click to deactivate" chip is no longer
-  // shown — Compare is exited from its own header bar, so the input-bar tool
+  // The old red-accent "Compare active - click to deactivate" chip is no longer
+  // shown - Compare is exited from its own header bar, so the input-bar tool
   // indicator was redundant. Keep it hidden regardless of state.
   const indicator = document.getElementById('compare-indicator-btn');
   if (indicator) {
@@ -116,7 +116,7 @@ async function showModelSelector() {
     const blindBtn = document.createElement('button');
     blindBtn.type = 'button';
     blindBtn.className = 'compare-blind-toggle active';
-    blindBtn.title = 'Blind Mode — hide model names until you vote';
+    blindBtn.title = 'Blind Mode - hide model names until you vote';
     blindBtn.innerHTML = EYE_CLOSED + _toggleLabel('Blind');
     blindBtn.addEventListener('click', () => {
       state._blindMode = !state._blindMode;
@@ -128,7 +128,7 @@ async function showModelSelector() {
         diceBtn.classList.remove('active');
       }
       renderModelRows();
-      // Mobile hides the button labels — surface the new state as a toast.
+      // Mobile hides the button labels - surface the new state as a toast.
       uiModule.showToast('Mode: Blind ' + (state._blindMode ? 'on' : 'off'));
       _updateModeLabel();
       _setModeHint(state._blindMode
@@ -137,12 +137,12 @@ async function showModelSelector() {
     });
     toggleRow.appendChild(blindBtn);
 
-    // Parallel / Sequential toggle — right after blind
+    // Parallel / Sequential toggle - right after blind
     state._parallel = true;
     const parallelBtn = document.createElement('button');
     parallelBtn.type = 'button';
     parallelBtn.className = 'compare-parallel-toggle active';
-    parallelBtn.title = 'Parallel — run all models at once vs one at a time';
+    parallelBtn.title = 'Parallel - run all models at once vs one at a time';
     parallelBtn.innerHTML = ICON_PARALLEL + _toggleLabel('Parallel');
     parallelBtn.addEventListener('click', () => {
       state._parallel = !state._parallel;
@@ -158,11 +158,11 @@ async function showModelSelector() {
     });
     toggleRow.appendChild(parallelBtn);
 
-    // Dice / shuffle button — next to blind toggle
+    // Dice / shuffle button - next to blind toggle
     const diceBtn = document.createElement('button');
     diceBtn.type = 'button';
     diceBtn.className = 'compare-dice-toggle';
-    diceBtn.title = 'Shuffle — randomly pick models for each slot';
+    diceBtn.title = 'Shuffle - randomly pick models for each slot';
     diceBtn.innerHTML = ICON_DICE + _toggleLabel('Shuffle');
     diceBtn.addEventListener('click', () => {
       if (!_modelsLoaded) return;
@@ -210,7 +210,7 @@ async function showModelSelector() {
     });
     toggleRow.appendChild(diceBtn);
 
-    // (Pre-round "Shuffle models?" reminder removed at the user's request — the
+    // (Pre-round "Shuffle models?" reminder removed at the user's request - the
     // running-state panes still show their own shuffle nudge.)
     function _remindShuffle() { /* no-op in the selector */ }
 
@@ -220,7 +220,7 @@ async function showModelSelector() {
     const saveBtn = document.createElement('button');
     saveBtn.type = 'button';
     saveBtn.className = 'compare-save-toggle';
-    saveBtn.title = 'Save — keep sessions after closing compare';
+    saveBtn.title = 'Save - keep sessions after closing compare';
     saveBtn.innerHTML = SAVE_ICON + _toggleLabel('Save');
     saveBtn.addEventListener('click', () => {
       state._saveOnClose = !state._saveOnClose;
@@ -237,7 +237,7 @@ async function showModelSelector() {
     const resetBtn = document.createElement('button');
     resetBtn.type = 'button';
     resetBtn.className = 'compare-reset-toggle';
-    resetBtn.title = 'Reset — restore all defaults';
+    resetBtn.title = 'Reset - restore all defaults';
     resetBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>' + _toggleLabel('Reset');
     resetBtn.addEventListener('click', () => {
       state._blindMode = true;
@@ -314,10 +314,10 @@ async function showModelSelector() {
     typeWrap.appendChild(typeLabel);
     const tabBar = document.createElement('div');
     tabBar.className = 'compare-mode-tabs compare-type-tabs';
-    // Agent — shell prompt `>_` (matches the bash-toggle-btn icon in the composer)
+    // Agent - shell prompt `>_` (matches the bash-toggle-btn icon in the composer)
     const _ICON_AGENT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>';
     const _ICON_SEARCH = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
-    // Research — magnifying glass with `+` (matches the sidebar Deep Research icon)
+    // Research - magnifying glass with `+` (matches the sidebar Deep Research icon)
     const _ICON_RESEARCH = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>';
     const _modes = [
       { id: 'chat', label: 'Chat', icon: CHAT_ICON },
@@ -450,7 +450,7 @@ async function showModelSelector() {
       dropdown.className = 'cmp-picker-dropdown';
       // Appended to document.body (NOT wrap) and position:fixed so it escapes
       // both the modal's overflow clipping AND any transform on the modal-content
-      // (a transformed ancestor makes position:fixed clip to it — which was why
+      // (a transformed ancestor makes position:fixed clip to it - which was why
       // the dropdown kept cropping under the next row). Coords set in _placeDropdown.
       dropdown.style.cssText = 'display:none;position:fixed;max-height:200px;overflow-y:auto;background:var(--panel);border:1px solid var(--border);border-radius:6px;z-index:100000;box-shadow:0 4px 12px rgba(0,0,0,0.2);';
       document.body.appendChild(dropdown);
@@ -491,7 +491,7 @@ async function showModelSelector() {
       }
 
       // Position the dropdown either below or above the input depending
-      // on which side has more room — otherwise on a mobile bottom-sheet
+      // on which side has more room - otherwise on a mobile bottom-sheet
       // a picker near the bottom of the screen would open downward and
       // either clip past the modal or extend off the viewport.
       const _placeDropdown = () => {
@@ -606,7 +606,7 @@ async function showModelSelector() {
           }
           row.appendChild(lbl);
 
-          // Model picker (synthesis LLM) — searchable for large lists
+          // Model picker (synthesis LLM) - searchable for large lists
           if (!state._searchSynthModels[idx] && chatModels.length > 0) {
             const fb = chatModels[Math.min(idx, chatModels.length - 1)];
             state._searchSynthModels[idx] = { model: fb.id, endpoint: fb.url, endpointId: fb.endpointId, name: fb.name };
@@ -673,7 +673,7 @@ async function showModelSelector() {
       const filtered = filteredModels();
       listContainer.innerHTML = '';
 
-      // Research mode needs search providers too — fetch if not cached
+      // Research mode needs search providers too - fetch if not cached
       const needsProviders = state._compareMode === 'research';
       if (needsProviders && !state._cachedProviders) {
         listContainer.innerHTML = '<div style="color:color-mix(in srgb, var(--fg) 40%, transparent);font-size:0.85em;padding:12px 0;">Loading search providers\u2026</div>';
@@ -801,7 +801,7 @@ async function showModelSelector() {
     addBtn.addEventListener('click', () => {
       if (selections.length >= 8) return;
       if (_shuffled) {
-        // In shuffle mode every slot is a hidden, randomly-picked model — so a
+        // In shuffle mode every slot is a hidden, randomly-picked model - so a
         // new slot must get a random pool model too, not an empty picker.
         const excluded = getExcludedModels();
         const used = new Set(selections.filter(Boolean).map(s => s.model + '|' + s.endpoint));
@@ -855,7 +855,7 @@ async function showModelSelector() {
     const footer = document.createElement('div');
     footer.className = 'modal-footer';
     footer.style.cssText = 'display:flex;gap:8px;justify-content:flex-end;padding:14px 16px 10px;border-top:1px solid var(--border);';
-    // Cancel button removed — the overlay's X / outside-click / Esc all
+    // Cancel button removed - the overlay's X / outside-click / Esc all
     // dismiss the popup, so the footer Cancel was redundant.
     const startBtn = document.createElement('button');
     startBtn.innerHTML = _CMP_START_LABEL;
@@ -886,7 +886,7 @@ async function showModelSelector() {
       }
       resolve(result);
     }
-    // (cancelBtn removed — overlay X / outside-click / Esc still call cleanup)
+    // (cancelBtn removed - overlay X / outside-click / Esc still call cleanup)
     startBtn.addEventListener('click', async () => {
       if (!_modelsLoaded) return;
       let selected = selections.filter(Boolean);
@@ -933,7 +933,7 @@ async function showModelSelector() {
         row.className = 'compare-probe-row';
         row.dataset.model = m.model;
         row.dataset.idx = i;
-        // In blind mode, hide name until failure — only show slot letter
+        // In blind mode, hide name until failure - only show slot letter
         const name = m.name || m.model.split('/').pop();
         const displayName = isBlind ? `Model ${_slotChar(i)}` : escapeHtml(name);
         row._realName = name;
@@ -992,7 +992,7 @@ async function showModelSelector() {
       };
       document.addEventListener('keydown', _probeEsc, false);
 
-      // Helper: probe a single model (skip image models — they use a different API)
+      // Helper: probe a single model (skip image models - they use a different API)
       const _imageModelPrefixes = ['dall-e', 'gpt-image', 'chatgpt-image', 'stable-diffusion', 'sdxl', 'flux', 'midjourney'];
       function _isImageModel(modelId) {
         const lower = (modelId || '').toLowerCase();
@@ -1002,7 +1002,7 @@ async function showModelSelector() {
         if (_isImageModel(m.model)) {
           return { status: 'ok', model: m.model, skipped: true, skipReason: 'Image' };
         }
-        // Search mode — probe the LLM model normally (don't skip)
+        // Search mode - probe the LLM model normally (don't skip)
         if (state._compareMode === 'search' && !m.model) {
           return { status: 'ok', model: m.model, skipped: true, skipReason: 'No model' };
         }
@@ -1247,7 +1247,7 @@ async function showModelSelector() {
         }
 
         if (allOk) {
-          // Don't hide the Skip button here — collapsing its space made the
+          // Don't hide the Skip button here - collapsing its space made the
           // card shrink and the title + rows jump ("quick cut"). On success the
           // whole overlay fades out a moment later, so just leave it in place.
           probeOverlay.querySelector('.compare-probe-title').textContent = 'All ready!';
@@ -1257,9 +1257,9 @@ async function showModelSelector() {
             setTimeout(() => { _clearProbeWaves(); probeOverlay.remove(); cleanup(true); if (window._updateCheckBtnState) window._updateCheckBtnState(); }, 300);
           }, 400);
         } else {
-          // Failed — the Skip button is replaced by the Go Back / Start Anyway row.
+          // Failed - the Skip button is replaced by the Go Back / Start Anyway row.
           skipBtn.style.display = 'none';
-          // Some failed — show which ones
+          // Some failed - show which ones
           const failedNames = [];
           probeList.querySelectorAll('.compare-probe-row.fail').forEach(row => {
             failedNames.push(row.querySelector('.compare-probe-name').textContent);
@@ -1285,7 +1285,7 @@ async function showModelSelector() {
           probeCard.appendChild(btnRow);
         }
       } catch (e) {
-        // Probe failed entirely — let user start anyway
+        // Probe failed entirely - let user start anyway
         console.error('Compare probe error:', e);
         _clearProbeWaves();
         probeOverlay.remove();

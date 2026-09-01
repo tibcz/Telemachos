@@ -3,7 +3,7 @@
 /**
  * Main chat functionality - message handling and streaming
  */
-// ES6 module — IIFE removed
+// ES6 module - IIFE removed
 
 import Storage from './storage.js';
 import uiModule from './ui.js';
@@ -46,7 +46,7 @@ import { loadPanel } from './panels.js';
   let currentAbort = null;
   let isStreaming = false;
   // Continuous stall watchdog: while streaming, if the SSE stream produces
-  // NOTHING for STALL_THRESHOLD_MS (no deltas, no tool heartbeat — tools beat
+  // NOTHING for STALL_THRESHOLD_MS (no deltas, no tool heartbeat - tools beat
   // every 2s, so a full minute of silence means it's genuinely stuck or the
   // model quietly stopped), surface a non-destructive "still working?" prompt
   // instead of silently hanging. Replaces relying only on the tab-refocus
@@ -394,7 +394,7 @@ import { loadPanel } from './panels.js';
   async function _adoptOpenedSessionBeforeAutoCreate() {
     if (!sessionModule || !sessionModule.getCurrentSessionId || sessionModule.getCurrentSessionId()) return true;
     // Don't adopt a stale session when the user explicitly started a New Chat
-    // (pending state set) — the send path must materialize the pending session.
+    // (pending state set) - the send path must materialize the pending session.
     if (sessionModule.hasPendingChat && sessionModule.hasPendingChat()) return false;
     const activeRowId = document.querySelector('.list-item.active-session[data-session-id], .session-item.active[data-session-id]')?.dataset?.sessionId || '';
     const hashId = _hashSessionCandidate();
@@ -501,7 +501,7 @@ import { loadPanel } from './panels.js';
     _researchAvgDuration = null;
   }
 
-  /** Append a "Generate Visual Report" button — delegates to chatRenderer. */
+  /** Append a "Generate Visual Report" button - delegates to chatRenderer. */
   function _appendViewReportLink(msgEl, sessionId) {
     const body = msgEl.querySelector('.body');
     if (body) chatRenderer.appendReportButton(body, sessionId);
@@ -628,7 +628,7 @@ import { loadPanel } from './panels.js';
   const _sendStates = new Map();        // sessionId -> { generation, abortCtrl } of the current send, installed synchronously at send commit so Stop never has to borrow an older send's controller
   const _pendingRunStops = new Map();   // 'sessionId:generation' -> abortCtrl|null; Stop queued for that send while it awaits headers. Keyed per send so concurrent sends' cancellation intents never displace each other.
   let _streamSessionId = null; // Session ID for the currently active reader loop
-  let _lastReaderActivity = 0; // Timestamp of last reader.read() success — used to detect frozen streams
+  let _lastReaderActivity = 0; // Timestamp of last reader.read() success - used to detect frozen streams
   let _webLockRelease = null;  // Function to release the Web Lock held during streaming
   let _staleStreamProbeInFlight = false;
   const STALE_LOCAL_STREAM_MS = 15000;
@@ -813,7 +813,7 @@ import { loadPanel } from './panels.js';
     // Initialize email inbox
     emailInbox.init(documentModule);
     // Wire the slash-command autocomplete popup on the chat composer. The
-    // dispatcher already handles the typed command — this just surfaces the
+    // dispatcher already handles the typed command - this just surfaces the
     // registry as a discoverable menu when the user starts a message with /.
     import('./slashAutocomplete.js').then(mod => {
       const ta = document.getElementById('message');
@@ -835,7 +835,7 @@ import { loadPanel } from './panels.js';
   }
 
   // addMessage, createMsgFooter, displayMetrics, hideWelcomeScreen, showWelcomeScreen
-  // are now in chatRenderer.js — referenced via the public API delegation above.
+  // are now in chatRenderer.js - referenced via the public API delegation above.
   var addMessage = chatRenderer.addMessage;
   var createMsgFooter = chatRenderer.createMsgFooter;
   var displayMetrics = chatRenderer.displayMetrics;
@@ -859,7 +859,7 @@ import { loadPanel } from './panels.js';
       submitBtn.classList.add('anim-launch');
       const _stopSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>';
       // Wait for the launch keyframe to finish (0.3s) before swapping the
-      // arrow out for the stop icon — otherwise the swap happens mid-flight
+      // arrow out for the stop icon - otherwise the swap happens mid-flight
       // and the user sees nothing fly out.
       setTimeout(() => {
         if (submitBtn.dataset.mode !== 'streaming') return;
@@ -899,7 +899,7 @@ import { loadPanel } from './panels.js';
   }
 
   // -----------------------------------------------------------------------
-  // Slash commands — now in slashCommands.js
+  // Slash commands - now in slashCommands.js
   // -----------------------------------------------------------------------
 
   // API key pattern for the guard in handleChatSubmit
@@ -1170,10 +1170,10 @@ import { loadPanel } from './panels.js';
         if (el._spinner) el._spinner.destroy();
         el.remove();
       });
-      // No text accumulated — remove the empty holder with spinner
+      // No text accumulated - remove the empty holder with spinner
       if (currentHolder && !currentAccumulated) {
         if (currentSpinner) { currentSpinner.destroy(); currentSpinner = null; }
-        // Empty cancel — keep the assistant bubble around with a "Cancelled
+        // Empty cancel - keep the assistant bubble around with a "Cancelled
         // by user" indicator and persist a placeholder server-side so the
         // turn survives a refresh instead of vanishing without a trace.
         _renderCancelledBubble(currentHolder);
@@ -1306,7 +1306,7 @@ import { loadPanel } from './panels.js';
     const el = uiModule.el;
     const msg = approvalForSend ? '' : el('message').value;
     // Allow empty text when a regen carries over the original message's
-    // attachment ids — a photo-only message still has something to send.
+    // attachment ids - a photo-only message still has something to send.
     if (!msg.trim() && !approvalForSend && !fileHandlerModule.getPendingCount() && !(_pendingRegenAttachments && _pendingRegenAttachments.length)) { _releaseSendFlag(); return; }
 
     // --- Slash commands: execute directly without AI (no session needed) ---
@@ -1470,7 +1470,7 @@ import { loadPanel } from './panels.js';
     _sendStates.set(streamSessionId, _sendState);
     // The previous send's run identity dies with its ownership: a Stop after
     // this instant must queue for THIS send, not fire against the old run.
-    // (The old send's own queued Stop still works — its flush carries the run
+    // (The old send's own queued Stop still works - its flush carries the run
     // id from its header, and its stale generation cannot repopulate this map.)
     _streamRunIds.delete(streamSessionId);
     _streamSessionId = streamSessionId;
@@ -1494,9 +1494,9 @@ import { loadPanel } from './panels.js';
     // Acquire Web Lock to hint browser not to discard this tab while streaming
     if (navigator.locks) {
       navigator.locks.request('telemachos-stream-' + streamSessionId, { mode: 'exclusive', ifAvailable: true }, lock => {
-        if (!lock) return; // Another stream already holds a lock — fine
+        if (!lock) return; // Another stream already holds a lock - fine
         return new Promise(resolve => { _webLockRelease = resolve; });
-      }).catch(e => console.warn('web lock acquire failed:', e)); // Ignore lock errors — best-effort
+      }).catch(e => console.warn('web lock acquire failed:', e)); // Ignore lock errors - best-effort
     }
 
     // Declare accumulated outside try block so it's accessible in catch
@@ -1522,7 +1522,7 @@ import { loadPanel } from './panels.js';
     // Declared out here, not inside the try: in an ES module a function declared
     // in the try block is scoped to that block, so `catch` (a sibling scope)
     // cannot see it. Calling one from catch throws ReferenceError and kills the
-    // rest of the error path — the stream never finalizes and the partial
+    // rest of the error path - the stream never finalizes and the partial
     // message is lost. Assigned below, alongside the two helpers above.
     let _closeOpenThinkingMarkup = () => {};
     let _endThinkingOnTerminalPath = () => {};
@@ -1589,8 +1589,8 @@ import { loadPanel } from './panels.js';
       _hideUserBubble = false;
       // Auto-recovery counter: carries across a turn's auto-continues, but resets
       // when the user genuinely sends a new message (so each task gets a fresh cap).
-      // A real user turn (visible bubble) ALWAYS resets the budget — even if a
-      // prior auto-continue's deferred click never cleared the pending flag — so a
+      // A real user turn (visible bubble) ALWAYS resets the budget - even if a
+      // prior auto-continue's deferred click never cleared the pending flag - so a
       // stuck flag can't silently eat the next turn's recovery budget.
       if (!skipBubble) { _autoNudges = 0; _autoContinuePending = false; }
       else if (_autoContinuePending) { _autoContinuePending = false; }
@@ -1629,11 +1629,11 @@ import { loadPanel } from './panels.js';
           messageInput.blur();
           const _dropReadonly = () => { try { messageInput.removeAttribute('readonly'); } catch {} };
           setTimeout(() => {
-            // If the blur stuck, the input is no longer the active element —
+            // If the blur stuck, the input is no longer the active element -
             // safe to drop readonly now so the next message can be typed.
             // If it did NOT stick (some mobile browsers keep the textarea
             // focused after a programmatic blur), removing readonly here would
-            // re-summon the keyboard mid-stream — the "bounce up" that then
+            // re-summon the keyboard mid-stream - the "bounce up" that then
             // lingers until the end-of-stream blur. In that case keep readonly
             // on (keyboard stays down) and drop it the moment the user taps to
             // type again, so typing still works without the bounce.
@@ -1671,7 +1671,7 @@ import { loadPanel } from './panels.js';
       // Carry over the original message's file-ids on a regenerate so the new
       // send still references the same photos / docs (and picks up the user's
       // edited OCR text via the server-side .vision cache). Always CONSUME the
-      // slot — even when empty / errored — so the regen ids can't bleed into
+      // slot - even when empty / errored - so the regen ids can't bleed into
       // an unrelated next message if uploadPending() above had thrown.
       if (!approvalForSend && _pendingRegenAttachments && _pendingRegenAttachments.length) {
         ids = ids.concat(_pendingRegenAttachments);
@@ -1680,8 +1680,8 @@ import { loadPanel } from './panels.js';
 
       // The optimistic user bubble was rendered before the upload assigned ids,
       // so image previews couldn't show (the renderer needs att.id). Now that
-      // the upload resolved, stamp the ids — plus width/height for images so
-      // the skeleton can size itself to the photo's aspect ratio — and
+      // the upload resolved, stamp the ids - plus width/height for images so
+      // the skeleton can size itself to the photo's aspect ratio - and
       // re-render so the thumbnail appears live, no refresh needed.
       if (_userMsgEl && _pendingAttachInfo && ids.length) {
         const _meta = fileHandlerModule.getLastUploadedMeta?.() || [];
@@ -1857,7 +1857,7 @@ import { loadPanel } from './panels.js';
         }
         fd.append('active_doc_id', activeDocIdForSend);
       }
-      // Active email context — when an email reader is open, pass its
+      // Active email context - when an email reader is open, pass its
       // uid/folder/account so "reply", "summarize", "what does this say"
       // resolve to the email the user is actually looking at instead of
       // making the agent invent a new markdown draft with fake headers.
@@ -1888,7 +1888,7 @@ import { loadPanel } from './panels.js';
 	      if (!isAgentMode && workspaceAgentIntent) {
 	        isAgentMode = true;
 	      }
-	      // Auto-escalate to agent mode when a document is open — the user expects
+	      // Auto-escalate to agent mode when a document is open - the user expects
 	      // the AI to see the document and have tools to edit it
 	      if (!isIncognito && !isAgentMode && documentModule && activeDocIdForSend) {
 	        isAgentMode = true;
@@ -1909,7 +1909,7 @@ import { loadPanel } from './panels.js';
       }
 	      if (!approvalForSend && el('research-toggle').checked) {
 	        fd.append('use_research', 'true');
-	        // Research always runs in chat mode — override agent if set
+	        // Research always runs in chat mode - override agent if set
 	        fd.set('mode', 'chat');
 	        fd.set('plan_mode', 'false');
 	      }
@@ -1932,8 +1932,8 @@ import { loadPanel } from './panels.js';
 
 
       // Superseded during preflight (uploads, document saves): a newer send
-      // owns the session. Bailing here — before registration and before the
-      // POST — keeps this stale send from overwriting the replacement's
+      // owns the session. Bailing here - before registration and before the
+      // POST - keeps this stale send from overwriting the replacement's
       // stream entry or reaching the server last, where agent_runs.start
       // would cancel the newer run in favor of this old one.
       if (_streamGenerations.get(streamSessionId) !== streamGeneration) {
@@ -1943,7 +1943,7 @@ import { loadPanel } from './panels.js';
         if (_userMsgEl && _userMsgEl.parentNode) {
           const _notSentNote = document.createElement('div');
           _notSentNote.style.cssText = 'color: var(--color-error); font-style: italic; font-size: 0.85em; padding: 2px 0;';
-          _notSentNote.textContent = '[Not sent — superseded by a newer message]';
+          _notSentNote.textContent = '[Not sent - superseded by a newer message]';
           _userMsgEl.appendChild(_notSentNote);
         }
         return;
@@ -2098,7 +2098,7 @@ import { loadPanel } from './panels.js';
       if (!res.ok) {
         clearResponseTimeout();
         if (res.status === 404) {
-          // Session was deleted (e.g. by AI) — reload and go to welcome
+          // Session was deleted (e.g. by AI) - reload and go to welcome
           holder.remove();
           if (sessionModule) await sessionModule.loadSessions();
           return;
@@ -2113,7 +2113,7 @@ import { loadPanel } from './panels.js';
         } catch {}
         // Auto-switch to chat mode for tool-related errors
         if (errText.includes('tool') || errText.includes('auto')) {
-          errText = 'This model doesn\'t support agent tools — switched to Chat mode. Try again.';
+          errText = 'This model doesn\'t support agent tools - switched to Chat mode. Try again.';
           const _ab = document.getElementById('mode-agent-btn');
           const _cb = document.getElementById('mode-chat-btn');
           if (_ab && _cb) {
@@ -2173,7 +2173,7 @@ import { loadPanel } from './panels.js';
         if (_generatedImagesForTurn.some(x => String(x.image_id || x.image_url || x.url) === imageKey || x.image_url === imageUrl || x.url === imageUrl)) return;
         _generatedImagesForTurn.push({ ...data, image_url: imageUrl, url: imageUrl });
       }
-      // _keepResearchOn removed — clarification state now persisted server-side via DB mode
+      // _keepResearchOn removed - clarification state now persisted server-side via DB mode
       function _metricsTargetForTurn() {
         const visibleRound = (roundHolder && roundHolder.style.display !== 'none') ? roundHolder : null;
         const visibleText = visibleRound ? (visibleRound.querySelector('.body')?.textContent || '').trim() : '';
@@ -2186,7 +2186,7 @@ import { loadPanel } from './panels.js';
       // Returns the content container to use for innerHTML updates.
       function _ensureStreamLayout(body) {
         if (!body) return body;
-        // Sources are deferred to final render — don't insert during streaming
+        // Sources are deferred to final render - don't insert during streaming
         // Ensure a stable content div exists for text content
         var contentDiv = body.querySelector('.stream-content');
         if (!contentDiv) {
@@ -2380,7 +2380,7 @@ import { loadPanel } from './panels.js';
       }
 
       // Once thinking has closed, the reply that follows </think> must not leak
-      // into the thinking box, so go through extractThinkingBlocks — it already
+      // into the thinking box, so go through extractThinkingBlocks - it already
       // collapses the false-close pattern and merges every block into one.
       function _closedThinkingText(text) {
         const normalized = markdownModule.normalizeThinkingMarkup(_streamDisplayText(text || ''));
@@ -2463,7 +2463,7 @@ import { loadPanel } from './panels.js';
 
       // Close the synthetic <think> we opened around vLLM reasoning deltas, so a
       // stream that ends mid-thinking doesn't persist an unclosed tag.
-      // `currentAccumulated` is the FOREGROUND stop-state text — mirror the guard
+      // `currentAccumulated` is the FOREGROUND stop-state text - mirror the guard
       // the delta path uses (`if (!_isBg) currentAccumulated = accumulated`), or a
       // backgrounded stream overwrites the visible session's stop-state and
       // abortCurrentRequest/detachCurrentStream write it into the wrong bubble.
@@ -2632,7 +2632,7 @@ import { loadPanel } from './panels.js';
         // If thinking was already collapsed in-place, only render the reply portion
         let liveReply = contentEl.querySelector('.live-reply-content');
         if (liveReply) {
-          // Extract reply text — handle native <think> tags and non-tag patterns
+          // Extract reply text - handle native <think> tags and non-tag patterns
           let replyTrimmed = replyText === null ? '' : String(replyText);
           if (replyText === null) {
             const dt = markdownModule.normalizeThinkingMarkup(_streamDisplayText(roundText));
@@ -2683,7 +2683,7 @@ import { loadPanel } from './panels.js';
               }));
             r.update(replyTrimmed);
           }
-          // Reply empty or not — preserve thinking bar, don't fall through to full re-render
+          // Reply empty or not - preserve thinking bar, don't fall through to full re-render
           uiModule.scrollHistory();
           return;
         }
@@ -2706,7 +2706,7 @@ import { loadPanel } from './panels.js';
             .replace(/<channel\|>/gi, '')
             .trim();
           const lines = thinkContent.split('\n').length;
-          // Don't show beforeThink text during streaming — it'll appear in the final render
+          // Don't show beforeThink text during streaming - it'll appear in the final render
           // This prevents the "split into two" duplication
           contentEl.innerHTML =
             '<div class="thinking-section"><div class="thinking-header"><div class="thinking-header-left">Thinking' +
@@ -2774,7 +2774,7 @@ import { loadPanel } from './panels.js';
             // On first transition to background, store state in map
             if (_isBg && !_backgroundStreams.has(streamSessionId)) {
               // Leave the block in its finished shape (rich, no pre-wrap) rather
-              // than frozen as plain text — the user may navigate back to it.
+              // than frozen as plain text - the user may navigate back to it.
               _flushLiveThinking({ rich: true });
               _cancelLiveThinkingWork();
               _backgroundStreams.set(streamSessionId, {
@@ -2817,7 +2817,7 @@ import { loadPanel } from './panels.js';
                 } catch (dotErr) {
                   console.warn('[bg-stream] markStreamComplete error:', dotErr);
                 }
-                // Don't do foreground final render — the checkBackgroundStream poll
+                // Don't do foreground final render - the checkBackgroundStream poll
                 // will detect 'completed' and reload history cleanly
                 break;
               }
@@ -2840,7 +2840,7 @@ import { loadPanel } from './panels.js';
                   _liveThinkTimerEl.style.marginRight = '5px';
                   var _hdrDone = _liveThinkTimerEl.closest('.thinking-header');
                   // Keep the chevron furthest right with the timer to its left
-                  // (match the live + final-render layout) — insert before the
+                  // (match the live + final-render layout) - insert before the
                   // toggle rather than appending (which would land after it).
                   if (_hdrDone) {
                     if (_liveThinkToggle && _liveThinkToggle.parentElement === _hdrDone)
@@ -2855,7 +2855,7 @@ import { loadPanel } from './panels.js';
                 if (_liveThinkContent) _liveThinkContent.id = _thinkIdDone;
                 if (_liveThinkToggle) _liveThinkToggle.id = _thinkIdDone + '-toggle';
               }
-              // Normal foreground completion — metrics will be displayed in the final render block below
+              // Normal foreground completion - metrics will be displayed in the final render block below
               break;
             }
             try {
@@ -2896,14 +2896,14 @@ import { loadPanel } from './panels.js';
               if (json.delta) {
                 _cancelThinkingTimer();
                 _removeThinkingSpinner();
-                // Text arrived after tools — connect thread line to this bubble
+                // Text arrived after tools - connect thread line to this bubble
                 const _threadAbove = roundHolder?.previousElementSibling;
                 if (_threadAbove && _threadAbove.classList.contains('agent-thread') && !_threadAbove.classList.contains('has-bottom')) {
                   _threadAbove.classList.add('has-bottom');
                 }
                 // VLLM reasoning tokens: wrap in <think> tags for the thinking UI.
                 // Stateful open/close (not a whole-message substring check) so each round
-                // of a multi-round agent response gets its own <think>…</think> — otherwise
+                // of a multi-round agent response gets its own <think>…</think> - otherwise
                 // only round 1 is wrapped and rounds 2+ reasoning leaks into the answer.
                 let _delta = json.delta;
                 if (json.thinking) {
@@ -2914,7 +2914,7 @@ import { loadPanel } from './panels.js';
 	                const wasEmpty = !accumulated;
 		                accumulated += _delta;
 		                if (!_isBg) currentAccumulated = accumulated; // Foreground stop-state text
-	                // First token arrived — switch stop button from processing to streaming
+	                // First token arrived - switch stop button from processing to streaming
 	                if (wasEmpty && submitBtn && !_isBg) {
 	                  submitBtn.dataset.phase = 'receiving';
                 }
@@ -3030,7 +3030,7 @@ import { loadPanel } from './panels.js';
                   _thinkingRecheckAt = _falseCloseDeadline || 0;
                   if (spinner && spinner.element) spinner.destroy();
 
-                  // Create a live thinking box — starts expanded so content streams visibly
+                  // Create a live thinking box - starts expanded so content streams visibly
                   var thinkBody = roundHolder.querySelector('.body');
                   var thinkContent = _ensureStreamLayout(thinkBody);
                   thinkContent.style.minHeight = '';
@@ -3121,7 +3121,7 @@ import { loadPanel } from './panels.js';
                     }
                     _researchTimerEl.textContent = txt;
                   }, 1000);
-                  // Synapse visualization — insert right above the timer so
+                  // Synapse visualization - insert right above the timer so
                   // it sits between the spinner message and the timer line.
                   try {
                     _researchSynapse = createResearchSynapse(spinner.element.parentNode, {
@@ -3171,7 +3171,7 @@ import { loadPanel } from './panels.js';
                   if (sessionModule && sessionModule.clearResearching) sessionModule.clearResearching(streamSessionId);
                   continue;
                 }
-                // Research done — clean up timer, show sources box, then spinner for LLM response
+                // Research done - clean up timer, show sources box, then spinner for LLM response
                 _clearResearchTimer();
                 holder._researchSources = json.data;
                 var _rSid2 = sessionModule && sessionModule.getCurrentSessionId();
@@ -3193,7 +3193,7 @@ import { loadPanel } from './panels.js';
                   _findingsData = json.data;
                 }
               } else if (json.type === 'research_done') {
-                // Research complete — reload session to show the persisted report
+                // Research complete - reload session to show the persisted report
                 _clearResearchTimer();
                 if (sessionModule && sessionModule.clearResearching) {
                   sessionModule.clearResearching(streamSessionId);
@@ -3202,7 +3202,7 @@ import { loadPanel } from './panels.js';
                 // Small delay then reload session history which includes the full report
                 setTimeout(async () => {
                   // Don't yank the user back to this chat if they've navigated
-                  // away (e.g. started a new chat) while research finished —
+                  // away (e.g. started a new chat) while research finished -
                   // just refresh the sidebar so the report shows when they return.
                   if (sessionModule.getCurrentSessionId && sessionModule.getCurrentSessionId() === streamSessionId) {
                     await sessionModule.selectSession(streamSessionId);
@@ -3220,7 +3220,7 @@ import { loadPanel } from './panels.js';
                   }
                   continue;
                 }
-                // Web search done — store sources for final render (don't render mid-stream)
+                // Web search done - store sources for final render (don't render mid-stream)
                 holder._webSources = json.data;
                 if (json.data && json.data.length > 0) {
                   _sourcesData = json.data; _sourcesType = 'web';
@@ -3273,7 +3273,7 @@ import { loadPanel } from './panels.js';
                 if (!_isBg) {
                   var _selM = _shortModel(json.selected_model || '');
                   var _ansM = _shortModel(json.answered_by || '');
-                  uiModule.showToast('Fallback: ' + _selM + ' failed — answered by ' + _ansM, 6000);
+                  uiModule.showToast('Fallback: ' + _selM + ' failed - answered by ' + _ansM, 6000);
                   var _fallbackHolder = applyModelRouteEventState(json, holder, roundHolder, modelName);
                   if (_fallbackHolder) {
                     var _rEl = _fallbackHolder.querySelector('.role');
@@ -3281,7 +3281,7 @@ import { loadPanel } from './panels.js';
                       var _tsS = _rEl.querySelector('.role-timestamp');
                       _rEl.textContent = _ansM + ' (fallback) ';
                       _rEl.title = (json.selected_model || '') + ' failed' +
-                        (json.reason ? ': ' + json.reason : '') + ' — answered by ' + (json.answered_by || '');
+                        (json.reason ? ': ' + json.reason : '') + ' - answered by ' + (json.answered_by || '');
                       _applyModelColor(_rEl, json.answered_by);
                       if (_tsS) _rEl.appendChild(_tsS);
                       _setRoleModelLabel(_rEl, _fallbackHolder._requestedModel, _fallbackHolder._actualModel, {
@@ -3300,7 +3300,7 @@ import { loadPanel } from './panels.js';
                 // The agent hit the per-turn step limit while still working.
                 // Offer a Continue button instead of stalling silently.
                 // NOTE: append to the chat-history container (bottom), NOT the
-                // message body — the body innerHTML is re-rendered at stream
+                // message body - the body innerHTML is re-rendered at stream
                 // finalize, which would wipe a note placed inside it.
                 const _chatBox = document.getElementById('chat-history');
                 if (!_isBg && _chatBox) {
@@ -3312,7 +3312,7 @@ import { loadPanel } from './panels.js';
                   note.className = 'stopped-indicator rounds-exhausted';
                   const label = document.createElement('span');
                   label.className = 'rounds-exhausted-label';
-                  label.textContent = `Reached the ${json.rounds || ''}-step limit — not finished.`;
+                  label.textContent = `Reached the ${json.rounds || ''}-step limit - not finished.`;
                   note.appendChild(label);
                   const contBtn = document.createElement('button');
                   contBtn.className = 'continue-btn';
@@ -3325,7 +3325,7 @@ import { loadPanel } from './panels.js';
                     _pendingContinue = _holder;
                     const msgInput = uiModule.el('message');
                     if (msgInput) {
-                      msgInput.value = 'You hit the step limit before finishing — the task is not complete. Continue from exactly where you left off and keep going until it is done. Do NOT repeat work already done.';
+                      msgInput.value = 'You hit the step limit before finishing - the task is not complete. Continue from exactly where you left off and keep going until it is done. Do NOT repeat work already done.';
                       const sb = document.querySelector('.send-btn');
                       if (sb) sb.click();
                     }
@@ -3348,7 +3348,7 @@ import { loadPanel } from './panels.js';
                 }
               } else if (json.type === 'attachments') {
                 if (_isBg) continue;
-                // Update user bubble — replace file chips with image previews
+                // Update user bubble - replace file chips with image previews
                 const _ub = document.querySelector('#chat-history .msg-user:last-of-type');
                 if (_ub) {
                   const _aw = _ub.querySelector('.attach-cards');
@@ -3356,7 +3356,7 @@ import { loadPanel } from './panels.js';
                     for (const _att of json.data) {
                       const _isImg = (_att.mime || '').startsWith('image/') || /\.(png|jpg|jpeg|gif|webp|svg|bmp)$/i.test(_att.name || '');
                       if (_isImg && _att.id) {
-                        // Skip if we already have a preview for this file id —
+                        // Skip if we already have a preview for this file id -
                         // on a regenerate the original user bubble keeps its
                         // photo and the backend re-emits the attachment event
                         // for the same id; without this guard we'd append a
@@ -3408,7 +3408,7 @@ import { loadPanel } from './panels.js';
                     }
                   }
                   // Caption / OCR text is no longer rendered as an inline
-                  // collapsible on the user bubble — the user can view/edit
+                  // collapsible on the user bubble - the user can view/edit
                   // it via the "Caption" button on the photo thumbnail.
                 }
               } else if (json.type === 'rag_sources') {
@@ -3419,7 +3419,7 @@ import { loadPanel } from './panels.js';
                 holder._memoriesUsed = json.data;
               } else if (json.type === 'compacted') {
                 if (!_isBg) {
-                  uiModule.showToast('Context compacted — older messages summarized');
+                  uiModule.showToast('Context compacted - older messages summarized');
                 }
               } else if (json.type === 'context_trimmed') {
                 if (!_isBg) {
@@ -3502,7 +3502,7 @@ import { loadPanel } from './panels.js';
                 if (_isBg) continue;
                 _cancelThinkingTimer();
                 _removeThinkingSpinner();
-                // Force-close thinking if still open — tools are real content, not thinking
+                // Force-close thinking if still open - tools are real content, not thinking
                 if (isThinking) {
                   _endLiveThinkingSection({ rich: false });
                 }
@@ -3516,7 +3516,7 @@ import { loadPanel } from './panels.js';
                 // --- Thread timeline: group tools in a thread container ---
                 const cmd = json.command || '';
                 const chatBox = document.getElementById('chat-history');
-                // Find existing thread to append to — check last few children
+                // Find existing thread to append to - check last few children
                 // (agent_step may insert an empty msg-ai between tool rounds)
                 let threadWrap = null;
                 for (let ci = chatBox.children.length - 1; ci >= Math.max(0, chatBox.children.length - 5); ci--) {
@@ -3531,7 +3531,7 @@ import { loadPanel } from './panels.js';
                   if (child.classList.contains('msg')) break;
                 }
                 if (threadWrap) {
-                  // Continuing an existing thread — remove has-bottom (agent_step may have set it
+                  // Continuing an existing thread - remove has-bottom (agent_step may have set it
                   // expecting text, but we got more tools instead)
                   threadWrap.classList.remove('has-bottom');
                 } else {
@@ -3567,7 +3567,7 @@ import { loadPanel } from './panels.js';
                     waveEl.textContent = waveFrames[waveIdx];
                   }, 100);
                 }
-                // Smooth per-second "cooking" timer — ticks every second (not
+                // Smooth per-second "cooking" timer - ticks every second (not
                 // just on the 2s backend heartbeat) so a long-running tool
                 // always shows visible motion and never reads as frozen.
                 node._startTime = Date.now();
@@ -3591,7 +3591,7 @@ import { loadPanel } from './panels.js';
 
               } else if (json.type === 'tool_progress') {
                 // Long-running subprocess (bash, python) is still in
-                // flight — refresh the running tool card with the
+                // flight - refresh the running tool card with the
                 // elapsed-time + tail of its stdout/stderr so the
                 // user doesn't stare at a blind "Running…" spinner.
                 if (_isBg) continue;
@@ -3669,17 +3669,17 @@ import { loadPanel } from './panels.js';
                       let cls = 'diff-ctx', text = line;
                       if (line.startsWith('+++') || line.startsWith('---')) cls = 'diff-meta';
                       else if (line.startsWith('@@')) cls = 'diff-hunk';
-                      // Drop the leading diff marker (+/-/space) — the row colour
+                      // Drop the leading diff marker (+/-/space) - the row colour
                       // already encodes add/del, and keeping it doubles up with
                       // markdown "- " bullets (reads as "+-"/"--").
                       else if (line.startsWith('+')) { cls = 'diff-add'; text = line.slice(1); }
                       else if (line.startsWith('-')) { cls = 'diff-del'; text = line.slice(1); }
                       else if (line.startsWith(' ')) { text = line.slice(1); }
                       return `<span class="${cls}">${esc(text) || '&nbsp;'}</span>`;
-                    }).join('');  // spans are display:block — a literal \n here would double-space the diff
+                    }).join('');  // spans are display:block - a literal \n here would double-space the diff
                     diffHtml = `<details class="agent-tool-output agent-tool-diff"><summary><span class="diff-file">${esc(d.file || 'diff')}</span> <span class="diff-summary-stats">${stat}</span></summary><pre class="diff-pre">${rows}</pre></details>`;
                   }
-                  // For file edits the "command" is the raw JSON args — redundant
+                  // For file edits the "command" is the raw JSON args - redundant
                   // next to the diff, so hide it when we have a diff to show.
                   const cmdHtml2 = (cmd && !(json.diff && json.diff.text)) ? `<pre class="agent-thread-cmd">${esc(cmd)}</pre>` : '';
                   // Preserve the user's .open choice across the innerHTML
@@ -3881,7 +3881,7 @@ import { loadPanel } from './panels.js';
                 roundText = '';
                 // Destroy any previous spinner before creating new one
                 if (spinner && spinner.element) spinner.destroy();
-                // Show spinner while waiting for text (skip for research — has its own progress)
+                // Show spinner while waiting for text (skip for research - has its own progress)
                 if (!_researchingStreamIds.has(streamSessionId)) {
                   spinner = spinnerModule.create('Generating response', 'right', 'wave');
                   newBody.appendChild(spinner.createElement());
@@ -3927,7 +3927,7 @@ import { loadPanel } from './panels.js';
                 banner.className = 'teacher-takeover-banner';
                 banner.style.cssText = 'margin:10px 0;padding:8px 12px;border-left:3px solid #c08a3e;background:rgba(192,138,62,0.08);font-size:12px;color:var(--fg);border-radius:4px;';
                 const teacherName = json.teacher_model || 'teacher';
-                const why = json.student_failure ? ` &mdash; <span style="opacity:0.7">${esc(json.student_failure)}</span>` : '';
+                const why = json.student_failure ? ` - <span style="opacity:0.7">${esc(json.student_failure)}</span>` : '';
                 banner.innerHTML = `<strong>Teacher takeover:</strong> escalating to <code>${esc(teacherName)}</code>${why}`;
                 chatBox.appendChild(banner);
                 // Reset round bubble state so the teacher's first text starts a new bubble
@@ -4037,7 +4037,7 @@ import { loadPanel } from './panels.js';
         // Anti-stall: a turn that ran tools but ended with essentially no
         // final prose usually means the model stopped mid-task (the case
         // where you had to type "did you finish?"). Offer a one-click
-        // Continue that resumes exactly where it left off — reuses the same
+        // Continue that resumes exactly where it left off - reuses the same
         // resume mechanism as the user-stop "[Message interrupted]" button.
         try {
           const _usedTools = holder.querySelector('.agent-thread-node');
@@ -4051,13 +4051,13 @@ import { loadPanel } from './panels.js';
             _stall.appendChild(_lbl);
             const _cont = document.createElement('button');
             _cont.className = 'continue-btn agent-continue-btn';
-            _cont.title = 'Continue — pick up where it left off';
+            _cont.title = 'Continue - pick up where it left off';
             _cont.textContent = '▸';
             _cont.addEventListener('click', () => {
               _stall.remove();
               const mi = uiModule.el('message');
               if (mi) {
-                mi.value = 'Continue — you stopped before finishing. Pick up exactly where you left off and complete the task.';
+                mi.value = 'Continue - you stopped before finishing. Pick up exactly where you left off and complete the task.';
                 const sb = document.querySelector('.send-btn');
                 if (sb) sb.click();
               }
@@ -4075,7 +4075,7 @@ import { loadPanel } from './panels.js';
           roundHolder.style.display = '';
         }
 
-        // Finalize the last round's bubble — flatten stream-content wrapper for clean DOM
+        // Finalize the last round's bubble - flatten stream-content wrapper for clean DOM
         const finalDisplay = _streamDisplayText(roundText, { final: _docFenceOpened });
         if (finalDisplay.trim()) {
           var _body4 = roundHolder.querySelector('.body');
@@ -4149,7 +4149,7 @@ import { loadPanel } from './panels.js';
             if (_body4c) _body4c.innerHTML = markdownModule.processWithThinking(_streamDisplayText(roundText));
           } else {
             roundHolder.style.display = 'none';
-            // Thread above expected a bubble below — remove has-bottom since bubble is hidden
+            // Thread above expected a bubble below - remove has-bottom since bubble is hidden
             const _lastThread = roundHolder.previousElementSibling;
             if (_lastThread && _lastThread.classList.contains('agent-thread')) {
               _lastThread.classList.remove('has-bottom');
@@ -4303,7 +4303,7 @@ import { loadPanel } from './panels.js';
         abortCtrl._reason = 'user-stop';
         abortCtrl.abort();
       }
-      // Check if this stream was running in background — needed before any
+      // Check if this stream was running in background - needed before any
       // stop-state write, so an errored background stream can't clobber the
       // foreground session's text.
       const _isBgCatch = (sessionModule.getCurrentSessionId() !== streamSessionId) || _backgroundStreams.has(streamSessionId);
@@ -4338,14 +4338,14 @@ import { loadPanel } from './panels.js';
       document.querySelectorAll('.agent-thread.streaming').forEach(t => t.classList.remove('streaming'));
 
       if (_isBgCatch) {
-        // Error happened while backgrounded — update map, don't touch DOM
+        // Error happened while backgrounded - update map, don't touch DOM
         console.error('Background stream error:', err);
         var bgErr = _backgroundStreams.get(streamSessionId);
         if (bgErr && (
           bgErr.status === 'completed' || _terminalSavedStreams.has(streamSessionId)
         )) {
           bgErr.status = 'completed';
-          // [DONE] was already processed — this error is benign (e.g. reader.read() after close)
+          // [DONE] was already processed - this error is benign (e.g. reader.read() after close)
           // Don't override the completed status; just ensure the completed dot stays
           if (sessionModule && sessionModule.clearStreaming) {
             sessionModule.clearStreaming(streamSessionId);
@@ -4383,7 +4383,7 @@ import { loadPanel } from './panels.js';
           }
 
           if (abortReason === 'offline') {
-            const offlineMsg = 'Endpoint offline — switch model or try again.';
+            const offlineMsg = 'Endpoint offline - switch model or try again.';
             if (holder && !accumulated) {
               holder.querySelector('.body').innerHTML =
                 `<div style="color: var(--color-error); font-style: italic; padding: 4px 0;">[${offlineMsg}]</div>`;
@@ -4430,7 +4430,7 @@ import { loadPanel } from './panels.js';
           }
 
           // User-initiated stop (or browser navigation abort).
-          // Stopped before any text arrived — keep the bubble as a
+          // Stopped before any text arrived - keep the bubble as a
           // "Cancelled by user" record (so it survives a refresh).
           if (holder && !accumulated) {
             _renderCancelledBubble(holder);
@@ -4482,7 +4482,7 @@ import { loadPanel } from './panels.js';
           console.error(err);
           // Stream died with a tool node still spinning. Its per-node tickers
           // (_elapsedTicker 50ms / _waveInterval 100ms) are normally cleared in
-          // `tool_output`, which will never arrive now — without this sweep they
+          // `tool_output`, which will never arrive now - without this sweep they
           // fire forever on the orphaned node (and auto-recover compounds it per
           // nudge). Safe here: auto-recover's new send is deferred 200ms, so no
           // fresh running nodes exist yet.
@@ -4491,7 +4491,7 @@ import { loadPanel } from './panels.js';
             if (node._elapsedTicker) { clearInterval(node._elapsedTicker); node._elapsedTicker = null; }
             node.classList.remove('running');
           });
-          // Stream died unexpectedly — the "silently died" case. Re-engage the
+          // Stream died unexpectedly - the "silently died" case. Re-engage the
           // model immediately (no wait) with a completion handshake, up to the
           // cap. Only auto-recover from connection-class failures; deterministic
           // errors (unsupported tools, 4xx/5xx, parse failures) surface right away
@@ -4530,7 +4530,7 @@ import { loadPanel } from './panels.js';
               let errMsg = `Error: ${err.message}`;
               // Add hint for tool-call errors
               if (err.message && (err.message.includes('tool') || err.message.includes('auto'))) {
-                errMsg += '\n\nThis model may not support tools — try switching to Chat mode.';
+                errMsg += '\n\nThis model may not support tools - try switching to Chat mode.';
               }
               typewriterInto(errorHolder, errMsg);
             }
@@ -4546,8 +4546,8 @@ import { loadPanel } from './panels.js';
       // starts, before it registers or reaches the server, so cleanup rights
       // are decided by generation: a superseded send may remove only what it
       // itself owns (its stream registration by controller identity, its own
-      // generation's queued Stop) and must leave session-level state — the
-      // reader session id, research marker, UI — to the replacement.
+      // generation's queued Stop) and must leave session-level state - the
+      // reader session id, research marker, UI - to the replacement.
       const _ownsStreamState =
         _streamGenerations.get(streamSessionId) === streamGeneration;
       const _finallyRegistered = _activeStreams.get(streamSessionId);
@@ -4567,7 +4567,7 @@ import { loadPanel } from './panels.js';
         // or finishes.
         _syncForegroundStreamGlobals();
       }
-      // Streaming done — let screen readers announce the settled response.
+      // Streaming done - let screen readers announce the settled response.
       if (_ownsStreamState) {
         const _chatLogDone = document.getElementById('chat-history');
         if (_chatLogDone) _chatLogDone.setAttribute('aria-busy', 'false');
@@ -4581,7 +4581,7 @@ import { loadPanel } from './panels.js';
       }
 
       // Only reset UI state if still on the stream's session, never
-      // backgrounded, and no replacement stream owns the session now — the
+      // backgrounded, and no replacement stream owns the session now - the
       // replacement disabled the composer for its own send, so re-enabling
       // it here would hand input back mid-stream.
       const _isBgFinally = (sessionModule.getCurrentSessionId() !== streamSessionId) || _backgroundStreams.has(streamSessionId);
@@ -4614,7 +4614,7 @@ import { loadPanel } from './panels.js';
         _clearResearchTimer();
 
         // Re-enable research button and auto-untoggle after use
-        // (skip if clarification round — keep toggle on for follow-up)
+        // (skip if clarification round - keep toggle on for follow-up)
         const _el = uiModule.el;
         const _researchBtn = _el('research-toggle-btn');
         const _researchToggle = _el('research-toggle');
@@ -4635,7 +4635,7 @@ import { loadPanel } from './panels.js';
 
       }
 
-      // Research clarification timeout — if user doesn't reply within 5 min, show timeout
+      // Research clarification timeout - if user doesn't reply within 5 min, show timeout
       if (holder && holder._roleSuffix === 'Research' && !_researchingStreamIds.has(streamSessionId)) {
         var _timeoutSessionId = streamSessionId;
         var _timeoutTimer = setTimeout(async function() {
@@ -4679,14 +4679,14 @@ import { loadPanel } from './panels.js';
   // stopServer=true ONLY for an explicit user Stop. The run is now DETACHED
   // (survives tab close / navigation), so the generic abort used by cleanup
   // paths (session switch, delete, reader teardown on tab close) must NOT stop
-  // the server run — otherwise closing the tab would kill the background task,
+  // the server run - otherwise closing the tab would kill the background task,
   // defeating the whole point. Only the Stop button cancels the server run.
   export function abortCurrentRequest(stopServer = false) {
     const _sid = (sessionModule && sessionModule.getCurrentSessionId && sessionModule.getCurrentSessionId())
       || _streamSessionId
       || (window.sessionModule && window.sessionModule.getCurrentSessionId && window.sessionModule.getCurrentSessionId());
     // The CURRENT send's controller comes from its send state, installed at
-    // send commit — never borrowed from the stream registry, which during the
+    // send commit - never borrowed from the stream registry, which during the
     // replacement's preflight still holds the superseded send's entry.
     // Aborting that older controller here would sever the only identity
     // channel able to name the old run. A send committed but pre-POST has a
@@ -4719,8 +4719,8 @@ import { loadPanel } from './panels.js';
   // detached server run. Returns false at the cap so the caller can surface
   // the failure instead of retrying forever.
   // Only auto-recover from connection-class failures (the genuine "silently
-  // died" case). Deterministic errors — unsupported tools, HTTP 4xx/5xx, JSON
-  // parse failures — will fail identically on retry, so surfacing them
+  // died" case). Deterministic errors - unsupported tools, HTTP 4xx/5xx, JSON
+  // parse failures - will fail identically on retry, so surfacing them
   // immediately is both more honest and avoids wasting the nudge budget.
   function _tryAutoRecover(holder, accumulated, sessionId) {
     if (_autoNudges >= _AUTO_NUDGE_CAP) return false;
@@ -4732,7 +4732,7 @@ import { loadPanel } from './panels.js';
     // Reconnect to that run instead of submitting a new user turn, which would
     // cancel it, retry the selected model, and risk duplicating side effects.
     setTimeout(async () => {
-      // The stream that died may not be the chat the user is now looking at —
+      // The stream that died may not be the chat the user is now looking at -
       // never attach the recovery reader to the wrong conversation.
       if (sessionId && sessionModule.getCurrentSessionId() !== sessionId) return;
       const resumed = await resumeStream(sessionId, holder || null);
@@ -4759,7 +4759,7 @@ import { loadPanel } from './panels.js';
     bar.className = 'stall-banner';
     const mins = Math.floor(secs / 60);
     const label = mins >= 1 ? `${mins}m` : `${secs}s`;
-    bar.innerHTML = `<span class="stall-banner-txt">Quiet for ${label} — still working?</span>`;
+    bar.innerHTML = `<span class="stall-banner-txt">Quiet for ${label} - still working?</span>`;
     const cont = document.createElement('button');
     cont.className = 'stall-banner-btn';
     cont.textContent = 'Nudge it';
@@ -4894,7 +4894,7 @@ import { loadPanel } from './panels.js';
   export function detachCurrentStream(sessionId) {
     const active = sessionId ? _activeStreams.get(sessionId) : _getForegroundStreamState();
     if (!active || !active.abortCtrl) {
-      // Not streaming — fall through to abort
+      // Not streaming - fall through to abort
       abortCurrentRequest();
       return;
     }
@@ -5091,7 +5091,7 @@ import { loadPanel } from './panels.js';
               );
             }
             uiModule.showToast(
-              'Fallback: ' + _shortModel(json.selected_model || '') + ' failed — answered by ' +
+              'Fallback: ' + _shortModel(json.selected_model || '') + ' failed - answered by ' +
               _shortModel(json.answered_by || ''),
               6000,
             );
@@ -5188,7 +5188,7 @@ import { loadPanel } from './panels.js';
     var entry = _backgroundStreams.get(sessionId);
 
     if (entry.status === 'completed') {
-      // Response is already saved to DB and will appear in history — just clean up
+      // Response is already saved to DB and will appear in history - just clean up
       _backgroundStreams.delete(sessionId);
       return;
     }
@@ -5206,7 +5206,7 @@ import { loadPanel } from './panels.js';
     }
 
     if (entry.status === 'running') {
-      // Stream is still active — show a clean spinner, poll until done,
+      // Stream is still active - show a clean spinner, poll until done,
       // then reload history to show the final saved response.
       var box = document.getElementById('chat-history');
       if (!box) return;
@@ -5253,7 +5253,7 @@ import { loadPanel } from './panels.js';
           spinner.destroy();
           if (holder.parentNode) holder.remove(); // Remove entire holder, not just spinner
           _backgroundStreams.delete(sessionId);
-          // Reload session to show the completed response — but only if the user
+          // Reload session to show the completed response - but only if the user
           // is still on it; don't yank them back from a new chat they opened.
           if (sessionModule.getCurrentSessionId && sessionModule.getCurrentSessionId() === sessionId) {
             sessionModule.selectSession(sessionId);
@@ -5272,7 +5272,7 @@ import { loadPanel } from './panels.js';
     const code = pre.querySelector('code');
     if (!code) return;
     const txt = code.textContent || '';
-    // Count visible lines — ignore trailing newline (common with fenced
+    // Count visible lines - ignore trailing newline (common with fenced
     // blocks) and treat any empty extra line as not a real second line.
     const lines = txt.replace(/\n+$/, '').split('\n');
     const compact = lines.length <= 1 && txt.length < 200;
@@ -5317,7 +5317,7 @@ import { loadPanel } from './panels.js';
         // Visual feedback: swap the icon to a checkmark (regular size)
         // and add .copied which the CSS uses to flash green + pulse.
         // For slim/.pre-compact buttons the label text comes from a
-        // CSS ::before — swap it via data-state so we don't break the
+        // CSS ::before - swap it via data-state so we don't break the
         // text-button layout.
         const origHTML = btn.innerHTML;
         const isCompact = !!btn.closest('pre.pre-compact');
@@ -5342,7 +5342,7 @@ import { loadPanel } from './panels.js';
       if (codeRunnerModule) codeRunnerModule.run(btn);
     });
 
-    // Edit code button delegation — toggle contentEditable on the code element
+    // Edit code button delegation - toggle contentEditable on the code element
     document.addEventListener('click', (e) => {
       const btn = e.target.closest('.edit-code');
       if (!btn) return;
@@ -5368,7 +5368,7 @@ import { loadPanel } from './panels.js';
         btn.classList.remove('active');
       } else {
         // Enter edit mode. Firefox (especially on mobile) historically lacks
-        // contentEditable="plaintext-only" — setting it there leaves the block
+        // contentEditable="plaintext-only" - setting it there leaves the block
         // non-editable, so the tap "just gets a checkmark" with no way to type.
         // Fall back to "true" when plaintext-only didn't take.
         try { codeEl.contentEditable = 'plaintext-only'; } catch (_) { /* unsupported value */ }
@@ -5376,7 +5376,7 @@ import { loadPanel } from './panels.js';
         codeEl.classList.add('editing');
         pre.classList.add('editing');
         // preventScroll keeps the page from jumping to the codeblock when
-        // focusing the editable on mobile — the browser would otherwise
+        // focusing the editable on mobile - the browser would otherwise
         // scroll it into view above the keyboard, which reads as "auto-
         // scroll triggered by clicking Edit".
         try { codeEl.focus({ preventScroll: true }); } catch (_) { codeEl.focus(); }
@@ -5393,16 +5393,16 @@ import { loadPanel } from './panels.js';
       if (e.target.closest('.copy-code, .edit-code, .run-code')) return;
       const pre = e.target.closest('pre');
       if (!pre || !pre.querySelector('.copy-code')) return;
-      // Don't hide while editing — the buttons (incl. the Done checkmark) matter.
+      // Don't hide while editing - the buttons (incl. the Done checkmark) matter.
       if (pre.classList.contains('editing')) return;
       pre.classList.toggle('buttons-hidden');
     });
 
     // Position copy/run buttons top or bottom based on viewport position
-    // — DESKTOP ONLY. On mobile this was constantly retriggering on tap
+    // - DESKTOP ONLY. On mobile this was constantly retriggering on tap
     // (synthetic mouseenter) and made the buttons jump, so the user's
     // finger landed on the moved target. Keep them pinned at the top on
-    // touch — no auto-repositioning.
+    // touch - no auto-repositioning.
     document.addEventListener('mouseenter', (e) => {
       if (window.matchMedia('(max-width: 768px)').matches) return;
       const pre = e.target.closest ? e.target.closest('pre') : null;
@@ -5425,7 +5425,7 @@ import { loadPanel } from './panels.js';
       const active = _getForegroundStreamState();
       if (!active) return;
 
-      // Stream claims to be running — check if reader is actually alive
+      // Stream claims to be running - check if reader is actually alive
       const staleSince = Date.now() - (active.lastActivity || _lastReaderActivity);
       if (staleSince < 20000) return; // Active recently, probably fine
 
@@ -5434,7 +5434,7 @@ import { loadPanel } from './panels.js';
       console.warn('[tab-recovery] Stream appears frozen (no activity for ' + Math.round(staleSince/1000) + 's). Recovering...');
 
       setTimeout(() => {
-        // Re-check — maybe the reader woke up during the grace period
+        // Re-check - maybe the reader woke up during the grace period
         const stillActive = _getForegroundStreamState();
         if (!stillActive) return;
         const stillStale = Date.now() - (stillActive.lastActivity || _lastReaderActivity);
@@ -5501,7 +5501,7 @@ import { loadPanel } from './panels.js';
     // If the browser discarded and restored this tab, reload the current session
     // so the user sees the server-saved partial response instead of a blank page
     if (document.wasDiscarded) {
-      console.warn('[tab-recovery] Tab was discarded by browser — reloading session');
+      console.warn('[tab-recovery] Tab was discarded by browser - reloading session');
       setTimeout(() => {
         var _sid = sessionModule && sessionModule.getCurrentSessionId();
         if (_sid) sessionModule.selectSession(_sid);
@@ -5611,7 +5611,7 @@ import { loadPanel } from './panels.js';
     if (msgIndex < 0) return;
 
     // Prefer dataset.raw (stripped original user text) over .body.textContent
-    // — the latter slurps the rendered "View image description" collapsible
+    // - the latter slurps the rendered "View image description" collapsible
     // content too, which would then be sent back as the user's question and
     // the AI would reply to that gibberish instead of the actual prompt.
     const bodyEl = userMsgElement.querySelector('.body');
@@ -5643,7 +5643,7 @@ import { loadPanel } from './panels.js';
     // The common case is a regen during a pre-upload race where the bubble
     // never had an `[data-file-id]` to scrape.
     if (!text && !_ids.length) {
-      if (uiModule?.showError) uiModule.showError('Nothing to resend — message has no text and no attachments yet (try again after the upload finishes).');
+      if (uiModule?.showError) uiModule.showError('Nothing to resend - message has no text and no attachments yet (try again after the upload finishes).');
       return;
     }
 
@@ -5663,7 +5663,7 @@ import { loadPanel } from './panels.js';
 
         // Drop the AI replies after the user message but KEEP the user bubble
         // itself (so its photo stays visible). Then suppress the new user
-        // bubble that send would otherwise add — same pattern as regenerate.
+        // bubble that send would otherwise add - same pattern as regenerate.
         let sibling = userMsgElement.nextSibling;
         while (sibling) {
           const next = sibling.nextSibling;
@@ -5700,7 +5700,7 @@ import { loadPanel } from './panels.js';
         userIndex = i;
         userMsgEl = allMsgs[i];
         // Prefer dataset.raw (set by addMessage with the stripped, original
-        // user text) over the rendered body's textContent — the latter
+        // user text) over the rendered body's textContent - the latter
         // pulls in the "View image description" collapsible content too,
         // duplicating the OCR text on regen.
         const bodyEl = userMsgEl.querySelector('.body');
@@ -5717,7 +5717,7 @@ import { loadPanel } from './panels.js';
 
     // Collect any file_ids attached to the original user message so the
     // regenerated send re-uses them. Without this the AI is regenerated on
-    // text alone — photos (and the user-edited OCR text cached server-side
+    // text alone - photos (and the user-edited OCR text cached server-side
     // under that file_id) would be silently dropped.
     const _attachEls = userMsgEl ? userMsgEl.querySelectorAll('[data-file-id]') : [];
     let _regenIds = Array.from(_attachEls).map(el => el.dataset.fileId).filter(Boolean);
@@ -5747,11 +5747,11 @@ import { loadPanel } from './panels.js';
       userText = '';
     }
 
-    // A photo-only message has empty user text — regen must still proceed,
+    // A photo-only message has empty user text - regen must still proceed,
     // because the attachments themselves are the message. Bail only if there
     // is no text AND no attachments to send.
     if (!userText && !_pendingRegenAttachments.length) {
-      if (uiModule) uiModule.showError('Nothing to regenerate — the user message has no text and no attachments');
+      if (uiModule) uiModule.showError('Nothing to regenerate - the user message has no text and no attachments');
       return;
     }
 
@@ -5764,7 +5764,7 @@ import { loadPanel } from './panels.js';
     let variants = [];
     try { variants = JSON.parse(aiMsgElement.dataset.variants || '[]'); } catch(_) {}
     if (variants.length === 0) {
-      // First regen — save the original as variant 0
+      // First regen - save the original as variant 0
       variants.push({ raw: oldRaw, html: oldHtml, label: 'original' });
     }
 
@@ -5781,7 +5781,7 @@ import { loadPanel } from './panels.js';
         allMsgs[i].remove();
       }
 
-      // Remove the AI message from DOM — it will be replaced by the new streaming response
+      // Remove the AI message from DOM - it will be replaced by the new streaming response
       // But first, stash the variants data so we can transfer it to the new element
       _pendingVariants = variants;
       _pendingVariantLabel = 'regen';
@@ -5799,7 +5799,7 @@ import { loadPanel } from './panels.js';
     }
   }
 
-  // Pending variants from a regeneration — transferred to new streaming element
+  // Pending variants from a regeneration - transferred to new streaming element
   let _pendingVariants = null;
   let _pendingVariantLabel = null;
   // File-ids carried over from the original user message during a regen, so
@@ -6033,7 +6033,7 @@ import { loadPanel } from './panels.js';
       // Don't show reconnect UI if we've already switched away
       if (sessionModule.getCurrentSessionId() !== sessionId) return;
 
-      // Research is still running — show reconnect UI with spinner
+      // Research is still running - show reconnect UI with spinner
       const box = document.getElementById('chat-history');
       if (!box) return;
 
@@ -6098,7 +6098,7 @@ import { loadPanel } from './panels.js';
           }
           _researchTimerEl.textContent = txt;
         }, 1000);
-        // Reconnect synapse — seed it with whatever progress is already known
+        // Reconnect synapse - seed it with whatever progress is already known
         try {
           _researchSynapse = createResearchSynapse(spinner.element.parentNode, {
             query: data.query || '',
@@ -6303,7 +6303,7 @@ import { loadPanel } from './panels.js';
     }
 
     if (!msgIds.length || !sessionId) {
-      // No persisted rows to delete (no DB IDs, or no session at all — e.g. an
+      // No persisted rows to delete (no DB IDs, or no session at all - e.g. an
       // error output shown before a model was selected, #1428). Just remove the
       // DOM so the "x" works regardless.
       domToRemove.forEach(el => el.remove());
@@ -6414,7 +6414,7 @@ import { loadPanel } from './panels.js';
 
   /**
    * Rewrite the AI's last response with a specific instruction.
-   * Uses the lightweight /api/rewrite endpoint — no tools, no agent loop.
+   * Uses the lightweight /api/rewrite endpoint - no tools, no agent loop.
    * Just rewrites the text of the last AI bubble.
    */
   export async function rewriteWith(aiMsgElement, instruction) {
@@ -6490,13 +6490,13 @@ import { loadPanel } from './panels.js';
           try {
             const data = JSON.parse(payload);
             // The endpoint streams `event: error\ndata: {error,status}` on
-            // failure — surface it instead of silently hanging on "Rewriting…".
+            // failure - surface it instead of silently hanging on "Rewriting…".
             if (data.error) {
               throw new Error(data.error || ('HTTP ' + (data.status || 500)));
             }
             // Reasoning tokens (vLLM --reasoning-parser: Qwen3 / DeepSeek-R1)
             // arrive as separate {delta, thinking:true} chunks. They are NOT
-            // the rewrite — fold them away so they don't pollute the result.
+            // the rewrite - fold them away so they don't pollute the result.
             if (data.thinking) continue;
             if (data.delta) {
               newText += data.delta;
@@ -6515,8 +6515,8 @@ import { loadPanel } from './panels.js';
       }
 
       // Strip any thinking markup from the answer. A reasoning model may emit
-      // an inline <think>…</think> block, a bare </think> (no opener), or — when
-      // its reasoning came via reasoning_content — a stray leading <think> that
+      // an inline <think>…</think> block, a bare </think> (no opener), or - when
+      // its reasoning came via reasoning_content - a stray leading <think> that
       // never closes (so it would otherwise hide the whole answer). Peel all of
       // those off so what's left is just the rewritten text.
       const _stripThink = (t) => {
@@ -6648,7 +6648,7 @@ import { loadPanel } from './panels.js';
     try {
       let doc;
       if (isPdf) {
-        // import-pdf wants a fresh file upload — re-fetch the stored blob and post it.
+        // import-pdf wants a fresh file upload - re-fetch the stored blob and post it.
         const blob = await (await fetch(url)).blob();
         const fd = new FormData();
         fd.append('file', blob, name || 'document.pdf');
@@ -6710,7 +6710,7 @@ import { loadPanel } from './panels.js';
   };
 
   // Single delegated handler for tool-call fold/expand. One listener on
-  // document.body covers every .agent-thread-node — running, completed,
+  // document.body covers every .agent-thread-node - running, completed,
   // streaming, history-rendered, compare-mode, all of them. Re-attaching
   // per-node listeners on every innerHTML rewrite was the source of the
   // "needs many clicks" bug.

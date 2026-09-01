@@ -132,7 +132,7 @@ export default function createResearchSynapse(container, opts = {}) {
     if (!subs.length) _addSub('');
     // Always attach the new source to the CURRENT round's sub (i.e. the
     // most-recently-added one). That gives a clean per-round attribution
-    // — 10 sources across 3 rounds ends up as 10/10/10 across the three
+    // - 10 sources across 3 rounds ends up as 10/10/10 across the three
     // sub-nodes, not a random scatter.
     const sub = subs[subs.length - 1];
     sub.count++;
@@ -181,7 +181,7 @@ export default function createResearchSynapse(container, opts = {}) {
       if (phase === 'error') wrap.classList.add('rs-error');
     },
 
-    /** Bump the round counter — adds a sub-question node when round grows. */
+    /** Bump the round counter - adds a sub-question node when round grows. */
     setRound(round, opts = {}) {
       if (completed) return;
       if (typeof round !== 'number' || round < 1) return;
@@ -195,7 +195,7 @@ export default function createResearchSynapse(container, opts = {}) {
       }
     },
 
-    /** Update the total source count — adds leaf nodes for any new sources. */
+    /** Update the total source count - adds leaf nodes for any new sources. */
     setSourceCount(total) {
       if (completed) return;
       if (typeof total !== 'number' || total <= sourceCount) return;
@@ -208,7 +208,7 @@ export default function createResearchSynapse(container, opts = {}) {
       srcE.textContent = total;
     },
 
-    /** Mark the run as done — freezes the pulse and tints the graph green. */
+    /** Mark the run as done - freezes the pulse and tints the graph green. */
     complete() {
       if (completed) return;
       completed = true;

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""telemachos-memory — shell wrapper for the AI memory store.
+"""telemachos-memory - shell wrapper for the AI memory store.
 
 The chat assistant accumulates durable facts about the user (name,
 projects, preferences, contacts) into `data/memory.json`. This CLI
@@ -14,7 +14,7 @@ lets you inspect, search, and prune them from the shell.
     telemachos-memory categories                    # counts per category
 
 Reads/writes the same `data/memory.json` the web UI uses via the
-`MemoryManager` helper. Atomic — the manager handles the temp-file
+`MemoryManager` helper. Atomic - the manager handles the temp-file
 swap so partial writes can't corrupt the file.
 """
 
@@ -87,7 +87,7 @@ def cmd_add(args):
         category=args.category,
         owner=args.owner,
     )
-    # add_entry doesn't save by default — the call in chat does it
+    # add_entry doesn't save by default - the call in chat does it
     # after dedup checks. Persist here so a one-shot CLI add sticks.
     all_entries = _manager().load_all()
     if not any(isinstance(e, dict) and e.get("id") == entry.get("id") for e in all_entries):

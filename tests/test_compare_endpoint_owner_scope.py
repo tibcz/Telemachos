@@ -2,7 +2,7 @@
 
 start_comparison() takes caller-supplied endpoint URLs (endpoint_a/endpoint_b),
 matches a ModelEndpoint by base_url, and copies that row's *decrypted* api_key
-into the caller-owned [CMP] session's headers — which then drive that session's
+into the caller-owned [CMP] session's headers - which then drive that session's
 /api/chat_stream calls. The match must be owner-scoped (the caller's own rows +
 legacy null-owner shared rows) so a user can't mint a comparison bound to
 ANOTHER user's private endpoint and spend their api_key / reach their base_url.

@@ -1,15 +1,15 @@
 """Compute intelligent llama.cpp serve profiles from detected hardware.
 
 Given a system (VRAM/RAM/arch) and a model, produce 1-4 ready-to-launch
-profiles — Quality / Balanced / Speed — with concrete llama.cpp flags
+profiles - Quality / Balanced / Speed - with concrete llama.cpp flags
 (n_gpu_layers, n_cpu_moe, cache-type, context). This turns the by-hand tuning
 (how many MoE layers fit on the GPU, when to spend VRAM on a q8 KV cache vs more
 context, how much headroom to leave for a vision encoder) into a formula.
 
-Pure/deterministic — no benchmarking, no I/O. Reuses the same VRAM math as
+Pure/deterministic - no benchmarking, no I/O. Reuses the same VRAM math as
 fit.py/models.py so "what the Cookbook recommends" and "what it serves" agree.
 
-NOTE: token/s figures are NOT computed here — real speed on partial-offload MoE
+NOTE: token/s figures are NOT computed here - real speed on partial-offload MoE
 is CPU-bound and not reliably predictable from specs. The UI labels profiles by
 their tradeoff (Quality/Balanced/Speed), and the VRAM fit (the part that decides
 whether it even loads) is what's computed from real numbers.
@@ -34,7 +34,7 @@ _QUANT_LADDER = ["Q8_0", "Q6_K", "Q5_K_M", "Q4_K_M", "Q3_K_M", "Q2_K"]
 
 def _weights_gb(model, quant, fixed_gb=None):
     """VRAM for the full weights. When fixed_gb is given (serving a specific GGUF
-    file already on disk), use its real size — the quant is whatever the file is,
+    file already on disk), use its real size - the quant is whatever the file is,
     not something we get to pick."""
     if fixed_gb and fixed_gb > 0:
         return float(fixed_gb)
@@ -53,7 +53,7 @@ def _n_layers(model):
         v = model.get(k)
         if isinstance(v, (int, float)) and v > 0:
             return int(v)
-    # Fallback heuristic by size — most MoE/dense LLMs land 28-64 layers.
+    # Fallback heuristic by size - most MoE/dense LLMs land 28-64 layers.
     pb = params_b(model)
     if pb >= 60:
         return 64
@@ -99,7 +99,7 @@ def compute_serve_profiles(system, model, serve_weights_gb=None, serve_quant=Non
     (Quality=Q6, Balanced=Q4, Speed=Q2…) to show download options.
 
     SERVE mode (serve_weights_gb set): a specific GGUF file already exists on
-    disk — its quant is FIXED. Profiles then keep that quant/size and differ only
+    disk - its quant is FIXED. Profiles then keep that quant/size and differ only
     in the actual serving knobs (n_cpu_moe, KV-cache type, context). serve_quant
     is the file's quant label (e.g. "Q4_K_M") just for display.
     """
@@ -112,7 +112,7 @@ def compute_serve_profiles(system, model, serve_weights_gb=None, serve_quant=Non
 
     serve_mode = bool(serve_weights_gb and serve_weights_gb > 0)
 
-    # Never propose more context than the model was trained for — asking llama.cpp
+    # Never propose more context than the model was trained for - asking llama.cpp
     # for ctx > n_ctx_train triggers a "training context overflow" and, with a
     # quantized KV cache, an oversized allocation that can crash the GPU
     # (radv/amdgpu ErrorDeviceLost). Cap every profile at the model's real limit.
@@ -144,7 +144,7 @@ def compute_serve_profiles(system, model, serve_weights_gb=None, serve_quant=Non
 
         - fixed_quant (AWQ/GPTQ/FP8 served via GGUF): always that.
         - require_full_fit=True (Speed): walk DOWN from `prefer` to the best quant
-          whose weights fit fully on the GPU (no offload) — fastest.
+          whose weights fit fully on the GPU (no offload) - fastest.
         - require_full_fit=False (Quality on MoE): keep `prefer` even if it must
           offload experts to CPU; that's the whole point of n-cpu-moe on a card
           too small to hold the weights. For dense models we can't offload
@@ -162,14 +162,14 @@ def compute_serve_profiles(system, model, serve_weights_gb=None, serve_quant=Non
         return prefer
 
     if serve_mode:
-        # Fixed file on disk — quant can't change. Vary only the serving knobs.
+        # Fixed file on disk - quant can't change. Vary only the serving knobs.
         fq = serve_quant or model.get("quantization") or "GGUF"
         specs = [
             # key, label, prefer_quant, full_fit, kv_type, ctx, note
             ("quality", "Quality", fq, False, "q8_0", 131072,
              "Sharp q8 KV cache + full context. Best long-context accuracy; offloads MoE layers to CPU if needed."),
             ("balanced", "Balanced", fq, False, "q4_0", 131072,
-             "Compact q4 KV at full context — good speed/quality mix."),
+             "Compact q4 KV at full context - good speed/quality mix."),
             ("speed", "Speed", fq, False, "q4_0", 32768,
              "Trimmed context + light KV for the fastest tokens/s."),
         ]
@@ -194,7 +194,7 @@ def compute_serve_profiles(system, model, serve_weights_gb=None, serve_quant=Non
         # Floor the context-shrink loop at 8192, but never above the model's own
         # trained limit. A model with a sub-8192 context (e.g. a 2048-token
         # SmolLM) starts below 8192, so a hard-coded 8192 guard skipped the loop
-        # entirely and produced NO profile — the serve UI then fell back to
+        # entirely and produced NO profile - the serve UI then fell back to
         # manual flags even though the model fits the GPU trivially.
         ctx_floor = min(8192, model_ctx_max)
         while cur_ctx >= ctx_floor:
@@ -213,7 +213,7 @@ def compute_serve_profiles(system, model, serve_weights_gb=None, serve_quant=Non
                     "ctx": cur_ctx,
                     # When experts offload, GPU-resident VRAM tops out at the
                     # budget (weights beyond it live in system RAM), so cap the
-                    # estimate at `budget`, not the full card — this also leaves
+                    # estimate at `budget`, not the full card - this also leaves
                     # the vision-encoder headroom visible in the number.
                     "est_vram_gb": round(min(est, budget), 1),
                     # For MoE we treat it as fitting via offload; report whether
@@ -226,7 +226,7 @@ def compute_serve_profiles(system, model, serve_weights_gb=None, serve_quant=Non
             cur_ctx //= 2
 
     # De-dupe identical profiles (e.g. tiny model where all three collapse to the
-    # same all-GPU config) — keep the first/highest-quality label.
+    # same all-GPU config) - keep the first/highest-quality label.
     seen = set()
     deduped = []
     for p in profiles:

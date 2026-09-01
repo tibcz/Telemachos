@@ -1,6 +1,6 @@
 # core/models.py
 """
-Pure data models — no database logic, no side effects.
+Pure data models - no database logic, no side effects.
 
 These are simple datacontainers. All persistence is handled by SessionManager.
 """
@@ -86,10 +86,10 @@ class ChatMessage:
 
 @dataclass
 class Session:
-    """A chat session — pure data container.
+    """A chat session - pure data container.
 
     ``.history`` is the authoritative mutable message list. Callers may
-    read, append, pop, or reassign it directly — these changes take
+    read, append, pop, or reassign it directly - these changes take
     effect immediately. ``_history`` remains a compatibility alias that
     always resolves to the authoritative ``history`` list.
 

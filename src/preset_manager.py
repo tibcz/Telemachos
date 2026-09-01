@@ -101,7 +101,7 @@ Use precise language. Show causal relationships explicitly. Quantify uncertainty
             # (a missing built-in is otherwise silently absent from the picker
             # served by GET /api/presets). There is no delete path for the
             # built-in keys, so this never clobbers an intentional removal.
-            # Defaults first, loaded values win — user edits are preserved.
+            # Defaults first, loaded values win - user edits are preserved.
             if isinstance(presets, dict) and any(
                 k not in presets for k in self.DEFAULT_PRESETS
             ):

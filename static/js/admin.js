@@ -1,4 +1,4 @@
-// static/js/admin.js — Admin panel module (ES6)
+// static/js/admin.js - Admin panel module (ES6)
 // Admin-only: users, endpoints, MCP, RAG, embeddings, tokens, webhooks, features
 
 import uiModule from './ui.js';
@@ -90,7 +90,7 @@ async function loadUsers() {
           </div>
           <input type="number" min="0" value="${maxMsg}" data-priv="max_messages_per_day" data-user="${esc(u.username)}" style="width:70px;padding:4px 6px;background:var(--bg);border:1px solid var(--border);border-radius:4px;color:var(--fg);font-size:12px;text-align:center;">
         </div>`;
-        // Allowed models — checkbox list
+        // Allowed models - checkbox list
         const allowedModels = Array.isArray(u.privileges && u.privileges.allowed_models)
           ? u.privileges.allowed_models
           : [];
@@ -202,7 +202,7 @@ async function loadUsers() {
         });
       }
 
-      // Promote / demote (admin toggle) — present on every row
+      // Promote / demote (admin toggle) - present on every row
       const adminToggleBtn = row.querySelector('[data-adm-toggle-admin]');
       if (adminToggleBtn) {
         adminToggleBtn.addEventListener('click', async (e) => {
@@ -210,7 +210,7 @@ async function loadUsers() {
           const username = adminToggleBtn.dataset.admToggleAdmin;
           const makeAdmin = adminToggleBtn.dataset.makeAdmin === '1';
           const confirmMsg = makeAdmin
-            ? `Grant admin rights to "${username}"? They'll get full access to all settings and users — including the power to demote or remove other admins (you included).`
+            ? `Grant admin rights to "${username}"? They'll get full access to all settings and users - including the power to demote or remove other admins (you included).`
             : `Revoke admin rights from "${username}"? They'll lose access to the admin panel.`;
           if (!await uiModule.styledConfirm(confirmMsg, { confirmText: makeAdmin ? 'Make admin' : 'Revoke admin', danger: !makeAdmin })) return;
           adminToggleBtn.disabled = true;
@@ -227,7 +227,7 @@ async function loadUsers() {
               adminToggleBtn.disabled = false;
               return;
             }
-            // Demoting yourself drops your own admin access — reload into the
+            // Demoting yourself drops your own admin access - reload into the
             // normal-user view (mirrors the rename-self reload above).
             if (data.self) { window.location.reload(); return; }
             loadUsers();
@@ -247,7 +247,7 @@ async function _loadModelsForUser(username, allowedSet, modelsRestricted, blockA
   const listEl = privPanel.querySelector(`.priv-models-list[data-user="${username}"]`);
   if (!listEl) return;
   try {
-    // Use /api/model-endpoints rather than /api/models — the latter is
+    // Use /api/model-endpoints rather than /api/models - the latter is
     // backed by `cached_models`, so endpoints that haven't been probed yet
     // (e.g. a freshly-added cloud API like DeepSeek) simply don't show up
     // until some other endpoint happens to trigger a cache refresh. The
@@ -399,7 +399,7 @@ function initAddUser() {
 }
 
 /* ═══════════════════════════════════════════
-   SERVICES TAB — Endpoints
+   SERVICES TAB - Endpoints
    ═══════════════════════════════════════════ */
 function _isLocalEndpoint(url) {
   if (!url) return false;
@@ -489,7 +489,7 @@ async function loadEndpoints() {
     const res = await fetch('/api/model-endpoints', { credentials: 'same-origin' });
     // Treat a non-OK response (e.g. 401/403 for non-admins, or backend
     // returning an error envelope) the same as "no endpoints yet": show the
-    // empty state, not "Failed to load". The user just installed the app —
+    // empty state, not "Failed to load". The user just installed the app -
     // there's literally nothing to load, so the error read as broken UI.
     let data = [];
     if (res.ok) {
@@ -509,7 +509,7 @@ async function loadEndpoints() {
       const totalCount = Number.isFinite(Number(ep.model_count))
         ? Number(ep.model_count)
         : visibleCount + (ep.hidden_count || 0);
-      // `ep.models` is the *visible* set — when every model is hidden it's
+      // `ep.models` is the *visible* set - when every model is hidden it's
       // empty, but we still need to render the expand panel so the user can
       // un-hide them. Gate on the total instead.
       const hasModels = ep.online && totalCount > 0;
@@ -605,7 +605,7 @@ async function loadEndpoints() {
         e.stopPropagation();
         var epId = btn.dataset.admDelEp;
         var isOffline = btn.dataset.admEpOnline === '0';
-        // Offline endpoints are already broken — skip the confirm dialog
+        // Offline endpoints are already broken - skip the confirm dialog
         // entirely and delete immediately. The optimistic UI removal makes
         // the action feel instant.
         if (!isOffline) {
@@ -617,7 +617,7 @@ async function loadEndpoints() {
           } catch (e) { /* proceed without warning */ }
           var msg = 'Delete this endpoint?';
           if (deps.length) {
-            msg += '\n\nThe following settings use this endpoint and will be reset:\n— ' + deps.join('\n— ');
+            msg += '\n\nThe following settings use this endpoint and will be reset:\n- ' + deps.join('\n- ');
           }
           if (!await uiModule.styledConfirm(msg, { confirmText: 'Delete', danger: true })) return;
         }
@@ -631,7 +631,7 @@ async function loadEndpoints() {
       });
     });
     // Clear the just-added marker now that the row has been rendered
-    // with the animation class — keeps the glow from re-firing on every
+    // with the animation class - keeps the glow from re-firing on every
     // subsequent loadEndpoints() call (e.g. when toggling a model).
     if (_recentlyAddedEpId) _recentlyAddedEpId = null;
     // Models expand/collapse (click anywhere on card)
@@ -642,7 +642,7 @@ async function loadEndpoints() {
       row.style.cursor = 'pointer';
       row.addEventListener('click', async (e) => {
         // Don't let interactions inside the expanded panel re-fire the
-        // expand/collapse handler — the search box was getting closed
+        // expand/collapse handler - the search box was getting closed
         // because clicking it bubbled up to here.
         if (e.target.closest('.admin-btn-sm, .admin-btn-delete, .mcp-tools-list, .mcp-tools-header, .mcp-tools-search, input, label')) return;
         const epId = header.dataset.admEpHeader;
@@ -803,7 +803,7 @@ function initEndpointForm() {
   const urlInput = el('adm-epUrl');
   const kindSel = el('adm-epKind');
 
-  // Custom provider picker — mirrors the (now hidden) <select id="adm-epProvider">
+  // Custom provider picker - mirrors the (now hidden) <select id="adm-epProvider">
   // so the rest of this function (which reads provider.value and dispatches
   // change events) keeps working unchanged.
   const picker = el('adm-provider-picker');
@@ -1013,18 +1013,18 @@ function initEndpointForm() {
 
   function _renderEndpointTestResult(msg, res, d) {
     if (res.ok && d.status === 'empty') {
-      msg.textContent = 'Online — no models found';
+      msg.textContent = 'Online - no models found';
       msg.className = 'admin-success';
       return;
     }
     if (res.ok && d.online) {
       const models = d.models || [];
       const preview = models.slice(0, 3).map(m => esc(String(m).split('/').pop())).join(', ');
-      msg.innerHTML = `Online — found ${models.length} model${models.length !== 1 ? 's' : ''}${preview ? `: ${preview}${models.length > 3 ? ', …' : ''}` : ''}`;
+      msg.innerHTML = `Online - found ${models.length} model${models.length !== 1 ? 's' : ''}${preview ? `: ${preview}${models.length > 3 ? ', …' : ''}` : ''}`;
       msg.className = 'admin-success';
       return;
     }
-    msg.textContent = (d && d.detail) || (d && d.ping_error ? `Offline — ${d.ping_error}` : 'Offline');
+    msg.textContent = (d && d.detail) || (d && d.ping_error ? `Offline - ${d.ping_error}` : 'Offline');
     msg.className = 'admin-error';
   }
 
@@ -1134,13 +1134,13 @@ function initEndpointForm() {
         await _selectAddedModelInChat(d);
         const goLink = ' <a href="#" data-go-added-models style="margin-left:6px;text-decoration:underline;color:inherit;font-weight:600;">Added Models →</a>';
         if (!d.online) {
-          msg.innerHTML = 'Added (endpoint offline — will retry on next load)' + goLink;
+          msg.innerHTML = 'Added (endpoint offline - will retry on next load)' + goLink;
           msg.className = 'admin-error';
         } else if (d.status === 'empty') {
-          msg.innerHTML = 'Added — endpoint reachable, no models found' + goLink;
+          msg.innerHTML = 'Added - endpoint reachable, no models found' + goLink;
           msg.className = 'admin-success';
         } else {
-          msg.innerHTML = `Added — found ${count} model${count !== 1 ? 's' : ''}` + goLink;
+          msg.innerHTML = `Added - found ${count} model${count !== 1 ? 's' : ''}` + goLink;
           msg.className = 'admin-success';
         }
       } else { msg.textContent = d.detail || 'Failed'; msg.className = 'admin-error'; }
@@ -1314,12 +1314,12 @@ function initEndpointForm() {
   // with id "<prefix>MoreBtn" toggles a sibling menu with id "<prefix>MoreMenu".
   // Global Esc handler: close any currently-open kebab menu in the admin
   // panel regardless of which _wireKebab instance owns it. Belt-and-braces
-  // backup for the per-instance handler below — registered once.
+  // backup for the per-instance handler below - registered once.
   if (!document._admKebabEscWired) {
     document._admKebabEscWired = true;
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
-      // Any visible kebab dropdown in the admin panel — match by id pattern
+      // Any visible kebab dropdown in the admin panel - match by id pattern
       // so adding a new kebab elsewhere automatically benefits.
       const menus = document.querySelectorAll(
         '#adm-epLocalMoreMenu, #adm-epApiMoreMenu'
@@ -1409,12 +1409,12 @@ function initEndpointForm() {
     if (!lbl) return;
     const n = document.querySelectorAll('[data-adm-ep-id] [data-adm-ep-online="0"]').length;
     lbl.textContent = n > 0 ? `(${n})` : '';
-    // Hide the button entirely when there's nothing offline — no point
+    // Hide the button entirely when there's nothing offline - no point
     // showing an action that has nothing to act on.
     const btn = el('adm-epClearOfflineBtn');
     if (btn) btn.style.display = n === 0 ? 'none' : '';
   };
-  // Wire after every loadEndpoints() run by patching the render hook —
+  // Wire after every loadEndpoints() run by patching the render hook -
   // simplest path: MutationObserver on the two list containers.
   const _obsRoots = ['adm-epList-local', 'adm-epList-api']
     .map(id => el(id)).filter(Boolean);
@@ -1523,7 +1523,7 @@ function initEndpointForm() {
       const ids = offlineBtns.map(b => b.getAttribute('data-adm-del-ep')).filter(Boolean);
       if (!ids.length) {
         if (uiModule && uiModule.showToast) {
-          uiModule.showToast('No offline endpoints — nothing to clear', 1800);
+          uiModule.showToast('No offline endpoints - nothing to clear', 1800);
         }
         return;
       }
@@ -1576,7 +1576,7 @@ function initEndpointForm() {
     }
   } catch (_) {}
 
-  // Local "Add" button — sibling form for self-hosted base URLs.
+  // Local "Add" button - sibling form for self-hosted base URLs.
   const localAddBtn = el('adm-epLocalAddBtn');
   const localTestBtn = el('adm-epLocalTestBtn');
   if (localTestBtn) {
@@ -1638,10 +1638,10 @@ function initEndpointForm() {
           await _selectAddedModelInChat(d);
           const count = (d.models || []).length;
           const baseText = d.status === 'empty'
-            ? 'Added — Ollama is running, no models pulled yet'
+            ? 'Added - Ollama is running, no models pulled yet'
             : d.online
-            ? `Added — found ${count} model${count !== 1 ? 's' : ''}`
-            : 'Added (offline — will retry on next load)';
+            ? `Added - found ${count} model${count !== 1 ? 's' : ''}`
+            : 'Added (offline - will retry on next load)';
           msg.innerHTML = `${baseText} <a href="#" data-go-added-models style="margin-left:6px;text-decoration:underline;color:inherit;font-weight:600;">Added Models →</a>`;
           msg.className = d.online ? 'admin-success' : 'admin-error';
         } else { msg.textContent = d.detail || 'Failed'; msg.className = 'admin-error'; }
@@ -1738,7 +1738,7 @@ function initEndpointForm() {
           ];
           if (added) parts.push(`added ${added} new`);
           if (skipped) parts.push(`${skipped} already added`);
-          msg.innerHTML = parts.join(' — ');
+          msg.innerHTML = parts.join(' - ');
           msg.className = 'admin-success';
           loadEndpoints();
         }
@@ -1776,7 +1776,7 @@ function initEndpointForm() {
 }
 
 /* ═══════════════════════════════════════════
-   TOOLS TAB — MCP
+   TOOLS TAB - MCP
    ═══════════════════════════════════════════ */
 
 const _GOOGLE_OAUTH_HELP = `To get Google OAuth credentials:
@@ -1836,7 +1836,7 @@ const MCP_PRESETS = [
 5. Click "Download JSON" on the credential you just created
 6. Set Google Oauth Credentials to the full path of the downloaded JSON file` },
   { name: "Google Drive",    command: "npx", args: ["-y", "@modelcontextprotocol/server-gdrive"],        env: {},
-    help: "Google Drive uses browser-based OAuth on first run. No env vars needed — just click Add and authorize when prompted." },
+    help: "Google Drive uses browser-based OAuth on first run. No env vars needed - just click Add and authorize when prompted." },
   { name: "GitHub",          command: "npx", args: ["-y", "@modelcontextprotocol/server-github"],        env: { GITHUB_PERSONAL_ACCESS_TOKEN: "" },
     help: "1. Go to github.com > Settings > Developer Settings > Personal Access Tokens > Fine-grained tokens\n2. Generate a new token with the repo permissions you need\n3. Paste it as Github Personal Access Token" },
   { name: "Slack",           command: "npx", args: ["-y", "@modelcontextprotocol/server-slack"],         env: { SLACK_BOT_TOKEN: "", SLACK_TEAM_ID: "" },
@@ -2155,7 +2155,7 @@ async function loadMcpServers() {
             </div><div class="mcp-tools-list">` + tools.map(t =>
               `<label title="${esc(t.description)}">
                 <input type="checkbox" data-mcp-tool-name="${esc(t.name)}" ${!t.is_disabled ? 'checked' : ''}>
-                <span><strong>${esc(t.name)}</strong> <span style="opacity:0.5;">— ${esc((t.description || '').slice(0, 80))}</span></span>
+                <span><strong>${esc(t.name)}</strong> <span style="opacity:0.5;">- ${esc((t.description || '').slice(0, 80))}</span></span>
               </label>`
             ).join('') + '</div>';
             panel.querySelector(`[data-mcp-select-all="${sid}"]`)?.addEventListener('click', (e) => {
@@ -2205,7 +2205,7 @@ async function _saveMcpToolState(serverId, panel) {
 
 function initMcpForm() {
   const cmdEl = el('adm-mcpCommand');
-  if (!cmdEl) return;  // MCP form not present in this build — nothing to wire
+  if (!cmdEl) return;  // MCP form not present in this build - nothing to wire
   const transportSel = el('adm-mcpTransport');
   const sseRow = el('adm-mcpSseRow');
   const envRow = el('adm-mcpEnvRow');
@@ -2387,7 +2387,7 @@ function initMcpForm() {
       const res = await fetch('/api/mcp/servers', { method: 'POST', body: fd, credentials: 'same-origin' });
       const data = await res.json();
       if (data.needs_oauth) {
-        msg.innerHTML = `Added ${esc(name)} — <a href="/api/mcp/oauth/authorize/${data.id}" target="_blank" style="color:var(--red);font-weight:600;">Authorize with Google</a> to connect`;
+        msg.innerHTML = `Added ${esc(name)} - <a href="/api/mcp/oauth/authorize/${data.id}" target="_blank" style="color:var(--red);font-weight:600;">Authorize with Google</a> to connect`;
         msg.className = 'admin-success';
       } else if (data.connected) {
         msg.textContent = `Added ${name} (${data.tool_count} tools discovered)`; msg.className = 'admin-success';
@@ -2509,7 +2509,7 @@ function initRag() {
 }
 
 /* ═══════════════════════════════════════════
-   SYSTEM TAB — Tokens
+   SYSTEM TAB - Tokens
    ═══════════════════════════════════════════ */
 // Catalog mirrors the one in settings.js integration form. Keep keys in
 // sync with the backend scope allowlist.
@@ -2579,7 +2579,7 @@ async function loadTokens() {
         await fetch(`/api/tokens/${btn.dataset.admDelToken}`, { method: 'DELETE', credentials: 'same-origin' });
         loadTokens();
         // Codex / Claude integration cards on the Integrations panel are
-        // backed by these tokens — let them re-render so the deleted token
+        // backed by these tokens - let them re-render so the deleted token
         // disappears there too.
         try { window.dispatchEvent(new CustomEvent('telemachos-integrations-changed')); } catch (_) {}
       });
@@ -2913,7 +2913,7 @@ function initDangerZone() {
       try {
         if (isAll) {
           // Iterate every known category. Failures in one shouldn't stop
-          // the rest — record per-category counts and surface a summary.
+          // the rest - record per-category counts and surface a summary.
           const kinds = Object.keys(_LABELS);
           const results = [];
           for (const k of kinds) {

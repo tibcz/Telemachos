@@ -1,6 +1,6 @@
 // static/js/document.js
 /**
- * Document editor module — multi-document tabbed panel alongside chat.
+ * Document editor module - multi-document tabbed panel alongside chat.
  * Supports multiple open documents with tab switching, per-doc state,
  * and theme-aware styling.
  */
@@ -218,12 +218,12 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
 
   // Mobile swipe-to-dismiss for the doc sheet. Mirrors the shared bottom-sheet
   // gesture in ui.js (finger-following drag, velocity-based dismiss, rubber-band
-  // on up-drag, spring snap-back) so it feels identical to the other windows —
+  // on up-drag, spring snap-back) so it feels identical to the other windows -
   // but dismisses through the doc panel's own closePanel() lifecycle.
   function _wireSwipeDismiss(el) {
     if (!el) return;
     const DISMISS_THRESHOLD = 50;    // px
-    const VELOCITY_THRESHOLD = 0.3;  // px/ms — fast flick dismisses below threshold
+    const VELOCITY_THRESHOLD = 0.3;  // px/ms - fast flick dismisses below threshold
     const RUBBER_RESISTANCE = 0.35;  // resistance when dragging up past origin
     let startY = 0, startX = 0, lastY = 0, lastT = 0, velocity = 0;
     let dragging = false, cancelled = false;
@@ -248,7 +248,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
         if (dx > 40 && dx > Math.abs(dy) * 2) { cancelled = true; return; } // horizontal → tab scroll
         if (Math.abs(dy) > 8) {
           dragging = true;
-          // Clear the open animation — its `both` fill-mode otherwise pins
+          // Clear the open animation - its `both` fill-mode otherwise pins
           // transform and overrides our inline finger-following transform.
           pane.style.animation = 'none';
           pane.style.transition = 'none';
@@ -304,7 +304,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       const menuBtn = `<button class="doc-tab-menu-btn" data-doc-id="${id}" title="Document actions"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2.5"/><circle cx="12" cy="12" r="2.5"/><circle cx="12" cy="19" r="2.5"/></svg></button>`;
       const ver = doc.version || doc.version_count || 1;
       const verChip = `<span class="doc-tab-version" data-doc-id="${id}" title="Version history">v${ver}</span>`;
-      // Language icon before the title — same family as the meta-line / picker
+      // Language icon before the title - same family as the meta-line / picker
       // icons. Hidden via :empty CSS when the doc has no useful language.
       const lic = (doc.language && doc.language !== 'text')
         ? langIcon(doc.language, 12, { style: 'opacity:0.65;flex-shrink:0;color:currentColor;margin-right:4px;' })
@@ -318,7 +318,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     // Empty state (panel open, no doc yet): show a ghost "Untitled" tab so it's
     // obvious you're in a fresh document rather than staring at a blank pane.
     if (!_anyTab && isOpen && !activeDocId) {
-      html += `<div class="doc-tab active doc-tab-ghost" title="New document — start typing"><span class="doc-tab-title">Untitled</span></div>`;
+      html += `<div class="doc-tab active doc-tab-ghost" title="New document - start typing"><span class="doc-tab-title">Untitled</span></div>`;
     }
     html += `<button class="doc-tab-new" id="doc-tab-new-btn" title="New document"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>`;
     html += '</div>';
@@ -336,10 +336,10 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       scrollArea.addEventListener('scroll', () => updateArrowVisibility(scrollArea, leftBtn, rightBtn));
     }
 
-    // Mobile: the tab bar doubles as a drag zone — swipe down to dismiss.
+    // Mobile: the tab bar doubles as a drag zone - swipe down to dismiss.
     if (!tabBar._swipeWired) { tabBar._swipeWired = true; _wireSwipeDismiss(tabBar); }
 
-    // Bring the clicked tab fully into view — the scroll area has an 18px
+    // Bring the clicked tab fully into view - the scroll area has an 18px
     // fade-mask at each edge plus the < / > arrow buttons; without this, the
     // rightmost tab stays partially under the fade so the user can't see its
     // close button or version chip.
@@ -385,7 +385,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       });
     });
 
-    // Wire close buttons — use delegation from tab bar for reliability
+    // Wire close buttons - use delegation from tab bar for reliability
     // Remove previous handler to prevent accumulation across renderTabs calls
     if (tabBar._closeHandler) tabBar.removeEventListener('click', tabBar._closeHandler);
     tabBar._closeHandler = (e) => {
@@ -854,7 +854,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
             input.className = 'pdf-export-input';
             const blank = document.createElement('option');
             blank.value = '';
-            blank.textContent = '— (none) —';
+            blank.textContent = '- (none) -';
             input.appendChild(blank);
             for (const o of f.options) {
               const opt = document.createElement('option');
@@ -1068,7 +1068,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     }
   }
 
-  // Active drop mode for the PDF toolbar — toolbar buttons set this; the
+  // Active drop mode for the PDF toolbar - toolbar buttons set this; the
   // next click on a page consumes it. null means clicks do nothing.
   let _pdfDropMode = null;
   // Per-doc last-used line spacing for text annotations. Once the user picks
@@ -1092,7 +1092,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
   // renders inline signatures and as the user picks new ones.
   const _sigCache = new Map();
 
-  // Mirror of Python _encode_name in src/pdf_form_doc.py — keep in sync.
+  // Mirror of Python _encode_name in src/pdf_form_doc.py - keep in sync.
   // Percent-encode everything that's not A-Za-z0-9 _ . -
   function _encodeFieldName(name) {
     let out = '';
@@ -1107,7 +1107,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     return out;
   }
 
-  // Proximity-based handle visibility — show ×/drag/resize handles whenever
+  // Proximity-based handle visibility - show ×/drag/resize handles whenever
   // the cursor gets within ~30px of an annotation, not only when it's inside.
   // Attached once to the pane; reads the current doc's refs at fire time.
   let _pdfPaneProximityWired = false;
@@ -1170,7 +1170,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     pane.innerHTML = '';
     if (savedPill) pane.appendChild(savedPill);
     const fieldRefs = [];
-    // Reset annotation refs for this doc before the page loop — we rebuild them
+    // Reset annotation refs for this doc before the page loop - we rebuild them
     // page by page from the live markdown.
     const annotationRefs = [];
     _pdfPaneAnnotationsByDoc.set(docId, annotationRefs);
@@ -1273,7 +1273,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
         } else if (f.type === 'choice' && (f.options || []).length) {
           el = document.createElement('select');
           const blank = document.createElement('option');
-          blank.value = ''; blank.textContent = '—';
+          blank.value = ''; blank.textContent = '-';
           el.appendChild(blank);
           for (const opt of f.options) {
             const o = document.createElement('option');
@@ -1299,7 +1299,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
           el.addEventListener('change', _schedulePdfPaneSave);
         }
         pageWrap.appendChild(el);
-        // Signature fields are also persisted via the markdown bullet — the
+        // Signature fields are also persisted via the markdown bullet - the
         // click handler invokes _schedulePdfPaneSave directly after picking.
         fieldRefs.push({ name: f.name, type: isSig ? 'signature' : f.type, el });
 
@@ -1331,7 +1331,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       }
       // Click on empty page area drops a new annotation when a drop mode is
       // active (toolbar buttons set the mode). Without a mode, clicking does
-      // nothing — keeps page interactions predictable so users don't get
+      // nothing - keeps page interactions predictable so users don't get
       // surprise boxes from stray clicks.
       pageWrap.addEventListener('click', (ev) => {
         if (ev.target !== pageWrap && ev.target.tagName !== 'IMG') return;
@@ -1370,12 +1370,12 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
         if (_pdfDropMode === 'text') {
           built.ref.el.focus();
         } else if (_pdfDropMode === 'signature') {
-          // Trigger the signature picker right away — users always want to
+          // Trigger the signature picker right away - users always want to
           // pick the signature when they place the box.
           built.ref.el.click();
         }
         _schedulePdfPaneSave();
-        // Mode stays armed — keep placing more until the user clicks the
+        // Mode stays armed - keep placing more until the user clicks the
         // toolbar button again to turn it off.
       });
 
@@ -1397,7 +1397,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
 
     let input;
     if (kind === 'check') {
-      // Stamp-style checkmark drawn as an SVG so it scales with the box —
+      // Stamp-style checkmark drawn as an SVG so it scales with the box -
       // a glyph at fixed font-size always over- or under-fills.
       input = document.createElement('div');
       input.style.cssText = `width:100%;height:100%;display:flex;align-items:center;justify-content:center;user-select:none;pointer-events:none;`;
@@ -1408,10 +1408,10 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       input.textContent = (ann.value && ann.value.startsWith('signature:')) ? '' : 'Sign here';
       input.dataset.signatureId = (ann.value && ann.value.startsWith('signature:')) ? ann.value.slice(10) : '';
     } else {
-      // Multi-line text input. Browser resize disabled — we use the custom
+      // Multi-line text input. Browser resize disabled - we use the custom
       // bottom-right handle for resizing so position metadata stays in sync.
       // Font size uses cqh (container-query height) so the text scales with
-      // the rendered page when the doc panel resizes — keeps annotations
+      // the rendered page when the doc panel resizes - keeps annotations
       // visually anchored to the PDF instead of looking small/large after
       // a fullscreen toggle.
       input = document.createElement('textarea');
@@ -1423,12 +1423,12 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       input.style.cssText = `width:100%;height:100%;box-sizing:border-box;border:1px dashed color-mix(in srgb, var(--accent, var(--red)) 65%, transparent);background:color-mix(in srgb, var(--accent, var(--red)) 10%, transparent);font-family:inherit;font-size:1.5cqh;line-height:${lh};padding:1px 4px;color:#111;resize:none;overflow:auto;white-space:pre-wrap;`;
     }
 
-    // Touch devices have no cursor, so the hover/proximity reveal never fires —
+    // Touch devices have no cursor, so the hover/proximity reveal never fires -
     // there, show the handles permanently and make them finger-sized so the
     // box edges are actually grabbable.
     const _isTouch = typeof matchMedia === 'function' && matchMedia('(hover: none)').matches;
     const HS = _isTouch ? 28 : 20;       // handle size (px)
-    // Sit the handles just outside the box — inner edge meets the corner (no
+    // Sit the handles just outside the box - inner edge meets the corner (no
     // gap, no overlap) so they don't cover the text you're typing but stay close.
     const OFF = -HS;
     const HIDE = _isTouch ? '' : 'none'; // initial display ('' = shown on touch)
@@ -1440,13 +1440,13 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     del.title = 'Delete annotation';
     del.style.cssText = `position:absolute;top:${OFF}px;right:${OFF}px;width:${HS}px;height:${HS}px;padding:0 0 0 1px;border:1px solid var(--accent, var(--red));background:#fff;color:var(--accent, var(--red));border-radius:50%;cursor:pointer;font-size:11px;line-height:1;display:${HIDE};font-weight:bold;touch-action:none;`;
 
-    // ☰ drag handle — same size as the × button.
+    // ☰ drag handle - same size as the × button.
     const grip = document.createElement('div');
     grip.title = 'Drag to move';
     grip.textContent = '☰';
     grip.style.cssText = `position:absolute;top:${OFF}px;left:${OFF}px;width:${HS}px;height:${HS}px;border:1px solid color-mix(in srgb, var(--accent, var(--red)) 65%, transparent);background:#fff;color:var(--accent, var(--red));border-radius:3px;cursor:move;font-size:11px;line-height:${HS - 2}px;text-align:center;display:${HIDE};touch-action:none;`;
 
-    // ↘ resize handle — same size as the × button.
+    // ↘ resize handle - same size as the × button.
     const resize = document.createElement('div');
     resize.title = 'Drag to resize';
     resize.style.cssText = `position:absolute;bottom:${OFF}px;right:${OFF}px;width:${HS}px;height:${HS}px;border:1px solid color-mix(in srgb, var(--accent, var(--red)) 65%, transparent);background:#fff;color:var(--accent, var(--red));border-radius:3px;cursor:nwse-resize;display:${HIDE};touch-action:none;`;
@@ -1489,7 +1489,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     const ref = { id: ann.id, page: ann.page, x: ann.x, y: ann.y, w: ann.w, h: ann.h, el: input, wrap, kind, _setHandlesVisible };
 
     if (kind === 'check') {
-      // Stamp checkmark — value is fixed, nothing to listen for.
+      // Stamp checkmark - value is fixed, nothing to listen for.
       ref.value = '✓';
     } else if (kind === 'signature') {
       const _renderSig = async (sigId) => {
@@ -1537,7 +1537,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       _renderSig(input.dataset.signatureId);
     } else {
       // Grow the wrap to fit typed content. Width grows for the longest line,
-      // height grows for total content height. Never shrinks — user-driven
+      // height grows for total content height. Never shrinks - user-driven
       // resizes (the corner handle) are preserved.
       let _mirror = null;
       const _autoGrow = () => {
@@ -1621,7 +1621,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       _pushPdfUndoSnapshot();
       try { grip.setPointerCapture(ev.pointerId); } catch (_) {}
       // Hide the × and resize handles while moving so they don't obscure the
-      // box — easier to see exactly where it lands. Restored on release.
+      // box - easier to see exactly where it lands. Restored on release.
       del.style.display = 'none';
       resize.style.display = 'none';
       if (menuBtn) menuBtn.style.display = 'none';
@@ -1651,7 +1651,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       ev.stopPropagation();
       _pushPdfUndoSnapshot();
       try { resize.setPointerCapture(ev.pointerId); } catch (_) {}
-      // Hide the × and move handles while resizing — clean view of the box edge.
+      // Hide the × and move handles while resizing - clean view of the box edge.
       del.style.display = 'none';
       grip.style.display = 'none';
       if (menuBtn) menuBtn.style.display = 'none';
@@ -1675,7 +1675,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       document.addEventListener('pointerup', onUp);
     });
 
-    // Text options menu — opened from the floating … button so the spacing
+    // Text options menu - opened from the floating … button so the spacing
     // controls are not always visible while typing.
     if (kind === 'text') {
       const popover = document.createElement('div');
@@ -1700,14 +1700,14 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
         }
         v = Math.max(0.5, Math.min(5, v));
         // Apply to every text annotation in the doc so spacing stays
-        // consistent — exports were "all over the place" because each box
+        // consistent - exports were "all over the place" because each box
         // could have its own lh; treat it as a doc-level setting.
         const allRefs = _pdfPaneAnnotationsByDoc.get(activeDocId) || [];
         for (const r of allRefs) {
           if (r.kind !== 'text') continue;
           r.lineHeight = v;
           if (r.el && r.el.style) r.el.style.lineHeight = String(v);
-          // Spacing change can push content past the box height — fire each
+          // Spacing change can push content past the box height - fire each
           // ref's auto-grow so the wrap expands to fit the new line height.
           if (typeof r._autoGrow === 'function') r._autoGrow();
         }
@@ -1720,7 +1720,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       };
       slider.addEventListener('input', () => _applyLh(parseFloat(slider.value), true));
       valInput.addEventListener('input', () => _applyLh(parseFloat(valInput.value), false));
-      // Reject invalid typed values on blur — snap back to the live ref value.
+      // Reject invalid typed values on blur - snap back to the live ref value.
       valInput.addEventListener('blur', () => {
         const v = parseFloat(valInput.value);
         if (!Number.isFinite(v)) valInput.value = (ref.lineHeight || 1.3).toFixed(2);
@@ -2028,13 +2028,13 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
   function _syncHeaderBarVisibility() {
     const hdr = document.getElementById('doc-editor-actions');
     if (!hdr) return;
-    // Email docs hide the whole header (they use their own send footer) — never
+    // Email docs hide the whole header (they use their own send footer) - never
     // resurrect it here.
     if (docs.get(activeDocId)?.language === 'email') { hdr.style.display = 'none'; return; }
     const vis = (id) => {
       const e = document.getElementById(id);
       if (!e || !e.parentElement) return false;
-      // Only count items still LIVING in the header itself — the runtime
+      // Only count items still LIVING in the header itself - the runtime
       // rearrangement (~line 3217) moves several buttons into the footer, and
       // we don't want a button parked elsewhere to keep this top row alive.
       if (!hdr.contains(e)) return false;
@@ -2042,7 +2042,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     };
     // Hide the whole header when nothing visible lives here anymore. Without
     // this every desktop view rendered an empty doc-editor-header above the
-    // real action footer — a duplicate row.
+    // real action footer - a duplicate row.
     const visible = vis('doc-stream-indicator')
       || vis('doc-version-badge')
       || vis('doc-export-pdf-btn')
@@ -2077,7 +2077,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
         _copyBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save';
       }
     }
-    // Standalone Export PDF / PDF-toggle icon buttons are retired — for a
+    // Standalone Export PDF / PDF-toggle icon buttons are retired - for a
     // form-backed doc the language selector itself toggles between
     // "pdf" (rendered view) and "markdown" (source view).
     if (exportBtn) exportBtn.style.display = 'none';
@@ -2160,7 +2160,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
           runBtn.dataset.lastIcon = lang;
         }
       }
-      // Swap the "code" side's icon too — CSV's "code" really means "edit
+      // Swap the "code" side's icon too - CSV's "code" really means "edit
       // the underlying spreadsheet text", so a pencil reads better than the
       // </> brackets used for actual code.
       const codeBtn = renderToggle.querySelector('[data-renderview="code"]');
@@ -2474,7 +2474,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     const t = (text || '').trim();
     if (!t) return '';
     // If it already contains a formatting/structural HTML tag, it's a saved
-    // WYSIWYG body — sanitize it before rendering. (Checking a leading '<' isn't enough: a
+    // WYSIWYG body - sanitize it before rendering. (Checking a leading '<' isn't enough: a
     // rich body often starts with plain text, e.g. "Hi <b>there</b>".)
     if (/<\/?(b|i|u|s|strong|em|del|strike|a|p|div|br|ul|ol|li|h[1-3]|blockquote|span|code|pre)\b[^>]*>/i.test(t)) {
       return markdownModule.sanitizeAllowedHtml
@@ -2553,13 +2553,13 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     });
     // Highlight toolbar buttons (B / I / S, headings, lists) when the caret
     // sits inside formatted text. queryCommandState reflects the live
-    // selection — we just translate that into .is-active classes the CSS
+    // selection - we just translate that into .is-active classes the CSS
     // already understands.
     let syncActiveFrame = 0;
     const syncActiveNow = () => {
       syncActiveFrame = 0;
       if (!rich.isConnected || rich.style.display === 'none') return;
-      // Only sync when focus is inside the rich body — otherwise selection
+      // Only sync when focus is inside the rich body - otherwise selection
       // outside it (e.g. clicking the toolbar itself) gives misleading state.
       if (!rich.contains(document.activeElement) && document.activeElement !== rich) return;
       const tb = document.getElementById('doc-md-toolbar');
@@ -2698,7 +2698,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     for (let i = 0; i < lines.length; i++) {
       const line = String(lines[i] || '').trim();
       if (
-        /^[-_=–—\s]{3,}(previous|original|forwarded)\s+(message|email|mail)[-_=–—\s]{3,}$/i.test(line)
+        /^[-_=–-\s]{3,}(previous|original|forwarded)\s+(message|email|mail)[-_=–-\s]{3,}$/i.test(line)
         || /^On .+ wrote:\s*$/i.test(line)
         || /^-{2,}\s*Original Message\s*-{2,}$/i.test(line)
       ) {
@@ -2722,7 +2722,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     if (!original) return -1;
     const boundary = String.raw`(?:^|\n|<br\s*\/?>|<\/(?:p|div|blockquote|li|tr|h[1-6])>)`;
     const patterns = [
-      new RegExp(`${boundary}\\s*(?:[-_=–—\\s]|&nbsp;){3,}(?:previous|original|forwarded)\\s+(?:message|email|mail)(?:[-_=–—\\s]|&nbsp;){3,}`, 'i'),
+      new RegExp(`${boundary}\\s*(?:[-_=–-\\s]|&nbsp;){3,}(?:previous|original|forwarded)\\s+(?:message|email|mail)(?:[-_=–-\\s]|&nbsp;){3,}`, 'i'),
       new RegExp(`${boundary}\\s*On\\s+.{1,700}?\\s+wrote:\\s*`, 'i'),
       new RegExp(`${boundary}\\s*-{2,}\\s*Original Message\\s*-{2,}`, 'i'),
     ];
@@ -2911,7 +2911,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     if (emailActions) emailActions.style.display = '';
     // Emails have their own complete footer (Close / More / Send), so hide the
     // generic documents action bar AND the generic bottom footer. The TYPE
-    // picker is the exception — relocate it into the email footer so the
+    // picker is the exception - relocate it into the email footer so the
     // type-switching affordance is in the same footer slot across all docs.
     const docActions = document.getElementById('doc-editor-actions');
     if (docActions) docActions.style.display = 'none';
@@ -2980,7 +2980,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
             const chip = document.createElement('button');
             chip.type = 'button';
             chip.className = 'email-attachment-chip email-attachment-chip-pdf';
-            // Full filename on hover — chip ellipsis-truncates long names.
+            // Full filename on hover - chip ellipsis-truncates long names.
             chip.title = att.filename;
             chip.innerHTML = chipHtml;
             chip.addEventListener('click', () => _withSpinner(chip, async () => {
@@ -3001,7 +3001,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
             }));
             attDiv.appendChild(chip);
           } else {
-            // Non-PDF: download via fetch+blob+anchor — browser-native download
+            // Non-PDF: download via fetch+blob+anchor - browser-native download
             // with target=_blank was unreliable in some browsers (the click did
             // nothing). The blob path forces a real Save dialog every time.
             const chip = document.createElement('button');
@@ -3664,7 +3664,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
         sugg.style.display = 'none';
         return;
       }
-      // Already-entered emails in this field — skip in the dropdown so
+      // Already-entered emails in this field - skip in the dropdown so
       // users don't accidentally add the same person twice.
       const already = new Set(
         (input.value || '').split(',').map(s => {
@@ -3750,8 +3750,8 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
         idx = Math.max(0, idx - 1);
         setActive(idx);
       } else if (e.key === 'Enter') {
-        // If a suggestion is highlighted, commit it. Otherwise — if the
-        // current fragment already looks like a complete email — commit
+        // If a suggestion is highlighted, commit it. Otherwise - if the
+        // current fragment already looks like a complete email - commit
         // the raw text so users who type a brand-new address don't have
         // to add the comma themselves.
         if (active) {
@@ -3798,7 +3798,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     const docFooter = document.getElementById('doc-actions-footer');
     if (docFooter) docFooter.style.display = '';
     // Return the type picker to its non-email home (right before the
-    // Copy/Export split) — _showEmailFields moved it into the email footer.
+    // Copy/Export split) - _showEmailFields moved it into the email footer.
     if (docFooter) {
       const _lang = document.getElementById('doc-language-select');
       const _split = docFooter.querySelector('#doc-copy-export-split');
@@ -4055,7 +4055,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
 
   function _discardEmail() {
     if (!activeDocId) return;
-    // Just close — the Draft button handles saving explicitly
+    // Just close - the Draft button handles saving explicitly
     _closeWithoutDeleting(true);
   }
 
@@ -4260,7 +4260,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       // Empty-compose path: if there's no original body, send a placeholder
       // so the backend's "no body" guard doesn't fail. The user_hint carries
       // the user's compose intent; the model uses To/Subject + that hint.
-      const bodyForApi = currentBody || (noteHint ? '(no prior email — compose a new message based on the To, Subject, and user instructions)' : currentBody);
+      const bodyForApi = currentBody || (noteHint ? '(no prior email - compose a new message based on the To, Subject, and user instructions)' : currentBody);
       const res = await fetch(`${API_BASE}/api/email/ai-reply`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -4282,7 +4282,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       if (data.success && data.reply) {
         let cleanReply = cleanAiReplyText(data.reply);
         // Strip any "On <date>, <name> wrote:" attribution + everything
-        // after it from the AI's output — the model sometimes re-quotes
+        // after it from the AI's output - the model sometimes re-quotes
         // the original thread, and we already have the real quote in
         // currentBody. Without this, AI's invented quote stacked on top
         // of the real one and looked like the history had been "edited".
@@ -4515,7 +4515,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     }
 
     // Show/hide markdown toolbar based on language. PDF-backed docs are
-    // markdown under the hood, so the toolbar shows up for them too — and
+    // markdown under the hood, so the toolbar shows up for them too - and
     // gets the PDF-specific buttons (Text/Check/Sign/AI) revealed below.
     const isMd = (doc.language || 'markdown') === 'markdown';
     const isPdf = _isFormBackedDoc(doc.content || '');
@@ -4523,7 +4523,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     // For PDF-backed docs, re-run text extraction on the backend so the AI
     // can see the contents on the very next message. Idempotent + skipped
     // once per session per doc to avoid hammering the VL model on every
-    // switch — track via a sentinel on the doc object.
+    // switch - track via a sentinel on the doc object.
     if (isPdf && !doc._ocrTriggered) {
       doc._ocrTriggered = true;
       (async () => {
@@ -4558,7 +4558,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     document.querySelectorAll('.md-toolbar-pdf-only').forEach(el => {
       el.style.display = isPdf ? '' : 'none';
     });
-    // Font size does nothing for a PDF (annotations are placed, not styled) —
+    // Font size does nothing for a PDF (annotations are placed, not styled) -
     // hide it on PDFs so the toolbar only shows what actually works.
     const _fsBtn = document.getElementById('doc-fontsize-btn');
     if (_fsBtn) _fsBtn.style.display = isPdf ? 'none' : '';
@@ -4648,7 +4648,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
 
   /** Auto-create a document when user types/pastes into empty editor */
   let _autoCreating = false;
-  // True while createDocument's POST is in flight — suppresses the type-to-
+  // True while createDocument's POST is in flight - suppresses the type-to-
   // auto-create path so clicking "New document" and immediately typing can't
   // spawn a SECOND untitled doc (the create round-trip hadn't set activeDocId
   // yet, so the input handler thought the editor was empty).
@@ -4763,7 +4763,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     document.getElementById('doc-editor-pane')?.remove();
     document.getElementById('doc-divider')?.remove();
     // If the doc was minimized as a chip and the user opened the panel via
-    // a different path (toolbar button, indicator), clear that chip — the
+    // a different path (toolbar button, indicator), clear that chip - the
     // doc is becoming visible again.
     if (Modals.isRegistered('doc-panel') && Modals.isMinimized('doc-panel')) {
       _minimizedDocId = null;
@@ -4787,14 +4787,14 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     const docInd = document.getElementById('doc-indicator-btn');
     if (docInd) docInd.classList.add('active');
 
-    // Create divider — grip in the middle (drag-to-resize), swapped for a
+    // Create divider - grip in the middle (drag-to-resize), swapped for a
     // clickable collapse chevron on hover.
     const divider = document.createElement('div');
     divider.className = 'doc-divider';
     divider.id = 'doc-divider';
     // Single chevron that swaps direction based on cursor position:
     //   - cursor INSIDE the doc pane  →  › (collapse / close panel)
-    //   - cursor OUTSIDE the doc pane →  ‹ (fullscreen — grow leftward)
+    //   - cursor OUTSIDE the doc pane →  ‹ (fullscreen - grow leftward)
     // The arrow rotates via CSS so the swap feels clean. The action follows
     // the glyph, so clicking always does what the arrow promises.
     // The secondary X button below it is only shown in fullscreen mode and
@@ -4819,7 +4819,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     // the field focused through the press so the tap isn't consumed, then
     // re-dispatch the click on release so the action fires on the first tap.
     // The action handler itself decides whether to then drop the keyboard
-    // (Undo/Export/Close do; Format/Copy keep it). Touch only — desktop is
+    // (Undo/Export/Close do; Format/Copy keep it). Touch only - desktop is
     // untouched.
     {
       let _kbBtn = null;
@@ -5021,10 +5021,10 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     // the top header into the bottom footer (left side, next to Close) so a
     // regular doc shows one bar, not two. The rest of the header (run/preview,
     // fullscreen, version, PDF) stays put; the header hides itself when nothing
-    // in it is visible — see _syncHeaderBarVisibility().
+    // in it is visible - see _syncHeaderBarVisibility().
     // Note: `#doc-render-view-toggle` (code↔run for SVG/HTML) intentionally
     // stays in the top header so it matches `#doc-md-view-toggle` (markdown
-    // edit↔preview) — both view toggles live in the same place.
+    // edit↔preview) - both view toggles live in the same place.
     {
       const _footer = pane.querySelector('#doc-actions-footer');
       const _split = _footer && _footer.querySelector('#doc-copy-export-split');
@@ -5036,7 +5036,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       if (_footer && _split) {
         // Footer order (left → right): Undo, Run/Preview, Lang, …, Copy/Export.
         // The X close was here too but is now redundant with the per-tab close
-        // button in the title strip — removed.
+        // button in the title strip - removed.
         if (_undo) _footer.insertBefore(_undo, _footer.firstChild);
         const _anchor = _undo;
         if (_preview && _anchor) _anchor.after(_preview);
@@ -5095,7 +5095,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
 
     // Wire up divider drag to resize
     initDividerDrag(divider, pane, isRight);
-    // Divider chevron — single button with three modes (the glyph is the
+    // Divider chevron - single button with three modes (the glyph is the
      // same `›` in markup; CSS rotates 180° for the left-pointing variant).
      //   • cursor INSIDE the doc pane  →  collapse  (›, slide back, closes panel)
      //   • cursor OUTSIDE the doc pane →  fullscreen (‹, slide outward, expands)
@@ -5115,7 +5115,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       });
       const HYSTERESIS = 24;
       const _applyMode = (ev) => {
-        // Fullscreen state takes precedence — once the pane is fullscreen the
+        // Fullscreen state takes precedence - once the pane is fullscreen the
         // chevron always offers the "exit fullscreen" affordance regardless
         // of cursor position.
         const isFull = pane.classList.contains('doc-fullscreen');
@@ -5188,7 +5188,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       _obs.observe(document.body, { childList: true, subtree: true });
     }
 
-    // Mobile grab handle — swipe down to dismiss (like the other sheet windows).
+    // Mobile grab handle - swipe down to dismiss (like the other sheet windows).
     _wireSwipeDismiss(document.getElementById('doc-mobile-grabber'));
     document.getElementById('doc-mobile-grabber')?.addEventListener('click', () => closePanel('down'));
 
@@ -5254,7 +5254,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       menu.setAttribute('role', 'listbox');
       menu.style.display = 'none';
 
-      // Build the menu rows from the <select>'s real <option>s — single
+      // Build the menu rows from the <select>'s real <option>s - single
       // source of truth, future additions to the select auto-propagate.
       const _buildMenu = () => {
         menu.innerHTML = '';
@@ -5266,7 +5266,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
           row.setAttribute('role', 'option');
           const ic = opt.value
             ? langIcon(opt.value, 14, { style: 'opacity:0.85;' })
-            // Empty value = the "type" placeholder option — small dot so the
+            // Empty value = the "type" placeholder option - small dot so the
             // row still aligns with the others (and the picker shows _some_
             // mark when no type is set yet).
             : '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="opacity:0.5;"><circle cx="12" cy="12" r="3"/></svg>';
@@ -5366,7 +5366,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
         _setPdfViewActive(val === 'pdf');
         return;
       }
-      // Mark user explicitly chose a language — stop auto-detection
+      // Mark user explicitly chose a language - stop auto-detection
       if (activeDocId && docs.has(activeDocId)) {
         docs.get(activeDocId).userSetLanguage = (val !== '');
       }
@@ -5581,8 +5581,8 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     document.addEventListener('click', (e) => {
       const menu = document.getElementById('doc-email-more-menu');
       // Keep the menu open ONLY while interacting with the caret itself or the
-      // menu. Any other click — including the Send button (which sits in the
-      // same .email-send-split) — closes it, so the popup is tied to the arrow.
+      // menu. Any other click - including the Send button (which sits in the
+      // same .email-send-split) - closes it, so the popup is tied to the arrow.
       if (menu && !e.target.closest('#doc-email-send-caret, #doc-email-more-menu')) {
         menu.style.display = 'none';
         document.getElementById('doc-email-send-caret')?.setAttribute('aria-expanded', 'false');
@@ -5624,7 +5624,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       _syncEmailHeaderSummary();
     });
 
-    // Cc/Bcc close — X buttons inside the Cc and Bcc fields hide both
+    // Cc/Bcc close - X buttons inside the Cc and Bcc fields hide both
     // rows + clear their inputs + restore the Cc opener on the To row.
     document.querySelectorAll('[data-cc-close]').forEach(closeBtn => {
       closeBtn.addEventListener('click', (ev) => {
@@ -5646,7 +5646,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       });
     });
 
-    // Autocomplete for To / Cc / Bcc — typed fragment after the last
+    // Autocomplete for To / Cc / Bcc - typed fragment after the last
     // comma triggers contact search; Enter / Tab / click on a suggestion
     // appends "<email>, " so the user can keep typing more recipients.
     _wireRecipientAutocomplete('doc-email-to',  'doc-email-to-suggestions');
@@ -5660,7 +5660,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       else if (lang === 'csv') toggleCsvPreview();
       else if (_isRenderLang(lang)) toggleHtmlPreview();
       else {
-        // Runnable language — toggle output
+        // Runnable language - toggle output
         const outputPanel = document.getElementById('doc-run-output');
         if (outputPanel && outputPanel.style.display !== 'none') {
           outputPanel.style.display = 'none';
@@ -5671,7 +5671,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       _syncHeaderActions();
     });
 
-    // Markdown Edit/Preview two-icon switch — click a side to go to that view.
+    // Markdown Edit/Preview two-icon switch - click a side to go to that view.
     document.getElementById('doc-md-view-toggle')?.addEventListener('click', (e) => {
       const opt = e.target.closest('.md-view-opt');
       if (!opt) return;
@@ -5683,7 +5683,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     });
     document.getElementById('doc-md-preview')?.addEventListener('click', _handleMarkdownPreviewClickHint);
 
-    // Unified Code / Run-or-View two-icon switch — language-aware: CSV flips
+    // Unified Code / Run-or-View two-icon switch - language-aware: CSV flips
     // between code and the table view, Python/JS/etc. between code and run
     // output, HTML/SVG/XML between code and the iframe preview.
     document.getElementById('doc-render-view-toggle')?.addEventListener('click', (e) => {
@@ -5700,7 +5700,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
         const isOn = htmlPrev && htmlPrev.style.display !== 'none';
         if (wantRun !== isOn) toggleHtmlPreview();
       } else {
-        // Runnable language (python / js / ts / bash …) — clicking Run is
+        // Runnable language (python / js / ts / bash …) - clicking Run is
         // a one-shot execute; clicking Code dismisses the output pane.
         if (wantRun) {
           document.getElementById('doc-header-preview-btn')?.click();
@@ -5762,7 +5762,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       }
     });
 
-    // Diff toggle button — compare current content against previous version
+    // Diff toggle button - compare current content against previous version
     const diffToggleBtn = document.getElementById('doc-diff-toggle-btn');
     if (diffToggleBtn) diffToggleBtn.addEventListener('click', async () => {
       if (_diffModeActive) {
@@ -5783,7 +5783,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
           if (uiModule) uiModule.showToast('No previous version to compare');
           return;
         }
-        // versions are sorted desc — [0] is latest, [1] is previous
+        // versions are sorted desc - [0] is latest, [1] is previous
         const prevContent = versions[1].content || '';
         if (prevContent === current) {
           if (uiModule) uiModule.showToast('No changes from previous version');
@@ -5799,7 +5799,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     document.getElementById('doc-export-pdf-btn')?.addEventListener('click', _downloadFilledPdf);
 
     // Toggle inline PDF view (form-backed markdown docs). Default for a
-    // form-backed doc is "active" — the toggle reads back the visible state.
+    // form-backed doc is "active" - the toggle reads back the visible state.
     document.getElementById('doc-pdf-view-btn')?.addEventListener('click', () => {
       const pane = document.getElementById('doc-pdf-view');
       const visible = pane && pane.style.display !== 'none';
@@ -5825,7 +5825,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
         // Typing invalidates any pinned selection highlight
         if (_selections.length) clearSelection();
         // Auto-create a document if user types/pastes with no active doc.
-        // Skip while a createDocument POST is in flight — otherwise typing
+        // Skip while a createDocument POST is in flight - otherwise typing
         // during the round-trip spawns a duplicate untitled doc.
         if (!activeDocId && !_creatingDoc && ta.value.trim()) {
           _autoCreateFromInput(ta.value);
@@ -5903,8 +5903,8 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
             e.stopPropagation();
             return;
           }
-          // No pinned selection — Esc MINIMIZES the panel (tabs it
-          // down to a dock chip) — same as the chevron button.
+          // No pinned selection - Esc MINIMIZES the panel (tabs it
+          // down to a dock chip) - same as the chevron button.
           e.preventDefault();
           e.stopPropagation();
           closePanel('down');
@@ -5932,7 +5932,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
         if (!bar) return;
         bar.style.display = 'flex';
         // The highlight overlay is normally display:none (single-layer
-        // rendering — textarea owns the visible text). Find marks live
+        // rendering - textarea owns the visible text). Find marks live
         // inside that overlay, so we have to re-show it while find is
         // active. The body class lets a CSS rule un-hide it without
         // touching every per-language stylesheet path.
@@ -6006,7 +6006,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
           codeEl.dataset.findCurrent = String(_findIdx);
           applyFindMarks(codeEl);
         }
-        // Dedicated overlay rects on top of the textarea — bulletproof
+        // Dedicated overlay rects on top of the textarea - bulletproof
         // visibility across markdown / email / code modes.
         renderFindRects(_findMatches.map(s => [s, s + q.length]), _findIdx);
         if (focusTextarea) ta.focus();
@@ -6052,7 +6052,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
         if (!doc || doc.language !== 'email') return false;
         const dt = e.dataTransfer;
         if (!dt) return false;
-        // Files-only — don't trigger on text drags etc.
+        // Files-only - don't trigger on text drags etc.
         return dt.types && Array.from(dt.types).includes('Files');
       };
       pane.addEventListener('dragenter', (e) => {
@@ -6087,7 +6087,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       ta.addEventListener('keyup', (e) => {
         if (e.shiftKey) updateSelectionState();
       });
-      // ESC clears any pinned selections — matches the badge's clear
+      // ESC clears any pinned selections - matches the badge's clear
       // button so users have a keyboard shortcut for the same action.
       ta.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && _selections.length > 0) {
@@ -6109,7 +6109,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
   /** Apply markdown formatting to the textarea selection */
   let _lastMdFormat = { action: null, t: 0 };
   // Styled two-field link dialog (display text + URL). Resolves {url, text}
-  // or null on cancel. Reuses the styled-prompt CSS. Text is optional — left
+  // or null on cancel. Reuses the styled-prompt CSS. Text is optional - left
   // empty it falls back to the selected text, then the URL itself.
   function _promptLink(defaultText = '') {
     return new Promise(resolve => {
@@ -6183,7 +6183,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     const a = document.createElement('a');
     a.href = url;
     if (selText && linkText === selText) {
-      // Unchanged selection — wrap it to keep any inline formatting.
+      // Unchanged selection - wrap it to keep any inline formatting.
       a.appendChild(savedRange.extractContents());
     } else {
       savedRange.deleteContents();
@@ -6203,7 +6203,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
 
   function applyMdFormat(action) {
     // Guard against a duplicate/"ghost" click firing the same toggle twice in
-    // quick succession — that would wrap then immediately unwrap, so the
+    // quick succession - that would wrap then immediately unwrap, so the
     // markers appear for a split second and vanish.
     const _now = Date.now();
     if (_lastMdFormat.action === action && _now - _lastMdFormat.t < 350) return;
@@ -6213,7 +6213,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     const _rich = _emailRichbodyActive();
     if (_rich) {
       _rich.focus();
-      // Link needs an async styled URL prompt — handle it separately so we can
+      // Link needs an async styled URL prompt - handle it separately so we can
       // save/restore the selection (opening the modal collapses it otherwise).
       if (action === 'link') { _wysiwygInsertLink(_rich); return; }
       const _cmd = { bold: 'bold', italic: 'italic', strike: 'strikeThrough',
@@ -6229,7 +6229,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
           const cur = _currentBlockTag(_rich);
           document.execCommand('formatBlock', false, (cur === 'pre') ? 'div' : 'pre');
         }
-        // quote/check/codeblock have no clean execCommand — skipped in WYSIWYG v1.
+        // quote/check/codeblock have no clean execCommand - skipped in WYSIWYG v1.
       } catch (_) {}
       _syncEmailRichbody(_rich);
       if (_rich._syncActive) _rich._syncActive();
@@ -6252,7 +6252,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       return;
     }
 
-    // Numbered list — special handling for incrementing numbers
+    // Numbered list - special handling for incrementing numbers
     if (action === 'ol') {
       _applyOrderedList(ta, start, end);
       return;
@@ -6342,7 +6342,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     let ok = false;
     try { ok = document.execCommand('insertText', false, text); } catch (_) { ok = false; }
     // execCommand('insertText') keeps native undo working. It silently no-ops on
-    // some mobile browsers though — so ONLY when it changed nothing do we splice
+    // some mobile browsers though - so ONLY when it changed nothing do we splice
     // the value directly (using the pre-edit value + original range, so we never
     // double-insert). execCommand fires its own input event; the splice path
     // dispatches one manually.
@@ -6357,7 +6357,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
   function _applyWrapToggle(ta, before, sel, after, start, end, mark, action) {
     const mLen = mark.length;
 
-    // Case 1: selection is wrapped inside — e.g. selected "**bold**" → unwrap to "bold"
+    // Case 1: selection is wrapped inside - e.g. selected "**bold**" → unwrap to "bold"
     if (sel.startsWith(mark) && sel.endsWith(mark) && sel.length > mLen * 2) {
       const inner = sel.slice(mLen, -mLen);
       _replaceRange(ta, start, end, inner);
@@ -6366,7 +6366,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       return;
     }
 
-    // Case 2: markers are outside selection — e.g. **|bold|** → unwrap
+    // Case 2: markers are outside selection - e.g. **|bold|** → unwrap
     if (before.endsWith(mark) && after.startsWith(mark)) {
       _replaceRange(ta, start - mLen, end + mLen, sel);
       ta.selectionStart = start - mLen;
@@ -6374,7 +6374,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       return;
     }
 
-    // Case 3: wrap — add markers. With no selection, insert empty markers and
+    // Case 3: wrap - add markers. With no selection, insert empty markers and
     // drop the cursor between them (don't inject the action name as text).
     const inner = sel;
     const wrapped = mark + inner + mark;
@@ -6385,7 +6385,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
 
   /** Toggle line prefix (headings, quotes, lists) */
   // The block-level tag (h1/h2/h3/pre/p/…) containing the current selection in
-  // a contenteditable root — used to decide whether a heading toggle should
+  // a contenteditable root - used to decide whether a heading toggle should
   // apply or revert.
   function _currentBlockTag(root) {
     const sel = window.getSelection();
@@ -6578,7 +6578,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     // Keep the editor's focus + selection when a format button / dropdown
     // toggle is pressed. Without this the button steals focus on press, which
     // collapses the textarea selection (so B/I/S apply to nothing) and, on
-    // mobile, drops the keyboard — whose viewport resize then instantly closes
+    // mobile, drops the keyboard - whose viewport resize then instantly closes
     // any dropdown that just opened. Preventing the default mousedown keeps the
     // textarea focused, so formatting hits the live selection and menus stay up.
     toolbar.addEventListener('mousedown', (e) => {
@@ -6746,7 +6746,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
         return 0;
       });
 
-      // Pinned + top N (deduplicated) — pinned count against the max
+      // Pinned + top N (deduplicated) - pinned count against the max
       const visible = [...pinned];
       for (const btn of sorted) {
         if (visible.length >= _DOC_MAX_VISIBLE) break;
@@ -6868,7 +6868,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
   function _ensureDocChipRegistered() {
     if (Modals.isRegistered('doc-panel')) return;
     Modals.register('doc-panel', {
-      // The ✕ / drag-to-trash on the minimized chip is a real close — detach
+      // The ✕ / drag-to-trash on the minimized chip is a real close - detach
       // the doc from the chat session so it doesn't reappear in that chat.
       closeFn: () => {
         // Content was already saved to the map when the panel was minimized,
@@ -6919,7 +6919,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
 
     // A "down" close means minimize, not close. Register the chip and flip
     // the dock state to minimized so a chip appears at the bottom. Any
-    // other direction is a real close — make sure any leftover chip from a
+    // other direction is a real close - make sure any leftover chip from a
     // prior minimize cycle is cleared too.
     if (direction === 'down') {
       _minimizedDocId = activeDocId;
@@ -6940,7 +6940,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     const _finishClose = () => {
       // If the panel was reopened during the slide-out animation (close →
       // reopen fast, e.g. close a draft then immediately compose a new one),
-      // bail — otherwise this stale close strips doc-view after the new open
+      // bail - otherwise this stale close strips doc-view after the new open
       // re-added it, and the fresh pane drops into the desktop split layout
       // (renders as a narrow "sidebar" on mobile).
       if (isOpen) { if (pane) pane.remove(); if (divider) divider.remove(); return; }
@@ -7009,7 +7009,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
 
   /** Create a new document for the current session */
   // Create a new blank document, reusing the current/last session or
-  // auto-creating one. Same flow as the tab-bar "+" — the single entry point
+  // auto-creating one. Same flow as the tab-bar "+" - the single entry point
   // the sidebar Library "+" should use too.
   export async function newDocument() {
     let sessionId = docs.get(activeDocId)?.sessionId
@@ -7026,7 +7026,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     if (_creatingDoc) return;
     _creatingDoc = true;
     // If the panel was in empty-state, the user may type into the editor
-    // during the create round-trip — preserve that text into the new doc
+    // during the create round-trip - preserve that text into the new doc
     // instead of letting switchToDoc blank it.
     const wasEmpty = !activeDocId;
     try {
@@ -7053,7 +7053,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
         textarea.placeholder = 'Document content...';
       }
       // Capture text typed during the round-trip (only when starting from the
-      // empty editor — don't steal another doc's content).
+      // empty editor - don't steal another doc's content).
       const typed = (wasEmpty && textarea && textarea.value.trim()) ? textarea.value : '';
       switchToDoc(doc.id);
       if (typed) {
@@ -7078,7 +7078,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
   /** Load an existing document into a tab */
   /** Inject a freshly-created doc dict (from a POST response) directly into
    * the tabs without re-fetching it via GET. Fixes a race where GET
-   * /api/document/{id} can 404 right after a successful POST — we already
+   * /api/document/{id} can 404 right after a successful POST - we already
    * have the full doc payload from the create response, no need to round-trip.
    */
   export function injectFreshDoc(doc) {
@@ -7094,7 +7094,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     addDocToTabs(doc, sessionId);
     // Use _ensureDocPaneMounted (not `if (!isOpen) openPanel()`): when a draft
     // is composed from the email modal, `isOpen` can be stale-true while the
-    // actual pane was torn down — a bare openPanel() early-returns and the doc
+    // actual pane was torn down - a bare openPanel() early-returns and the doc
     // mounts into a wrong/half-built pane (rendered as a narrow sidebar on
     // mobile instead of its own full-screen window). This remounts it cleanly.
     _ensureDocPaneMounted();
@@ -7252,7 +7252,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       console.error('Failed to load document:', e);
       if (uiModule) {
         const msg = e.message === 'Not found'
-          ? 'Document not found — try opening it from the Library.'
+          ? 'Document not found - try opening it from the Library.'
           : 'Could not open document.';
         uiModule.showError(msg);
       }
@@ -7324,7 +7324,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     const shouldRestoreOpen = localStorage.getItem(_docOpenKey(sessionId)) === '1';
     const shouldRestoreMinimized = localStorage.getItem(_docMinimizedKey(sessionId)) === '1';
     // Clear docs from other sessions so tabs are per-session,
-    // but keep session-less docs (e.g. email compose) — they're independent
+    // but keep session-less docs (e.g. email compose) - they're independent
     for (const [id, doc] of [...docs]) {
       if (doc.sessionId && doc.sessionId !== sessionId) docs.delete(id);
     }
@@ -7340,7 +7340,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       // Only load active docs
       const activeDocs = allDocs.filter(d => d.is_active);
       if (activeDocs.length === 0) {
-        // No docs yet — show empty editor, doc will be created when user types
+        // No docs yet - show empty editor, doc will be created when user types
         if (!restoreMode || shouldRestoreOpen) {
           if (!isOpen) openPanel();
           showEmptyState();
@@ -7462,7 +7462,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     });
   }
 
-  // Find-result rectangles drawn ON TOP of the textarea — bypasses
+  // Find-result rectangles drawn ON TOP of the textarea - bypasses
   // the syntax-highlight overlay entirely so visibility works in
   // markdown, email, and any other mode regardless of single-layer-
   // rendering quirks. Same mirror-measurement approach as pinned
@@ -7586,7 +7586,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     codeEl.textContent = text + '\n';
 
     const lang = document.getElementById('doc-language-select')?.value;
-    // hljs has no 'svg' grammar — highlight it as xml (the dropdown value stays
+    // hljs has no 'svg' grammar - highlight it as xml (the dropdown value stays
     // 'svg' so the preview/run routing still treats it as renderable markup).
     const _hlLang = lang === 'svg' ? 'xml' : lang;
     codeEl.className = _hlLang ? `language-${_hlLang}` : '';
@@ -7818,7 +7818,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     const text = textarea.value;
     if (text.length < AUTO_DETECT_MIN_CHARS) return;
 
-    // SVG heuristic — a standalone <svg> root (optionally after an XML decl /
+    // SVG heuristic - a standalone <svg> root (optionally after an XML decl /
     // doctype). hljs would tag this generic "xml"; we want it labeled svg so it
     // routes to the preview iframe with a correct type.
     if (/^\s*(<\?xml[^>]*>\s*)?(<!doctype[^>]*>\s*)?<svg[\s>]/i.test(text)) {
@@ -7833,7 +7833,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       return;
     }
 
-    // Markdown heuristic first — hljs often fails to detect it
+    // Markdown heuristic first - hljs often fails to detect it
     if (_looksLikeMarkdown(text)) {
       const langSelect = document.getElementById('doc-language-select');
       if (langSelect && langSelect.value !== 'markdown') {
@@ -7871,13 +7871,13 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
 
   // ---- Selection-based AI editing ----
 
-  // Tracked selection state — when set, the next chat message auto-includes this context
+  // Tracked selection state - when set, the next chat message auto-includes this context
   let _selections = [];  // [{ text, startLine, endLine, start, end }, ...]
 
   // Pinned-selection overlays are positioned in pixel coords measured
   // against the textarea's current size. When the window shrinks (or
   // the sidebar collapses, or the panel resizes), the text wraps to
-  // more rows but the overlay rectangles stay where they were —
+  // more rows but the overlay rectangles stay where they were -
   // visibly drifting off the real highlighted text. Re-render on any
   // size change so the overlays follow the new wrap. Debounced via
   // rAF to coalesce the rapid-fire ResizeObserver pulses during a
@@ -7923,7 +7923,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     const end = textarea.selectionEnd;
 
     if (start === end) {
-      // Simple click — don't clear, user might be clicking into chat
+      // Simple click - don't clear, user might be clicking into chat
       return;
     }
 
@@ -7932,7 +7932,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     const startLine = text.substring(0, start).split('\n').length;
     const endLine = text.substring(0, end).split('\n').length;
 
-    // Check for overlap with existing selection — replace if overlapping
+    // Check for overlap with existing selection - replace if overlapping
     const overlapIdx = _selections.findIndex(s =>
       (start >= s.start && start <= s.end) || (end >= s.start && end <= s.end) ||
       (start <= s.start && end >= s.end)
@@ -7955,7 +7955,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       badge = document.createElement('span');
       badge.id = 'doc-selection-badge';
       badge.className = 'doc-selection-badge';
-      badge.title = 'Selected regions — type in chat to edit';
+      badge.title = 'Selected regions - type in chat to edit';
       // Sits directly under the formatting toolbar so it reads as part
       // of the toolbar row, not buried in the page header. Falls back
       // to the editor header if the toolbar isn't on screen.
@@ -7987,7 +7987,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
 
   /** Markdown / prose docs get character-precise highlights (like a
    *  normal browser selection but persistent). Code docs get line-based
-   *  highlights — when working in code you usually operate on whole
+   *  highlights - when working in code you usually operate on whole
    *  lines, and the character-based version reads as jittery against
    *  monospace alignment. */
   function _isCodeDoc() {
@@ -8081,13 +8081,13 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     const paddingLeft = parseFloat(style.paddingLeft) || 48;
     const lineHeight = parseFloat(style.lineHeight) || (parseFloat(style.fontSize) * 1.45);
 
-    // Shared mirror for measurement — same box model as the textarea
+    // Shared mirror for measurement - same box model as the textarea
     // so any measurement we take lines up 1:1 with the rendered text.
     let mirror = document.getElementById('doc-selection-mirror');
     if (!mirror) {
       mirror = document.createElement('div');
       mirror.id = 'doc-selection-mirror';
-      // box-sizing:border-box is critical — without it the mirror's
+      // box-sizing:border-box is critical - without it the mirror's
       // actual box width = (width prop) + horizontal padding, which is
       // wider than the textarea's text-render area. Text wraps at a
       // different column inside the mirror, so every measured y-offset
@@ -8195,7 +8195,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
    */
   export function getSelectionContext() {
     if (_selections.length === 0) return null;
-    // Re-anchor / drop stale selections before handing them to chat —
+    // Re-anchor / drop stale selections before handing them to chat -
     // shipping text from a stale offset would mean the AI sees content
     // from a different region than what the user thinks they highlighted.
     const _ta = document.getElementById('doc-editor-textarea');
@@ -8206,7 +8206,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       clearSelection();
       return ctx;
     }
-    // Multiple selections — return array
+    // Multiple selections - return array
     const ctx = [..._selections];
     clearSelection();
     return ctx;
@@ -8241,7 +8241,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     } catch {}
   }
 
-  /** Handle doc_suggestions SSE event — show one suggestion at a time.
+  /** Handle doc_suggestions SSE event - show one suggestion at a time.
    *
    *  If a previous batch is already pending approval, NEW suggestions are
    *  appended to the live queue rather than replacing it. The agent (or a
@@ -8488,7 +8488,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     codeEl.dataset.hasDiff = '1';
   }
 
-  /** Clear inline diff — restore normal highlighting */
+  /** Clear inline diff - restore normal highlighting */
   function _clearInlineDiff() {
     const codeEl = document.getElementById('doc-editor-code');
     if (codeEl && codeEl.dataset.hasDiff) {
@@ -8570,7 +8570,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     return chunks;
   }
 
-  /** Enter diff mode — show line-level diff for review */
+  /** Enter diff mode - show line-level diff for review */
   function enterDiffMode(oldContent, newContent) {
     if (_diffModeActive) exitDiffMode(true);
 
@@ -8621,7 +8621,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       if (entries[entryIdx].type === 'equal') {
         entryIdx++;
       } else {
-        // This is the start of a change block — assign all contiguous non-equal entries to the current chunk
+        // This is the start of a change block - assign all contiguous non-equal entries to the current chunk
         const cid = chunkIdx < _diffChunks.length ? _diffChunks[chunkIdx].id : -1;
         while (entryIdx < entries.length && entries[entryIdx].type !== 'equal') {
           entryChunkMap[entryIdx] = cid;
@@ -8861,7 +8861,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     if (wrap) wrap.classList.remove('diff-mode');
 
     if (discard) {
-      // Reject all — restore original content
+      // Reject all - restore original content
       if (textarea) textarea.value = _diffOldContent || '';
     } else {
       // Build final content from resolved chunks
@@ -8967,7 +8967,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  /** Accept a suggestion — apply the edit */
+  /** Accept a suggestion - apply the edit */
   function acceptSuggestion(id) {
     const sugg = _activeSuggestions.find(s => s.id === id);
     if (!sugg) return;
@@ -8995,7 +8995,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     }
   }
 
-  /** Dismiss a suggestion — just remove the card */
+  /** Dismiss a suggestion - just remove the card */
   function dismissSuggestion(id) {
     const sugg = _activeSuggestions.find(s => s.id === id);
     if (!sugg) return;
@@ -9073,7 +9073,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     highlight.style.height = height + 'px';
     wrap.appendChild(highlight);
 
-    // Don't auto-scroll here — caller handles scrolling
+    // Don't auto-scroll here - caller handles scrolling
   }
 
   /** Remove hover highlight */
@@ -9104,7 +9104,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     outputPanel.innerHTML = '';
 
     if (_isRenderLang(lang)) {
-      // HTML / SVG / XML — render inline in the sandboxed preview iframe.
+      // HTML / SVG / XML - render inline in the sandboxed preview iframe.
       outputPanel.style.display = 'none';
       toggleHtmlPreview();
       return;
@@ -9226,7 +9226,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     }
     const _downloadIco = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
     items += `<div class="dropdown-item-compact doc-tab-action" data-action="download">${_di(_downloadIco)}<span>Download</span></div>`;
-    // "Send signed reply" — only if this doc was opened from an email attachment
+    // "Send signed reply" - only if this doc was opened from an email attachment
     if (doc.sourceEmailUid && doc.sourceEmailFolder) {
       const _sendBackIco = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>';
       items += `<div class="dropdown-item-compact doc-tab-action" data-action="signed-reply">${_di(_sendBackIco)}<span>Send signed reply</span></div>`;
@@ -9292,7 +9292,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
   }
 
   /**
-   * "Send signed reply" — flatten the current PDF (form fields + signature
+   * "Send signed reply" - flatten the current PDF (form fields + signature
    * stamps + freeform annotations), drop it into the compose-uploads dir,
    * then either:
    *   1. add the attachment to an existing open email draft for the same
@@ -9396,7 +9396,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
 
     await loadDocument(draftId);
     _renderComposeAttachments();
-    if (uiModule) uiModule.showToast(`Reply draft ready — "${att.filename}" attached`);
+    if (uiModule) uiModule.showToast(`Reply draft ready - "${att.filename}" attached`);
   }
 
   /** Save manual edits */
@@ -9522,7 +9522,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     URL.revokeObjectURL(a.href);
   }
 
-  // "Import from device" — open a file picker, upload, and immediately open
+  // "Import from device" - open a file picker, upload, and immediately open
   // the resulting doc in THIS panel (vs. dumping it in the library and
   // making the user click through). Mirrors the library's extension logic
   // for text/code; routes PDFs through the dedicated import-pdf endpoint
@@ -9549,7 +9549,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       const baseTitle = dotIdx > 0 ? name.slice(0, dotIdx) : name;
       const isSpreadsheet = ['.xlsx','.xls','.ods'].includes(ext);
       const isPdf = ext === '.pdf';
-      // Spreadsheets need the library's per-sheet split — defer to it.
+      // Spreadsheets need the library's per-sheet split - defer to it.
       if (isSpreadsheet) {
         openLibrary();
         requestAnimationFrame(() => requestAnimationFrame(() => document.getElementById('doclib-import-file-btn')?.click()));
@@ -9597,7 +9597,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
             addDocToTabs(full, full.session_id || sid);
             switchToDoc(full.id || docId);
           } catch (_) {
-            // Fallback — at least try to switch (may fail silently if not loaded).
+            // Fallback - at least try to switch (may fail silently if not loaded).
             addDocToTabs({ id: docId, title: baseTitle }, _lastSessionId || '');
             switchToDoc(docId);
           }
@@ -9615,7 +9615,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
 
   function showExportMenu(e, anchorRect) {
     if (e) e.stopPropagation();
-    // Remove existing menu if any (toggle off) — tear it down through its
+    // Remove existing menu if any (toggle off) - tear it down through its
     // registered dismiss so the outside-click listener + Escape-stack entry go.
     const existing = document.getElementById('doc-export-menu');
     if (existing) { dismissOrRemove(existing); return; }
@@ -9652,7 +9652,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       || docs.get(activeDocId)?.content || '';
     const isForm = _isFormBackedDoc(liveContent);
     const options = [];
-    // Import lives at the top of the same dropdown — it's a sibling action
+    // Import lives at the top of the same dropdown - it's a sibling action
     // ("bring something IN" vs "send something OUT"), and the footer was
     // getting too cramped for dedicated icons.
     options.push({ label: 'Import from library', fn: () => openLibrary() });
@@ -9679,7 +9679,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     });
 
     document.body.appendChild(menu);
-    // Flip above the anchor when there's no room below — the Export button now
+    // Flip above the anchor when there's no room below - the Export button now
     // lives in the bottom footer, so the menu would otherwise drop off-screen.
     const mh = menu.offsetHeight;
     if (rect.bottom + mh > window.innerHeight - 8) {
@@ -9985,7 +9985,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
           if (editorWrap) editorWrap.after(outputPanel);
         }
         outputPanel.style.display = 'block';
-        outputPanel.innerHTML = '<pre class="doc-run-error">No data — CSV is empty or unparseable.</pre>';
+        outputPanel.innerHTML = '<pre class="doc-run-error">No data - CSV is empty or unparseable.</pre>';
         return;
       } else {
         const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -10056,7 +10056,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       wrap.style.display = '';
     }
     // Update the segmented Code/Run toggle's active class so the icon
-    // highlights match the new state — without this, opening a CSV that
+    // highlights match the new state - without this, opening a CSV that
     // auto-shows the table view left the Edit (code) side wrongly marked
     // active and the user had to flip the toggle to resync.
     _syncHeaderActions();
@@ -10070,7 +10070,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     if (!iframe || !wrap || !textarea) return;
 
     if (!_htmlPreviewActive) {
-      // Show preview — hide markdown preview if active
+      // Show preview - hide markdown preview if active
       const mdPreview = document.getElementById('doc-md-preview');
       if (mdPreview) mdPreview.style.display = 'none';
       const code = textarea.value || '';
@@ -10204,7 +10204,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       const content = document.createElement('div');
       content.className = 'doc-diff-content';
 
-      // Render diff lines — show context around changes
+      // Render diff lines - show context around changes
       let inContext = false;
       let skipped = 0;
       diff.forEach((line, idx) => {
@@ -10313,7 +10313,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     // stale diff isn't cleared first, a later exitDiffMode applies the old doc's
     // content to the new one and overwrites it (issue #2467). activeDocId still
     // points at the previously-active doc here, so exitDiffMode(true) restores
-    // and saves THAT doc — same guard handleDocUpdate/switchToDoc use.
+    // and saves THAT doc - same guard handleDocUpdate/switchToDoc use.
     if (_diffModeActive) exitDiffMode(true);
     // If already streaming a doc, reuse it (don't create a second temp doc)
     if (_streamDocId && docs.has(_streamDocId)) {
@@ -10468,7 +10468,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
         if (insertPos < insertedText.length) {
           _editAnimFrame = requestAnimationFrame(tick);
         } else {
-          // Done — set final content
+          // Done - set final content
           textarea.value = newContent;
           _editAnimFrame = null;
           if (indicator) indicator.style.display = 'none';
@@ -10516,7 +10516,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     }
   }
 
-  /** Finalize streaming — called when doc_update arrives with the real ID.
+  /** Finalize streaming - called when doc_update arrives with the real ID.
    *  Returns the old _streamDocId so handleDocUpdate can migrate temp→real. */
   export function streamDocFinalize() {
     const oldId = _streamDocId;
@@ -10586,7 +10586,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     // Accept/Reject-All flushes the stale diff's content into the now-active
     // doc and silently overwrites it (issue #2467). activeDocId still points at
     // the previously-active doc here, so exitDiffMode(true) restores and saves
-    // THAT doc before we reassign activeDocId below — mirroring switchToDoc()
+    // THAT doc before we reassign activeDocId below - mirroring switchToDoc()
     // and enterDiffMode().
     if (_diffModeActive) exitDiffMode(true);
     let docId = data.doc_id;
@@ -10808,7 +10808,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     // Show/hide format-specific buttons and auto-toggle previews
     const finalLang = docLang || (updatedDoc && updatedDoc.language) || '';
     const mdToolbar = document.getElementById('doc-md-toolbar');
-    // Toolbar shown for every doc type — items inside self-gate on language.
+    // Toolbar shown for every doc type - items inside self-gate on language.
     if (mdToolbar) mdToolbar.style.display = '';
     // Auto-show table view for CSV after streaming
     const finalLangLower = (finalLang || '').toLowerCase();
@@ -10824,7 +10824,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     renderTabs();
 
     // Refresh the header buttons (Run/Preview ▶, edit toggles) for the active
-    // doc after ANY update — otherwise an AI-created html/svg/code doc wouldn't
+    // doc after ANY update - otherwise an AI-created html/svg/code doc wouldn't
     // show its ▶ Run button until the page was refreshed.
     if (docId === activeDocId) {
       _syncHeaderActions();
@@ -10912,7 +10912,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
     const oldLines = (oldText || '').split('\n');
     const newLines = (newText || '').split('\n');
     const added = [], removed = [];
-    // Simple line diff — collect changed lines
+    // Simple line diff - collect changed lines
     const maxCheck = Math.max(oldLines.length, newLines.length);
     for (let i = 0; i < maxCheck; i++) {
       const ol = oldLines[i], nl = newLines[i];
@@ -11014,7 +11014,7 @@ import { bindMenuDismiss, dismissOrRemove } from './escMenuStack.js';
       });
       const doc = await res.json();
       populateEditor(doc);
-      // Clear stash — restored content IS the new latest
+      // Clear stash - restored content IS the new latest
       _versionSavedContent = null;
       // Update map
       if (docs.has(activeDocId)) {

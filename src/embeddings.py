@@ -4,8 +4,8 @@ embeddings.py
 Embedding clients for RAG and memory vector search.
 
 Priority order:
-  1. HTTP API (Ollama / vLLM / llama.cpp) — set EMBEDDING_URL in .env
-  2. Local fastembed (ONNX, ~50MB) — zero config fallback
+  1. HTTP API (Ollama / vLLM / llama.cpp) - set EMBEDDING_URL in .env
+  2. Local fastembed (ONNX, ~50MB) - zero config fallback
 
 Set EMBEDDING_URL in .env, e.g.:
   EMBEDDING_URL=http://localhost:11434/v1/embeddings   (ollama)
@@ -20,7 +20,7 @@ from src.constants import FASTEMBED_CACHE_DIR, EMBEDDING_ENDPOINT_FILE
 # them. On a network-share/UNC cache dir Windows can't follow HF's symlinks
 # ([WinError 1463] "symbolic link cannot be followed"), so ONNX fails to load the
 # model and semantic memory dies. huggingface_hub reads this flag at import time,
-# so it must be set before huggingface_hub is first imported — hence module-top.
+# so it must be set before huggingface_hub is first imported - hence module-top.
 # (app.py sets the same guard for the server entrypoint.)
 if os.name == "nt":
     os.environ.setdefault("HF_HUB_DISABLE_SYMLINKS", "1")
@@ -231,7 +231,7 @@ _http_embed_down = False  # process-level latch: skip re-probing a dead endpoint
 def reset_http_embed_state():
     """Clear the 'HTTP embedding endpoint is down' latch so the next
     get_embedding_client() re-probes. Call this when the embedding endpoint
-    setting changes (e.g. the user starts Ollama and saves the endpoint) —
+    setting changes (e.g. the user starts Ollama and saves the endpoint) -
     otherwise a latch tripped at startup would keep us on FastEmbed for the
     whole process even after the endpoint comes back."""
     global _http_embed_down
@@ -255,7 +255,7 @@ def get_embedding_client():
         if api_key:
             from src.secret_storage import decrypt
             os.environ["EMBEDDING_API_KEY"] = decrypt(api_key)
-    # Try the HTTP embedding API — unless we already found it down this process
+    # Try the HTTP embedding API - unless we already found it down this process
     # (avoids paying the connect timeout again on every RAG/memory/tool probe).
     if not _http_embed_down:
         try:
@@ -274,7 +274,7 @@ def get_embedding_client():
         logger.info(f"Using local FastEmbed: model={client.model}")
         return client
     except ImportError:
-        logger.error("fastembed not installed — run: pip install fastembed")
+        logger.error("fastembed not installed - run: pip install fastembed")
     except Exception as e:
         logger.error(f"FastEmbed init failed: {e}")
 

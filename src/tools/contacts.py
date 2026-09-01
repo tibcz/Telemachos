@@ -25,7 +25,7 @@ async def do_resolve_contact(content: str, owner: Optional[str] = None) -> Dict:
 
     contacts = {}  # email_or_phone -> {name, source, phone?}
 
-    # 1. CardDAV (Radicale) — structured contacts. Call in-process: a
+    # 1. CardDAV (Radicale) - structured contacts. Call in-process: a
     # server-side httpx GET to /api/contacts/search carries no session
     # cookie and would 401 under require_user.
     try:
@@ -71,7 +71,7 @@ async def do_resolve_contact(content: str, owner: Optional[str] = None) -> Dict:
     lines = [f"Contacts matching '{name}':"]
     for key, info in contacts.items():
         if info.get("phone"):
-            lines.append(f"- {info['name']} — phone: {info['phone']} ({info['source']})")
+            lines.append(f"- {info['name']} - phone: {info['phone']} ({info['source']})")
         else:
             lines.append(f"- {info['name']} <{key}> ({info['source']})")
     return {"output": "\n".join(lines), "exit_code": 0}
@@ -79,7 +79,7 @@ async def do_resolve_contact(content: str, owner: Optional[str] = None) -> Dict:
 
 async def do_manage_contact(content: str, owner: Optional[str] = None) -> Dict:
     """Add / update / delete / list CardDAV contacts. Calls the contacts
-    helpers IN-PROCESS rather than over HTTP — a server-side httpx call to
+    helpers IN-PROCESS rather than over HTTP - a server-side httpx call to
     /api/contacts/* carries no session cookie and would be rejected by
     require_user (401), so the tool would see zero contacts even though
     the browser-side UI works fine."""
@@ -92,7 +92,7 @@ async def do_manage_contact(content: str, owner: Optional[str] = None) -> Dict:
         from routes import contacts_routes as cc
     except Exception as e:
         return {"error": f"Contacts module unavailable: {e}", "exit_code": 1}
-    # The contacts helpers are sync (httpx blocking calls to CardDAV) — run
+    # The contacts helpers are sync (httpx blocking calls to CardDAV) - run
     # them in a thread so we don't block the event loop.
     import asyncio
     try:

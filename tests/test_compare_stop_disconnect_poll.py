@@ -4,16 +4,16 @@ Replaces an earlier source-text version of this test (which only asserted on
 string positions inside routes/chat_routes.py and never exercised actual
 streaming behavior) with tests that drive the real mechanisms involved:
 
-  * src.agent_runs — the detached-run manager that normal chat/agent streams
+  * src.agent_runs - the detached-run manager that normal chat/agent streams
     are wrapped in. A subscriber (the SSE client) disconnecting must NOT stop
     the run; only an explicit stop()/cancel does, and the wrapped generator's
     own CancelledError handler must fire exactly once (no duplicate partial
     saves).
 
-  * the chat_stream endpoint's compare-vs-normal branch — Compare panes must
+  * the chat_stream endpoint's compare-vs-normal branch - Compare panes must
     be streamed directly (NOT wrapped in agent_runs), so that the pane's Stop
     button (which closes the SSE / aborts the fetch) cancels the underlying
-    generator immediately — including while it's awaiting the *next* upstream
+    generator immediately - including while it's awaiting the *next* upstream
     chunk, rather than only being noticed after that chunk arrives. Normal
     chat/agent streams must still go through agent_runs so they survive the
     client disconnecting (the existing "detached run" behavior).
@@ -35,7 +35,7 @@ from src import agent_runs
 # generator accumulates `full_response` as it yields chunks, and on
 # cancellation (asyncio.CancelledError / GeneratorExit, the same exceptions
 # Starlette raises into a streaming generator when the client disconnects)
-# saves the partial response exactly once via its `except` handler — mirroring
+# saves the partial response exactly once via its `except` handler - mirroring
 # the real except (asyncio.CancelledError, GeneratorExit): blocks in
 # routes/chat_routes.py.
 # --------------------------------------------------------------------------- #
@@ -60,7 +60,7 @@ def _make_stream_with_save(sink, chunks, *, hang_after=None):
     re-raising (so agent_runs._drain's `await agen.aclose()` sees it run).
 
     `hang_after`: if set, after yielding that many chunks the generator
-    awaits an Event that's never set — simulating a slow/silent upstream
+    awaits an Event that's never set - simulating a slow/silent upstream
     so cancellation must interrupt an in-flight await, not just be noticed
     between chunks.
     """
@@ -95,7 +95,7 @@ async def _collect_subscription(session_id, expected_run=None):
 @pytest.mark.asyncio
 async def test_detached_run_keeps_going_after_subscriber_disconnects():
     """A subscriber dropping (client closes tab/SSE) must NOT stop a detached
-    run — that's the whole point of agent_runs. Only stop()/cancel does."""
+    run - that's the whole point of agent_runs. Only stop()/cancel does."""
     sink = _FakeSaveSink()
     session_id = "sess-detached-1"
     agent_runs._RUNS.pop(session_id, None)
@@ -105,32 +105,32 @@ async def test_detached_run_keeps_going_after_subscriber_disconnects():
     run = agent_runs.start(session_id, agen)
 
     # Subscribe, then immediately disconnect (simulate the client closing the
-    # SSE) — by simply breaking out of the async-for over subscribe().
+    # SSE) - by simply breaking out of the async-for over subscribe().
     sub = agent_runs.subscribe(session_id)
     async for _ in sub:
         break
     await sub.aclose()
 
-    # The run must still be active / finish on its own — not stopped by the
+    # The run must still be active / finish on its own - not stopped by the
     # subscriber going away.
     await run.task
     assert run.status == "done"
     assert sink.completions == ["hello world!"]
-    assert sink.saves == []  # completed normally — no partial save
+    assert sink.saves == []  # completed normally - no partial save
 
 
 @pytest.mark.asyncio
 async def test_stop_cancels_detached_run_and_saves_partial_exactly_once():
     """agent_runs.stop() (the Stop button's real backend call for detached
-    runs) cancels the in-flight generator promptly — including while it is
-    awaiting the next chunk — and the partial is saved exactly once."""
+    runs) cancels the in-flight generator promptly - including while it is
+    awaiting the next chunk - and the partial is saved exactly once."""
     sink = _FakeSaveSink()
     session_id = "sess-detached-2"
     agent_runs._RUNS.pop(session_id, None)
 
     chunks = ["partial-a", "partial-b", "partial-c"]
     # Hang after the 2nd chunk so cancellation must interrupt an in-flight
-    # await — not just be noticed between already-arrived chunks.
+    # await - not just be noticed between already-arrived chunks.
     agen = _make_stream_with_save(sink, chunks, hang_after=2)
     run = agent_runs.start(session_id, agen)
 
@@ -146,7 +146,7 @@ async def test_stop_cancels_detached_run_and_saves_partial_exactly_once():
     stopped = agent_runs.stop(session_id, run.run_id)
     assert stopped is True
 
-    await run.task  # propagates promptly — not stuck on the hung await
+    await run.task  # propagates promptly - not stuck on the hung await
     assert run.status == "stopped"
 
     # Saved exactly once, with exactly the chunks that arrived before the hang.
@@ -340,7 +340,7 @@ async def test_reconnect_replays_pinned_fallback_run_without_restarting_tools():
 
 # --------------------------------------------------------------------------- #
 # chat_stream: Compare panes must NOT be detached, so the Stop button (closing
-# the SSE) cancels the upstream generator promptly — exercising the same
+# the SSE) cancels the upstream generator promptly - exercising the same
 # generator/cancellation contract as above, but driven the way a Compare pane
 # actually drives it: by the SSE response itself being cancelled, with no
 # agent_runs subscriber layer in between.
@@ -354,8 +354,8 @@ async def _drain_into(agen, sink_list):
 @pytest.mark.asyncio
 async def test_compare_pane_disconnect_cancels_promptly_mid_await():
     """Simulates the Compare-pane path: the generator IS the SSE body (no
-    agent_runs wrapping). Cancelling it — what Starlette does the instant it
-    notices the client disconnected — interrupts an in-flight await on the
+    agent_runs wrapping). Cancelling it - what Starlette does the instant it
+    notices the client disconnected - interrupts an in-flight await on the
     next upstream chunk immediately, and the partial is saved exactly once."""
     sink = _FakeSaveSink()
     chunks = ["chunk-1", "chunk-2", "chunk-3"]
@@ -365,7 +365,7 @@ async def test_compare_pane_disconnect_cancels_promptly_mid_await():
     task = asyncio.ensure_future(_drain_into(agen, received))
 
     # Wait until exactly one chunk has been forwarded, then the generator is
-    # blocked awaiting the (never-set) event — i.e. "waiting on the next
+    # blocked awaiting the (never-set) event - i.e. "waiting on the next
     # upstream chunk". Cancelling now must not require that chunk to arrive.
     for _ in range(200):
         if received:
@@ -378,7 +378,7 @@ async def test_compare_pane_disconnect_cancels_promptly_mid_await():
         await task
 
     # Saved exactly once, with only the chunk that actually streamed before
-    # the cancel — proving we didn't wait for chunk-2 to arrive first.
+    # the cancel - proving we didn't wait for chunk-2 to arrive first.
     assert sink.saves == ["chunk-1"]
     assert sink.completions == []
 
@@ -408,7 +408,7 @@ async def test_compare_pane_full_stream_completes_and_saves_once():
 # --------------------------------------------------------------------------- #
 # chat-mode vs agent-mode: both loops in chat_stream share the same generator
 # shape (async-for over the upstream stream, accumulating full_response, with
-# a CancelledError/GeneratorExit handler that saves the partial once) — so the
+# a CancelledError/GeneratorExit handler that saves the partial once) - so the
 # cancellation contract above applies identically to either mode. This test
 # pins that the *same* fake-generator contract covers both, so a regression
 # that only fixes one mode's loop would still be caught.
@@ -448,7 +448,7 @@ async def test_cancellation_contract_holds_for_chat_and_agent_shaped_streams(mod
 def test_compare_mode_branch_skips_agent_runs_in_source():
     """The compare_mode branch must return the raw generator as the SSE body
     (bypassing agent_runs.start/subscribe) BEFORE the detached agent_runs.start
-    call below it — otherwise compare streams would still be detached and a
+    call below it - otherwise compare streams would still be detached and a
     pane's Stop (closing the SSE) wouldn't cancel the upstream call."""
     from pathlib import Path
     src = (Path(__file__).resolve().parents[1] / "routes" / "chat_routes.py").read_text(encoding="utf-8")

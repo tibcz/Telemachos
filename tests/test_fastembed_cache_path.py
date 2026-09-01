@@ -59,7 +59,7 @@ def test_unset_fastembed_cache_path_uses_default(monkeypatch):
 
 
 def test_explicit_fastembed_cache_path_is_respected(monkeypatch):
-    """A real explicit override must still win — the fix only changes the
+    """A real explicit override must still win - the fix only changes the
     empty-value handling, not the documented FASTEMBED_CACHE_PATH override."""
     custom = os.path.join("custom", "fastembed-cache")
     try:

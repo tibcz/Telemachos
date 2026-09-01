@@ -28,7 +28,7 @@ class APIKeyManager:
             with open(self.key_file, 'wb') as f:
                 f.write(key)
             # This key decrypts every stored provider credential, so restrict it
-            # to the owner (0o600) — it must not be group/world-readable. No-op
+            # to the owner (0o600) - it must not be group/world-readable. No-op
             # on Windows (files there are ACL-restricted to the user already).
             safe_chmod(self.key_file, 0o600)
             return key
@@ -50,7 +50,7 @@ class APIKeyManager:
     def _load_raw(self) -> Dict[str, str]:
         """Load the raw, still-encrypted keys dict from disk.
 
-        Tolerates a missing/corrupt/wrong-shaped file by returning {} — the
+        Tolerates a missing/corrupt/wrong-shaped file by returning {} - the
         same robustness load() relies on at startup.
         """
         if not os.path.exists(self.api_keys_file):
@@ -60,11 +60,11 @@ class APIKeyManager:
                 encrypted_keys = json.load(f)
         except (json.JSONDecodeError, OSError) as e:
             # A corrupt/truncated api_keys.json must not crash load() (called on
-            # startup via app_initializer) — treat it as no stored keys.
+            # startup via app_initializer) - treat it as no stored keys.
             logger.warning("Failed to read API keys file: %s", e)
             return {}
         if not isinstance(encrypted_keys, dict):
-            # Legacy/wrong shape (e.g. a list) — .items() would raise. Ignore it.
+            # Legacy/wrong shape (e.g. a list) - .items() would raise. Ignore it.
             logger.warning("API keys file has unexpected shape (%s); ignoring", type(encrypted_keys).__name__)
             return {}
 

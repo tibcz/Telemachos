@@ -1,5 +1,5 @@
 # services/memory/service.py
-"""Memory service — persistent memory storage and retrieval."""
+"""Memory service - persistent memory storage and retrieval."""
 
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Any

@@ -3,7 +3,7 @@
 BUG: the skills import block deduplicates against EVERY tenant's skills
 (skills_manager.load_all()) instead of the importing user's own skills.
 So importing your own backup silently drops any skill whose title (or id)
-collides with ANOTHER user's skill — the same cross-tenant data-loss bug
+collides with ANOTHER user's skill - the same cross-tenant data-loss bug
 that was already fixed for memories in the block just above.
 """
 import pytest
@@ -15,7 +15,7 @@ from routes.backup_routes import setup_backup_routes
 
 # require_admin / get_current_user are bound into routes.backup_routes at import
 # time (`from x import name`). We patch them on that module directly per-test
-# via monkeypatch — robust to import order and reverted at teardown. (Stubbing
+# via monkeypatch - robust to import order and reverted at teardown. (Stubbing
 # them through sys.modules only works if backup_routes has not been imported
 # yet, which is not guaranteed in a full-suite run.)
 

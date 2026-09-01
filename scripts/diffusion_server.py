@@ -11,7 +11,7 @@ import os
 import sys
 import importlib
 import importlib.machinery
-# Block xformers — create a fake module that reports as not installed
+# Block xformers - create a fake module that reports as not installed
 _fake = type(sys)("xformers")
 _fake.__version__ = "0.0.0"
 _fake.__spec__ = importlib.machinery.ModuleSpec("xformers", None)
@@ -56,7 +56,7 @@ async def lifespan(application):
 
 app = FastAPI(title="Diffusion Server", lifespan=lifespan)
 
-# Conservative defaults — server is designed for server-to-server use from
+# Conservative defaults - server is designed for server-to-server use from
 # the Telemachos backend. Wildcard CORS + the 127.0.0.1 default bind used to
 # leave the server reachable via DNS-rebinding from any browser tab on the
 # same host. The CLI flags below extend these allowlists for operators who
@@ -367,7 +367,7 @@ def load_model():
         except Exception as e:
             logger.warning(f"HF login failed: {e}")
     else:
-        logger.warning("No HF_TOKEN set — gated models will fail")
+        logger.warning("No HF_TOKEN set - gated models will fail")
 
     # Detect pipeline class from model_index.json
     model_index = Path(model_path) / "model_index.json"
@@ -471,7 +471,7 @@ def load_model():
             logger.error(f"{name} could not be placed on {target_device}. On CUDA, try --cpu-offload; on Apple Silicon try a smaller model or lower resolution.")
             return False
 
-        # OOM — reload and try with CPU offload
+        # OOM - reload and try with CPU offload
         try:
             logger.info(f"Reloading {name} with CPU offload...")
             kwargs = {"torch_dtype": torch_dtype}
@@ -487,7 +487,7 @@ def load_model():
             _pipe = None
             _cleanup()
 
-        # Last resort — sequential offload
+        # Last resort - sequential offload
         try:
             logger.info(f"Reloading {name} with sequential CPU offload...")
             kwargs = {"torch_dtype": torch_dtype}
@@ -708,7 +708,7 @@ def generate_image(req: ImageRequest):
             progress_offset = image_index * steps
             negative_prompt = _default_negative_prompt() if _pipeline_accepts_arg("negative_prompt") else None
             if _is_inpaint_pipe:
-                # Inpaint pipelines need an image + mask — create blank ones for txt2img
+                # Inpaint pipelines need an image + mask - create blank ones for txt2img
                 from PIL import Image as _PILGen
                 _blank = _PILGen.new('RGB', (width, height), (128, 128, 128))
                 _mask = _PILGen.new('L', (width, height), 255)  # full white = regenerate everything
@@ -967,7 +967,7 @@ def _get_inpaint_pipe():
                 except Exception as e2:
                     logger.debug(f"{name} from_pretrained also failed: {e2}")
 
-    logger.warning("No inpaint or img2img pipeline available — will use txt2img fallback")
+    logger.warning("No inpaint or img2img pipeline available - will use txt2img fallback")
     return None, None
 
 
@@ -985,7 +985,7 @@ def inpaint_image(req: InpaintRequest):
     init_image = PILImage.open(io.BytesIO(img_bytes)).convert("RGB")
     mask_image = PILImage.open(io.BytesIO(mask_bytes)).convert("L")
 
-    # Feather value — applied after cropping to avoid edge clipping
+    # Feather value - applied after cropping to avoid edge clipping
     feather = max(0, min(60, req.feather))
 
     width = req.width or init_image.width
@@ -1029,7 +1029,7 @@ def inpaint_image(req: InpaintRequest):
     try:
         if alt_type == 'inpaint' and alt_pipe:
             # Use dedicated inpaint pipeline. guidance_scale 7.5 is the
-            # SDXL default — the previous 3.5 was producing muted / grey
+            # SDXL default - the previous 3.5 was producing muted / grey
             # results, especially on style-transfer prompts with large
             # masks.
             logger.info("Using dedicated inpaint pipeline")
@@ -1058,10 +1058,10 @@ def inpaint_image(req: InpaintRequest):
                 guidance_scale=7.5,
             )
     except TypeError:
-        # Pipeline doesn't support native inpainting — use crop-to-mask + img2img + composite
+        # Pipeline doesn't support native inpainting - use crop-to-mask + img2img + composite
         # This preserves context by only regenerating the masked region with surrounding padding
         import numpy as np
-        logger.info(f"Pipeline doesn't support inpainting — using crop+img2img (strength={strength}) + composite")
+        logger.info(f"Pipeline doesn't support inpainting - using crop+img2img (strength={strength}) + composite")
 
         mask_resized = mask_image.resize((width, height))
         init_resized = init_image.resize((width, height))
@@ -1070,7 +1070,7 @@ def inpaint_image(req: InpaintRequest):
         # Find bounding box of the mask
         ys, xs = np.where(mask_arr > 10)
         if len(xs) == 0 or len(ys) == 0:
-            logger.warning("Empty mask — returning original image")
+            logger.warning("Empty mask - returning original image")
             buf = io.BytesIO()
             init_resized.save(buf, format="PNG")
             return {"image": base64.b64encode(buf.getvalue()).decode(), "elapsed": 0}
@@ -1134,8 +1134,8 @@ def inpaint_image(req: InpaintRequest):
                 )
             generated_crop = result.images[0].resize((cw, ch))
         except TypeError:
-            # No img2img support at all — txt2img on crop size
-            logger.info("No img2img support — txt2img on crop region")
+            # No img2img support at all - txt2img on crop size
+            logger.info("No img2img support - txt2img on crop region")
             result = _pipe(
                 prompt=req.prompt,
                 width=cw,
@@ -1193,8 +1193,8 @@ class HarmonizeRequest(BaseModel):
     #      of the masked region to the unmasked surroundings). Pixel-sharp.
     #   2) Optional narrow inpaint on `seam_mask` (alpha edge band) to fix
     #      jagged cutouts and seams. Only the edge band is regenerated.
-    color_match: float = 0.65  # 0..1 — how much of the color shift to apply
-    seam_fix: float = 0.0      # 0..1 — strength of the seam inpaint pass
+    color_match: float = 0.65  # 0..1 - how much of the color shift to apply
+    seam_fix: float = 0.0      # 0..1 - strength of the seam inpaint pass
     body_mask: str | None = None  # base64 PNG, white = layer body
     seam_mask: str | None = None  # base64 PNG, white = layer alpha edge band
     steps: int = 0
@@ -1207,7 +1207,7 @@ class HarmonizeRequest(BaseModel):
 
 def _rgb_to_lalphabeta(rgb_f):
     """RGB → L*alpha*beta (Ruderman et al., the colour space Reinhard's
-    original paper used). Pure numpy — no cv2. Input/output: float32 arrays
+    original paper used). Pure numpy - no cv2. Input/output: float32 arrays
     of shape (..., 3); input in 0..255, output unbounded log-RGB-style."""
     import numpy as np
     eps = 1.0
@@ -1308,11 +1308,11 @@ def _decode_mask_b64(b64_str, target_size):
 def harmonize_image(req: HarmonizeRequest):
     """Two-stage layer harmonization.
 
-    Stage 1 — Reinhard color transfer inside `body_mask`: matches the
+    Stage 1 - Reinhard color transfer inside `body_mask`: matches the
     masked region's L*a*b* mean/std to the unmasked surroundings. Pixel-
     sharp, no model regen. Controlled by `color_match` (0..1).
 
-    Stage 2 — Optional narrow inpaint on `seam_mask` (alpha edge band):
+    Stage 2 - Optional narrow inpaint on `seam_mask` (alpha edge band):
     only the band is regenerated; layer interiors stay identical to the
     color-shifted result. Controlled by `seam_fix` (0..1). Skipped if
     `seam_fix=0` or no inpaint pipeline is available.
@@ -1344,7 +1344,7 @@ def harmonize_image(req: HarmonizeRequest):
     # If neither mask was supplied: legacy whole-image fallback. The user
     # didn't tell us where the seams are, so we can't do targeted blending.
     if body_mask_full is None and seam_mask_full is None:
-        logger.info("Harmonize: no masks — falling back to legacy whole-image path")
+        logger.info("Harmonize: no masks - falling back to legacy whole-image path")
         return _legacy_whole_image_harmonize(req, source_full)
 
     logger.info(
@@ -1370,7 +1370,7 @@ def harmonize_image(req: HarmonizeRequest):
         is_inpaint_main = 'inpaint' in type(_pipe).__name__.lower()
         inpaint_pipe = alt_pipe if alt_type == 'inpaint' else (_pipe if is_inpaint_main else None)
         if inpaint_pipe is None:
-            logger.info("Harmonize: seam_fix requested but no inpaint pipe — skipping stage 2")
+            logger.info("Harmonize: seam_fix requested but no inpaint pipe - skipping stage 2")
         else:
             try:
                 max_side = req.max_side or 1024
@@ -1379,7 +1379,7 @@ def harmonize_image(req: HarmonizeRequest):
                 h = ((int(orig_h * scale) + 63) // 64) * 64
                 init_small = stage1.resize((w, h), PILImage.LANCZOS)
                 seam_small = seam_mask_full.resize((w, h), PILImage.BILINEAR)
-                # Cap the inpaint strength — seam_fix=1.0 → strength=0.50,
+                # Cap the inpaint strength - seam_fix=1.0 → strength=0.50,
                 # so even max setting can't fully redraw the band.
                 inpaint_strength = max(0.10, min(0.50, seam_fix * 0.50))
                 steps = req.steps or (_args.steps or 12)
@@ -1396,7 +1396,7 @@ def harmonize_image(req: HarmonizeRequest):
                 )
                 ai_small = result.images[0]
                 ai_full = ai_small.resize((orig_w, orig_h), PILImage.LANCZOS) if (w, h) != (orig_w, orig_h) else ai_small
-                # Composite back using the seam mask as alpha — outside the
+                # Composite back using the seam mask as alpha - outside the
                 # seam band stays pixel-identical to stage1.
                 final = PILImage.composite(ai_full, stage1, seam_mask_full)
             except Exception as e:
@@ -1487,7 +1487,7 @@ if __name__ == "__main__":
              "Can be repeated. Loopback values are always included.")
     parser.add_argument("--allowed-origin", action="append", default=[],
         help="Additional CORS origin to allow. Can be repeated. Defaults to "
-             "no cross-origin access — only pass this if you need a browser "
+             "no cross-origin access - only pass this if you need a browser "
              "on a specific origin to call the server.")
     _args = parser.parse_args()
 
@@ -1500,7 +1500,7 @@ if __name__ == "__main__":
     final_origins = _compute_cors_origins(_args.allowed_origin)
     _configure_security_middleware(app, final_hosts, final_origins)
     logger.info("security middleware: allowed_hosts=%s allowed_origins=%s",
-                final_hosts, final_origins or "(none — default-deny)")
+                final_hosts, final_origins or "(none - default-deny)")
 
     app.state.model_path = _args.model
     uvicorn.run(app, host=_args.host, port=_args.port)

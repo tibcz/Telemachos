@@ -493,7 +493,7 @@ export async function _runModelDownload(panel, model, backend, hostOverride) {
     selectedServerKey = selectedServer ? (typeof window.cookbookModule?._serverKey === 'function' ? window.cookbookModule._serverKey(selectedServer) : '') : '';
   } else {
     // No explicit host passed: resolve from the visible server dropdown rather
-    // than _envState.remoteHost (unreliable — multiple state copies disagree).
+    // than _envState.remoteHost (unreliable - multiple state copies disagree).
     const ssEl = document.getElementById('hwfit-server-select') || document.getElementById('hwfit-dl-server');
     // Dropdown values are profile keys now ('local' for local); stale host
     // strings and numeric indices still resolve for backwards compatibility.
@@ -568,7 +568,7 @@ export async function _runModelDownload(panel, model, backend, hostOverride) {
     uiModule.showToast(`${shortName} is already ${duplicate.status === 'queued' ? 'queued' : 'downloading'}`);
     return;
   }
-  // Also catch zombie "done" tasks — the cookbook may have lost track of a
+  // Also catch zombie "done" tasks - the cookbook may have lost track of a
   // download (server restart, stale state) while its tmux session is still
   // alive on the host. Probe it; if alive, flip back to running + treat as
   // duplicate so we don't kick off a second concurrent download writing to
@@ -601,10 +601,10 @@ export async function _runModelDownload(panel, model, backend, hostOverride) {
           _saveTasks(_fresh);
         }
         _renderRunningTab();
-        uiModule.showToast(`${shortName} is still downloading (was marked finished after a restart — revived)`);
+        uiModule.showToast(`${shortName} is still downloading (was marked finished after a restart - revived)`);
         return;
       }
-    } catch { /* probe failed — fall through and let the user launch */ }
+    } catch { /* probe failed - fall through and let the user launch */ }
   }
   const activeOnHost = tasks.find(t => t.type === 'download' && (t.status === 'running' || t.status === 'queued') && (t.remoteHost || 'local') === targetHost);
 
@@ -614,7 +614,7 @@ export async function _runModelDownload(panel, model, backend, hostOverride) {
     allTasks.push({ id: queueId, sessionId: queueId, name: taskName, type: 'download', status: 'queued', output: '', ts: Date.now(), payload, remoteHost: host, remoteServerKey: payload.remote_server_key || '', remoteServerName: payload.remote_server_name || '', sshPort: payload.ssh_port || '', platform: payload.platform || '' });
     _saveTasks(allTasks);
     _renderRunningTab();
-    uiModule.showToast(`Queued ${shortName} — waiting for current download`);
+    uiModule.showToast(`Queued ${shortName} - waiting for current download`);
     return;
   }
 

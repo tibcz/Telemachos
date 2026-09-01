@@ -1,4 +1,4 @@
-"""Tests for _normalize_mistral_content() — Mistral's structured content parser.
+"""Tests for _normalize_mistral_content() - Mistral's structured content parser.
 
 Mistral's chat completions API returns content as a typed array when reasoning
 is enabled, instead of the plain string most OpenAI-compat servers use:
@@ -64,7 +64,7 @@ def test_array_with_only_thinking_block():
 
 
 def test_array_with_only_text_block():
-    """Final answer delta — only the text block, no thinking."""
+    """Final answer delta - only the text block, no thinking."""
     content = [{"type": "text", "text": "Final answer."}]
     text, thinking = _normalize_mistral_content(content)
     assert text == "Final answer."
@@ -105,7 +105,7 @@ def test_empty_array_returns_empty_strings():
 
 
 def test_array_with_garbage_entries_skips_them():
-    """Non-dict entries, missing type, missing text — all silently skipped."""
+    """Non-dict entries, missing type, missing text - all silently skipped."""
     content = [
         "not a dict",
         None,

@@ -100,7 +100,7 @@ async def do_vault_get(content: str, owner: Optional[str] = None) -> Dict:
     if not item_id:
         return {"error": "item_id is required", "exit_code": 1}
     if not reason:
-        return {"error": "reason is required — explain WHY you need this password", "exit_code": 1}
+        return {"error": "reason is required - explain WHY you need this password", "exit_code": 1}
 
     cfg = _load_vault_config()
     session = cfg.get("session")
@@ -125,7 +125,7 @@ async def do_vault_get(content: str, owner: Optional[str] = None) -> Dict:
         if owner:
             log_to_assistant(
                 owner,
-                f"Retrieved password for **{name}** — reason: {reason}",
+                f"Retrieved password for **{name}** - reason: {reason}",
                 category="Vault",
             )
     except Exception:

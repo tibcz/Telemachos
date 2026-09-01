@@ -1,4 +1,4 @@
-"""Issue #4589 — _resolve_model does a blocking httpx.get, so calling it
+"""Issue #4589 - _resolve_model does a blocking httpx.get, so calling it
 directly from an async handler stalls the whole event loop for the duration of
 the probe. The async call sites now wrap it in asyncio.to_thread.
 
@@ -17,7 +17,7 @@ import src.ai_interaction as ai
 async def test_do_pipeline_resolves_model_off_the_event_loop(monkeypatch):
     # A deliberately blocking _resolve_model that records how many copies run
     # at once. If it ran on the event loop, the first call would block the loop
-    # and the second could not start — peak concurrency would be 1.
+    # and the second could not start - peak concurrency would be 1.
     state = {"active": 0, "peak": 0}
     lock = threading.Lock()
 
@@ -39,7 +39,7 @@ async def test_do_pipeline_resolves_model_off_the_event_loop(monkeypatch):
     )
 
     assert all("error" in r for r in results)
-    assert state["peak"] == 2, "resolutions did not overlap — call still blocks the loop"
+    assert state["peak"] == 2, "resolutions did not overlap - call still blocks the loop"
 
 
 async def test_do_pipeline_uses_offloaded_resolution_result(monkeypatch):

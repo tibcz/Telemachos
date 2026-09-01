@@ -4,7 +4,7 @@
 configured, a bare first-enabled fallback) to a `ModelEndpoint` whose *decrypted*
 api_key + base_url then drive the research LLM calls
 (`start_research(llm_endpoint=, llm_headers=)`). Both lookups must be
-owner-scoped — the caller's own rows plus legacy null-owner ("shared") rows —
+owner-scoped - the caller's own rows plus legacy null-owner ("shared") rows -
 so a research-privileged user (or a chat-scoped token) can't bind a research run
 to ANOTHER user's PRIVATE endpoint and silently spend that owner's API key /
 reach whatever internal base_url they configured. Mirrors the

@@ -2,7 +2,7 @@
  * Pure blur renderers shared by the editor's live-preview popups.
  *
  * Each export matches the `renderer(snap, params, dst)` signature
- * expected by `_applyLiveBlur` in galleryEditor.js — `snap` is the
+ * expected by `_applyLiveBlur` in galleryEditor.js - `snap` is the
  * pre-blur snapshot canvas, `params` is the slider values object, and
  * `dst` is the 2D context to draw the final result into. No module
  * state.
@@ -25,7 +25,7 @@ export function gaussianBlur(snap, v, dst) {
   if (!v.radius || v.radius <= 0) { dst.drawImage(snap, 0, 0); return; }
   const r = v.radius;
   const w = snap.width, h = snap.height;
-  // Margin needs to cover the kernel's effective reach — most
+  // Margin needs to cover the kernel's effective reach - most
   // engines saturate within ~2× the radius.
   const m = Math.ceil(r * 2 + 4);
   const pad = document.createElement('canvas');
@@ -35,12 +35,12 @@ export function gaussianBlur(snap, v, dst) {
   pctx.drawImage(snap, m, m);
   // Edge strips: drawImage with src height=1 (or width=1) into a
   // dst region of size `m` stretches the edge pixels into the
-  // margin — same effect as clamp-to-edge sampling.
+  // margin - same effect as clamp-to-edge sampling.
   pctx.drawImage(snap, 0, 0, w, 1, m, 0, w, m);
   pctx.drawImage(snap, 0, h - 1, w, 1, m, m + h, w, m);
   pctx.drawImage(snap, 0, 0, 1, h, 0, m, m, h);
   pctx.drawImage(snap, w - 1, 0, 1, h, m + w, m, m, h);
-  // Corners — stretch the corner pixel into an m×m block.
+  // Corners - stretch the corner pixel into an m×m block.
   pctx.drawImage(snap, 0, 0, 1, 1, 0, 0, m, m);
   pctx.drawImage(snap, w - 1, 0, 1, 1, m + w, 0, m, m);
   pctx.drawImage(snap, 0, h - 1, 1, 1, 0, m + h, m, m);
@@ -58,7 +58,7 @@ export function gaussianBlur(snap, v, dst) {
 
 
 /**
- * Zoom blur — radial smear from the canvas centre. 16 scaled copies at
+ * Zoom blur - radial smear from the canvas centre. 16 scaled copies at
  * low alpha approximate a Gaussian zoom blur.
  *
  * @param {HTMLCanvasElement} snap
@@ -81,7 +81,7 @@ export function zoomBlur(snap, v, dst) {
 
 
 /**
- * Motion blur — directional smear along a user-chosen angle.
+ * Motion blur - directional smear along a user-chosen angle.
  *
  * Each shifted stamp is rendered at globalAlpha = 1/steps with
  * globalCompositeOperation = 'lighter' (additive) into an offscreen

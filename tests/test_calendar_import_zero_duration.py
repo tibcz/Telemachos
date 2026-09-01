@@ -3,7 +3,7 @@
 list_events selects events that overlap the query window with
 ``dtstart < end AND dtend > start``. An import that stores ``dtend == dtstart``
 (a single-day all-day event whose source wrote DTEND equal to DTSTART, treating
-it as an inclusive bound) is therefore silently dropped — the event never shows
+it as an inclusive bound) is therefore silently dropped - the event never shows
 on the calendar even though it was imported. import_ics now clamps such an end
 to a positive span, matching the default used when DTEND is absent.
 """

@@ -46,7 +46,7 @@ These are imported first and used across most features.
 | **`modalManager.js`** | side-effect import | Unified minimize/restore behavior for floating tool modals. |
 | **`tileManager.js`** | side-effect import | Desktop window tiling and snap-to-edge behavior. |
 | **`windowDrag.js`** | `makeWindowDraggable` | Drag support for floating panels. |
-| **`modalSnap.js`**, **`toolWindowZOrder.js`**, **`windowResize.js`** | — | Modal snapping, z-index management, resize handles. |
+| **`modalSnap.js`**, **`toolWindowZOrder.js`**, **`windowResize.js`** | - | Modal snapping, z-index management, resize handles. |
 
 ---
 

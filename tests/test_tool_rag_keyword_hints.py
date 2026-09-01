@@ -1,4 +1,4 @@
-"""Regression for issue #1707 — the agent tool-RAG force-included the entire
+"""Regression for issue #1707 - the agent tool-RAG force-included the entire
 email toolset on any "tell me ..." query, crowding out the relevant tools so the
 model believed it only had email tools and refused web/other tasks.
 
@@ -8,7 +8,7 @@ its keywords appears (word-boundary match). "tell" appears in a huge fraction of
 requests (the reporter's was "visit <url> and tell me the title"), so email tools
 were force-included for non-email queries.
 
-These hints are deterministic string matching — no embeddings — so we can test
+These hints are deterministic string matching - no embeddings - so we can test
 `get_tools_for_query` directly with retrieval stubbed out (no ChromaDB needed).
 """
 
@@ -49,7 +49,7 @@ def test_explicit_web_search_query_gets_web_tools_without_retrieval():
 
 
 def test_genuine_email_query_still_gets_email_tools():
-    """Removing 'tell' must not break real email intent — the actual email
+    """Removing 'tell' must not break real email intent - the actual email
     keywords still force-include the toolset."""
     ti = _index_without_embeddings()
     tools = ti.get_tools_for_query("reply to the unread email in my inbox")

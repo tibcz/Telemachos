@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 # Pattern 1: ```bash ... ``` fenced code blocks. The tag may be followed by a
 # newline (classic form) or by inline JSON args on the same line
 # (```list_email_accounts {}). The same-line part is captured separately
-# (group 2) and judged by _fenced_tool_call below — the regex alone only
+# (group 2) and judged by _fenced_tool_call below - the regex alone only
 # requires it to start with { or [; anything else after the tag is a Markdown
 # info string (```python title="example.py") and the fence never matches.
 # (?![\w-]) keeps the alternation from prefix-matching longer fence tags:
@@ -38,7 +38,7 @@ _TOOL_BLOCK_RE = re.compile(
 
 # Tags whose fenced content is raw code, not JSON args. Same-line text after
 # these tags is Markdown fence metadata on a real language (```bash {title=
-# "setup"}), never inline tool args — only the classic tag-then-newline form
+# "setup"}), never inline tool args - only the classic tag-then-newline form
 # executes for them.
 _CODE_FENCE_TAGS = frozenset({"bash", "python"})
 
@@ -55,7 +55,7 @@ def _fenced_tool_call(m) -> Optional[Tuple[str, str]]:
     tag's tool takes JSON args (not a code tag) AND the text is valid
     standalone JSON. ```bash {title="setup"} and ```python {"x": 1} are
     fence attributes on real languages, and {title="x"} on any tag is
-    metadata, not arguments — all of those stay visible and inert.
+    metadata, not arguments - all of those stay visible and inert.
     """
     tag = m.group(1).lower()
     inline = (m.group(2) or "").strip()
@@ -138,7 +138,7 @@ _XML_PARAM_CLOSE_RE = re.compile(r'</parameter>', re.IGNORECASE)
 # flood of distinct unclosed tag names stays near-linear. See _iter_backref_blocks.
 _XML_DIRECT_CLOSE_ANY_RE = re.compile(r"</\s*([A-Za-z_][\w-]*)\s*>", re.IGNORECASE)
 # `args => { ... }` opener (its closer is the last `}`, found with rfind) and the
-# `<tag>` opener for tool_code XML params — both split out of greedy/backref
+# `<tag>` opener for tool_code XML params - both split out of greedy/backref
 # patterns that finditer would otherwise rescan from every opener. See
 # _parse_tool_call_block / _parse_tool_code_block.
 _ARGS_BRACE_OPEN_RE = re.compile(r'args\s*(?:=>|:|=)\s*\{')
@@ -222,7 +222,7 @@ def _normalize_dsml(text: str) -> str:
     t = re.sub(rf"<\s*/\s*{_DSML_PIPES}\s*DSML\s*{_DSML_PIPES}\s*tool_calls\s*>", "</tool_call>", t, flags=re.IGNORECASE)
     t = re.sub(rf"<\s*{_DSML_PIPES}\s*DSML\s*{_DSML_PIPES}\s*invoke\s+name=", "<invoke name=", t, flags=re.IGNORECASE)
     t = re.sub(rf"<\s*/\s*{_DSML_PIPES}\s*DSML\s*{_DSML_PIPES}\s*invoke\s*>", "</invoke>", t, flags=re.IGNORECASE)
-    # parameter open tag — drop any extra attrs (e.g. string="true").
+    # parameter open tag - drop any extra attrs (e.g. string="true").
     t = re.sub(rf'<\s*{_DSML_PIPES}\s*DSML\s*{_DSML_PIPES}\s*parameter\s+name=(["\'][^"\']+["\'])[^>]*>',
                r"<parameter name=\1>", t, flags=re.IGNORECASE)
     t = re.sub(rf"<\s*/\s*{_DSML_PIPES}\s*DSML\s*{_DSML_PIPES}\s*parameter\s*>", "</parameter>", t, flags=re.IGNORECASE)
@@ -814,7 +814,7 @@ def _parse_tool_call_block(raw: str) -> Optional[ToolBlock]:
     if not mapped:
         return None
 
-    # Extract the command/content — try several patterns
+    # Extract the command/content - try several patterns
     content = None
 
     # Pattern: --command "value" or --command 'value'
@@ -828,7 +828,7 @@ def _parse_tool_call_block(raw: str) -> Optional[ToolBlock]:
         if cmd_match:
             content = cmd_match.group(1)
 
-    # Pattern: args => {content} — extract everything inside the nested braces.
+    # Pattern: args => {content} - extract everything inside the nested braces.
     # Find the opener, then take through the LAST `}` (rfind). Equivalent to the
     # greedy `\{([\s\S]*)\}` capture, but the bounded opener + rfind avoids
     # finditer rescanning from every `args:{` opener (CodeQL py/polynomial-redos).
@@ -867,8 +867,8 @@ def _parse_tool_call_block(raw: str) -> Optional[ToolBlock]:
 def _parse_xml_invoke(name, body) -> Optional[ToolBlock]:
     """Parse an <invoke name="tool"><parameter ...>...</parameter></invoke> call.
 
-    Delegates content-shaping to function_call_to_tool_block — the SAME
-    converter used for native function calls — so the full tool set (every
+    Delegates content-shaping to function_call_to_tool_block - the SAME
+    converter used for native function calls - so the full tool set (every
     name in TOOL_TAGS, plus email + MCP tools) and the correct per-tool
     content format are handled in ONE place. The previous version duplicated
     a partial, hand-maintained tool-name map plus a `key: value` serializer:
@@ -942,7 +942,7 @@ def _parse_json_tool_call_body(body: str) -> Optional[ToolBlock]:
       </tool_call>
 
     Strict by design (issue #5187 / tracker #5333): the body must decode to an
-    object with a string "name", and "arguments" — when present — must itself
+    object with a string "name", and "arguments" - when present - must itself
     be an object. Anything else returns None rather than being coerced, so a
     malformed call is dropped instead of dispatching with mangled arguments.
     raw_decode tolerates trailing chatter after the JSON object; the trailing
@@ -1089,7 +1089,7 @@ def _parse_tool_code_block(raw: str) -> Optional[ToolBlock]:
 
     # When the model gave structured params, hand them to the canonical
     # converter (same as native calls + <invoke>) so the full tool set and
-    # correct per-tool content format apply — not a partial map + k:v blob.
+    # correct per-tool content format apply - not a partial map + k:v blob.
     if xml_params:
         from src.tool_schemas import function_call_to_tool_block
         block = function_call_to_tool_block(mapped or tool_name, json.dumps(xml_params))
@@ -1114,7 +1114,7 @@ def _parse_tool_code_block(raw: str) -> Optional[ToolBlock]:
         if content:
             return ToolBlock(mapped, content.strip())
     elif tool_name and args_body:
-        # Unknown tool — try as MCP tool call
+        # Unknown tool - try as MCP tool call
         content = "\n".join(f"{k}: {v}" for k, v in xml_params.items()) if xml_params else args_body
         return ToolBlock(tool_name, content.strip())
     return None
@@ -1299,8 +1299,8 @@ def parse_tool_blocks(text: str, skip_fenced: bool = False) -> List[ToolBlock]:
     Grok/Qwen3/DeepSeek-V, etc.) commonly write illustrative fenced examples in
     prose; for those models we trust the structured tool_calls channel for real
     invocations and treat a bare fence as display text rather than an action
-    (issue #3222). Patterns 2-5 — explicit [TOOL_CALL]/<invoke>/<tool_code>/DSML
-    markup that leaked into content as text — stay fully active regardless,
+    (issue #3222). Patterns 2-5 - explicit [TOOL_CALL]/<invoke>/<tool_code>/DSML
+    markup that leaked into content as text - stay fully active regardless,
     since that markup is never an illustrative example and dropping it would
     silently lose real calls (e.g. DeepSeek-V falling back to DSML when it
     can't emit structured tool_calls).
@@ -1311,7 +1311,7 @@ def parse_tool_blocks(text: str, skip_fenced: bool = False) -> List[ToolBlock]:
     # XML patterns below catch it.
     text = _normalize_dsml(text)
 
-    # Pattern 1: fenced code blocks (skipped when `skip_fenced` — see docstring).
+    # Pattern 1: fenced code blocks (skipped when `skip_fenced` - see docstring).
     if not skip_fenced:
         for m in _TOOL_BLOCK_RE.finditer(text):
             call = _fenced_tool_call(m)
@@ -1320,7 +1320,7 @@ def parse_tool_blocks(text: str, skip_fenced: bool = False) -> List[ToolBlock]:
             tag, content = call
             if not content:
                 # An empty fence is still an unambiguous call for the email
-                # tools — ```list_email_accounts``` with no body is a shape
+                # tools - ```list_email_accounts``` with no body is a shape
                 # local models really emit for no-arg tools. Dispatch with
                 # empty args and let the tool's own validation answer;
                 # silently dropping the call left models concluding email was
@@ -1338,7 +1338,7 @@ def parse_tool_blocks(text: str, skip_fenced: bool = False) -> List[ToolBlock]:
                         blocks.append(block)
                 # This fenced block is <invoke> markup, not literal code. Whether or
                 # not any call converted, never fall through to append the raw XML as
-                # a python/bash block — e.g. a hyphenated/namespaced tool name that
+                # a python/bash block - e.g. a hyphenated/namespaced tool name that
                 # _XML_INVOKE_RE's \w+ can't match would otherwise be executed as code.
                 continue
             if tag in ("python", "bash"):
@@ -1371,7 +1371,7 @@ def parse_tool_blocks(text: str, skip_fenced: bool = False) -> List[ToolBlock]:
             return blocks
         # Try wrapped: <tool_call><invoke ...>...</invoke></tool_call>
         # A wrapper body that is JSON (Qwen/Hermes text mode, issue #5187) is
-        # parsed as JSON or dropped — never scanned by the XML iterators, so
+        # parsed as JSON or dropped - never scanned by the XML iterators, so
         # XML-like text inside JSON argument values stays data instead of
         # selecting a different tool.
         json_body_seen = False
@@ -1485,7 +1485,7 @@ def strip_tool_blocks(text: str, skip_fenced: bool = False) -> str:
     whatever `skip_fenced` value `parse_tool_blocks` was called with for the
     same response: if a fence wasn't executed as a tool call (because it's an
     illustrative example from a native function-calling model), it shouldn't
-    vanish from the persisted/displayed text either — otherwise the example
+    vanish from the persisted/displayed text either - otherwise the example
     streams once and then disappears on reload (issue #3222 follow-up).
     Patterns 2-5 + DSML markup are always stripped, since that markup should
     never reach the user regardless of whether it converted to a tool call.

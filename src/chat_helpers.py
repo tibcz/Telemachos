@@ -48,7 +48,7 @@ _VISION_MODEL_KEYWORDS = (
     "vision", "multimodal", "llava", "bakllava", "moondream", "pixtral", "minicpm",
     "internvl", "cogvlm", "qwen-vl", "qwen2-vl", "qwen3-vl", "qwen3vl",
     # multimodal families whose names don't contain "vision"/"vl" but DO accept
-    # images — without these the image is silently dropped for common Ollama tags
+    # images - without these the image is silently dropped for common Ollama tags
     # like gemma3:4b or gemma4:12b (issue #1274). Gemma 3/4 (4b+), Llama 4 (all),
     # Mistral Small 3.1/3.2, and Phi-4 multimodal are vision-capable; per the
     # err-toward-True policy (#124) a rare text-only tag being treated as vision is

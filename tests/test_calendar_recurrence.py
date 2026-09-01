@@ -1,6 +1,6 @@
 """Regression tests for calendar recurrence expansion.
 
-Tests _expand_rrule and _resolve_base_uid — imported directly from
+Tests _expand_rrule and _resolve_base_uid - imported directly from
 routes/calendar_routes using the shared stub-friendly test helper.
 No live DB or FastAPI test client needed.
 """
@@ -117,7 +117,7 @@ def test_expand_yearly_old_dtstart_later_year_single_occurrence():
         rrule="FREQ=YEARLY",
     )
 
-    # Query year 2028 — should find the 2028-04-15 occurrence only
+    # Query year 2028 - should find the 2028-04-15 occurrence only
     results = cal._expand_rrule(ev, datetime(2028, 1, 1), datetime(2029, 1, 1))
 
     assert len(results) == 1, (
@@ -133,7 +133,7 @@ def test_expand_yearly_old_dtstart_later_year_single_occurrence():
 
 
 def test_expand_yearly_narrow_window_after_dtstart_returns_one():
-    """DTSTART=2020, query just two months in 2029 — should return
+    """DTSTART=2020, query just two months in 2029 - should return
     exactly one occurrence (the one that falls in that window).
     """
     cal = import_calendar_routes()
@@ -233,7 +233,7 @@ def test_expand_bad_rrule_graceful():
         uid="evt-broken",
         rrule="FREQ=GARBAGE",
     )
-    # Base event (2026-06-01) falls inside the window — should appear
+    # Base event (2026-06-01) falls inside the window - should appear
     results = cal._expand_rrule(ev, datetime(2026, 1, 1), datetime(2026, 12, 31))
     assert len(results) == 1
     assert results[0]["uid"] == "evt-broken"
@@ -268,7 +268,7 @@ def test_expand_exclusive_end_boundary():
         dtend=datetime(2026, 6, 1, 10, 0),
         rrule="FREQ=DAILY",
     )
-    # Query [Jun 1, Jun 5) — occurrences on Jun 1-4 only
+    # Query [Jun 1, Jun 5) - occurrences on Jun 1-4 only
     results = cal._expand_rrule(ev, datetime(2026, 6, 1), datetime(2026, 6, 5))
     uids = [r["uid"] for r in results]
     assert len(results) == 4, f"Expected 4 (Jun 1-4), got {len(results)}: {uids}"
@@ -286,12 +286,12 @@ def test_expand_multi_day_crossing_range_start():
         dtend=datetime(2026, 6, 1, 12, 0),       # Monday noon
         rrule="FREQ=WEEKLY",
     )
-    # Query the Monday window — the occurrence starts Fri but ends Mon,
+    # Query the Monday window - the occurrence starts Fri but ends Mon,
     # so it overlaps the query.
     results = cal._expand_rrule(ev, datetime(2026, 6, 1), datetime(2026, 6, 2))
-    # The 2026-06-05 occurrence starts Fri Jun 5 and ends Mon Jun 8 —
+    # The 2026-06-05 occurrence starts Fri Jun 5 and ends Mon Jun 8 -
     # that crosses [Jun 1, Jun 2): occ_start=2026-06-05 >= end=2026-06-02 → excluded.
-    # The 2026-05-29 occurrence starts Fri May 29 and ends Mon Jun 1 —
+    # The 2026-05-29 occurrence starts Fri May 29 and ends Mon Jun 1 -
     # occ_end=2026-06-01T12:00 > start=2026-06-01 → included.
     assert len(results) == 1, (
         f"Expected 1 occurrence crossing into the window, got {len(results)}: "
@@ -310,7 +310,7 @@ def test_expand_multi_day_fully_before_window():
         dtend=datetime(2026, 6, 1, 0, 0),   # ends at midnight Jun 1
         rrule="FREQ=WEEKLY",
     )
-    # Query starting Jun 1 midnight — occ_end <= start, excluded
+    # Query starting Jun 1 midnight - occ_end <= start, excluded
     results = cal._expand_rrule(ev, datetime(2026, 6, 1), datetime(2026, 6, 8))
     assert len(results) == 1  # only the next week's occurrence (Jun 5-8)
     assert results[0]["uid"] == "evt-multi::2026-06-05T18:00"

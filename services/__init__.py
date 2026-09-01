@@ -1,6 +1,6 @@
 # services/__init__.py
 """
-Service layer — plug-in capabilities for the chat core.
+Service layer - plug-in capabilities for the chat core.
 
 Each service:
 - Does one thing well

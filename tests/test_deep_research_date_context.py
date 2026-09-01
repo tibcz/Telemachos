@@ -1,4 +1,4 @@
-"""Regression tests for issue #1341 — deep research used the model's
+"""Regression tests for issue #1341 - deep research used the model's
 training-cutoff year (e.g. "best Python tutorials 2025") because the
 query-generation and planning prompts never told the LLM the current date.
 

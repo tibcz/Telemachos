@@ -2,7 +2,7 @@
 // / mouseup + snap-to-top fullscreen + left/right edge dock patterns that
 // were copy-pasted across calendar.js, tasks.js, gallery.js, emailLibrary.js,
 // documentLibrary.js, theme.js. Behavior stays identical to the old per-file
-// copies — each callsite provides its own enter/exit-fullscreen callbacks
+// copies - each callsite provides its own enter/exit-fullscreen callbacks
 // since the CSS class + inline styles differ per modal.
 //
 // API:
@@ -11,11 +11,11 @@
 //     content:         the element being moved (usually .modal-content)
 //     header:          the drag handle (usually .modal-header)
 //     fsClass:         optional class name representing "fullscreen" state
-//     onEnterFullscreen: optional () => void — called when cursor releases
+//     onEnterFullscreen: optional () => void - called when cursor releases
 //                        near the top edge (within SNAP_PX). Caller is
 //                        responsible for adding fsClass + applying inline
 //                        styles that produce the fullscreen layout.
-//     onExitFullscreen:  optional (cx, cy) => void — called mid-drag when
+//     onExitFullscreen:  optional (cx, cy) => void - called mid-drag when
 //                        the cursor leaves the fullscreen "unsnap" band
 //                        (down > UNSNAP_PX OR near either horizontal edge
 //                        in dock-snap range). Caller restores windowed
@@ -23,17 +23,17 @@
 //     skipSelector:    CSS selector for elements inside `header` whose
 //                        clicks should NOT start a drag (close button,
 //                        form fields, etc). Default: 'button, input, select'
-//     onDragEnd:       optional (state) => void — fires after mouseup
+//     onDragEnd:       optional (state) => void - fires after mouseup
 //                        WHEN no snap was committed. state = { rect } so
 //                        callers can persist the final position.
-//     enableTouch:     bool — also wire touchstart/touchmove/touchend
+//     enableTouch:     bool - also wire touchstart/touchmove/touchend
 //                        with the same drag (no fs/dock on touch). Default
 //                        true on desktop, irrelevant on mobile (mobileSkip).
 //     mobileSkip:      drag is disabled below this viewport width.
 //                        Default 768. Set to 0 to never skip.
-//     enableDock:      bool — enable left + right edge docks.
+//     enableDock:      bool - enable left + right edge docks.
 //                        Default true.
-//     enableFullscreen: bool — enable top-edge fullscreen snap.
+//     enableFullscreen: bool - enable top-edge fullscreen snap.
 //                        Default true when onEnterFullscreen is supplied.
 
 import { makeEdgeDockController } from './modalSnap.js';
@@ -44,7 +44,7 @@ const UNSNAP_PX = 24;     // cursor distance from top before fullscreen exits
 const DOCK_EDGE_PX = 60;  // cursor distance from L/R edge to trigger dock
                           // exit while still in fullscreen state
 
-// CSS-var lookup for the rail+sidebar width — used to decide where the
+// CSS-var lookup for the rail+sidebar width - used to decide where the
 // "left edge" effectively is during a fullscreen drag-out (the cursor
 // has to pass the rail to count as "near left").
 function _leftNavWidth() {
@@ -72,7 +72,7 @@ export function makeWindowDraggable(modal, options = {}) {
   header.style.cursor = 'move';
   header.style.userSelect = 'none';
 
-  // Edge/corner resize. Every draggable window also becomes resizable — the
+  // Edge/corner resize. Every draggable window also becomes resizable - the
   // same gesture a native desktop window uses (grab an edge or corner, drag).
   // Skipped on mobile (windows are full-screen sheets there) and while the
   // window is fullscreen-snapped or docked. Wired here so all ~12 callsites
@@ -105,7 +105,7 @@ export function makeWindowDraggable(modal, options = {}) {
   let startLeft = 0, startTop = 0;
   let snapHint = null;
   // Whether the pointer actually moved beyond a small threshold this drag.
-  // Used to suppress the synthetic click the browser fires on mouseup —
+  // Used to suppress the synthetic click the browser fires on mouseup -
   // header click handlers (e.g. "collapse expanded card / back to list")
   // would otherwise fire after a drag and collapse the modal contents.
   let movedDuringDrag = false;
@@ -187,7 +187,7 @@ export function makeWindowDraggable(modal, options = {}) {
       // Dragging a fullscreen window to a SIDE edge → keep it fullscreen and
       // just arm the side-dock hint; releasing there docks it (handled in
       // _onEnd, which drops the fullscreen class). Previously this exited
-      // fullscreen first, which re-CENTERED the window — so it looked like
+      // fullscreen first, which re-CENTERED the window - so it looked like
       // it "centered instead of docking". Only a downward drag unsnaps to a
       // windowed (centered) modal.
       if (nearRight && rightDock) {
@@ -234,7 +234,7 @@ export function makeWindowDraggable(modal, options = {}) {
     content.style.left = (startLeft + cx - startX) + 'px';
     content.style.top = (startTop + cy - startY) + 'px';
     // Corner guard: in the top fullscreen band the side docks stay OFF, so a
-    // top corner only ever snaps to fullscreen — never the corner hybrid.
+    // top corner only ever snaps to fullscreen - never the corner hybrid.
     const inTopBand = cy <= SNAP_PX;
     _showSnapHint(enableFullscreen && inTopBand);
     if (inTopBand) {
@@ -251,7 +251,7 @@ export function makeWindowDraggable(modal, options = {}) {
     dragging = false;
     if (modal) modal.classList.remove('modal-dragging');
     _showSnapHint(false);
-    // Top edge wins over side edges — fullscreen is the more common gesture.
+    // Top edge wins over side edges - fullscreen is the more common gesture.
     if (enableFullscreen && typeof cy === 'number' && cy <= SNAP_PX) {
       if (rightDock) rightDock.release();
       if (leftDock) leftDock.release();
@@ -290,7 +290,7 @@ export function makeWindowDraggable(modal, options = {}) {
       document.removeEventListener('mousemove', onMove);
       document.removeEventListener('mouseup', onUp);
       // If the pointer actually moved, swallow the synthetic click the
-      // browser fires next — otherwise a header click handler (collapse
+      // browser fires next - otherwise a header click handler (collapse
       // expanded card / "back to list") runs and undoes the drag intent.
       if (movedDuringDrag) {
         const swallow = (clickEv) => {

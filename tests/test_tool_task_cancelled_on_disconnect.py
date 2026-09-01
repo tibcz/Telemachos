@@ -1,6 +1,6 @@
 """Regression: the tool-execution task inside stream_agent_loop must be
 cancelled (not orphaned) when the SSE consumer stops draining the generator
-early — e.g. a client disconnect mid tool-call.
+early - e.g. a client disconnect mid tool-call.
 
 The drain loop in stream_agent_loop:
 
@@ -15,7 +15,7 @@ The drain loop in stream_agent_loop:
 used to have no try/finally around it. If the generator is closed while
 suspended on `await _progress_q.get()` (which is exactly what Starlette does
 via `aclose()` when an SSE client disconnects), GeneratorExit is thrown at
-that point and `_tool_task` is abandoned mid-flight — never awaited, never
+that point and `_tool_task` is abandoned mid-flight - never awaited, never
 cancelled. For a long-running `bash`/`python` tool this orphans the
 subprocess server-side with nothing left to reap it.
 
@@ -82,7 +82,7 @@ def test_tool_task_cancelled_on_generator_close(monkeypatch):
         await gen.aclose()
         # Assert *inside* this coroutine, immediately after aclose() returns.
         # asyncio.run()'s own shutdown sequence cancels any tasks still
-        # pending once _run() itself completes — checking after asyncio.run()
+        # pending once _run() itself completes - checking after asyncio.run()
         # returns would pass even with the bug, because that unrelated
         # cleanup would cancel the orphaned task anyway and mask the fix.
         assert cancelled["v"] is True, (

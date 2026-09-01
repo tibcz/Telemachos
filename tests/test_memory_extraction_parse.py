@@ -2,7 +2,7 @@
 
 The extraction model wraps its JSON array in <think> blocks, ```json fences,
 or leading/trailing prose. The helper strips that noise and slices the array
-unconditionally — a reply that starts with '[' can still carry trailing
+unconditionally - a reply that starts with '[' can still carry trailing
 commentary like "[...] Done!" that would otherwise break json.loads.
 """
 

@@ -28,7 +28,7 @@ courtesy: the permissive licences below require their notices to be preserved
 in anything that ships this code.
 
 If you believe something here is mis-attributed or missing, please open an
-issue — it will be corrected promptly.
+issue - it will be corrected promptly.
 
 ---
 
@@ -42,19 +42,19 @@ The sources below are under permissive licenses (MIT / Apache-2.0), which permit
 this use as long as their original copyright and license notices are preserved.
 The full license texts are kept in [`licenses/`](licenses/).
 
-- **[opencode](https://github.com/anomalyco/opencode)** — open-source AI coding
+- **[opencode](https://github.com/anomalyco/opencode)** - open-source AI coding
   agent (originally [opencode-ai/opencode](https://github.com/opencode-ai/opencode),
   archived Sep 2025; now maintained at `anomalyco/opencode`). Copyright © the
   opencode authors. **MIT License.** Adapted for agent-loop / tool-execution
   patterns and UI concepts.
-- **[llmfit](https://github.com/AlexsJones/llmfit)** by **Alex Jones** — the
+- **[llmfit](https://github.com/AlexsJones/llmfit)** by **Alex Jones** - the
   engine behind the Cookbook's model download / serve / "What Fits?" feature.
   Copyright © Alex Jones. **MIT License.** Adapted in `services/hwfit/`
   (hardware detection, quant-aware fit scoring, model catalog),
   `routes/cookbook_*.py`, `routes/hwfit_routes.py`, `static/js/cookbook*.js`,
   and `scripts/odysseus-cookbook`.
 - **[Tongyi DeepResearch](https://github.com/Alibaba-NLP/DeepResearch)** by
-  **Alibaba-NLP / Tongyi Lab** — the multi-step deep-research agent pipeline.
+  **Alibaba-NLP / Tongyi Lab** - the multi-step deep-research agent pipeline.
   Copyright © Alibaba-NLP / Tongyi Lab. **Apache-2.0.** Adapted for Odysseus's
   Deep Research feature (`services/research/`, `src/research_handler.py`,
   `routes/research_routes.py`, `services/search/`). Full text in
@@ -65,7 +65,7 @@ The full license texts are kept in [`licenses/`](licenses/).
 ## Bundled via Docker Compose
 
 These services are pulled as images by the project's `docker-compose.yml`
-and run alongside Odysseus on `docker compose up`. They are not modified —
+and run alongside Odysseus on `docker compose up`. They are not modified -
 just composed.
 
 | Service | Image | Purpose | License |
@@ -96,12 +96,12 @@ from `index.html`, so a session that renders no math and no diagram never fetche
 either. Only the `.woff2` KaTeX fonts are shipped, matching `static/fonts/`; the
 `.woff` and `.ttf` variants its stylesheet also lists are never requested by a
 browser that supports `woff2`. The bundles are the published npm artifacts,
-unmodified — `.gitattributes` turns the whitespace check off for `static/lib/`
+unmodified - `.gitattributes` turns the whitespace check off for `static/lib/`
 so they can stay byte-identical to upstream.
 
 ## Front-end libraries loaded at runtime (CDN)
 
-Referenced from `cdn.jsdelivr.net` / `cdnjs.cloudflare.com` at runtime — not vendored:
+Referenced from `cdn.jsdelivr.net` / `cdnjs.cloudflare.com` at runtime - not vendored:
 
 | Library | Purpose | License |
 |---|---|---|
@@ -150,8 +150,8 @@ Core (`requirements.txt`) and optional (`requirements-optional.txt`):
 | croniter | MIT |
 | pytest / pytest-asyncio | MIT / Apache-2.0 |
 | duckduckgo-search (optional) | MIT |
-| markitdown (optional — Office/EPUB text extraction) | MIT |
-| **PyMuPDF** *(optional — form-filling only)* | **AGPL-3.0** — see note below |
+| markitdown (optional - Office/EPUB text extraction) | MIT |
+| **PyMuPDF** *(optional - form-filling only)* | **AGPL-3.0** - see note below |
 
 ## Companion services (interoperated with, not bundled)
 
@@ -159,12 +159,12 @@ Odysseus talks to these over the network/API. They are **not** distributed
 with this project; their licenses do not bind this codebase, but they deserve
 credit:
 
-- [Ollama](https://github.com/ollama/ollama) — local model serving (MIT)
-- [Radicale](https://github.com/Kozea/Radicale) — CardDAV/CalDAV server (GPL-3.0)
-- [Dovecot](https://www.dovecot.org/) — IMAP server
-- [isync / mbsync](https://isync.sourceforge.io/) — IMAP mailbox sync (GPL-2.0)
-- [tmux](https://github.com/tmux/tmux) — terminal multiplexer; Cookbook shells out to it on Linux/macOS for background model downloads and serves (ISC)
-- [OpenSSH](https://www.openssh.com/) (`ssh`, `ssh-keygen`, `ssh-copy-id`) — Cookbook shells out to it to manage remote model servers and provision keys (BSD-style permissive)
+- [Ollama](https://github.com/ollama/ollama) - local model serving (MIT)
+- [Radicale](https://github.com/Kozea/Radicale) - CardDAV/CalDAV server (GPL-3.0)
+- [Dovecot](https://www.dovecot.org/) - IMAP server
+- [isync / mbsync](https://isync.sourceforge.io/) - IMAP mailbox sync (GPL-2.0)
+- [tmux](https://github.com/tmux/tmux) - terminal multiplexer; Cookbook shells out to it on Linux/macOS for background model downloads and serves (ISC)
+- [OpenSSH](https://www.openssh.com/) (`ssh`, `ssh-keygen`, `ssh-copy-id`) - Cookbook shells out to it to manage remote model servers and provision keys (BSD-style permissive)
 - Model/API providers: Anthropic, OpenAI, Google (Gemini), DuckDuckGo
 
 ---
@@ -186,7 +186,7 @@ concerns from earlier are resolved:
 - **`caldav`** (Python lib) is **dual-licensed GPL-3.0-or-later OR Apache-2.0**.
   Odysseus uses it under **Apache-2.0**, which is permissive and MIT-compatible.
 - **`markitdown`** (Microsoft) is **MIT** and used only as an *optional* dependency for Office/EPUB text
-  extraction (`src/markitdown_runtime.py`), lazy-imported with graceful fallback — the MIT core runs without
+  extraction (`src/markitdown_runtime.py`), lazy-imported with graceful fallback - the MIT core runs without
   it. The cloud `az-doc-intel` extra is deliberately **not** installed, keeping extraction fully local.
 
 ---
@@ -194,9 +194,9 @@ concerns from earlier are resolved:
 ## Thanks to
 
 Most of Odysseus's code was written *with* AI models, not just by a human.
-The project would not exist without them — credit where credit is due:
+The project would not exist without them - credit where credit is due:
 
-- **gpt-oss-120b** — the legend that kicked this project off.
+- **gpt-oss-120b** - the legend that kicked this project off.
 - **Qwen3-235B**
 - **DeepSeek V3.1 · DeepSeek V4 Pro · DeepSeek V4 Flash**
 - **Claude** (Anthropic)

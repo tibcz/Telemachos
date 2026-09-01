@@ -1,4 +1,4 @@
-"""Custom font discovery — lists user-supplied font files in static/fonts/custom/."""
+"""Custom font discovery - lists user-supplied font files in static/fonts/custom/."""
 import os
 import re
 from fastapi import APIRouter

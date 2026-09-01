@@ -1,5 +1,5 @@
 /**
- * emailLibrary.js — Email library popup modal.
+ * emailLibrary.js - Email library popup modal.
  * Similar pattern to documentLibrary.js. Shows emails in a grid with search/filter.
  */
 
@@ -577,7 +577,7 @@ function _stampReaderContext(reader, em, folder, account) {
 }
 
 // Returns { uid, folder, account, subject, from } for the email the user
-// is most likely referring to — the last reader they interacted with, then
+// is most likely referring to - the last reader they interacted with, then
 // any open reader-modal as a fallback. Returns null when no email reader
 // is open. Exported below for chat.js to read on submit.
 function _getActiveEmailContext() {
@@ -1020,7 +1020,7 @@ function _emailSplitLeftEdge() {
 function _setEmailDocumentSplit(leftEdge, emailWidth) {
   if (window.innerWidth <= 768) return;
   // Zero gap so the doc-pane sits flush against the email's right edge.
-  // modalSnap.js's left-dock path publishes the same vars with 0 gap — both
+  // modalSnap.js's left-dock path publishes the same vars with 0 gap - both
   // systems agree on flush so handoffs between them don't cause the doc to
   // "jump" sideways. The 1px modal border on each side is the visual seam.
   const splitGap = 0;
@@ -1103,7 +1103,7 @@ function _hasDesktopRoomForEmailAndDocument(modal, opts = {}) {
   const emailWidth = isFullscreen
     ? Math.min(440, Math.max(360, Math.round(window.innerWidth * 0.30)))
     : Math.max(360, Math.round(rect?.width || 440));
-  // Relaxed thresholds — the old 560 + 72 forced an unnecessary tab-down
+  // Relaxed thresholds - the old 560 + 72 forced an unnecessary tab-down
   // on ~1200–1300px viewports where there was visually plenty of room.
   const docMinWidth = 460;
   const breathingRoom = 40;
@@ -1119,7 +1119,7 @@ function _prepareEmailWindowForDocument(modal) {
   // when there isn't enough horizontal space for both panes. The
   // route-collapse marker that collapseSidebarToRail() sets means the
   // sidebar will auto-restore when the doc closes. Crucially, we no
-  // longer fall back to clearing the split when even that isn't enough —
+  // longer fall back to clearing the split when even that isn't enough -
   // the user opted out of auto-tab-down, so we proceed with the dock
   // even if it's cramped.
   if (!_hasDesktopRoomForEmailAndDocument(modal)) {
@@ -1272,7 +1272,7 @@ function _animateEmailCardRemoval(uids, opts = {}) {
 }
 
 
-// URL-suffix helper — appends &account_id=... when an account is actively selected.
+// URL-suffix helper - appends &account_id=... when an account is actively selected.
 // Every email route call in this file goes through here so switching accounts
 // is a single-variable flip.
 // Open the Settings modal and activate a specific tab. Used by empty-state
@@ -1785,7 +1785,7 @@ function _rememberedEmailAccountId() {
 
 // Per-(account, folder, filter, attachments) cache of the most recent
 // first-page list response. Lets reopen-after-close paint the previous
-// list instantly while the network refresh runs behind it — the modal
+// list instantly while the network refresh runs behind it - the modal
 // used to wipe its DOM and spinner-from-empty on every open, even when
 // the same view was just visible a second ago.
 //
@@ -1997,7 +1997,7 @@ function _loadEmailsFresh() {
 async function _refreshEmailLibraryFromUi(btn = null) {
   btn?.classList.add('email-lib-refreshing');
   state._libOffset = 0;
-  // Don't wipe state._libEmails — _loadEmails will paint the current
+  // Don't wipe state._libEmails - _loadEmails will paint the current
   // list while the forced refetch runs, so the grid doesn't blank out
   // mid-refresh. `force: true` adds the cache-buster so the server's
   // 8s list cache is bypassed for an actually-fresh result.
@@ -2519,7 +2519,7 @@ export function openEmailLibrary(opts = {}) {
   }
   _emailMailboxGeneration += 1;
   state._libOpen = true;
-  // On mobile the sidebar overlays content — close it so the email view isn't
+  // On mobile the sidebar overlays content - close it so the email view isn't
   // opened behind it (same pattern as session-switch/delete).
   if (window.innerWidth <= 768) {
     const _sb = document.getElementById('sidebar');
@@ -2596,7 +2596,7 @@ export function openEmailLibrary(opts = {}) {
               <select class="memory-sort-select" id="email-lib-folder" style="flex:1;min-width:0;text-overflow:ellipsis;">
                 <option value="INBOX">Inbox</option>
               </select>
-              <!-- Hidden native select kept as the source of truth — all
+              <!-- Hidden native select kept as the source of truth - all
                    existing change handlers still fire via the custom picker
                    dispatching 'change' on it. -->
               <select class="memory-sort-select" id="email-lib-filter" style="display:none;">
@@ -2688,7 +2688,7 @@ export function openEmailLibrary(opts = {}) {
   modal.style.cssText += 'pointer-events:none;background:transparent;';
 
   // Register so the chip carries the right label/icon. restoreFn left
-  // empty — just unminimizing the modal is enough; whatever email was
+  // empty - just unminimizing the modal is enough; whatever email was
   // expanded inside stays expanded.
   try {
     Modals.register('email-lib-modal', {
@@ -2753,7 +2753,7 @@ export function openEmailLibrary(opts = {}) {
       content.style.position = 'fixed';
       content.style.pointerEvents = 'auto';
       // Wait a frame for size to stabilize, then center. Center against the
-      // modal's max-height (85vh) — NOT the live offsetHeight, which is tiny
+      // modal's max-height (85vh) - NOT the live offsetHeight, which is tiny
       // while the email list is still loading and put the window ~1/3 down
       // (then it grew off the bottom as the list filled in).
       requestAnimationFrame(() => {
@@ -2894,14 +2894,14 @@ export function openEmailLibrary(opts = {}) {
     _loadEmailsFresh();
   });
   // The old "sort" dropdown (Latest / Unread first / Favorites first) was merged
-  // into the filter dropdown above — "Favorites" is now a filter (server-side
+  // into the filter dropdown above - "Favorites" is now a filter (server-side
   // \Flagged search). _libSort stays at its 'recent' default so the grid keeps
   // the API's newest-first order.
 
   // Chip-bar search: pills represent contact + free-text filters; the live
-  // input below drives the autocomplete dropdown. Old behavior — instant
+  // input below drives the autocomplete dropdown. Old behavior - instant
   // local filter on every keystroke + server-side IMAP search after 350ms
-  // — is replaced by deterministic local filtering against the snapshot.
+  // - is replaced by deterministic local filtering against the snapshot.
   _initEmailSearchChipBar();
 
   document.getElementById('email-lib-refresh-btn').addEventListener('click', async () => {
@@ -2949,7 +2949,7 @@ export function openEmailLibrary(opts = {}) {
     // unreliable, so measure how far the panel extends below the *visible*
     // (visualViewport) area and lift the button by that much.
     function _positionFab() {
-      if (!_fab.isConnected) {       // modal was rebuilt/closed — stop listening
+      if (!_fab.isConnected) {       // modal was rebuilt/closed - stop listening
         window.visualViewport?.removeEventListener('resize', _positionFab);
         window.visualViewport?.removeEventListener('scroll', _positionFab);
         window.removeEventListener('resize', _positionFab);
@@ -2970,7 +2970,7 @@ export function openEmailLibrary(opts = {}) {
     setTimeout(_positionFab, 300);
 
     // Reveal the FAB with a scale-from-center pop only AFTER the email list has
-    // rendered (the window is "fully loaded") — position it first while it's
+    // rendered (the window is "fully loaded") - position it first while it's
     // still invisible so it never flashes at the top and slides down.
     let _revealed = false;
     const _revealFab = () => {
@@ -3003,7 +3003,7 @@ export function openEmailLibrary(opts = {}) {
           if (_grid.children.length) { _gobs.disconnect(); _revealFab(); }
         });
         _gobs.observe(_grid, { childList: true });
-        // Safety net — never leave the FAB hidden if the list stays empty.
+        // Safety net - never leave the FAB hidden if the list stays empty.
         setTimeout(() => { _gobs.disconnect(); _revealFab(); }, 1600);
       }
     } else {
@@ -3011,7 +3011,7 @@ export function openEmailLibrary(opts = {}) {
     }
   }
 
-  // Select mode toggle — icon + label swap matches the brain memories
+  // Select mode toggle - icon + label swap matches the brain memories
   // select button (dot+Select ↔ X+Cancel).
   const _SELECT_BTN_DOT_SVG = '<svg class="memory-select-btn-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/></svg>';
   const _SELECT_BTN_X_SVG = '<svg class="memory-select-btn-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="vertical-align:-2px;margin-right:3px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
@@ -3038,7 +3038,7 @@ export function openEmailLibrary(opts = {}) {
     _renderGrid();
   });
 
-  // Bulk cancel — wired with the same teardown a fresh Cancel-via-toggle does.
+  // Bulk cancel - wired with the same teardown a fresh Cancel-via-toggle does.
   // Lets the global Esc handler (keyboard-shortcuts.js) close select mode by
   // clicking the visible [id$="-bulk-cancel"] button.
   document.getElementById('email-lib-bulk-cancel')?.addEventListener('click', () => {
@@ -3177,7 +3177,7 @@ async function _loadAccounts({ force = false } = {}) {
   } catch (_) {
     if (!hasCachedAccounts) state._libAccounts = [];
   }
-  // The 'Default' chip is gone — pick an explicit account so the email
+  // The 'Default' chip is gone - pick an explicit account so the email
   // list and any per-email actions (open in new tab, mark read, etc.)
   // always carry an account_id and can't desync from the server's
   // is_default state.
@@ -3203,7 +3203,7 @@ function _renderAccountsStrip() {
   // open the wrong account's emails). Each account renders as its own
   // chip; the active one is selected explicitly via _loadAccounts.
   let html = '';
-  // 6px dot — matches the sidebar notification-dot size.
+  // 6px dot - matches the sidebar notification-dot size.
   const _dotFilled = '<svg width="6" height="6" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>';
   const _dotHollow = '<svg width="6" height="6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="9"/></svg>';
   for (const a of state._libAccounts) {
@@ -3254,7 +3254,7 @@ function _renderAccountsStrip() {
       }
     });
   });
-  // Idempotent — wire wheel + grab-drag scroll once per strip element.
+  // Idempotent - wire wheel + grab-drag scroll once per strip element.
   if (!strip._scrollWired) {
     strip._scrollWired = true;
     // Vertical wheel → horizontal scroll. Only intercept when there's
@@ -3295,7 +3295,7 @@ function _renderAccountsStrip() {
       strip.style.cursor = 'grab';
       strip.style.userSelect = '';
     });
-    // Swallow chip clicks fired after a real drag — the user meant to scroll,
+    // Swallow chip clicks fired after a real drag - the user meant to scroll,
     // not select.
     strip.addEventListener('click', (e) => {
       if (moved > 5) { e.stopPropagation(); e.preventDefault(); moved = 0; }
@@ -3361,7 +3361,7 @@ function _makeDraggable(content, modal, fsClass) {
   if (!content) return;
   const header = content.querySelector('.modal-header');
   if (!header) return;
-  // Per-modal fullscreen behavior — caller supplies fsClass, we apply
+  // Per-modal fullscreen behavior - caller supplies fsClass, we apply
   // the same inline-style fullscreen pattern email-lib + email-window
   // both use. exitFullscreen restores the default windowed size
   // (min(720px, 92vw) × 85vh) and centers around the cursor.
@@ -3432,13 +3432,13 @@ function _snapEmailModalToLeftSidebar(modal) {
   if (window.innerWidth < 900) return false;
   // "Open in new tab" reader modals (id="email-view-…") are explicitly
   // floating windows the user already positioned. Replying from one
-  // shouldn't yank it to the left edge — leave it on top in its current
+  // shouldn't yank it to the left edge - leave it on top in its current
   // spot. Reply still opens the compose document; the user can drag the
   // reader away or close it themselves.
   if ((modal.id || '').startsWith('email-view-')) return false;
   const content = modal.querySelector('.modal-content');
   if (!content) return false;
-  // Only dock if currently fullscreen — for a manually-sized window the
+  // Only dock if currently fullscreen - for a manually-sized window the
   // user already chose its layout; don't surprise them by snapping it.
   const wasLibFs = modal.classList.contains('email-lib-fullscreen');
   const wasWinFs = modal.classList.contains('email-window-fullscreen');
@@ -3637,7 +3637,7 @@ async function _buildSuggestionSource() {
     _parse(em.to);
     _parse(em.cc);
   }
-  // 2) Address book — best-effort.
+  // 2) Address book - best-effort.
   try {
     const r = await fetch(`${API_BASE}/api/contacts/list`, { credentials: 'same-origin' });
     if (r.ok) {
@@ -3701,7 +3701,7 @@ const _LIB_FILTER_OPTIONS = [
 ];
 
 function _libFilterIconFor(value) {
-  // value is 'filter:<X>' — strip prefix and reuse the existing icon map.
+  // value is 'filter:<X>' - strip prefix and reuse the existing icon map.
   const v = String(value || '').replace(/^filter:/, '');
   if (v === 'has-attachments') return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 17.93 8.8l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>';
   return _EMAIL_FILTER_ICONS[v] || _EMAIL_FILTER_ICONS['all'];
@@ -3720,7 +3720,7 @@ function _scoreFilterOption(opt, needle) {
 function _filterSuggestions(needle, limit = 10) {
   const n = String(needle || '').trim().toLowerCase();
   if (!n) return [];
-  // Filter / attachment matches first — typing 'unread' should surface
+  // Filter / attachment matches first - typing 'unread' should surface
   // the filter row before contact suggestions, since 'unread' isn't a
   // person.
   const filterMatches = _LIB_FILTER_OPTIONS
@@ -3730,7 +3730,7 @@ function _filterSuggestions(needle, limit = 10) {
   const contactMatches = src
     .map(s => ({ s: { kind: 'contact', ...s }, score: _scoreSuggestion(s, n) }))
     .filter(x => x.score > 0);
-  // Email subject / sender-name matches — use the snapshot (unfiltered
+  // Email subject / sender-name matches - use the snapshot (unfiltered
   // list) when available so suggestions don't shrink as pills narrow the
   // visible grid. Cap to 4 so contacts + filters stay visible.
   const emails = _libPreSearchEmails || state._libEmails || [];
@@ -3775,10 +3775,10 @@ function _emailMatchesPill(em, pill) {
     // Filter pills delegate to the server-side filter (state._libFilter)
     // or the has-attachments toggle. The list is already pre-filtered by
     // those when this runs, so the pill is effectively always-true here
-    // — it lives in the pill bar purely as a visible affordance.
+    // - it lives in the pill bar purely as a visible affordance.
     return true;
   }
-  // text pill — broad local-match
+  // text pill - broad local-match
   const q = (pill.text || '').toLowerCase();
   if (!q) return true;
   return _matchesQuery(em, q);
@@ -3831,7 +3831,7 @@ function _applyPillFilter() {
   const source = _libServerSearchEmails || _libPreSearchEmails || state._libEmails || [];
   // If the active server search covers a piece of text (either the live
   // draft OR an Enter-committed text pill), skip the local re-filter for
-  // it — _emailMatchesPill only checks subject/from_name/from_address/
+  // it - _emailMatchesPill only checks subject/from_name/from_address/
   // snippet (no BODY), so it was dropping legitimate server hits where
   // the match was in body text. Real pills (contact, filter chips) still
   // apply, and other text pills with different strings still apply.
@@ -3839,13 +3839,13 @@ function _applyPillFilter() {
   const hasRefinementBase = !!(_libServerSearchEmails && pills.length > 1);
   const serverHandledDraft = !hasRefinementBase && !!(libSearchLower && draft && libSearchLower === draft.toLowerCase());
   const draftPill = (!serverHandledDraft && draft.length >= 1) ? { type: 'text', text: draft } : null;
-  // Filter out text pills whose text matches the active server search —
+  // Filter out text pills whose text matches the active server search -
   // those were the trigger for the IMAP query and don't need re-checking.
   const effectiveBasePills = (libSearchLower && !hasRefinementBase)
     ? pills.filter(p => !(p.type === 'text' && (p.text || '').toLowerCase() === libSearchLower))
     : pills;
   const effective = draftPill ? effectiveBasePills.concat([draftPill]) : effectiveBasePills;
-  // AND across pills — "alice + bob" should mean both alice AND bob are
+  // AND across pills - "alice + bob" should mean both alice AND bob are
   // somewhere on the email (from/to/cc), not "from alice OR from bob".
   const filtered = source.filter(em => effective.every(p => _emailMatchesPill(em, p)));
   state._libEmails = filtered;
@@ -3907,7 +3907,7 @@ function _applyFilterPillSideEffect(pill) {
     if (sel && sel.value !== 'all') { sel.value = 'all'; sel.dispatchEvent(new Event('change')); }
     return;
   }
-  // Any other filter pill — set the dropdown value, clear attachments
+  // Any other filter pill - set the dropdown value, clear attachments
   if (state._libHasAttachments) {
     state._libHasAttachments = false;
     if (attachBtn) attachBtn.classList.remove('active');
@@ -3944,7 +3944,7 @@ function _addSearchPill(pill) {
     if (!t) return;
     if (state._libSearchPills.some(p => p.type === 'text' && (p.text || '').toLowerCase() === t)) return;
   } else if (pill.type === 'filter') {
-    // Single-filter rule — drop any existing filter pill before adding.
+    // Single-filter rule - drop any existing filter pill before adding.
     state._libSearchPills = state._libSearchPills.filter(p => p.type !== 'filter');
     state._libSearchPills.push(pill);
     _applyFilterPillSideEffect(pill);
@@ -4034,7 +4034,7 @@ function _renderSearchSuggestions(items) {
       return `<div class="email-lib-suggest-item" data-idx="${i}" style="display:flex;align-items:center;gap:6px;padding:6px 10px;cursor:pointer;font-size:12px;${highlight}">
         <span style="display:inline-flex;align-items:center;width:13px;height:13px;color:var(--fg-muted, var(--fg));opacity:0.55;flex-shrink:0;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2 6 12 13 22 6"/></svg></span>
         <span style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(s.subject)}</span>
-        ${s.from_name ? `<span style="opacity:0.55;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">— ${esc(s.from_name)}</span>` : ''}
+        ${s.from_name ? `<span style="opacity:0.55;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">- ${esc(s.from_name)}</span>` : ''}
         ${s.date_label ? `<span style="margin-left:auto;opacity:0.48;font-size:11px;white-space:nowrap;flex-shrink:0;">${esc(s.date_label)}</span>` : ''}
       </div>`;
     }
@@ -4123,7 +4123,7 @@ async function _initEmailSearchChipBar() {
   const _refreshSuggestions = async () => {
     await _ensureSuggestionCache();
     _itemsRef = _filterSuggestions(input.value);
-    // Default to no focused suggestion — text typing should feel like
+    // Default to no focused suggestion - text typing should feel like
     // regular search; the user has to ArrowDown / Tab explicitly to
     // pick a contact. Enter without a focused row commits as text.
     _libSuggestionFocusIdx = -1;
@@ -4131,7 +4131,7 @@ async function _initEmailSearchChipBar() {
   };
 
   input.addEventListener('focus', _refreshSuggestions);
-  // Debounced IMAP search — fires ~500ms after the user stops typing so
+  // Debounced IMAP search - fires ~500ms after the user stops typing so
   // searches for names/text not in the current inbox page actually surface
   // hits, instead of just locally filtering the visible window.
   //
@@ -4140,7 +4140,7 @@ async function _initEmailSearchChipBar() {
   // snippet but never body, so intermediate text like "sam" reduced the
   // 61 server results to whatever matched just those four fields (often
   // 0). User saw "no emails" while typing. So local filter is gone from
-  // the typing path — debounced server search drives the grid. Pill
+  // the typing path - debounced server search drives the grid. Pill
   // add/remove still re-runs the local filter through _applyPillFilter
   // directly.
   let _libSearchTypingTimer = null;
@@ -4196,7 +4196,7 @@ async function _initEmailSearchChipBar() {
     }
     if (e.key === 'Tab' && menuOpen) {
       // Tab autocompletes the FIRST suggestion (most-relevant), regardless
-      // of whether the user arrowed down yet — matches the user's mental
+      // of whether the user arrowed down yet - matches the user's mental
       // model of "type a name and tab to pick".
       const pick = _libSuggestionFocusIdx >= 0 ? _itemsRef[_libSuggestionFocusIdx] : _itemsRef[0];
       if (pick) { e.preventDefault(); _acceptSuggestion(pick); return; }
@@ -4229,7 +4229,7 @@ async function _initEmailSearchChipBar() {
     }
     if (e.key === 'Escape') {
       if (menuOpen) {
-        // Just close the dropdown — let the modal Esc handler run on the
+        // Just close the dropdown - let the modal Esc handler run on the
         // next Esc to actually dismiss the library.
         e.preventDefault();
         e.stopPropagation();
@@ -4253,7 +4253,7 @@ window.addEventListener('click', (e) => {
   const chip = e.target.closest && e.target.closest('.recipient-chip');
   if (chip && chip.closest('.email-reader-header, .email-card-reader, .email-reader-tab-modal')) {
     // Don't pivot to library search for chips in the From / To / Cc
-    // meta — clicking those should just toggle the expanded address
+    // meta - clicking those should just toggle the expanded address
     // view via the per-reader handler.
     if (chip.closest('.email-reader-meta')) return;
     const email = (chip.dataset && chip.dataset.email) || '';
@@ -4286,7 +4286,7 @@ async function _doSearch() {
   const derived = _deriveSearchScope(state._libSearch);
   const q = derived.q;
   if (q.length < 2 && !derived.forced) {
-    // Empty or too short — restore the normal folder if a previous search
+    // Empty or too short - restore the normal folder if a previous search
     // had replaced the grid contents.
     if (_libSearchHadResults) {
       _libSearchHadResults = false;
@@ -4300,7 +4300,7 @@ async function _doSearch() {
   const accountAtStart = state._libAccountId || '';
   const folderAtStart = derived.folder || state._libFolder || 'INBOX';
   const serverScopeAtStart = derived.serverScope || 'all';
-  // No grid-blanking spinner — the local filter already painted something
+  // No grid-blanking spinner - the local filter already painted something
   // useful. Surface progress in the stats badge instead so the user knows
   // the server search is still grinding.
   const stats = document.getElementById('email-lib-stats');
@@ -4463,7 +4463,7 @@ async function _doSearch() {
 
 // Custom dropdown for the email filter (All/Unread/Favorites/...). Replaces
 // the native <select> so each row can carry an SVG icon. The hidden
-// <select id="email-lib-filter"> stays as the value source — clicking a
+// <select id="email-lib-filter"> stays as the value source - clicking a
 // menu item updates its value and dispatches 'change', so every existing
 // listener keeps working.
 const _EMAIL_FILTER_ICONS = {
@@ -4626,7 +4626,7 @@ function _appendEmailSearchProgressRow(grid) {
 // Refreshes the small accent-pill in the modal title with the unread count
 // for the current folder. When the inbox is currently filtered to unread, the
 // pill flips to show the total-emails count + "all" label, because clicking
-// it would toggle the filter off — so the label needs to advertise the
+// it would toggle the filter off - so the label needs to advertise the
 // action, not the now-current view. Uses the cheap unread-state endpoint for
 // the normal badge; silent on failure.
 async function _refreshUnreadBadge({ unreadCountOverride = null } = {}) {
@@ -4657,7 +4657,7 @@ async function _refreshUnreadBadge({ unreadCountOverride = null } = {}) {
       badge.dataset.mode = 'away';
       badge.style.display = '';
     } else if (state._libFilter === 'unread') {
-      // Currently viewing unread — show what the click will take you to.
+      // Currently viewing unread - show what the click will take you to.
       try {
         const allRes = await fetch(`${API_BASE}/api/email/list?folder=${encodeURIComponent(folder)}${_acct()}&limit=1&filter=all`);
         const allData = await allRes.json();
@@ -4741,7 +4741,7 @@ async function _loadEmails({ force = false, useCache = true } = {}) {
   let sp = null;
   if (cached) {
     // Suppress the open-cascade animation when we're painting from
-    // cache — the data was already on screen a moment ago, so sliding
+    // cache - the data was already on screen a moment ago, so sliding
     // each card in fresh feels janky. Also prevents the cascade from
     // re-firing when the bg refetch lands within the 900ms cleanup
     // window and appends new card nodes into the still-classed grid.
@@ -4814,7 +4814,7 @@ async function _loadEmails({ force = false, useCache = true } = {}) {
   } catch (e) {
     if (seq !== _libLoadSeq || accountAtStart !== (state._libAccountId || '')) return;
     if (sp) sp.destroy();
-    // If we already painted the cached list, leave it on screen — beats
+    // If we already painted the cached list, leave it on screen - beats
     // wiping it for "Failed to load" when there's still readable content.
     if (!paintedExisting) {
       const msg = e && e.message ? `Failed to load: ${e.message}` : 'Failed to load';
@@ -4964,7 +4964,7 @@ function _renderGrid() {
   filtered = _dateGroupEmailsWithPinned([...filtered], state._libSort);
 
   if (filtered.length === 0) {
-    // Active search — don't flash "No emails": the IMAP fetch is still
+    // Active search - don't flash "No emails": the IMAP fetch is still
     // running. Show a "Searching…" placeholder until _doSearch resolves
     // and renders again. Without this the user saw an empty state
     // smiley for ~500ms between the optimistic pill-filter clear and
@@ -4973,11 +4973,11 @@ function _renderGrid() {
       _renderEmailLoading(grid);
       return;
     }
-    // Inbox-zero is a win — pair the message with a small smiley so the
+    // Inbox-zero is a win - pair the message with a small smiley so the
     // empty state reads as "all caught up", not "something's broken".
     const _smileyIco = '<span style="vertical-align:-3px;margin-left:6px;">' + emptyStateIcon('smiley') + '</span>';
     // Only show the "Set up at Settings › Integrations" hint when the inbox
-    // is TRULY empty — no filter, no search, no source emails. A sub-filter
+    // is TRULY empty - no filter, no search, no source emails. A sub-filter
     // (reminders, unread, etc.) that happens to be empty isn't a setup
     // problem; the link there reads as nonsense.
     const _isTrulyEmpty = (
@@ -5009,7 +5009,7 @@ function _renderGrid() {
 
   // Cascade-on-open: fire the same domino-in animation the sidebar
    // section uses. Only on the FIRST grid render after the library is
-   // opened — subsequent re-renders (filter/sort/search) need to be
+   // opened - subsequent re-renders (filter/sort/search) need to be
    // instant.
   if (state._libJustOpened) {
     grid.classList.add('email-lib-just-opened');
@@ -5072,7 +5072,7 @@ function _createCard(em) {
     card.appendChild(cb);
   }
 
-  // In Sent results, show the recipient(s) — the sender is always you and
+  // In Sent results, show the recipient(s) - the sender is always you and
   // hides the actually useful info. Search results can be stamped with their
   // real folder while the visible folder selector still says INBOX, so use the
   // email's folder first.
@@ -5116,7 +5116,7 @@ function _createCard(em) {
   titleEl.className = 'memory-item-title';
   titleEl.textContent = em.subject || '(no subject)';
   // Hover preview: surface the cached AI summary directly on the title via
-  // a native browser tooltip — no need to open the email to skim it.
+  // a native browser tooltip - no need to open the email to skim it.
   if (em.cached_summary) {
     titleEl.title = em.cached_summary;
     titleEl.classList.add('email-card-has-summary');
@@ -5164,7 +5164,7 @@ function _createCard(em) {
     doneCheck.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
     const _toggleDone = async (e) => {
       if (e) e.stopPropagation();
-      // Use the visible class as source of truth — em.is_answered could
+      // Use the visible class as source of truth - em.is_answered could
       // be stale from a background sync, which would leave the user
       // clicking and seeing no UI change.
       const wasActive = doneCheck.classList.contains('active');
@@ -5173,7 +5173,7 @@ function _createCard(em) {
       doneCheck.classList.toggle('active', newState);
       doneCheck.title = newState ? 'Mark not done' : 'Mark done';
       // Animate in both directions so the user gets explicit feedback when
-      // un-checking too — without this the hover state and the active state
+      // un-checking too - without this the hover state and the active state
       // look identical, so the click felt like a no-op.
       doneCheck.classList.remove('just-checked', 'just-unchecked');
       void doneCheck.offsetWidth; // restart animation
@@ -5211,7 +5211,7 @@ function _createCard(em) {
     titleRow.appendChild(star);
   }
 
-  // Prev/next arrows — visible only when this card is the expanded one
+  // Prev/next arrows - visible only when this card is the expanded one
   // (CSS-gated so collapsed cards stay clean). Click navigates by collapsing
   // this card and expanding the neighbour.
   const navArrows = document.createElement('span');
@@ -5235,7 +5235,7 @@ function _createCard(em) {
     await _toggleCardPreview(sibling, nextEm);
     sibling.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });
-  // Just the nav arrows here — the per-card `.memory-item-actions` menu
+  // Just the nav arrows here - the per-card `.memory-item-actions` menu
   // at the bottom of the card stays visible while expanded (see the CSS
   // override below), so duplicating it in the header was redundant.
   titleRow.appendChild(navArrows);
@@ -5274,7 +5274,7 @@ function _createCard(em) {
     actionsWrap.appendChild(menuBtn);
     card.appendChild(actionsWrap);
 
-    // Long-press anywhere on the row opens the same actions menu — matches
+    // Long-press anywhere on the row opens the same actions menu - matches
     // the chats / archive / research / documents tabs' long-press UX.
     let _hold = null, _holdStart = null;
     const _cancelHold = () => { if (_hold) { clearTimeout(_hold); _hold = null; } _holdStart = null; };
@@ -5299,7 +5299,7 @@ function _createCard(em) {
     card.addEventListener('pointercancel', _cancelHold);
   }
 
-  // Click handler — toggle preview expansion
+  // Click handler - toggle preview expansion
   card.addEventListener('click', async (e) => {
     if (card._suppressNextClick) { card._suppressNextClick = false; return; }
     if (state._selectMode) {
@@ -5411,7 +5411,7 @@ async function _toggleCardPreview(card, em) {
     Math.min(Math.max(260, window.innerHeight * 0.56), gridRect?.height || window.innerHeight)
   );
 
-  // Already expanded — collapse
+  // Already expanded - collapse
   if (card.classList.contains('email-card-expanded')) {
     card.classList.remove('email-card-expanded');
     card.classList.remove('doclib-card-expanded');
@@ -5474,7 +5474,7 @@ async function _toggleCardPreview(card, em) {
     _syncEmailReadState(uidAtStart, true, readContext);
   }
   // Class hook on the modal so the header-hide / padding rules work on
-  // browsers without :has() support (Firefox mobile) — the :has() versions
+  // browsers without :has() support (Firefox mobile) - the :has() versions
   // below stay as the desktop path.
   if (modal && modalRect?.height) {
     modal.style.setProperty('--email-reading-modal-min-h', `${Math.round(modalRect.height)}px`);
@@ -5555,7 +5555,7 @@ async function _toggleCardPreview(card, em) {
       }).join('');
     };
 
-    // Build the From chip too — single chip with name, click reveals address
+    // Build the From chip too - single chip with name, click reveals address
     const fromChip = _recipientChipHtml(`${data.from_name || ''} <${data.from_address || ''}>`, data.from_name || data.from_address, 'from-chip');
 
     reader.innerHTML = `
@@ -5620,7 +5620,7 @@ async function _toggleCardPreview(card, em) {
     // Refresh the title-row prev/next arrows for this newly-expanded card.
     _syncCardNavArrows(card);
 
-    // Horizontal swipe on the reader switches to prev/next email — but
+    // Horizontal swipe on the reader switches to prev/next email - but
     // only when the underlying content can't scroll further in the swipe
     // direction. If the email body is wider than the viewport (HTML emails
     // with tables, embedded images), normal horizontal scroll wins; nav
@@ -5670,7 +5670,7 @@ async function _toggleCardPreview(card, em) {
         const dy = t.clientY - _sy;
         if (Math.abs(dx) < SWIPE_THRESHOLD || Math.abs(dy) > Math.abs(dx)) return;
         // If a horizontally-scrollable element captured the swipe, let it
-        // scroll instead of changing email — UNLESS the user was already
+        // scroll instead of changing email - UNLESS the user was already
         // at the edge (scrollLeft can't move further in that direction).
         if (_scrollEl) {
           const max = _scrollEl.scrollWidth - _scrollEl.clientWidth;
@@ -5713,11 +5713,11 @@ async function _toggleCardPreview(card, em) {
 /**
  * Wrap a probable signature block in a collapsed <details> so it stops
  * eating the whole reader. We try, in priority order:
- *   1. Mail-client signature wrappers — Gmail's `gmail_signature` div is
+ *   1. Mail-client signature wrappers - Gmail's `gmail_signature` div is
  *      explicit, no guessing required. Same for Apple Mail's data-smartmail.
  *   2. The standard "-- " RFC 3676 sig delimiter.
  *   3. A common closing phrase ("Best regards", "Cheers", etc.) on its own
- *      line — fuzzier, but catches sigs without the dash marker.
+ *      line - fuzzier, but catches sigs without the dash marker.
  *   4. "Sent from my iPhone/Android" / "Get Outlook for ..." mobile-client
  *      boilerplate.
  * Anything matched gets wrapped from the marker through end-of-body.
@@ -5729,12 +5729,12 @@ async function _toggleCardPreview(card, em) {
  * detectors. The plain-body branch is always preferred when boundaries
  * exist because the offsets are computed against plain text.
  */
-// Global escape hatch — when the server's thread parser misfires (it
+// Global escape hatch - when the server's thread parser misfires (it
 // occasionally splits a single reply into two bogus "turns" by treating a
 // signature/disclaimer as its own message), the user can flip this off to
 // fall back to plain rendering. Survives reloads.
 const _BUBBLES_DISABLED_KEY = 'telemachos.email.bubblesDisabled';
-// Threaded chat-bubble email view is DISABLED for now — too buggy to
+// Threaded chat-bubble email view is DISABLED for now - too buggy to
 // ship. Force plain-text rendering everywhere by always returning true.
 // Re-enable by restoring the localStorage-backed body + the toggle
 // menu item in the reader's More menu.
@@ -5763,7 +5763,7 @@ function _renderEmailBody(data) {
     return _foldSignature(_escLinkify(plain).replace(/\n/g, '<br>'), null);
   }
 
-  // Prefer the server-cached thread parse — that's the richest structure
+  // Prefer the server-cached thread parse - that's the richest structure
   // and the one the chat-bubble layout is built around. Skip when the user
   // has manually disabled bubble rendering.
   if (!_bubblesDisabled() && Array.isArray(data && data.thread_turns) && data.thread_turns.length) {
@@ -5815,7 +5815,7 @@ function _renderEmailBody(data) {
         out += '<details class="email-sig-fold">' + _foldSummary('Signature', _SIG_ICON)
              + sigHtml + '</details>';
       } else {
-        // Short closing — leave inline; folding would just add chrome.
+        // Short closing - leave inline; folding would just add chrome.
         out += sigHtml;
       }
     }
@@ -6075,7 +6075,7 @@ function _wireEmailInlineImages(reader) {
 // account's outgoing replies align right; everyone else aligns left.
 // Order is reversed so the oldest message sits at the top of the
 // conversation and the newest (the message currently being read) sits
-// at the bottom — matches the mental model people have from chat.
+// at the bottom - matches the mental model people have from chat.
 
 function _meEmailAddrs() {
   const set = new Set();
@@ -6327,7 +6327,7 @@ function _renderThreadStructure(html) {
 // Looks like a signature / corporate disclaimer rather than a quoted email.
 // Used to demote attribution-less blockquotes that some senders wrap their
 // sig+disclaimer in (Outlook, EY, big firms) from "Earlier reply" to a
-// proper Signature fold. Conservative — only fires when there's no quoted
+// proper Signature fold. Conservative - only fires when there's no quoted
 // reply markers AND it matches strong corporate-noise phrases.
 // _looksLikeSignature / _harvestAttribution / _extractTurnMetaFromBlockquote
 // live in ./emailLibrary/signatureFold.js
@@ -6471,7 +6471,7 @@ function _foldQuotedReplies(html) {
         for (const bq of tops) {
           const det = doc.createElement('details');
           det.className = 'email-quote-fold';
-          // Build the summary as raw HTML — easier than building DOM by hand.
+          // Build the summary as raw HTML - easier than building DOM by hand.
           const summary = _foldSummary('Earlier thread', _QUOTE_ICON, _extractQuoteMeta(bq.innerHTML));
           det.innerHTML = summary;
           bq.parentNode.insertBefore(det, bq);
@@ -6487,9 +6487,9 @@ function _foldQuotedReplies(html) {
     // Fall through to the legacy regex path below if DOMParser fails
   }
   // If DOM-pass already wrapped something, we returned above. Otherwise no
-  // blockquotes were found — try the Outlook-header heuristic.
+  // blockquotes were found - try the Outlook-header heuristic.
   if (html !== before) return html;
-  // Outlook-style quoted-reply header — multilingual. Fold from the first
+  // Outlook-style quoted-reply header - multilingual. Fold from the first
   // "From: ... Sent: ... Subject: ..." block through end-of-body so all
   // prior thread levels collapse together.
   const FROM = '(?:From|Från|Von|De|De\\s|Da|От|Od|Van)';
@@ -6560,7 +6560,7 @@ function _showCachedSummary(reader, summary, btn) {
 }
 
 // Wire click handlers for attachment chips + "open in editor" sub-buttons
-// inside a reader. Safe to call multiple times — uses dataset.wired flag to
+// inside a reader. Safe to call multiple times - uses dataset.wired flag to
 // skip nodes that already have listeners.
 function _wireAttachmentHandlers(reader, folder) {
   const useFolder = folder || state._libFolder;
@@ -6926,7 +6926,7 @@ function _loadDeferredAttachmentsIntoReader(reader, uid, folder, data, knownHasA
   }).catch(() => {});
 }
 
-// "Open in new tab" — the email opens in the library (expanded inline)
+// "Open in new tab" - the email opens in the library (expanded inline)
 // AND a separate floating "email viewer" overlay modal is created. The
 // overlay starts minimized as a chip in the dock; tapping the chip
 // brings the viewer up over the library. Multiple tabs = multiple
@@ -6934,7 +6934,7 @@ function _loadDeferredAttachmentsIntoReader(reader, uid, folder, data, knownHasA
 const _EMAIL_ICON_PATH = 'M2 4h20v16H2zM22 7l-9.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7';
 let _emailTabSeq = 0;
 // Persistent slot numbers per reader modalId. Once a reader is "tab 2"
-// it stays "tab 2" until it's closed — even if tab 1 closes first, the
+// it stays "tab 2" until it's closed - even if tab 1 closes first, the
 // remaining reader doesn't renumber down to 1. New tabs claim the
 // lowest unused slot.
 const _emailReaderSlots = new Map(); // modalId -> slot (1, 2, 3, ...)
@@ -7094,7 +7094,7 @@ async function _openEmailAsTab(em, folder) {
 
   // Wire dragging on the header (desktop only). Matches the global pattern
   // in app.js initUIVisibility, but that runs once at boot and doesn't see
-  // dynamically-created modals — so we replicate it here.
+  // dynamically-created modals - so we replicate it here.
   const content = modal.querySelector('.modal-content');
   const mh = modal.querySelector('.modal-header');
   if (mh && content) {
@@ -7132,7 +7132,7 @@ async function _openEmailAsTab(em, folder) {
   // can tap `_` to tab it down to a chip when they're done reading.
   //
   // Mobile: bottom-sheet windows fill the viewport, so stacking multiple
-  // readers on top of each other is confusing — only one window can be
+  // readers on top of each other is confusing - only one window can be
   // meaningfully visible at a time. So when the new tab opens, chip down
   // the library AND any other email-reader-* tab that's currently up.
   // The user gets a stack of mini chips to toggle between them.
@@ -7254,7 +7254,7 @@ async function _openEmailAsTab(em, folder) {
 }
 
 
-// "Open in new window" — spawns a floating draggable modal that shows just
+// "Open in new window" - spawns a floating draggable modal that shows just
 // the email content. Multiple windows can stack; each has its own DOM id
 // and close button. Uses `_makeDraggable` so dragging the header pans the
 // window around. Renders the body via _renderEmailBody for parity with the
@@ -7401,7 +7401,7 @@ async function _openEmailWindow(em, folder) {
     _wireMetaToggle(bodyEl);
     bodyEl.querySelector('[data-act="more"]')?.addEventListener('click', (ev) => {
       ev.stopPropagation();
-      // Use a synthetic "card" — the more-menu only needs the anchor
+      // Use a synthetic "card" - the more-menu only needs the anchor
       // element and the email data. The card param is mostly used to find
       // the next sibling; the standalone window has none so we just pass
       // bodyEl as a stand-in.
@@ -7436,7 +7436,7 @@ async function _summarizeEmail(reader, data, btn) {
   }
 
   // No panel yet. If the email has no cached AI summary, show a placeholder
-  // "not generated — create now?" prompt instead of firing the LLM immediately.
+  // "not generated - create now?" prompt instead of firing the LLM immediately.
   // This avoids accidental LLM spend and makes the state explicit to the user.
   if (!data.cached_summary) {
     const prompt = document.createElement('div');
@@ -7453,7 +7453,7 @@ async function _summarizeEmail(reader, data, btn) {
       const label = btn.querySelector('.btn-label');
       if (label) label.textContent = 'Summary';
     }
-    // No Cancel button — toggling the Summary button again hides this panel
+    // No Cancel button - toggling the Summary button again hides this panel
     // (handled by the existing-panel branch above), so it'd be redundant.
     prompt.querySelector('[data-act="summary-generate"]').addEventListener('click', async (ev) => {
       ev.stopPropagation();
@@ -7463,7 +7463,7 @@ async function _summarizeEmail(reader, data, btn) {
     return;
   }
 
-  // Cached summary exists — show it immediately.
+  // Cached summary exists - show it immediately.
   await _generateSummary(reader, data, btn);
 }
 
@@ -7626,7 +7626,7 @@ async function _maybeAutoTranslateEmail(reader) {
 function _fitEmailDropdown(dropdown, rect) {
   requestAnimationFrame(() => {
     const margin = 8;
-    // Horizontal clamp — keep the dropdown inside the viewport regardless of
+    // Horizontal clamp - keep the dropdown inside the viewport regardless of
     // whether it was anchored via left or right. Needed now that some
     // triggers (e.g. the right-aligned bulk "Actions" button) sit close to
     // the right edge, where a left-anchored menu would spill off-screen.
@@ -7639,7 +7639,7 @@ function _fitEmailDropdown(dropdown, rect) {
       dropdown.style.left = margin + 'px';
       dropdown.style.right = 'auto';
     }
-    // Vertical fit — flip up or cap+scroll if it doesn't fit below.
+    // Vertical fit - flip up or cap+scroll if it doesn't fit below.
     const dh = dropdown.offsetHeight;
     const below = window.innerHeight - rect.bottom - margin;
     const above = rect.top - margin;
@@ -7695,7 +7695,7 @@ function _showReaderMoreMenu(em, card, reader, anchor) {
     _renderGrid();
     _libCacheWriteBack();
     if (!nextUid) return;
-    // After _renderGrid, the card nodes are fresh — re-resolve and expand.
+    // After _renderGrid, the card nodes are fresh - re-resolve and expand.
     const grid = document.getElementById('email-lib-grid');
     const nextCard = grid?.querySelector(`.doclib-card[data-uid="${CSS.escape(String(nextUid))}"]`);
     const nextEm = state._libEmails.find(e => String(e.uid) === String(nextUid));
@@ -7708,9 +7708,9 @@ function _showReaderMoreMenu(em, card, reader, anchor) {
   const _bubblesIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
   const _contactIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>';
   // Three groups separated by dividers:
-  //   1. Open / Mark Unread / Remind — the per-email view actions
-  //   2. Save sender / Not Done / Archive — non-destructive state changes
-  //   3. Move to Spam / Move to Trash / Delete — destructive
+  //   1. Open / Mark Unread / Remind - the per-email view actions
+  //   2. Save sender / Not Done / Archive - non-destructive state changes
+  //   3. Move to Spam / Move to Trash / Delete - destructive
   const actions = [
     {
       label: 'Open in new tab',
@@ -7911,7 +7911,7 @@ function _showReaderMoreMenu(em, card, reader, anchor) {
     });
     dropdown.appendChild(item);
   }
-  // Mobile-only Cancel item — explicit close for touch users. CSS hides it
+  // Mobile-only Cancel item - explicit close for touch users. CSS hides it
   // on desktop where outside-click already dismisses cleanly.
   const _cancelIco = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
   const cancelItem = document.createElement('div');
@@ -7960,7 +7960,7 @@ function _showCardMenu(em, anchor) {
     }},
     { label: 'Open in new tab', icon: _newTabIcon, action: async () => {
       // Open this email as its own in-app modal that registers a dock
-      // chip — multiple emails can be opened simultaneously, each gets
+      // chip - multiple emails can be opened simultaneously, each gets
       // its own chip in the minimized dock.
       const folder = state._libFolder || 'INBOX';
       await _openEmailAsTab(em, folder);
@@ -8062,9 +8062,9 @@ function _showCardMenu(em, anchor) {
     });
   }
 
-  // "Select" — switch to multi-select mode with THIS email pre-selected so
+  // "Select" - switch to multi-select mode with THIS email pre-selected so
   // the user can quickly fan-out to neighbours with the bulk bar.
-  // Match the chat-sidebar Select icon — a thick bullet character reads
+  // Match the chat-sidebar Select icon - a thick bullet character reads
   // much heavier than a small SVG circle. Nudged up 2px so its visual
   // center lines up with the SVG icons above (which sit a bit higher).
   const _selectIcon = '<span style="font-size:16px;line-height:1;position:relative;top:-2px;">●</span>';
@@ -8118,7 +8118,7 @@ function _showCardMenu(em, anchor) {
     });
     dropdown.appendChild(item);
   }
-  // Mobile-only Cancel item — explicit close for touch users. CSS hides it
+  // Mobile-only Cancel item - explicit close for touch users. CSS hides it
   // on desktop where outside-click already dismisses cleanly.
   const _cancelIco = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
   const cancelItem = document.createElement('div');
@@ -8138,7 +8138,7 @@ function _showCardMenu(em, anchor) {
   }, (ev) => !dropdown.contains(ev.target) && ev.target !== anchor);
 }
 
-// Bulk "Actions" dropdown for select mode — Delete is a separate visible button.
+// Bulk "Actions" dropdown for select mode - Delete is a separate visible button.
 function _showBulkActionsMenu(anchor) {
   document.querySelectorAll('.email-card-dropdown').forEach(dismissOrRemove);
   const dropdown = document.createElement('div');
@@ -8160,7 +8160,7 @@ function _showBulkActionsMenu(anchor) {
     it.addEventListener('click', (e) => { e.stopPropagation(); close(); a.action(); });
     dropdown.appendChild(it);
   }
-  // Mobile-only Cancel — matches the per-card and sidebar dropdowns.
+  // Mobile-only Cancel - matches the per-card and sidebar dropdowns.
   const _cancelIco2 = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
   const cancelIt = document.createElement('div');
   cancelIt.className = 'dropdown-item-compact dropdown-cancel-mobile';
@@ -8168,7 +8168,7 @@ function _showBulkActionsMenu(anchor) {
   cancelIt.addEventListener('click', (e) => {
     e.stopPropagation();
     close();
-    // Cancel inside the bulk-Actions menu also exits select mode — matches the
+    // Cancel inside the bulk-Actions menu also exits select mode - matches the
     // documents bulk dropdown.
     state._selectMode = false;
     state._selectedUids.clear();
@@ -8223,7 +8223,7 @@ async function _bulkAction(action) {
   const originalDeleteHtml = deleteBtn?.innerHTML || '';
   const originalCountText = countEl?.textContent || '';
   let busySpinner = null;
-  // Loading state for every bulk action, not just delete — large
+  // Loading state for every bulk action, not just delete - large
   // selections (e.g. 90+ Dones) used to silently hammer the server
   // with sequential requests and the user got zero feedback. Now the
   // Actions button (or Delete button) shows a whirlpool + verb-ing
@@ -8272,7 +8272,7 @@ async function _bulkAction(action) {
         await fetch(`${API_BASE}/api/email/delete/${uid}?folder=${encodeURIComponent(state._libFolder)}${_acct()}`, { method: 'DELETE' });
       } else if (action === 'done') {
         // uid may come back from the Set as a string while em.uid is
-        // numeric (or vice versa) — coerce both sides so the in-memory
+        // numeric (or vice versa) - coerce both sides so the in-memory
         // state actually flips and the post-loop re-render shows the
         // done checkmark.
         const em = state._libEmails.find(e => String(e.uid) === String(uid));
@@ -8335,7 +8335,7 @@ async function _bulkAction(action) {
       const removed = new Set(uids.map(uid => String(uid)));
       state._libEmails = state._libEmails.filter(e => !removed.has(String(e.uid)));
     } else if (action === 'done' && state._libFilter === 'undone') {
-      // The undone filter is a "show only not-done" view — after marking
+      // The undone filter is a "show only not-done" view - after marking
       // selected emails done, they no longer match. Animate them out and
       // drop them from the local list so the view reflects the filter
       // instead of leaving freshly-done cards sitting there.
@@ -8518,7 +8518,7 @@ function _handleAiReplyButton(ev, em, data) {
 
 function _hasMultipleRecipients(data) {
   // Count distinct addresses in To + Cc (minus the current user). Empty
-  // fallback when the user's address isn't yet known — no exclusion.
+  // fallback when the user's address isn't yet known - no exclusion.
   const myAddress = (window._myEmailAddress || '').toLowerCase();
   const extractEmails = (str) => {
     if (!str) return [];
@@ -8655,7 +8655,7 @@ function _showLibRemindSubmenu(em, parentDropdown) {
     tmp.addEventListener('blur', () => setTimeout(() => tmp.remove(), 200));
   });
   parentDropdown.appendChild(customItem);
-  // "Note" — prompts for free-text and saves it as a note without a
+  // "Note" - prompts for free-text and saves it as a note without a
   // due_date, so no timer/reminder fires.
   const noteItem = document.createElement('div');
   noteItem.className = 'dropdown-item-compact';
@@ -8757,7 +8757,7 @@ async function _createEmailReplyReminder(em, dueDate, customText = '') {
 
 // Sanitize untrusted HTML email bodies before injecting via innerHTML.
 //
-// Denylist sanitizer — has to block every well-known XSS sink:
+// Denylist sanitizer - has to block every well-known XSS sink:
 //   - <script>, <iframe>, <object>, <embed>, <form>, <style>, <link>
 //   - SVG entirely (event handlers, <use href="javascript:">, <foreignObject>,
 //     <animate>, <set>, etc.). Email clients don't need SVG.
@@ -8766,6 +8766,6 @@ async function _createEmailReplyReminder(em, dueDate, customText = '') {
 //     <frameset>, <applet>, <portal>.
 //   - on* attributes; javascript:/vbscript:/data: URLs in href/src/srcset/
 //     formaction/action/background/poster/data attributes.
-//   - srcdoc (defensive — iframe is already nuked).
+//   - srcdoc (defensive - iframe is already nuked).
 //   - inline `style` declarations containing javascript: or expression().
 // _sanitizeHtml / _escLinkify live in ./emailLibrary/utils.js

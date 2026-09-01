@@ -2,7 +2,7 @@
 
 The edit/delete/pause/run actions of ``do_manage_tasks`` previously gated with
 ``if owner and task.owner and task.owner != owner``. The middle term made the
-check a no-op whenever the task had no owner — the state a scheduled task is in
+check a no-op whenever the task had no owner - the state a scheduled task is in
 when it was created in no-login mode (or via the localhost middleware bypass)
 before the periodic legacy-owner sweep reassigns it to the admin user. So any
 authenticated user's agent could edit, delete, pause, or *run* another tenant's
@@ -128,7 +128,7 @@ async def test_edit_allowed_for_matching_owner():
 
 @pytest.mark.asyncio
 async def test_edit_allowed_in_no_login_mode():
-    # owner is None when auth is disabled — single-user mode keeps full access
+    # owner is None when auth is disabled - single-user mode keeps full access
     # to shared (owner-less) tasks, exactly as `list` returns them unfiltered.
     _seed("shared-task", None)
     out = await do_manage_tasks(

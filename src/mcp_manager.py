@@ -37,7 +37,7 @@ def _format_mcp_connection_error(name: str, command: str = "", args: Optional[Li
 
 # Caps for rendering untrusted MCP tool schemas into the agent prompt (issue #2660).
 # MCP servers are third-party/user-added, so field names and parameter counts are
-# untrusted input — bound them so an odd or hostile schema cannot distort the prompt.
+# untrusted input - bound them so an odd or hostile schema cannot distort the prompt.
 _MCP_PARAM_MAX = 12   # max params rendered per tool
 _MCP_TOKEN_MAX = 40   # max chars per rendered name / type token
 _MCP_HINT_MAX = 300   # total-length backstop for the whole hint
@@ -62,7 +62,7 @@ def _format_mcp_params(input_schema: Any) -> str:
 
     Without this the agent only sees a tool's name + description and has to
     guess its arguments (issue #2509). Produces e.g.
-    ` Args (JSON): {"path": string (required), "limit": integer}` — names,
+    ` Args (JSON): {"path": string (required), "limit": integer}` - names,
     coarse types, and required-ness, kept short so it stays prompt-friendly.
     Returns "" when there are no parameters.
 
@@ -109,7 +109,7 @@ def mcp_tool_is_readonly(tool: Dict) -> bool:
 
     Prefer the server's own annotations (readOnlyHint / destructiveHint). When
     absent, fall back to a tool-name verb heuristic, and FAIL CLOSED (treat as
-    write) for anything that doesn't clearly read — plan mode must not run a
+    write) for anything that doesn't clearly read - plan mode must not run a
     write tool just because its intent is ambiguous.
     """
     ann = tool.get("annotations")
@@ -127,7 +127,7 @@ def mcp_tool_is_readonly(tool: Dict) -> bool:
         return True
     if read_hint is False or destructive is True:
         return False
-    # No usable hint — heuristic on the tool name's leading verb.
+    # No usable hint - heuristic on the tool name's leading verb.
     name = (tool.get("name") or "").lower()
     return name.startswith(_MCP_READONLY_VERBS)
 
@@ -575,7 +575,7 @@ class McpManager:
         """
         schemas = []
         for server_id, tools in self._tools.items():
-            # Skip builtin Python servers — they use the code-block tool format
+            # Skip builtin Python servers - they use the code-block tool format
             # But include NPX-based builtins (like browser) which need function calling
             if self.is_builtin(server_id) and server_id != "builtin_browser":
                 continue
@@ -674,7 +674,7 @@ class McpManager:
         lines = ["\n\nYou also have access to external MCP tool servers. These tools are called via native function calling:"]
         by_server = {}
         for t in tools:
-            # Skip builtin Python servers — they're already in the agent prompt
+            # Skip builtin Python servers - they're already in the agent prompt
             # But include NPX-based builtins (like browser) which aren't hardcoded
             if self.is_builtin(t["server_id"]) and t["server_id"] != "builtin_browser":
                 continue

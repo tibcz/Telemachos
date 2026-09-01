@@ -1,4 +1,4 @@
-"""Backward-compat shim — canonical location is routes/task/task_routes.py.
+"""Backward-compat shim - canonical location is routes/task/task_routes.py.
 
 This module is replaced in ``sys.modules`` by the canonical module object so
 that ``import routes.task_routes``, ``from routes.task_routes import X``,

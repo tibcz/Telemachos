@@ -4,7 +4,7 @@ contains an asterisk.
 `parse_markdown_to_values` is the read-back path for GET .../export-pdf, the
 export preview, and prepare-signed-reply. Its bullet regexes matched the bold
 label with `[^*]+`, so they could not match a label like "Email *" / "State *"
-/ "Signature *" — the near-universal required-field marker. The value then
+/ "Signature *" - the near-universal required-field marker. The value then
 stayed empty and the exported PDF (and signed-reply attachment) came out blank
 for that field, with no error.
 """

@@ -3,7 +3,7 @@
 The ChatGPT Subscription access token is a short-lived OAuth bearer re-resolved
 (and refreshed) on every request. resolve_session_auth() may set it on the
 in-memory session for the current request, but it must never write it back into
-the sessions table — otherwise the live token sits at rest as
+the sessions table - otherwise the live token sits at rest as
 "Authorization: Bearer ...". Only the encrypted refresh token in
 ProviderAuthSession is allowed to persist.
 """

@@ -1,4 +1,4 @@
-"""Tests for agent_loop.py — _detect_admin_intent, _compute_final_metrics,
+"""Tests for agent_loop.py - _detect_admin_intent, _compute_final_metrics,
 and _append_tool_results. Uses mock imports to avoid loading the full app stack."""
 
 import sys
@@ -332,7 +332,7 @@ class TestComputeFinalMetrics:
 
 
 # ---------------------------------------------------------------------------
-# _append_tool_results — native tool-call message shaping
+# _append_tool_results - native tool-call message shaping
 # ---------------------------------------------------------------------------
 
 class TestAppendToolResultsNativeContent:
@@ -426,7 +426,7 @@ class TestAppendToolResultsThoughtSignature:
 
 
 # ---------------------------------------------------------------------------
-# web_search sources extraction — key lookup regression (#443)
+# web_search sources extraction - key lookup regression (#443)
 # ---------------------------------------------------------------------------
 
 import json as _json

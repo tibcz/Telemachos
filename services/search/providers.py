@@ -15,7 +15,7 @@ from .query import build_enhanced_query
 
 logger = logging.getLogger(__name__)
 
-# Provider registry — maps setting value to (label, needs_key, needs_url)
+# Provider registry - maps setting value to (label, needs_key, needs_url)
 PROVIDER_INFO = {
     "searxng":  ("SearXNG",           False, True),
     "brave":    ("Brave Search",      True,  False),
@@ -141,13 +141,13 @@ def searxng_search_api(query: str, count: Optional[int] = None, categories: str 
     headers = {"User-Agent": WEB_FETCH_USER_AGENT}
     if api_key:
         headers["Authorization"] = f"Bearer {api_key}"
-    # News/fresh queries do badly in the 'general' category — it favours
+    # News/fresh queries do badly in the 'general' category - it favours
     # encyclopedic/tourism pages, ignores recency, and (with no language pin)
     # bleeds in foreign-language results. When the agent layer detected
     # freshness (time_filter) or the query reads like a news lookup, switch to
     # the 'news' category, constrain recency, and pin language to English so a
     # search like "Canada latest news" returns actual news instead of Wikipedia.
-    # Pin English for ALL searches — without it, SearXNG geolocates / mixes
+    # Pin English for ALL searches - without it, SearXNG geolocates / mixes
     # languages and brand-ambiguous terms bleed in foreign SEO pages (e.g.
     # "Odyssey" → Honda Japan, "Trojan" → Japanese malware blogs, "Polyphemus"
     # → Chinese math forums). The news path already did this; general didn't.
@@ -162,13 +162,13 @@ def searxng_search_api(query: str, count: Optional[int] = None, categories: str 
     if is_news and categories == "general":
         params["categories"] = "news"
         if time_filter in ("day", "week", "month", "year"):
-            # 'day' is too sparse on most SearXNG news engines — widen to a week
+            # 'day' is too sparse on most SearXNG news engines - widen to a week
             # so there's enough volume; the news category already biases recent.
             params["time_range"] = "week" if time_filter in ("day", "week") else time_filter
     else:
         params["categories"] = categories
         # Route general queries to engines that aren't blocked (default general
-        # set returns 0 on this instance — see _GENERAL_ENGINES).
+        # set returns 0 on this instance - see _GENERAL_ENGINES).
         if categories == "general" and _GENERAL_ENGINES:
             params["engines"] = _GENERAL_ENGINES
     try:

@@ -1,4 +1,4 @@
-"""Regression guard for #1661 — GET /api/search/config must not leak API keys.
+"""Regression guard for #1661 - GET /api/search/config must not leak API keys.
 
 `get_search_config()` returned `SEARCH_CONFIG.copy()`, and `update_search_config()`
 cached the decrypted Brave key into that shared global at startup
@@ -45,7 +45,7 @@ def test_get_search_config_never_returns_a_secret(stub_settings, monkeypatch):
 
 
 def test_is_secret_key_keeps_presence_flag():
-    # has_api_key matches the *_api_key suffix, but it is a bool — the isinstance
+    # has_api_key matches the *_api_key suffix, but it is a bool - the isinstance
     # guard in get_search_config keeps it; only string-valued secrets are dropped.
     assert core._is_secret_key("brave_api_key") is True
     assert core._is_secret_key("has_api_key") is True

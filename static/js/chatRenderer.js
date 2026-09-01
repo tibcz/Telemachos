@@ -1,5 +1,5 @@
 // static/js/chatRenderer.js
-// Extracted from chat.js — message rendering, sources, images, metrics
+// Extracted from chat.js - message rendering, sources, images, metrics
 
 import uiModule from './ui.js';
 import markdownModule from './markdown.js';
@@ -20,7 +20,7 @@ const COPY_ICON = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" s
 const CHECK_ICON = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
 const PAPERCLIP_ICON = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 17.93 8.8l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>';
 
-/** Sanitize a URL for use in href — only allow http(s) and protocol-relative. */
+/** Sanitize a URL for use in href - only allow http(s) and protocol-relative. */
 function _safeHref(url) {
   if (!url) return '#';
   try {
@@ -130,7 +130,7 @@ export function buildAttachCards(attachments) {
 
       if (att.id || att.previewUrl) {
         const img = document.createElement('img');
-        // Small cached thumbnail — the preview is tiny, no need to pull the
+        // Small cached thumbnail - the preview is tiny, no need to pull the
         // full-resolution photo. Click still opens the full image.
         img.alt = att.name || 'Image';
         img.loading = 'lazy';
@@ -223,7 +223,7 @@ export function buildAttachCards(attachments) {
 
 // Re-render the attachment cards of an already-rendered message. Used to swap
 // in real upload ids (and image thumbnails) on the optimistic user bubble once
-// uploadPending() resolves — otherwise image previews only appear after a
+// uploadPending() resolves - otherwise image previews only appear after a
 // refresh, because the bubble is rendered before the upload assigns ids.
 export function updateMessageAttachments(msgWrap, attachments) {
   if (!msgWrap || !attachments?.length) return;
@@ -235,7 +235,7 @@ export function updateMessageAttachments(msgWrap, attachments) {
 }
 
 // Quick full-size preview when the user taps a chat photo thumbnail. Just an
-// overlay with the original image centered — no Gallery panel, no editor.
+// overlay with the original image centered - no Gallery panel, no editor.
 function _openImageLightbox(att) {
   if (!att?.id) return;
   const overlay = document.createElement('div');
@@ -282,7 +282,7 @@ function _openImageLightbox(att) {
   document.body.appendChild(overlay);
 }
 
-// Vision/OCR editor modal — opened from the corner "Aa" button on a chat photo
+// Vision/OCR editor modal - opened from the corner "Aa" button on a chat photo
 // thumbnail. Lets the user view and correct the text the vision model fed to
 // the LLM (e.g. when OCR misreads a word). Persists to the server's vision
 // cache (PUT /api/upload/{id}/vision), so any subsequent message that
@@ -401,7 +401,7 @@ function _openVisionEditor(att, userMsgEl) {
     })
     .catch(() => {
       ta.value = '';
-      ta.placeholder = 'Could not load OCR text — type your correction and save.';
+      ta.placeholder = 'Could not load OCR text - type your correction and save.';
       ta.disabled = false;
       saveBtn.disabled = false;
       regenBtn.disabled = !userMsgEl;
@@ -411,16 +411,16 @@ function _openVisionEditor(att, userMsgEl) {
 // Tool call syntax patterns to strip from displayed text
 const TOOL_CALL_RE = /\[TOOL_CALL\][\s\S]*?\[\/TOOL_CALL\]/gi;
 // Strip fenced tool-call blocks that look like structured invocations, not
-// regular code examples. The tool tags are NOT hard-coded here — they are the
+// regular code examples. The tool tags are NOT hard-coded here - they are the
 // backend's authoritative TOOL_TAGS set, fetched once from GET /api/tools and
 // built into EXEC_FENCE_RE at load. TOOL_TAGS (src/agent_tools/__init__.py) is
 // thus the single source: the live-strip list can never drift from the backend
-// or miss a future tool (#3993). bash/python are carved out on purpose — they
+// or miss a future tool (#3993). bash/python are carved out on purpose - they
 // are languages a user may legitimately have asked the model to show, not tool
 // invocations.
 //
 // Until the fetch resolves, EXEC_FENCE_RE stays null and exec fences aren't
-// stripped — normally a sub-second window before the first stream. If the fetch
+// stripped - normally a sub-second window before the first stream. If the fetch
 // fails it stays null for the rest of the session (logged below), so live exec
 // fences won't be stripped until reload. Either way the backend already strips
 // persisted history (src/tool_parsing.py builds the same regex from TOOL_TAGS),
@@ -447,7 +447,7 @@ function stripExecutedFence(match, tag, inline, body) {
 
 async function loadExecFenceRegex() {
   try {
-    // Shared with admin.js, and — more to the point — with the other copies of
+    // Shared with admin.js, and - more to the point - with the other copies of
     // this module: chatRenderer.js is imported under three different ?v= query
     // strings, so it is instantiated three times per load and used to issue
     // three identical /api/tools requests. appConfig.js is imported by one
@@ -492,7 +492,7 @@ const QWEN_BARE_MARKER_RE = /(?:^|[\t\r\n ])(?:\/?\|end\||\|end|end\|)(?=[\t\r\n
 const TOOL_NARRATION_RE = /(?:The (?:result|output) shows?:?\s*)?-?\s*(?:stdout|stderr|exit_code):\s*.+/gi;
 
 
-// Model pricing table — per million tokens
+// Model pricing table - per million tokens
 // Model info: pricing (per 1M tokens) + context window length
 const MODEL_INFO = {
   // --- Anthropic ---
@@ -819,7 +819,7 @@ export function getModelCost(modelName, inputTokens, outputTokens) {
 
 /**
  * Is this endpoint a local / self-hosted model server (vLLM, Ollama, …)?
- * Local models are free, so we must NOT bill them at cloud rates — the
+ * Local models are free, so we must NOT bill them at cloud rates - the
  * pricing table matches on a name substring, so a local `qwen2.5-coder`
  * would otherwise be charged like cloud `qwen2.5`. When the serving host is
  * loopback, a private LAN range, Tailscale CGNAT (100.64–100.127.x), a
@@ -834,7 +834,7 @@ export function isLocalEndpoint(url) {
   if (host === 'localhost' || host === '0.0.0.0' || host === 'host.docker.internal' || host.endsWith('.local')) return true;
   if (typeof window !== 'undefined' && window.location && host === window.location.hostname) return true;
   // A single-label hostname (no dot) is an internal/Docker service name
-  // (e.g. "nim-nano", "llamaswap", "nemotron-super-49b") or a LAN shortname —
+  // (e.g. "nim-nano", "llamaswap", "nemotron-super-49b") or a LAN shortname -
   // never a public API, which always needs an FQDN. Treat as local → free.
   // (Without this, container-name endpoints get billed at cloud rates because
   // the pricing table matches on a name substring, e.g. "nemotron".)
@@ -1105,7 +1105,7 @@ export function stripToolBlocks(text) {
 
 /**
  * Plain-text payload for the message copy buttons: the reply as the renderer
- * displays it — tool blocks and <think> reasoning stripped. dataset.raw keeps
+ * displays it - tool blocks and <think> reasoning stripped. dataset.raw keeps
  * the full model output (chat.js even embeds the elapsed time into the
  * <think> tag for reload persistence), so copying it verbatim leaks the
  * thinking block (#3722). Falls back to the raw text when stripping leaves
@@ -1151,7 +1151,7 @@ export function buildSourcesBox(sources, type, expanded) {
 }
 
 /**
- * Build the RAG "Sources (N documents)" box — mirrors the live render in
+ * Build the RAG "Sources (N documents)" box - mirrors the live render in
  * chat.js so persisted rag_sources survive a refresh. Items carry a
  * filename, similarity %, and snippet (not URLs, unlike web sources).
  * @param {Array<{filename, similarity, snippet}>} sources
@@ -1320,16 +1320,16 @@ function resolveDocumentPlaceholderLinks(text, metadata) {
   });
 }
 
-// Jump-to-entity anchors — the agent emits links like
+// Jump-to-entity anchors - the agent emits links like
 //   [New Chat](#session-89effa28)
 //   [Notes](#document-abc123)
 //   [Reminder](#note-42)
 // and the chat-history click delegate turns them into navigation
 // instead of default in-page anchor jumps. Each prefix routes to the
-// matching module via a dynamic import (avoids circular deps —
+// matching module via a dynamic import (avoids circular deps -
 // sessions.js itself imports chatRenderer.js).
 document.addEventListener('click', function(e) {
-  // Walk past Text nodes — clicking link text yields a Text node target
+  // Walk past Text nodes - clicking link text yields a Text node target
   // whose .closest is undefined, so preventDefault never fires and the
   // browser performs a default hash-navigation that resets the session.
   let _t = e.target;
@@ -1653,7 +1653,7 @@ export function hideWelcomeScreen() {
   const cc = document.getElementById('chat-container');
   if (ws) ws.classList.add('hidden');
   if (cc) cc.classList.remove('welcome-active');
-  // Update send button — switches from muted arrow to + Chat
+  // Update send button - switches from muted arrow to + Chat
   if (window._updateSendBtnIcon) setTimeout(window._updateSendBtnIcon, 50);
   const ib = document.getElementById('incognito-btn');
   if (ib) ib.style.display = ib.classList.contains('active') ? '' : 'none';
@@ -1680,7 +1680,7 @@ export function showWelcomeScreen() {
     _msg.dispatchEvent(new Event('input', { bubbles: true }));
   }
   // Re-trigger the L→R clip-wipe reveal on the welcome name each time the
-  // welcome screen is shown (new session, deleted last session, etc.) — without
+  // welcome screen is shown (new session, deleted last session, etc.) - without
   // this, the CSS animation only fires on initial DOM insertion.
   const wn = document.querySelector('.welcome-name');
   if (wn) {
@@ -1689,7 +1689,7 @@ export function showWelcomeScreen() {
     void wn.offsetHeight;
     wn.style.animation = '';
   }
-  // Update send button — switches from + Chat to muted arrow on empty session
+  // Update send button - switches from + Chat to muted arrow on empty session
   if (window._updateSendBtnIcon) setTimeout(window._updateSendBtnIcon, 50);
   const ib = document.getElementById('incognito-btn');
   const _researchChk = document.getElementById('research-toggle');
@@ -1798,7 +1798,7 @@ export function createMsgFooter(msgElement) {
     moreBtn.textContent = '\u00B7\u00B7\u00B7';
     moreBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      // Toggle overflow menu — close any existing one first (through its own
+      // Toggle overflow menu - close any existing one first (through its own
       // dismiss so the Escape registry entry goes with it).
       const existing = document.querySelector('.msg-overflow-menu');
       if (existing) {
@@ -2053,7 +2053,7 @@ export function displayMetrics(messageElement, metrics) {
     outputTokens,
   );
 
-  // Nothing useful to show — bail out (only if ALL metrics are missing)
+  // Nothing useful to show - bail out (only if ALL metrics are missing)
   if (!responseTime && !inputTokens && !outputTokens && tps == null && !ctxPct) return;
 
   // Rendering can occur when metrics arrive and again after [DONE]. The
@@ -2161,7 +2161,7 @@ export function displayMetrics(messageElement, metrics) {
     const ctxColor = ctxPct >= 85 ? 'var(--red, #e06c75)' : ctxPct >= 70 ? '#ff9900' : 'var(--green, #98c379)';
     ctxRing = document.createElement('span');
     ctxRing.className = 'ctx-ring';
-    ctxRing.title = `${ctxPct}% context used — click for details`;
+    ctxRing.title = `${ctxPct}% context used - click for details`;
     ctxRing.style.cursor = 'pointer';
     ctxRing.style.setProperty('--ctx-color', ctxColor);
     ctxRing.innerHTML = `<svg width="14" height="14" viewBox="0 0 14 14">
@@ -2240,7 +2240,7 @@ export function displayMetrics(messageElement, metrics) {
             clearInterval(waveInterval);
             if (res.ok) {
               const data = await res.json();
-              // Reload session — the compacted history will show
+              // Reload session - the compacted history will show
               if (window.sessionModule) await window.sessionModule.selectSession(sid);
               // Scroll to the compacted message (first msg with compacted metadata)
               setTimeout(() => {
@@ -2645,7 +2645,7 @@ export function addMessage(role, content, modelName, metadata) {
           wrap.appendChild(roleEl);
           const body = document.createElement('div');
           body.className = 'body';
-          // Check if this is the last text round — sources go on top of final response
+          // Check if this is the last text round - sources go on top of final response
           var agentSourcesPrefix = '';
           var isLastTextRound = true;
           for (let rr = r + 1; rr < maxRound; rr++) {
@@ -2660,7 +2660,7 @@ export function addMessage(role, content, modelName, metadata) {
           if (isLastTextRound && metadata?.research_findings?.length) {
             agentFindingsSuffix = buildFindingsBox(metadata.research_findings);
           }
-          // RAG document sources — restored on the final text round.
+          // RAG document sources - restored on the final text round.
           if (isLastTextRound && metadata?.rag_sources?.length) {
             agentFindingsSuffix += buildRagSourcesBox(metadata.rag_sources);
           }
@@ -2712,7 +2712,7 @@ export function addMessage(role, content, modelName, metadata) {
                 let cls = 'diff-ctx', text = line;
                 if (line.startsWith('+++') || line.startsWith('---')) cls = 'diff-meta';
                 else if (line.startsWith('@@')) cls = 'diff-hunk';
-                // Drop the leading diff marker (+/-/space) — colour encodes add/del.
+                // Drop the leading diff marker (+/-/space) - colour encodes add/del.
                 else if (line.startsWith('+')) { cls = 'diff-add'; text = line.slice(1); }
                 else if (line.startsWith('-')) { cls = 'diff-del'; text = line.slice(1); }
                 else if (line.startsWith(' ')) { text = line.slice(1); }
@@ -2728,7 +2728,7 @@ export function addMessage(role, content, modelName, metadata) {
             // Click handling is delegated globally \u2014 see chat.js init.
             threadWrap.appendChild(node);
           }
-          // Check if next round has text — extend line down to connect
+          // Check if next round has text - extend line down to connect
           const nextTxt = (roundTexts[r + 1] || '').trim();
           if (nextTxt) threadWrap.classList.add('has-bottom');
           lastWrap = threadWrap;
@@ -2765,8 +2765,8 @@ export function addMessage(role, content, modelName, metadata) {
     // The self-wake mechanism injects "Did you finish?" as a user message
     // (or persisted history shows a "[Task] Self-check: <id>" envelope)
     // so the agent loop re-enters and re-checks status. Render as a
-    // normal user-style bubble — same chrome as a real user message,
-    // just with role "Supervisor" and a short summary body — instead of
+    // normal user-style bubble - same chrome as a real user message,
+    // just with role "Supervisor" and a short summary body - instead of
     // a slim system chip. Matches chat style and integrates cleanly
     // into the conversation flow.
     let _isWakeCheck = !!(metadata?.wake_check_in || metadata?.hidden_from_user_view);
@@ -2778,7 +2778,7 @@ export function addMessage(role, content, modelName, metadata) {
       }
     }
     if (_isWakeCheck) {
-      // Supervisor self-check messages are an internal control signal —
+      // Supervisor self-check messages are an internal control signal -
       // skip rendering entirely so they don't show up in the conversation.
       return null;
     }
@@ -2869,7 +2869,7 @@ export function addMessage(role, content, modelName, metadata) {
     if (role === 'assistant' && metadata?.research_findings?.length) {
       findingsSuffix = buildFindingsBox(metadata.research_findings);
     }
-    // RAG document sources — restored from metadata so they survive refresh.
+    // RAG document sources - restored from metadata so they survive refresh.
     if (role === 'assistant' && metadata?.rag_sources?.length) {
       findingsSuffix += buildRagSourcesBox(metadata.rag_sources);
     }
@@ -2887,7 +2887,7 @@ export function addMessage(role, content, modelName, metadata) {
 
     // The vision/OCR caption is stripped from the displayed text above (so the
     // bubble doesn't show the raw model output) but no longer rendered as an
-    // inline collapsible — the user can still view/edit it via the "Caption"
+    // inline collapsible - the user can still view/edit it via the "Caption"
     // button on the photo thumbnail. _visionBlocks is intentionally left unused
     // so the parsing-and-strip side-effect on `text` still happens.
     void _visionBlocks;
@@ -2931,7 +2931,7 @@ export function addMessage(role, content, modelName, metadata) {
       stoppedIndicator.className = 'stopped-indicator';
       const stoppedLabel = document.createElement('span');
       // Differentiate between "stopped mid-stream" (had content, can continue)
-      // and "cancelled before any content" — the latter has no Continue affordance.
+      // and "cancelled before any content" - the latter has no Continue affordance.
       stoppedLabel.textContent = metadata.cancelled
         ? '[Cancelled by user]'
         : '[Message interrupted]';
@@ -3062,7 +3062,7 @@ export function addMessage(role, content, modelName, metadata) {
 
     if (role === 'assistant') {
       // The "N pinned" / "N recalled" pill in the footer reads from
-      // wrap._memoriesUsed — propagate it from saved metadata so the pill
+      // wrap._memoriesUsed - propagate it from saved metadata so the pill
       // survives a page refresh (live-stream path sets it via SSE, but
       // history reloads need this assignment).
       if (metadata?.memories_used?.length) wrap._memoriesUsed = metadata.memories_used;

@@ -2,7 +2,7 @@
 
 ``add_directory`` clears exclusions for files inside the directory being added.
 It previously used a raw ``path.startswith(directory)`` test, which also matched
-sibling directories sharing a name prefix — so adding ``/docs`` would silently
+sibling directories sharing a name prefix - so adding ``/docs`` would silently
 drop exclusions for files under ``/docs2``. The match must respect a path
 boundary.
 """
@@ -32,7 +32,7 @@ def test_sibling_directory_exclusions_survive(tmp_path):
 
     mgr.add_directory(str(docs))
 
-    # The sibling-directory exclusion must remain — /docs2 is not under /docs.
+    # The sibling-directory exclusion must remain - /docs2 is not under /docs.
     assert sibling_excluded in mgr.excluded_files
 
 

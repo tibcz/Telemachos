@@ -1,7 +1,7 @@
 /**
  * Pure helpers + constants for layers and adjustment sub-layers.
  *
- * Everything in this module is stateless — feed in a layer object and
+ * Everything in this module is stateless - feed in a layer object and
  * get back a value. The legacy gallery editor's module-level helpers
  * re-export from here so existing call sites keep working unchanged.
  */

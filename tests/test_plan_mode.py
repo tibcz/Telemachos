@@ -10,7 +10,7 @@ contract:
 - It fails CLOSED: if the tool-schema list can't be loaded, it still blocks a
   known-mutating set rather than returning nothing (which would allow mutations).
 
-Pure-function tests — no FastAPI app boot, no DB.
+Pure-function tests - no FastAPI app boot, no DB.
 """
 
 from src.tool_security import (

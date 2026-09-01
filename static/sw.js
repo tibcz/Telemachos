@@ -1,4 +1,4 @@
-// static/sw.js — Telemachos PWA Service Worker
+// static/sw.js - Telemachos PWA Service Worker
 // Strategy:
 //   - HTML (navigation): stale-while-revalidate. Instant open from cache,
 //     background refresh so the next open has latest HTML.
@@ -23,11 +23,11 @@ const KATEX_FONTS = [
 ].map(name => `/static/lib/katex/fonts/KaTeX_${name}.woff2`);
 
 
-// Two lists, two jobs — they are no longer the same set and must not be
+// Two lists, two jobs - they are no longer the same set and must not be
 // "resynced" back into one:
 //
 //   PRECACHE       = the app shell. Mirrors the <script type="module"> tags
-//                    and <link rel="stylesheet"> in index.html — i.e. what
+//                    and <link rel="stylesheet"> in index.html - i.e. what
 //                    loads before first paint.
 //   PANEL_PRECACHE = modules that index.html deliberately does NOT load,
 //                    because js/panels.js imports them on first use. They are
@@ -101,7 +101,7 @@ const PRECACHE = [
 // Lazily-imported panel modules (js/panels.js). Not in index.html by design;
 // precached so the panel still opens with no network.
 const PANEL_PRECACHE = [
-  // Image editor — galleryEditor.js and its js/editor/ graph.
+  // Image editor - galleryEditor.js and its js/editor/ graph.
   '/static/js/galleryEditor.js',
   '/static/js/editor/ai-inpaint.js?v=20260708match1',
   '/static/js/editor/ai-models.js',
@@ -161,7 +161,7 @@ const PANEL_PRECACHE = [
 self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then(cache =>
-      // addAll is atomic — if any item fails, none are cached. Use individual
+      // addAll is atomic - if any item fails, none are cached. Use individual
       // puts so a single 404 can't block the whole install.
       Promise.all(
         [...PRECACHE, ...PANEL_PRECACHE].map(url =>
@@ -189,7 +189,7 @@ self.addEventListener('fetch', (e) => {
   // Never touch API calls or non-GET.
   if (url.pathname.startsWith('/api/') || e.request.method !== 'GET') return;
 
-  // HTML navigation: stale-while-revalidate the app shell — but ONLY for the
+  // HTML navigation: stale-while-revalidate the app shell - but ONLY for the
   // SPA root. Other navigations (e.g. a deep-linked /static/*.html page) must
   // go to the network/static handlers below; otherwise every navigation was
   // served the app index, replacing the page the user actually asked for.
@@ -207,7 +207,7 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
-  // JS/CSS: network-first — always try the network so code/style edits show up
+  // JS/CSS: network-first - always try the network so code/style edits show up
   // on a normal reload; fall back to cache only when offline.
   if (url.pathname.startsWith('/static/') && /\.(js|css)(\?|$)/.test(url.pathname + url.search)) {
     e.respondWith(

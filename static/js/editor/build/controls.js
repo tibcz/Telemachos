@@ -1,7 +1,7 @@
 /**
  * Build the editor's right-panel controls innerHTML.
  *
- * Returns the string — caller creates the wrapper element, attaches its
+ * Returns the string - caller creates the wrapper element, attaches its
  * own touch / swipe-to-dismiss listeners, then sets innerHTML. Per-tool
  * sections are all toggled `display:none` here; the tool-switch handler
  * in galleryEditor.js shows the section matching the active tool.
@@ -26,7 +26,7 @@ export function controlsHTML({ color, brushSize, wandTolerance }) {
       <div class="ge-control-row ge-eraser-row ge-sel-refine" id="ge-lasso-refine-feather" style="display:none;">
         <span class="ge-eraser-preview" id="ge-lasso-feather-preview" aria-hidden="true"></span>
         <label>Feather <span id="ge-lasso-feather-label">0px</span></label>
-        <input type="range" id="ge-lasso-feather" min="0" max="200" value="0" title="Soften the selection edge — feathers the mask alpha." />
+        <input type="range" id="ge-lasso-feather" min="0" max="200" value="0" title="Soften the selection edge - feathers the mask alpha." />
       </div>
       <div class="ge-control-row ge-eraser-row ge-sel-refine" id="ge-lasso-refine-grow" style="display:none;">
         <span class="ge-eraser-preview" id="ge-lasso-grow-preview" aria-hidden="true"></span>
@@ -68,7 +68,7 @@ export function controlsHTML({ color, brushSize, wandTolerance }) {
       <div class="ge-control-row ge-eraser-row ge-sel-refine" id="ge-wand-refine-feather" style="display:none;">
         <span class="ge-eraser-preview" id="ge-wand-feather-preview" aria-hidden="true"></span>
         <label>Feather <span id="ge-wand-feather-label">0px</span></label>
-        <input type="range" id="ge-wand-feather" min="0" max="200" value="0" title="Soften the selection edge — feathers the mask alpha." />
+        <input type="range" id="ge-wand-feather" min="0" max="200" value="0" title="Soften the selection edge - feathers the mask alpha." />
       </div>
       <div class="ge-control-row ge-eraser-row ge-sel-refine" id="ge-wand-refine-grow" style="display:none;">
         <span class="ge-eraser-preview" id="ge-wand-grow-preview" aria-hidden="true"></span>
@@ -133,16 +133,16 @@ export function controlsHTML({ color, brushSize, wandTolerance }) {
     </div>
     <div class="ge-inpaint-section" id="ge-inpaint-section" style="display:none;">
       <div class="ge-inpaint-popover-head" data-inpaint-drag>
-        <div class="ge-section-title ge-section-title-with-help ge-inpaint-popover-title"><span>INPAINT</span><span class="ge-section-help" tabindex="0" role="img" aria-label="How inpaint works" title="Brush the area you want the AI to redraw — the red preview marks the mask region. Use Paint to add, Erase to subtract (or hold Ctrl+Alt to flip for one stroke). Generate fills with what your prompt describes; Remove fills with the surrounding background.">?</span></div>
+        <div class="ge-section-title ge-section-title-with-help ge-inpaint-popover-title"><span>INPAINT</span><span class="ge-section-help" tabindex="0" role="img" aria-label="How inpaint works" title="Brush the area you want the AI to redraw - the red preview marks the mask region. Use Paint to add, Erase to subtract (or hold Ctrl+Alt to flip for one stroke). Generate fills with what your prompt describes; Remove fills with the surrounding background.">?</span></div>
         <button class="ge-inpaint-popover-close" id="ge-inpaint-popover-close" type="button" title="Close inpaint panel" aria-label="Close inpaint panel">&times;</button>
       </div>
-      <div class="ge-section-title ge-section-title-with-help"><span>INPAINT</span><span class="ge-section-help" tabindex="0" role="img" aria-label="How inpaint works" title="Brush the area you want the AI to redraw — the red preview marks the mask region. Use Paint to add, Erase to subtract (or hold Ctrl+Alt to flip for one stroke). Generate fills with what your prompt describes; Remove fills with the surrounding background.">?</span></div>
+      <div class="ge-section-title ge-section-title-with-help"><span>INPAINT</span><span class="ge-section-help" tabindex="0" role="img" aria-label="How inpaint works" title="Brush the area you want the AI to redraw - the red preview marks the mask region. Use Paint to add, Erase to subtract (or hold Ctrl+Alt to flip for one stroke). Generate fills with what your prompt describes; Remove fills with the surrounding background.">?</span></div>
       <p class="ge-section-hint" style="margin-top:0;">
         Generates or removes from the mask you have selected. Set <strong>Strength</strong> before and adjust <strong>Edge feather / stroke</strong> after.
       </p>
       <div class="ge-section-title" style="margin-top:8px;display:flex;align-items:center;gap:6px;">
         <span>Mask Brush</span>
-        <input type="color" class="ge-color-picker ge-inpaint-mask-color" value="#ff6e6e" title="Mask overlay color — purely visual, the model still sees a hard mask either way." />
+        <input type="color" class="ge-color-picker ge-inpaint-mask-color" value="#ff6e6e" title="Mask overlay color - purely visual, the model still sees a hard mask either way." />
       </div>
       <div class="ge-control-row" style="display:flex;gap:4px;margin-bottom:4px;" title="Hold Ctrl+Alt to flip temporarily for a single stroke.">
         <button type="button" class="ge-btn ge-btn-sm ge-inpaint-mode-btn active" id="ge-inpaint-mode-paint" style="flex:1 1 0;display:inline-flex;align-items:center;justify-content:center;gap:4px;">
@@ -211,7 +211,7 @@ export function controlsHTML({ color, brushSize, wandTolerance }) {
       <div class="ge-control-row ge-eraser-row" id="ge-inpaint-postfeather-row" style="display:none;">
         <span class="ge-eraser-preview" id="ge-feather-preview" aria-hidden="true"></span>
         <label>Edge feather <span id="ge-feather-label">0px</span></label>
-        <input type="range" id="ge-feather-slider" min="0" max="200" value="0" title="Blurs the inpaint result's alpha edge — drag to blend the AI fill into the surrounding image. Updates live." />
+        <input type="range" id="ge-feather-slider" min="0" max="200" value="0" title="Blurs the inpaint result's alpha edge - drag to blend the AI fill into the surrounding image. Updates live." />
       </div>
       <div class="ge-control-row ge-eraser-row" id="ge-inpaint-edgestroke-row" style="display:none;">
         <span class="ge-eraser-preview" id="ge-edgestroke-preview" aria-hidden="true"></span>
@@ -243,7 +243,7 @@ export function controlsHTML({ color, brushSize, wandTolerance }) {
       <div class="ge-control-row ge-eraser-row">
         <span class="ge-eraser-preview" id="ge-clone-preview-softness" aria-hidden="true"></span>
         <label>Softness <span id="ge-clone-softness-label">100%</span></label>
-        <input type="range" id="ge-clone-softness" min="0" max="300" value="100" title="Soft brush edge — blurs each stamp for a feathered fade." />
+        <input type="range" id="ge-clone-softness" min="0" max="300" value="100" title="Soft brush edge - blurs each stamp for a feathered fade." />
       </div>
     </div>
     <div class="ge-eraser-section" id="ge-brush-section" style="display:none;">
@@ -261,7 +261,7 @@ export function controlsHTML({ color, brushSize, wandTolerance }) {
       <div class="ge-control-row ge-eraser-row">
         <span class="ge-eraser-preview" id="ge-brush-preview-softness" aria-hidden="true"></span>
         <label>Softness <span id="ge-brush-softness-label">100%</span></label>
-        <input type="range" id="ge-brush-softness" min="0" max="300" value="100" title="Soft brush edge — blurs the stroke's alpha for a feathered fade at the perimeter." />
+        <input type="range" id="ge-brush-softness" min="0" max="300" value="100" title="Soft brush edge - blurs the stroke's alpha for a feathered fade at the perimeter." />
       </div>
     </div>
     <div class="ge-eraser-section" id="ge-eraser-section" style="display:none;">
@@ -279,7 +279,7 @@ export function controlsHTML({ color, brushSize, wandTolerance }) {
       <div class="ge-control-row ge-eraser-row">
         <span class="ge-eraser-preview" id="ge-eraser-preview-softness" aria-hidden="true"></span>
         <label>Softness <span id="ge-eraser-softness-label">100%</span></label>
-        <input type="range" id="ge-eraser-softness" min="0" max="300" value="100" title="Soft brush edge — blurs the stroke's alpha so the eraser fades out at the perimeter." />
+        <input type="range" id="ge-eraser-softness" min="0" max="300" value="100" title="Soft brush edge - blurs the stroke's alpha so the eraser fades out at the perimeter." />
       </div>
     </div>
     <div class="ge-sharpen-section" id="ge-sharpen-section" style="display:none;">
@@ -293,7 +293,7 @@ export function controlsHTML({ color, brushSize, wandTolerance }) {
       </div>
     </div>
     <div class="ge-rembg-section" id="ge-rembg-section" style="display:none;">
-      <div class="ge-section-title ge-section-title-with-help"><span>Background Remove</span><span class="ge-section-help" tabindex="0" role="img" aria-label="What this does" title="Runs an ML model that keeps whatever it learned to call the foreground (usually a person, product, or animal). If you have a Lasso or Wand selection active, it's used as a hint — the model only looks inside that region and anything outside is forced transparent.">?</span></div>
+      <div class="ge-section-title ge-section-title-with-help"><span>Background Remove</span><span class="ge-section-help" tabindex="0" role="img" aria-label="What this does" title="Runs an ML model that keeps whatever it learned to call the foreground (usually a person, product, or animal). If you have a Lasso or Wand selection active, it's used as a hint - the model only looks inside that region and anything outside is forced transparent.">?</span></div>
       <div class="ge-dep-notice" id="ge-rembg-dep-missing" style="display:none;">
         <div class="ge-dep-notice-text">
           <strong>rembg not installed.</strong>

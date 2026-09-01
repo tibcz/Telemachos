@@ -145,7 +145,7 @@ export function wireArrowUpRecall(composer, getUserMessages, options = {}) {
 
     // ArrowUp walks older prompts. An unmatched draft already returned above,
     // so reaching here means the composer is empty or holds a recalled prompt
-    // — the caret-navigation case is never hijacked.
+    // - the caret-navigation case is never hijacked.
     const nextIndex = currentIndex >= 0 ? Math.min(currentIndex + 1, history.length - 1) : 0;
     const recalled = history[nextIndex];
     if (!recalled) {

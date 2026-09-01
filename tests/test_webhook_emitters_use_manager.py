@@ -4,7 +4,7 @@ Public emitters in `routes/` must schedule their fire through
 `webhook_manager.fire_and_forget(...)` (or `_spawn_tracked`). A bare
 `asyncio.create_task(webhook_manager.fire(...))` escapes
 `WebhookManager._bg_tasks`, so asyncio only holds a weak reference to the
-delivery task and the GC can collect it before it sends — silently dropping
+delivery task and the GC can collect it before it sends - silently dropping
 the webhook. Catching this with a scan stops a regression from sneaking
 back in via a copy-paste.
 """

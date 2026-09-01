@@ -190,7 +190,7 @@ def setup_personal_routes(personal_docs_manager, rag_manager, rag_available):
     
     @router.post("/reload")
     async def api_personal_reload(owner: str = Depends(require_user), _admin: None = Depends(require_admin)):
-        # refresh_index() re-extracts text across every tracked directory —
+        # refresh_index() re-extracts text across every tracked directory -
         # blocking work. Take the shared job lock (so it cannot race an add /
         # remove) and run it off the event loop.
         async with _index_job_lock:
@@ -238,7 +238,7 @@ def setup_personal_routes(personal_docs_manager, rag_manager, rag_available):
                         personal_docs_manager.add_directory(directory, index=False)
                     return result
 
-                # Indexing walks, embeds, and stores the whole tree — minutes
+                # Indexing walks, embeds, and stores the whole tree - minutes
                 # on a real directory. The handler is async, so calling it
                 # inline runs it on the event loop and every other request
                 # queues behind it until it finishes (#5558). Serialize on the
@@ -278,7 +278,7 @@ def setup_personal_routes(personal_docs_manager, rag_manager, rag_available):
             JSON response confirming removal
         """
         try:
-            # Confine to PERSONAL_DIR — parity with add_directory_to_rag (which
+            # Confine to PERSONAL_DIR - parity with add_directory_to_rag (which
             # resolves the path the same way). Without this, an arbitrary or
             # `..`-escaping path is passed straight to
             # personal_docs_manager.remove_directory / rag.remove_directory.
@@ -324,7 +324,7 @@ def setup_personal_routes(personal_docs_manager, rag_manager, rag_available):
         user = require_privilege(request, "can_use_documents")
         rag = _rag()
         if not rag:
-            raise HTTPException(503, "RAG system is not available — is the embedding service running?")
+            raise HTTPException(503, "RAG system is not available - is the embedding service running?")
 
         upload_dir = _personal_upload_dir_for_owner(user)
 
@@ -440,7 +440,7 @@ def setup_personal_routes(personal_docs_manager, rag_manager, rag_available):
                         os.remove(abs_target)
                         deleted_from_disk = True
                     except FileNotFoundError:
-                        pass  # already gone — race with another request or cleanup
+                        pass  # already gone - race with another request or cleanup
 
                 # Exclude the file from the listing (persists across restarts)
                 personal_docs_manager.exclude_file(filepath)

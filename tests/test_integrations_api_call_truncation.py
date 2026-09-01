@@ -192,7 +192,7 @@ async def test_small_json_list_not_truncated():
 @pytest.mark.asyncio
 async def test_large_json_dict_actually_truncated():
     """A JSON dict response that exceeds 12000 chars must be truncated to fit,
-    with _truncated: true marking presence — not just marked without removal."""
+    with _truncated: true marking presence - not just marked without removal."""
     # Build a dict with enough entries to exceed 12000 chars when serialized.
     # Each value is ~200 chars; 100 entries ~ 22000 chars.
     big_dict = {f"key_{i}": "v" * 200 for i in range(100)}

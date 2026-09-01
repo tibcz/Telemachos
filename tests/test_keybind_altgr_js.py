@@ -10,15 +10,15 @@ many non-US layouts to type @ # { } [ ] | \\ and €) as ctrlKey=true AND
 altKey=true, so a user on a non-US layout typing a special character could
 silently fire a destructive ctrl+alt+<letter> default (new_session,
 delete_session, incognito, open_calendar). getModifierState('AltGraph') is true
-for AltGr but false for a genuine left Ctrl+Alt — except on macOS, where the
+for AltGr but false for a genuine left Ctrl+Alt - except on macOS, where the
 Option key also sets it.
 
-The guard now lives in ONE place — `isAltGrEvent` in static/js/platform.js — and
+The guard now lives in ONE place - `isAltGrEvent` in static/js/platform.js - and
 all three call sites (editor keyboard-shortcuts.js, root keyboard-shortcuts.js,
 settings.js) route through it. So these tests pin the shared *predicate*
 directly (both the isMac arg and the navigator-derived IS_MAC default), plus the
 `_matchesCombo` integration. They do NOT prove that real browsers actually set
-AltGraph for AltGr — that mapping is taken from the UI Events spec / MDN; older
+AltGraph for AltGr - that mapping is taken from the UI Events spec / MDN; older
 Firefox and some Linux setups historically did not report it (the guard is a
 no-op there, i.e. pre-fix behaviour, not a regression).
 """
@@ -56,7 +56,7 @@ def _is_altgr(
     ctrl: bool = True,
     alt: bool = True,
 ) -> bool:
-    """Return isAltGrEvent(ev, is_mac) — the predicate every guard routes through."""
+    """Return isAltGrEvent(ev, is_mac) - the predicate every guard routes through."""
     modifier = (
         f"ev.getModifierState = (m) => m === 'AltGraph' ? {json.dumps(altgraph)} : false;"
         if has_modifier_state else "")
@@ -111,7 +111,7 @@ def test_isaltgr_false_when_altgraph_set_but_not_ctrl_alt():
     # The collision we defend against is specifically "AltGr reported AS
     # Ctrl+Alt". An event that asserts AltGraph WITHOUT presenting as Ctrl+Alt
     # (e.g. a Linux ISO_Level3_Shift layout, or a stray modifier state) must NOT
-    # be swallowed — only a genuine Ctrl+Alt-presenting AltGr keystroke is.
+    # be swallowed - only a genuine Ctrl+Alt-presenting AltGr keystroke is.
     assert _is_altgr(altgraph=True, ctrl=False, alt=False) is False
     assert _is_altgr(altgraph=True, ctrl=True, alt=False) is False
     assert _is_altgr(altgraph=True, ctrl=False, alt=True) is False
@@ -131,7 +131,7 @@ def test_isaltgr_false_when_getmodifierstate_missing():
 # --- The navigator-derived IS_MAC default (dead in node without a stub) -------
 
 def test_is_mac_from_navigator_platform():
-    # navigator.platform reports "MacIntel" on EVERY Mac — Apple Silicon
+    # navigator.platform reports "MacIntel" on EVERY Mac - Apple Silicon
     # (M1/M2/M3...) included; the string was frozen for compatibility, so there
     # is no "MacARM". The regex matches the "Mac" substring, not "Intel".
     assert _is_mac_default(platform="MacIntel") is True

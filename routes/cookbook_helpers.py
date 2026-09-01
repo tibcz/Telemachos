@@ -1,4 +1,4 @@
-"""cookbook_helpers.py — validators + small helpers shared by the cookbook routes.
+"""cookbook_helpers.py - validators + small helpers shared by the cookbook routes.
 Extracted from cookbook_routes.py; the routes module imports the symbols it needs."""
 
 import json
@@ -43,8 +43,8 @@ _GPU_LIST_RE = re.compile(r"^\d+(?:,\d+)*$")
 # A download target directory. Absolute or ~-relative path; safe path glyphs
 # only (no quotes or shell metacharacters). Spaces are allowed because command
 # builders pass the value through quoted shell/Python contexts. The character
-# class uses ``\w`` — Unicode word characters under Python 3's default str
-# matching — so non-ASCII folder names pass validation too: Cyrillic, accented
+# class uses ``\w`` - Unicode word characters under Python 3's default str
+# matching - so non-ASCII folder names pass validation too: Cyrillic, accented
 # Latin, CJK, e.g. ``/Volumes/Модели`` or ``D:\AI Models\Модели``. This stays
 # shell-safe: none of ``; & | ` $ '' "" () {}`` newlines etc. are in ``[\w. -]``,
 # so injection vectors remain rejected. A leading ~ is expanded to $HOME at
@@ -64,7 +64,7 @@ def _git_bash_path(path: str) -> str:
 
 def _validate_repo_id(v: str | None) -> str:
     if not v or not _REPO_ID_RE.match(v):
-        raise HTTPException(400, "Invalid repo_id — must be <org>/<name> using [A-Za-z0-9._-]")
+        raise HTTPException(400, "Invalid repo_id - must be <org>/<name> using [A-Za-z0-9._-]")
     return v
 
 
@@ -73,7 +73,7 @@ def _validate_serve_model_id(v: str | None) -> str:
         raise HTTPException(400, "repo_id is required")
     if _REPO_ID_RE.match(v) or _LOCAL_MODEL_ID_RE.match(v) or _OLLAMA_MODEL_ID_RE.match(v):
         return v
-    raise HTTPException(400, "Invalid repo_id — must be <org>/<name>, an Ollama name:tag, or a cached local model id")
+    raise HTTPException(400, "Invalid repo_id - must be <org>/<name>, an Ollama name:tag, or a cached local model id")
 
 
 def _validate_include(v: str | None) -> str | None:
@@ -117,15 +117,15 @@ def _validate_local_dir(v: str | None) -> str | None:
         v = v[1:-1]
     v = v.rstrip("/") or "/"
     if not (_LOCAL_DIR_RE.match(v) or _WINDOWS_LOCAL_DIR_RE.match(v)):
-        raise HTTPException(400, "Invalid local_dir — must be an absolute or ~ path with no shell metacharacters")
+        raise HTTPException(400, "Invalid local_dir - must be an absolute or ~ path with no shell metacharacters")
     # Reject path segments that start with '-' (option injection). '-' is in the
     # allowlist, so a dir like ``/models/-rf`` or ``D:\models\-rf`` could be read
-    # as a CLI flag by hf/etc. — and quoting does NOT stop a value from being
+    # as a CLI flag by hf/etc. - and quoting does NOT stop a value from being
     # parsed as an option. This is the one residual that command-build-time
     # quoting can't cover, so the guard lives here, keeping the safety wholly
     # inside the validator rather than relying on consumers.
     if any(seg.startswith("-") for seg in re.split(r"[\\/]", v) if seg):
-        raise HTTPException(400, "Invalid local_dir — path segments cannot start with '-'")
+        raise HTTPException(400, "Invalid local_dir - path segments cannot start with '-'")
     return v
 
 
@@ -133,7 +133,7 @@ def _validate_gpus(v: str | None) -> str | None:
     if v is None or v == "":
         return None
     if not _GPU_LIST_RE.fullmatch(str(v)):
-        raise HTTPException(400, "Invalid gpus — expected comma-separated GPU indexes")
+        raise HTTPException(400, "Invalid gpus - expected comma-separated GPU indexes")
     return str(v)
 
 
@@ -154,7 +154,7 @@ def _local_tooling_path_export(executable: str) -> str:
     When Telemachos runs from a virtualenv, that bin dir holds the tools the
     cookbook runners shell out to (`hf`, `python`). tmux runners start from a
     fresh login shell with the venv NOT activated, so without this they can't
-    find `hf` and downloads fail with "hf: command not found" — notably on
+    find `hf` and downloads fail with "hf: command not found" - notably on
     macOS, where the `pip --user` self-heal also misses (`pip` isn't a command,
     only `pip3`/`python3 -m pip`). Local runs only; meaningless over SSH.
     """
@@ -583,7 +583,7 @@ def _cached_model_scan_script(model_dirs: list[str] | None = None, add_hf_cache:
 
 def _ps_squote(v: str) -> str:
     """Escape a value for PowerShell single-quoted string interpolation.
-    Belt-and-suspenders on top of _validate_token's regex — if the regex
+    Belt-and-suspenders on top of _validate_token's regex - if the regex
     is ever loosened, this still keeps the heredoc shell-safe."""
     return v.replace("'", "''")
 
@@ -720,7 +720,7 @@ def _check_serve_binary(seg: str) -> None:
     try:
         tokens = shlex.split(seg) if seg.strip() else []
     except ValueError:
-        raise HTTPException(400, "Invalid cmd — could not parse")
+        raise HTTPException(400, "Invalid cmd - could not parse")
     if not tokens:
         return
     env_re = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*=")
@@ -749,14 +749,14 @@ def _validate_serve_cmd(v: str | None) -> str | None:
     pre-fix world) could pass arbitrary shell payloads.
 
     Leading env-var assignments (e.g. `CUDA_VISIBLE_DEVICES=0 python3 ...`)
-    are stripped before checking the binary — several of our cmd builders
+    are stripped before checking the binary - several of our cmd builders
     prepend them, and they shouldn't trip the allowlist.
     """
     if v is None or v == "":
         return None
     # Collapse backslash-newline line continuations into single spaces. Serve
     # commands (vLLM especially) are routinely pasted multi-line with trailing
-    # `\` — that's a safe shell/shlex continuation, so the command stays ONE
+    # `\` - that's a safe shell/shlex continuation, so the command stays ONE
     # logical invocation and the leading-token allowlist below still governs.
     v = re.sub(r"\\[ \t]*\r?\n[ \t]*", " ", v).strip()
     # Backticks and raw newlines are never legitimate here.
@@ -772,7 +772,7 @@ def _validate_serve_cmd(v: str | None) -> str | None:
             _check_serve_binary(part.strip())
         return v
 
-    # Otherwise: a single invocation — no shell metacharacters allowed. Replace
+    # Otherwise: a single invocation - no shell metacharacters allowed. Replace
     # only the exact command substitutions emitted by the Cookbook UI:
     # $(printf %s 'safe-path') and the mmproj lookup
     # $(find <path> -iname 'mmproj*.gguf' 2>/dev/null | sort | head -1).
@@ -850,7 +850,7 @@ def _append_llama_cpp_linux_accel_build_lines(runner_lines: list[str]) -> None:
     to hard-wire CUDA on Linux. That made ROCm hosts attempt a CUDA configure and
     fail with "CUDA Toolkit not found" instead of building with HIP.
     """
-    # Try a prebuilt binary from llama.cpp's GitHub releases FIRST — no
+    # Try a prebuilt binary from llama.cpp's GitHub releases FIRST - no
     # cmake/build-essential/git/CUDA-headers needed at all. The from-source
     # build below stays as a fallback (custom flags, esoteric arch, no
     # internet, etc). 30 seconds vs 5+ minutes of compile, and removes
@@ -894,13 +894,13 @@ def _append_llama_cpp_linux_accel_build_lines(runner_lines: list[str]) -> None:
     runner_lines.append('          echo "[telemachos] Prebuilt llama-server installed at $_telemachos_extracted"')
     runner_lines.append('        fi')
     runner_lines.append('      fi')
-    runner_lines.append('      [ -z "$_telemachos_have_prebuilt" ] && echo "[telemachos] Prebuilt download/extract failed — falling back to from-source build."')
+    runner_lines.append('      [ -z "$_telemachos_have_prebuilt" ] && echo "[telemachos] Prebuilt download/extract failed - falling back to from-source build."')
     runner_lines.append('    elif [ -z "$_telemachos_prebuilt_url" ]; then')
-    runner_lines.append('      echo "[telemachos] No matching prebuilt llama-server for this host (arch=$_telemachos_arch) — will build from source."')
+    runner_lines.append('      echo "[telemachos] No matching prebuilt llama-server for this host (arch=$_telemachos_arch) - will build from source."')
     runner_lines.append('    fi')
     runner_lines.append('  if [ -z "$_telemachos_have_prebuilt" ]; then')
     # Detect pip-installed nvcc (from vLLM/nvidia CUDA wheels) and put it on PATH
-    # so cmake's CUDA configure can find it — BUT only when actual NVIDIA
+    # so cmake's CUDA configure can find it - BUT only when actual NVIDIA
     # hardware is present. On AMD/Intel hosts the pip nvcc is a misleading
     # leftover (no libcudart, no GPU it could target) and would otherwise
     # send the build down the CUDA branch and fail with "CUDA Toolkit not
@@ -920,7 +920,7 @@ def _append_llama_cpp_linux_accel_build_lines(runner_lines: list[str]) -> None:
     # or HIP attempt) doesn't cause the next configure to reuse stale settings.
     runner_lines.append('    mkdir -p ~/bin')
     # Try to install cmake / build-essential / git automatically before the
-    # build, but ONLY via passwordless sudo (`sudo -n`) — interactive sudo
+    # build, but ONLY via passwordless sudo (`sudo -n`) - interactive sudo
     # would hang a tmux-backgrounded serve task waiting for a password. If
     # sudo asks for a password the install is skipped silently and the
     # diagnosis pattern (cookbook_routes.py / cookbook_helpers.py) surfaces
@@ -945,7 +945,7 @@ def _append_llama_cpp_linux_accel_build_lines(runner_lines: list[str]) -> None:
     runner_lines.append('        local _dnfpkgs="$(echo "$_missing" | sed -e \'s/build-essential/gcc gcc-c++ make/g\')"')
     runner_lines.append('        sudo -n dnf install -y $_dnfpkgs 2>&1 | tail -5 || true')
     runner_lines.append('      else')
-    runner_lines.append('        echo "[telemachos] WARNING: missing build deps ($_missing) — passwordless sudo is unavailable, cannot auto-install. Cookbook Diagnosis will explain the fix after the build fails."')
+    runner_lines.append('        echo "[telemachos] WARNING: missing build deps ($_missing) - passwordless sudo is unavailable, cannot auto-install. Cookbook Diagnosis will explain the fix after the build fails."')
     runner_lines.append('      fi')
     runner_lines.append('    }')
     runner_lines.append('    _telemachos_apt_bootstrap')
@@ -981,7 +981,7 @@ def _append_llama_cpp_linux_accel_build_lines(runner_lines: list[str]) -> None:
     # Backend preference: native ROCm/HIP > native CUDA > Vulkan > CPU.
     # Vulkan is a portable fallback that works on AMD when ROCm isn't
     # installed (e.g. Strix Halo) and on any vendor's discrete GPU, but
-    # it's ~30-40% slower than native HIP/CUDA for LLM inference — only
+    # it's ~30-40% slower than native HIP/CUDA for LLM inference - only
     # pick it when no native toolchain is present.
     runner_lines.append('    if command -v hipconfig &>/dev/null || [ -d /opt/rocm ] || [ -n "$ROCM_PATH" ] || [ -n "$HIP_PATH" ]; then')
     runner_lines.append('      rm -rf build')
@@ -989,11 +989,11 @@ def _append_llama_cpp_linux_accel_build_lines(runner_lines: list[str]) -> None:
     runner_lines.append('        export HIPCXX="${HIPCXX:-$(hipconfig -l)/clang}"')
     runner_lines.append('        export HIP_PATH="${HIP_PATH:-$(hipconfig -R)}"')
     runner_lines.append('      fi')
-    runner_lines.append('      echo "[telemachos] ROCm/HIP detected — building llama-server with HIP support..."')
+    runner_lines.append('      echo "[telemachos] ROCm/HIP detected - building llama-server with HIP support..."')
     runner_lines.append('      cmake -B build -DCMAKE_BUILD_TYPE=Release -DGGML_HIP=ON && cmake --build build -j"$NPROC" --target llama-server && ln -sf ~/llama.cpp/build/bin/llama-server ~/bin/llama-server')
     runner_lines.append('    elif command -v nvcc &>/dev/null && _telemachos_has_nvidia_hw; then')
     runner_lines.append('      rm -rf build')
-    # nvcc alone is not sufficient — pip-installed CUDA wheels or incomplete
+    # nvcc alone is not sufficient - pip-installed CUDA wheels or incomplete
     # tooling can expose nvcc without shipping libcudart, causing cmake to fail
     # mid-build with "CUDA runtime library not found". Check cudart explicitly
     # via a small helper so the guard stays readable.
@@ -1008,20 +1008,20 @@ def _append_llama_cpp_linux_accel_build_lines(runner_lines: list[str]) -> None:
     runner_lines.append('        return 1')
     runner_lines.append('      }')
     runner_lines.append('      if _telemachos_has_cudart; then')
-    runner_lines.append('        echo "[telemachos] CUDA nvcc + cudart found — building llama-server with CUDA (GPU) support..."')
+    runner_lines.append('        echo "[telemachos] CUDA nvcc + cudart found - building llama-server with CUDA (GPU) support..."')
     runner_lines.append('        cmake -B build -DCMAKE_BUILD_TYPE=Release -DGGML_CUDA=ON && cmake --build build -j"$NPROC" --target llama-server && ln -sf ~/llama.cpp/build/bin/llama-server ~/bin/llama-server')
     runner_lines.append('      else')
-    runner_lines.append('        echo "[telemachos] WARNING: nvcc found but CUDA runtime (libcudart.so) is not visible — building llama-server for CPU only."')
+    runner_lines.append('        echo "[telemachos] WARNING: nvcc found but CUDA runtime (libcudart.so) is not visible - building llama-server for CPU only."')
     runner_lines.append('        echo "[telemachos]   GPU inference will not be available for this llama.cpp build."')
     runner_lines.append('        echo "[telemachos]   Ensure libcudart is installed (e.g. cuda-runtime package) and visible via ldconfig or CUDA_HOME."')
     runner_lines.append('        cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build -j"$NPROC" --target llama-server && ln -sf ~/llama.cpp/build/bin/llama-server ~/bin/llama-server')
     runner_lines.append('      fi')
     runner_lines.append('    elif _telemachos_has_vulkan_device && _telemachos_has_vulkan; then')
-    runner_lines.append('      echo "[telemachos] Vulkan-capable GPU detected (no ROCm/CUDA toolchain installed) — building llama-server with Vulkan support..."')
+    runner_lines.append('      echo "[telemachos] Vulkan-capable GPU detected (no ROCm/CUDA toolchain installed) - building llama-server with Vulkan support..."')
     runner_lines.append('      rm -rf build-vulkan')
     runner_lines.append('      cmake -B build-vulkan -DCMAKE_BUILD_TYPE=Release -DGGML_VULKAN=ON && cmake --build build-vulkan -j"$NPROC" --target llama-server && ln -sf ~/llama.cpp/build-vulkan/bin/llama-server ~/bin/llama-server')
     runner_lines.append('    else')
-    runner_lines.append('      echo "[telemachos] WARNING: no HIP/CUDA/Vulkan toolchain found — building llama-server for CPU only."')
+    runner_lines.append('      echo "[telemachos] WARNING: no HIP/CUDA/Vulkan toolchain found - building llama-server for CPU only."')
     runner_lines.append('      echo "[telemachos]   GPU inference will not be available for this llama.cpp build."')
     runner_lines.append('      echo "[telemachos]   Install Vulkan (libvulkan-dev) / ROCm for AMD GPUs or CUDA tooling for NVIDIA, then re-launch this serve task."')
     runner_lines.append('      rm -rf build')
@@ -1069,11 +1069,11 @@ class ModelDownloadRequest(BaseModel):
     include: str | None = None  # glob pattern e.g. "*Q4_K_M*"
     hf_token: str | None = None
     env_prefix: str | None = None  # e.g. "source ~/venv/bin/activate"
-    remote_host: str | None = None  # e.g. "gpu-box" — run download on this host via SSH
+    remote_host: str | None = None  # e.g. "gpu-box" - run download on this host via SSH
     ssh_port: str | None = None    # e.g. "8022" for Termux
     platform: str | None = None    # "linux", "termux", or "windows"
     local_dir: str | None = None   # base dir to download into (a per-model subfolder is created under it); None = default HF cache
-    disable_hf_transfer: bool = False  # skip the Rust hf_transfer downloader — slower but far more reliable on large files (used by retries)
+    disable_hf_transfer: bool = False  # skip the Rust hf_transfer downloader - slower but far more reliable on large files (used by retries)
 
 
 class ServeRequest(BaseModel):
@@ -1112,7 +1112,7 @@ def _parse_serve_phase(snapshot: str, task_type: str = "serve") -> dict:
         flat,
     )
 
-    # Check throughput FIRST — the throughput log line contains "GPU KV cache usage"
+    # Check throughput FIRST - the throughput log line contains "GPU KV cache usage"
     # which would otherwise false-match the warmup check
     if tps_matches:
         tps_str, reqs_str = tps_matches[-1]
@@ -1133,7 +1133,7 @@ def _parse_serve_phase(snapshot: str, task_type: str = "serve") -> dict:
         return {"phase": "idle", "status": "ready"}
     if "Loading weights took" in flat:
         return {"phase": "initializing", "status": "running"}
-    # "GPU KV cache" alone (during allocation) — not "GPU KV cache usage" (runtime log)
+    # "GPU KV cache" alone (during allocation) - not "GPU KV cache usage" (runtime log)
     if "GPU KV cache" in flat and "GPU KV cache usage" not in flat:
         return {"phase": "warming up", "status": "running"}
     if load_matches:
@@ -1245,7 +1245,7 @@ def _ssh_ps(host, script_path, port=None):
     return f'ssh {pf}{host} "powershell -ExecutionPolicy Bypass -File {script_path}"'
 
 
-# Windows session dir — stored in user's temp on the remote
+# Windows session dir - stored in user's temp on the remote
 WIN_SESSION_DIR = "$env:TEMP\\\\telemachos-sessions"
 
 

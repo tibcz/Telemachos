@@ -1,4 +1,4 @@
-"""Backward-compat shim — canonical location is routes/mcp/mcp_routes.py.
+"""Backward-compat shim - canonical location is routes/mcp/mcp_routes.py.
 
 This module is replaced in ``sys.modules`` by the canonical module object so
 that ``import routes.mcp_routes``, ``from routes.mcp_routes import X``,

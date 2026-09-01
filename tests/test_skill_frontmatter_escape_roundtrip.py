@@ -1,4 +1,4 @@
-"""Regression for issue #5210 — SKILL.md frontmatter scalars must round-trip.
+"""Regression for issue #5210 - SKILL.md frontmatter scalars must round-trip.
 
 ``_emit_scalar`` quotes a scalar with ``json.dumps`` whenever it contains
 punctuation that would change how the line reads back. ``_parse_scalar`` used
@@ -6,7 +6,7 @@ to undo that with a bare ``raw[1:-1]``: it stripped the quotes but never
 decoded the escapes. So ``"Pr\\u00fcfung"`` was read back as the literal text
 ``Pr\\u00fcfung``, and the next save escaped *that* backslash again.
 
-The damage compounds — each save doubles the backslash run — so a German or
+The damage compounds - each save doubles the backslash run - so a German or
 Japanese skill description degrades into backslash noise after a handful of
 edits, and the same happens to a plain-ASCII description that merely contains
 a quote character. The escapes are also shown verbatim in the skills list and
@@ -28,7 +28,7 @@ from services.memory.skill_format import (
 )
 from services.memory.skills import SkillsManager
 
-# Umlauts plus a comma — the comma is what forces the quoted form, which is the
+# Umlauts plus a comma - the comma is what forces the quoted form, which is the
 # only path that was corrupted. Reported verbatim in issue #5210.
 GERMAN = "Einstiegs- und Pr\u00fcfungslinie f\u00fcr AGB, Datenschutz"
 JAPANESE = "\u30b9\u30ad\u30eb: \u30c6\u30b9\u30c8\u7528\u306e\u8aac\u660e"
@@ -65,7 +65,7 @@ def test_description_survives_repeated_saves(description):
 def test_corruption_does_not_compound_across_saves():
     """Pin the *growth*, not just the mismatch.
 
-    The original defect was not a one-off mangling — the escaped form was
+    The original defect was not a one-off mangling - the escaped form was
     re-escaped on every save, so the value grew without bound. A regression
     that reintroduced single-level mangling would still be caught by the test
     above; this one catches the runaway specifically.
@@ -135,7 +135,7 @@ def test_non_json_escape_falls_back_to_literal_reading():
 
 
 def test_plain_scalars_are_still_emitted_bare():
-    """Only values needing quotes get them — the common case must not suddenly
+    """Only values needing quotes get them - the common case must not suddenly
     start quoting, which would churn every SKILL.md on disk."""
     assert _emit_scalar("open-pr-from-branch") == "open-pr-from-branch"
     assert _emit_scalar("1.0.0") == "1.0.0"
@@ -172,7 +172,7 @@ def test_line_break_characters_do_not_split_the_frontmatter(sep):
     bogus key.
 
     json.dumps covers the C0 ones, but with ensure_ascii=False it passes NEL,
-    LINE SEPARATOR and PARAGRAPH SEPARATOR through as themselves — so those
+    LINE SEPARATOR and PARAGRAPH SEPARATOR through as themselves - so those
     three are re-escaped explicitly.
     """
     description = f"before{sep}after, x"
@@ -194,8 +194,8 @@ def test_line_break_characters_do_not_split_the_frontmatter(sep):
 
 def test_description_survives_real_save_load_cycles_on_disk(tmp_path):
     """The unit tests above go straight through to_markdown/from_markdown.
-    This drives the same path the app does — SkillsManager writing UTF-8 files
-    with atomic_write_text and reading them back — because the encoding used at
+    This drives the same path the app does - SkillsManager writing UTF-8 files
+    with atomic_write_text and reading them back - because the encoding used at
     either end is part of the fix.
     """
     manager = SkillsManager(str(tmp_path))
