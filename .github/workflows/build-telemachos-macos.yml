@@ -23,6 +23,13 @@ on:
   push:
     tags:
       - "v*"
+    # GitHub only offers the "Run workflow" button for workflows that exist on
+    # the default branch, so until this lands on dev the manual trigger is not
+    # available. Building on push to the development branches means the disk
+    # image is downloadable from the run's artifacts straight away.
+    branches:
+      - dev
+      - "claude/**"
 
 permissions:
   contents: write
