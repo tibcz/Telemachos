@@ -159,42 +159,71 @@ jobs:
           if-no-files-found: ignore
 
       - name: Publish a GitHub Release
-        if: startsWith(github.ref, 'refs/tags/') || inputs.release
+        # Always publishes, so the disk image has a stable home on the Releases
+        # page rather than living only inside a run's artifacts (which expire
+        # and cannot be linked to from outside the Actions tab).
+        #
+        # `gh release create --target` creates the tag server-side with the
+        # workflow's own token. That matters: it is the only way to produce a
+        # tag from an environment whose gateway refuses tag pushes over git.
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: ${{ inputs.tag }}
+          TAG_INPUT: ${{ inputs.tag }}
         run: |
           set -euo pipefail
-          tag="${GITHUB_REF_NAME}"
-          if [ "${GITHUB_REF_TYPE}" != "tag" ]; then
-            tag="${TAG:-}"
-            [ -n "$tag" ] || { echo "::error::A tag is required to publish a release."; exit 1; }
-            git tag "$tag" || true
-            git push origin "$tag" || true
+
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            tag="${GITHUB_REF_NAME}"
+          elif [ -n "${TAG_INPUT:-}" ]; then
+            tag="${TAG_INPUT}"
+          else
+            # Track the version the bundle actually reports, so the release name
+            # and the app's own About box never disagree.
+            tag="v$(sed -n 's/^APP_VERSION = "\(.*\)"/\1/p' src/constants.py | head -1)"
           fi
+          echo "release tag: $tag"
 
           checksum="$(cut -d" " -f1 < dist/Telemachos.dmg.sha256)"
 
           # printf rather than an indented heredoc: a heredoc inside a nested
           # YAML block carries its indentation straight into the release notes.
           printf '%s\n' \
-            'Standalone Telemachos for Apple Silicon. Download the disk image, drag Telemachos to Applications, and open it. Nothing else to install.' \
+            '**Telemachos for Apple Silicon** — a self-contained AI workspace. Download the disk image, drag Telemachos to Applications, open it. No Python, no Docker, no server to run.' \
             '' \
-            'Because this build is signed ad-hoc rather than with an Apple Developer certificate, macOS asks once before it will run it:' \
+            '### Install' \
             '' \
-            '> Right-click Telemachos in Applications, choose **Open**, then **Open** again.' \
+            '1. Download `Telemachos.dmg` below.' \
+            '2. Open it and drag **Telemachos** to Applications.' \
+            '3. **Right-click** Telemachos in Applications, choose **Open**, then **Open** again.' \
             '' \
-            'Or from Terminal:' \
+            'Step 3 happens once. This build is signed ad-hoc — a real signature, but without an Apple Developer certificate behind it, so macOS asks you to confirm the first launch. Equivalent from Terminal:' \
             '' \
             '```' \
             'xattr -dr com.apple.quarantine /Applications/Telemachos.app' \
             '```' \
             '' \
-            "SHA-256: \`$checksum\`" \
+            'Requires macOS 13 or later on Apple Silicon (M1 and up).' \
+            '' \
+            '### First launch' \
+            '' \
+            'Open **Settings** and add an API key for your model provider. Ollama and LM Studio are detected automatically if you run them. Your data lives in `~/Library/Application Support/Telemachos`.' \
+            '' \
+            '---' \
+            '' \
+            "SHA-256 of the disk image: \`$checksum\`" \
             > release-notes.md
 
-          gh release create "$tag" \
-            dist/Telemachos.dmg dist/Telemachos.dmg.sha256 \
-            --title "Telemachos $tag" \
-            --notes-file release-notes.md \
-            || gh release upload "$tag" dist/Telemachos.dmg dist/Telemachos.dmg.sha256 --clobber
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "updating existing release"
+            gh release upload "$tag" dist/Telemachos.dmg dist/Telemachos.dmg.sha256 --clobber
+            gh release edit "$tag" --title "Telemachos $tag" --notes-file release-notes.md
+          else
+            echo "creating release"
+            gh release create "$tag" \
+              dist/Telemachos.dmg dist/Telemachos.dmg.sha256 \
+              --target "$GITHUB_SHA" \
+              --title "Telemachos $tag" \
+              --notes-file release-notes.md
+          fi
+
+          echo "release: $(gh release view "$tag" --json url --jq .url)"
