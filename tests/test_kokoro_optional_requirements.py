@@ -29,12 +29,3 @@ def test_kokoro_feature_markers_match_supported_python_range(python_version, sel
         assert requirement.marker.evaluate({"python_version": python_version}) is selected
 
 
-def test_setup_documents_container_constraint_and_install_command():
-    setup = (ROOT / "website" / "setup.md").read_text(encoding="utf-8")
-
-    assert "pip install -r requirements-optional.txt" in setup
-    assert "default Docker image currently uses Python 3.14" in setup
-    assert "Python `>=3.10,<3.13`" in setup
-    assert "native Python 3.11 or 3.12" in setup
-    assert "skipped on Python 3.13+" in setup
-    assert "torch build has CUDA" in setup

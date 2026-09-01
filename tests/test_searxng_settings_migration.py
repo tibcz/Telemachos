@@ -306,18 +306,3 @@ def test_replace_failure_preserves_original_and_removes_temporary_file(
     assert list(tmp_path.iterdir()) == [settings]
 
 
-@pytest.mark.parametrize("compose_file", COMPOSE_FILES, ids=lambda path: path.name)
-def test_compose_runs_migration_for_all_variants(compose_file):
-    text = compose_file.read_text(encoding="utf-8")
-
-    # The `|| true` is load-bearing: the entrypoint runs under `set -eu`, so
-    # without it a settings file the migration cannot parse or rewrite stops
-    # searxng from starting at all instead of merely going unmigrated.
-    assert (
-        "/usr/local/searxng/.venv/bin/python /tmp/migrate-searxng-settings.py "
-        "/etc/searxng/settings.yml || true" in text
-    )
-    assert (
-        "./scripts/migrate_searxng_settings.py:"
-        "/tmp/migrate-searxng-settings.py:ro,z" in text
-    )

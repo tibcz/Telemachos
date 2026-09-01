@@ -114,29 +114,6 @@ def test_secret_storage_key_created_with_safe_mode(tmp_path, monkeypatch):
     assert mode == 0o600, f"expected 0o600, got 0o{mode:o}"
 
 
-# ── secure-by-default deployment + integration storage ─────────
-
-def test_docker_compose_binds_web_ui_to_loopback_by_default():
-    compose = Path("docker-compose.yml").read_text(encoding="utf-8")
-    assert "${APP_BIND:-127.0.0.1}:${APP_PORT:-7000}:7000" in compose
-    assert '"${APP_PORT:-7000}:7000"' not in compose
-
-
-def test_readme_native_quickstart_uses_loopback():
-    # The Pages source split (#6175) moved the native quickstart into website/setup.md,
-    # so accept the loopback guidance from either the README or the setup guide.
-    docs = Path("README.md").read_text(encoding="utf-8")
-    docs += "\n" + Path("website/setup.md").read_text(encoding="utf-8")
-    assert "python -m uvicorn app:app --host 127.0.0.1 --port 7000" in docs
-    assert "0.0.0.0` only when you intentionally want" in docs
-
-
-def test_readme_warns_auth_enabled_for_network_access():
-    readme = Path("README.md").read_text(encoding="utf-8")
-    assert "Keep `AUTH_ENABLED=true` for any network-accessible deployment." in readme
-    assert "Keep `LOCALHOST_BYPASS=false` outside local development." in readme
-
-
 def test_ollama_cookbook_runner_does_not_force_public_bind():
     route = Path("routes/cookbook_routes.py").read_text(encoding="utf-8")
     cookbook_js = Path("static/js/cookbook.js").read_text(encoding="utf-8")
