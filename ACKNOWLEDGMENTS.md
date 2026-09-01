@@ -1,5 +1,24 @@
 # Acknowledgments
 
+## Telemachos and Odysseus
+
+Telemachos is a modified version of
+[Odysseus](https://github.com/odysseus-dev/odysseus), repackaged as a
+self-contained macOS application. The workspace engine, its features and
+almost all of the code in this repository are Odysseus's work.
+
+Odysseus is licensed under the GNU Affero General Public License, version 3 or
+later. Telemachos is distributed under the same licence, and the full text is
+in [`LICENSE`](LICENSE).
+
+Changes made in this fork: the vector store runs in-process instead of against
+a separate ChromaDB service; a frozen entry point and a native macOS shell were
+added under `packaging/macos/`; the server, Docker, Windows and upstream
+project material was removed; and the user-facing name was changed to
+Telemachos.
+
+---
+
 Odysseus stands on the shoulders of a lot of open-source work. This file
 credits the projects whose code, assets, or designs are included in or
 adapted by this repository, and notes their licenses.

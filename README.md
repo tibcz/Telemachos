@@ -1,81 +1,131 @@
-<p align="center">
-  <img src="assets/branding/odysseus-wordmark.png" alt="Odysseus" width="238">
-</p>
+# Telemachos
 
-<p align="center">
-  A self-hosted AI workspace for chat, agents, research, documents, email, notes, calendar, and local model workflows.
-</p>
+A self-contained AI workspace for Apple Silicon Macs. Chat, agents, deep
+research, documents, email, notes, tasks, calendar, and a local vector memory —
+in one application you download and open.
 
-<p align="center">
-  <a href="#quick-start">Quick Start</a> ·
-  <a href="website/setup.md">Setup Guide</a> ·
-  <a href="CONTRIBUTING.md">Contributing</a> ·
-  <a href="ROADMAP.md">Roadmap</a>
-</p>
-
-<p align="center">
-  <a href="https://repology.org/project/odysseus-ai/versions"><img src="https://repology.org/badge/vertical-allrepos/odysseus-ai.svg" alt="Packaging status"></a>
-</p>
-
-<p align="center">
-  <img src="assets/branding/odysseus-browser.jpg" alt="Odysseus interface">
-</p>
+There is no server to run, no Python to install, no Docker, no repository to
+clone, and no address to type in. Telemachos carries its own engine inside the
+app bundle, starts it when you open the app, and stops it when you quit.
 
 ---
 
-## Quick Start
+## Install
 
-> `dev` is the default branch and gets the newest changes first. Use [`main`](https://github.com/odysseus-dev/odysseus/tree/main) if you want the more curated branch.
+1. Download `Telemachos.dmg` from the [Releases page](../../releases), or from
+   the artifact of a [Build Telemachos (macOS ARM)](../../actions) run.
+2. Open the disk image and drag **Telemachos** to Applications.
+3. **Right-click** Telemachos in Applications, choose **Open**, then **Open**
+   again in the dialog that appears.
 
-```bash
-git clone https://github.com/odysseus-dev/odysseus.git
-cd odysseus
-cp .env.example .env
-docker compose up -d --build
+That third step is a one-time thing, and it is worth understanding rather than
+just clicking through. This build is signed *ad-hoc* — a real cryptographic
+signature, but one made with no Apple Developer certificate behind it. macOS
+therefore cannot tie the app to a registered developer and asks you to confirm
+you meant to open it. After you confirm once, it opens normally forever.
+
+If you prefer the terminal, this does the same thing:
+
+```
+xattr -dr com.apple.quarantine /Applications/Telemachos.app
 ```
 
-Open `http://localhost:7000` when the containers are healthy. The first admin password is printed in `docker compose logs odysseus`.
+Requires macOS 13 or later on an Apple Silicon Mac (M1 and up).
 
-Native installs, GPU notes, Windows/macOS instructions, HTTPS, and configuration live in the [setup guide](website/setup.md).
+## First launch
 
-## Features
+Opening the app shows a start-up screen while the engine initialises its
+database and vector store. First launch takes longer than later ones — this is
+the only time that setup happens.
 
-- **Chat + Agents** — local/API models, tools, MCP, files, shell, skills, and memory.
-- **Cookbook** — hardware-aware model recommendations, downloads, and serving.
-- **Deep Research** — multi-step web research with source reading and report generation.
-- **Compare** — blind side-by-side model testing and synthesis.
-- **Documents** — writing-first editor with AI edits, suggestions, Markdown, HTML, CSV, and syntax highlighting.
-- **Email** — IMAP/SMTP inbox with triage, tags, summaries, reminders, and reply drafts.
-- **Notes, Tasks + Calendar** — reminders, todos, scheduled agent tasks, and CalDAV sync.
-- **Extras** — gallery/image editor, themes, uploads, web search, presets, sessions, and 2FA.
+Then you need to give it a model to think with. Open **Settings** and add an API
+key for whichever provider you use (Anthropic, OpenAI, and the other supported
+providers). If you already run **Ollama** or **LM Studio** locally, Telemachos
+finds them without any configuration.
 
-## Demo
+## Where your data lives
 
-A full hover-to-play tour lives on the [Odysseus landing page](https://odysseus-dev.github.io/odysseus/). Its source lives under [`website/`](website/).
+Everything is in one folder:
 
-## Contributing
+```
+~/Library/Application Support/Telemachos
+```
 
-Help is welcome. The best entry points are fresh-install testing, provider setup bugs, mobile/editor polish, docs, and small focused refactors. See [CONTRIBUTING.md](CONTRIBUTING.md) and [ROADMAP.md](ROADMAP.md).
+Conversations, documents, notes, mail, uploads, the vector index and the logs
+all live there. Nothing is written inside the application bundle, so replacing
+the app with a newer build never touches your data. **Open Data Folder** in the
+app menu takes you straight there, and backing up that one folder backs up
+everything.
 
-## Security
+To start completely fresh, quit the app and delete that folder.
 
-Odysseus is a self-hosted workspace with powerful local tools. Keep auth enabled, keep private data out of Git, and do not expose raw model/service ports publicly.
+## How it works
 
-- Keep `AUTH_ENABLED=true` for any network-accessible deployment.
-- Keep `LOCALHOST_BYPASS=false` outside local development.
+Telemachos is two pieces in one bundle:
 
-Deployment details are in the [setup guide](website/setup.md#security-notes).
+- **The shell** — a native Swift application. It reserves a loopback port,
+  starts the engine, waits for it to report itself genuinely ready, and hosts
+  the workspace in a `WKWebView`. It owns the window, the menus, downloads,
+  microphone access and shutdown.
+- **The engine** — the Odysseus workspace, frozen with PyInstaller into
+  `Contents/Resources/engine`. It binds `127.0.0.1` on a port the shell picks,
+  and is not reachable from anywhere else on the network.
 
-## Star History
+Two things make it genuinely standalone rather than a wrapper around a local
+server you still have to run:
 
-<a href="https://star-history.dera.page/#odysseus-dev/odysseus&type=date&legend=top-left">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://star-history.dera.page/svg?repos=odysseus-dev/odysseus&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://star-history.dera.page/svg?repos=odysseus-dev/odysseus&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://star-history.dera.page/svg?repos=odysseus-dev/odysseus&type=date&legend=top-left" />
- </picture>
-</a>
+- **The vector store runs in-process.** Upstream Odysseus talks to ChromaDB over
+  HTTP as a separate service. `src/chroma_client.py` gained an embedded mode
+  that uses an in-process persistent client instead, so RAG and semantic memory
+  work with nothing else installed.
+- **The engine can act as its own interpreter.** Odysseus starts helper
+  processes — the built-in MCP servers, the agent's Python tool — with
+  `sys.executable`. Inside a frozen bundle that path *is* the engine, so an
+  unguarded spawn would relaunch the whole app. The entry script in
+  `packaging/macos/telemachos_engine.py` recognises the `python …` argument
+  shapes the app uses and runs them, which keeps those features working without
+  changing any of the call sites.
 
-## License
+Some optional features still need something else on your Mac. Browser
+automation uses the Playwright MCP server and needs Node installed; without it
+that one tool is simply absent and everything else works.
 
-AGPL-3.0-or-later -- see [LICENSE](LICENSE) and [ACKNOWLEDGMENTS.md](ACKNOWLEDGMENTS.md).
+## Building it yourself
+
+The build runs on an Apple Silicon Mac with the Xcode command line tools and
+Python 3.11+:
+
+```
+./packaging/macos/build.sh
+```
+
+It produces `dist/Telemachos.app` and `dist/Telemachos.dmg`. The same script is
+what CI runs, so a local build and a released build are the same build.
+
+To have GitHub build it instead, run the **Build Telemachos (macOS ARM)**
+workflow from the Actions tab. It compiles on a macOS ARM runner, verifies the
+signature and architecture, boots the packaged engine and requires it to report
+ready, then uploads the disk image. Tick *release* (or push a `v*` tag) to
+publish it to Releases.
+
+Layout of the packaging code:
+
+```
+packaging/macos/
+  build.sh                     assemble, sign ad-hoc, package the .dmg
+  telemachos_engine.py         frozen entry point: interpreter dispatch, paths, uvicorn
+  TelemachosEngine.spec        PyInstaller spec
+  requirements-standalone.txt  runtime dependencies for the bundle
+  icon.png                     source art for the app icon
+  TelemachosShell/             the native Swift application
+```
+
+## Licence and attribution
+
+Telemachos is built on [Odysseus](https://github.com/odysseus-dev/odysseus) and
+is a modified version of it. Odysseus is licensed under the GNU Affero General
+Public License, version 3 or later, and Telemachos is distributed under the same
+licence — see [LICENSE](LICENSE) and [ACKNOWLEDGMENTS.md](ACKNOWLEDGMENTS.md).
+
+The licence texts ship inside the application as well, and **About Telemachos**
+in the app menu links to them.
