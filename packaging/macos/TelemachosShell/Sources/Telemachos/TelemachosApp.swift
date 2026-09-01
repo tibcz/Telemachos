@@ -15,32 +15,54 @@ struct TelemachosApp: App {
                 .onAppear { engine.start() }
         }
         .commands {
-            // The app is its own workspace; a "New Window" that opens a second
-            // view of the same local engine is confusing, so it goes.
-            CommandGroup(replacing: .newItem) {}
-
-            CommandGroup(after: .toolbar) {
-                Button("Reload") { coordinatorBox.coordinator?.reload() }
-                    .keyboardShortcut("r", modifiers: .command)
-
-                Button("Restart Engine") { engine.restart() }
-                    .keyboardShortcut("r", modifiers: [.command, .shift])
-
-                Divider()
-
-                Button("Open Data Folder") {
-                    NSWorkspace.shared.open(EnginePaths.dataDirectory)
-                }
-                Button("Show Engine Log") {
-                    NSWorkspace.shared.open(EnginePaths.logDirectory)
-                }
-            }
+            TelemachosCommands(engine: engine, coordinatorBox: coordinatorBox)
         }
 
         Window("About Telemachos", id: "credits") {
             CreditsView()
         }
         .windowResizability(.contentSize)
+    }
+}
+
+/// Menu commands.
+///
+/// Split into its own Commands type so it can hold @Environment(\.openWindow):
+/// the About window is a scene, and a scene can only be opened through that
+/// environment action, which is not available inside the App's own body.
+struct TelemachosCommands: Commands {
+    @ObservedObject var engine: EngineController
+    let coordinatorBox: WebViewCoordinatorBox
+
+    @Environment(\.openWindow) private var openWindow
+
+    var body: some Commands {
+        // Replace the stock About panel, which would show only the bundle
+        // version, with the attribution the AGPL requires this build to carry.
+        CommandGroup(replacing: .appInfo) {
+            Button("About Telemachos") { openWindow(id: "credits") }
+        }
+
+        // The app is its own workspace; a "New Window" that opens a second view
+        // of the same local engine is confusing, so it goes.
+        CommandGroup(replacing: .newItem) {}
+
+        CommandGroup(after: .toolbar) {
+            Button("Reload") { coordinatorBox.coordinator?.reload() }
+                .keyboardShortcut("r", modifiers: .command)
+
+            Button("Restart Engine") { engine.restart() }
+                .keyboardShortcut("r", modifiers: [.command, .shift])
+
+            Divider()
+
+            Button("Open Data Folder") {
+                NSWorkspace.shared.open(EnginePaths.dataDirectory)
+            }
+            Button("Show Engine Log") {
+                NSWorkspace.shared.open(EnginePaths.logDirectory)
+            }
+        }
     }
 }
 
