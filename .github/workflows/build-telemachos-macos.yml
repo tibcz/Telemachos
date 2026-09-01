@@ -1,0 +1,189 @@
+name: Build Telemachos (macOS ARM)
+
+# Builds the standalone Telemachos.app on an Apple Silicon runner and publishes
+# the disk image as a download.
+#
+#   - Run it by hand from the Actions tab to get a downloadable artifact.
+#   - Push a tag like v1.0.3 to additionally publish a GitHub Release.
+#
+# The app is signed ad-hoc (`codesign -s -`), so no Apple Developer account,
+# certificate or notarisation credential is involved anywhere in this workflow.
+
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: "Also publish a GitHub Release"
+        type: boolean
+        default: false
+      tag:
+        description: "Tag for the release (only used when Release is checked)"
+        type: string
+        default: ""
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    # macos-15 and macos-14 are both Apple Silicon; the build refuses to run on
+    # an Intel runner rather than quietly producing the wrong architecture.
+    runs-on: macos-15
+    timeout-minutes: 90
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Show build environment
+        run: |
+          echo "runner arch : $(uname -m)"
+          echo "macOS       : $(sw_vers -productVersion)"
+          swift --version
+          python3 --version
+
+      # The pip environment and the fetched embedding model are the slow parts
+      # of a cold build; both are content-addressed by the files that determine
+      # them, so a rebuild that changes neither reuses them.
+      - name: Cache the Python build environment
+        uses: actions/cache@v4
+        with:
+          path: |
+            build/venv
+            build/fastembed_seed
+          key: telemachos-buildenv-${{ runner.os }}-${{ hashFiles('packaging/macos/requirements-standalone.txt') }}
+
+      - name: Build Telemachos.app
+        env:
+          PYTHON: python3
+        run: ./packaging/macos/build.sh
+
+      - name: Verify the built app
+        run: |
+          set -euo pipefail
+          APP="dist/Telemachos.app"
+
+          echo "--- signature ---"
+          codesign --verify --deep --strict --verbose=2 "$APP"
+          codesign --display --verbose=2 "$APP" 2>&1 | grep -i "signature" || true
+
+          echo "--- architecture ---"
+          # Both the shell and the embedded engine must be arm64; an x86_64
+          # slice here would mean the app silently runs under Rosetta.
+          for binary in "$APP/Contents/MacOS/Telemachos" "$APP/Contents/Resources/engine/TelemachosEngine"; do
+            info="$(lipo -archs "$binary" 2>/dev/null || file -b "$binary")"
+            echo "$binary -> $info"
+            case "$info" in
+              *arm64*) ;;
+              *) echo "::error::$binary is not arm64 ($info)"; exit 1 ;;
+            esac
+          done
+
+          echo "--- payload ---"
+          test -x "$APP/Contents/Resources/engine/TelemachosEngine" || { echo "::error::engine missing"; exit 1; }
+          test -f "$APP/Contents/Info.plist" || { echo "::error::Info.plist missing"; exit 1; }
+          du -sh "$APP" dist/Telemachos.dmg
+
+      # Start the packaged engine exactly as the app does and require it to
+      # report itself ready. This is what distinguishes "it compiled" from
+      # "it works": a missing frozen module only shows up at run time.
+      - name: Smoke-test the embedded engine
+        run: |
+          set -euo pipefail
+          ENGINE="dist/Telemachos.app/Contents/Resources/engine/TelemachosEngine"
+          PORT=7799
+          DATA="$(mktemp -d)"
+
+          ODYSSEUS_DATA_DIR="$DATA" "$ENGINE" --port "$PORT" > engine-smoke.log 2>&1 &
+          PID=$!
+
+          ready=0
+          for _ in $(seq 1 120); do
+            code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 3 "http://127.0.0.1:$PORT/api/ready" || true)"
+            if [ "$code" = "200" ]; then ready=1; break; fi
+            if ! kill -0 "$PID" 2>/dev/null; then break; fi
+            sleep 1
+          done
+
+          if [ "$ready" != "1" ]; then
+            echo "::error::The embedded engine never became ready."
+            tail -80 engine-smoke.log
+            kill "$PID" 2>/dev/null || true
+            exit 1
+          fi
+
+          echo "engine reported ready"
+          curl -s --max-time 5 "http://127.0.0.1:$PORT/api/ready"; echo
+          # The workspace UI itself must render, not just the health endpoint.
+          curl -s -o /dev/null -w 'workspace UI: HTTP %{http_code}\n' --max-time 10 "http://127.0.0.1:$PORT/"
+
+          kill "$PID" 2>/dev/null || true
+
+      - name: Upload the disk image
+        uses: actions/upload-artifact@v4
+        with:
+          name: Telemachos-macOS-arm64
+          path: |
+            dist/Telemachos.dmg
+            dist/Telemachos.dmg.sha256
+          retention-days: 30
+          compression-level: 0
+
+      - name: Upload the engine log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-diagnostics
+          path: |
+            engine-smoke.log
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Publish a GitHub Release
+        if: startsWith(github.ref, 'refs/tags/') || inputs.release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF_NAME}"
+          if [ "${GITHUB_REF_TYPE}" != "tag" ]; then
+            tag="${TAG:-}"
+            [ -n "$tag" ] || { echo "::error::A tag is required to publish a release."; exit 1; }
+            git tag "$tag" || true
+            git push origin "$tag" || true
+          fi
+
+          checksum="$(cut -d" " -f1 < dist/Telemachos.dmg.sha256)"
+
+          # printf rather than an indented heredoc: a heredoc inside a nested
+          # YAML block carries its indentation straight into the release notes.
+          printf '%s\n' \
+            'Standalone Telemachos for Apple Silicon. Download the disk image, drag Telemachos to Applications, and open it. Nothing else to install.' \
+            '' \
+            'Because this build is signed ad-hoc rather than with an Apple Developer certificate, macOS asks once before it will run it:' \
+            '' \
+            '> Right-click Telemachos in Applications, choose **Open**, then **Open** again.' \
+            '' \
+            'Or from Terminal:' \
+            '' \
+            '```' \
+            'xattr -dr com.apple.quarantine /Applications/Telemachos.app' \
+            '```' \
+            '' \
+            "SHA-256: \`$checksum\`" \
+            > release-notes.md
+
+          gh release create "$tag" \
+            dist/Telemachos.dmg dist/Telemachos.dmg.sha256 \
+            --title "Telemachos $tag" \
+            --notes-file release-notes.md \
+            || gh release upload "$tag" dist/Telemachos.dmg dist/Telemachos.dmg.sha256 --clobber

@@ -1,0 +1,47 @@
+# Dependency set for the standalone macOS Telemachos.app.
+#
+# Two deliberate differences from the server-oriented requirements.txt:
+#
+#   1. `chromadb` (the full engine) replaces `chromadb-client` (the thin HTTP
+#      client). The app runs its vector store in-process — see
+#      src/chroma_client.py — because a desktop app cannot ask its user to
+#      start a separate ChromaDB service first. The two packages share the
+#      `chromadb` import name and must never both be installed.
+#   2. The test-only packages (pytest, pytest-asyncio, httpx2) are dropped.
+#      They are development tooling and have no business inside a shipped
+#      application bundle.
+#
+# Everything else tracks requirements.txt. Keep them in sync when upstream
+# adds a runtime dependency.
+
+fastapi
+uvicorn
+python-multipart
+python-dotenv
+httpx
+httpcore>=1.0,<2.0
+pydantic>=2.13.4
+pydantic-settings>=2.14.1
+SQLAlchemy
+pypdf
+beautifulsoup4
+charset-normalizer
+numpy
+
+# Vector store + local embeddings for RAG, semantic memory, and tool
+# selection. Full engine, not the HTTP client — see the note above.
+chromadb
+fastembed
+
+youtube-transcript-api
+markdown
+nh3
+icalendar
+python-dateutil
+caldav
+cryptography
+bcrypt
+mcp<2
+pyotp
+qrcode[pil]
+croniter
