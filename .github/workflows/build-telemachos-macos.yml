@@ -39,6 +39,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python
+        id: python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -59,7 +60,10 @@ jobs:
           path: |
             build/venv
             build/fastembed_seed
-          key: telemachos-buildenv-${{ runner.os }}-${{ hashFiles('packaging/macos/requirements-standalone.txt') }}
+          # The venv records absolute paths to a specific interpreter, so a
+          # patch-level Python bump on the runner must invalidate it — a stale
+          # venv fails later and much less legibly than a cache miss.
+          key: telemachos-buildenv-${{ runner.os }}-py${{ steps.python.outputs.python-version }}-${{ hashFiles('packaging/macos/requirements-standalone.txt') }}
 
       - name: Build Telemachos.app
         env:
