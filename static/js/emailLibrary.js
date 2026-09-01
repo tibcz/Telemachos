@@ -522,7 +522,7 @@ function _applyTagFilterFromPill(tag) {
   });
 }
 
-document.addEventListener('odysseus:email-filter-tag', (e) => {
+document.addEventListener('telemachos:email-filter-tag', (e) => {
   _applyTagFilterFromPill(e.detail?.tag);
 });
 
@@ -606,7 +606,7 @@ function _getActiveEmailContext() {
 
 // Frontend reads via the global so chat.js doesn't need a separate import
 // path (emailLibrary loads lazily in some entry points).
-try { window.__odysseusGetActiveEmailContext = _getActiveEmailContext; } catch (_) {}
+try { window.__telemachosGetActiveEmailContext = _getActiveEmailContext; } catch (_) {}
 
 const _COPY_EMAIL_ICON = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
 
@@ -1002,7 +1002,7 @@ async function _loadEmailReminderBellVisibility() {
 }
 // Live-update the bell when the reminder channel changes in Settings,
 // so the user doesn't have to reopen Email to see the change apply.
-window.addEventListener('odysseus-reminder-channel-changed', (e) => {
+window.addEventListener('telemachos-reminder-channel-changed', (e) => {
   const ch = e?.detail?.channel;
   _syncEmailReminderBellVisibility(ch === 'email');
 });
@@ -1794,9 +1794,9 @@ function _rememberedEmailAccountId() {
 const _libListCache = new Map();
 const _LIB_CACHE_MAX = 24;
 const _LIB_INITIAL_PAGE_SIZE = 100;
-const _LIB_SESSION_CACHE_PREFIX = 'odysseus.email.list.';
+const _LIB_SESSION_CACHE_PREFIX = 'telemachos.email.list.';
 const _LIB_SESSION_CACHE_TTL_MS = 10 * 60 * 1000;
-const _LIB_LAST_ACCOUNT_KEY = 'odysseus.email.lastAccountId';
+const _LIB_LAST_ACCOUNT_KEY = 'telemachos.email.lastAccountId';
 const _LIB_PREWARM_COOLDOWN_MS = 5 * 60 * 1000;
 let _libPrewarmDelayTimer = null;
 let _libPrewarmIdleHandle = null;
@@ -2107,8 +2107,8 @@ function _initMobileEmailPullRefresh() {
 
 function _isChatInteractionBusy() {
   try {
-    if (window.__odysseusChatBusy) return true;
-    const until = Number(window.__odysseusChatBusyUntil || 0);
+    if (window.__telemachosChatBusy) return true;
+    const until = Number(window.__telemachosChatBusyUntil || 0);
     return until > Date.now();
   } catch (_) {
     return false;
@@ -2220,10 +2220,10 @@ function _scheduleEmailPrewarm(task, { delay = 0 } = {}) {
     }
   }
 
-  window.addEventListener('odysseus:chat-busy-change', handlePriorityChange);
+  window.addEventListener('telemachos:chat-busy-change', handlePriorityChange);
   document.addEventListener('visibilitychange', handlePriorityChange);
   _libPrewarmDetachPriorityListeners = () => {
-    window.removeEventListener('odysseus:chat-busy-change', handlePriorityChange);
+    window.removeEventListener('telemachos:chat-busy-change', handlePriorityChange);
     document.removeEventListener('visibilitychange', handlePriorityChange);
   };
 
@@ -2456,7 +2456,7 @@ function _libCacheWriteBack() {
 // Expose the active account id to other modules (document.js uses this when sending).
 // Simple global rather than cross-module import to keep coupling minimal.
 function _publishActiveAccount() {
-  try { window.__odysseusActiveEmailAccount = state._libAccountId || null; } catch (_) {}
+  try { window.__telemachosActiveEmailAccount = state._libAccountId || null; } catch (_) {}
   try {
     if (state._libAccountId) localStorage.setItem(_LIB_LAST_ACCOUNT_KEY, state._libAccountId);
   } catch (_) {}
@@ -2821,11 +2821,11 @@ export function openEmailLibrary(opts = {}) {
     tagsToggle.setAttribute('aria-pressed', String(!!state._libShowTags));
     tagsToggle.addEventListener('click', () => {
       state._libShowTags = !state._libShowTags;
-      localStorage.setItem('odysseus.email.showTags', state._libShowTags ? '1' : '0');
+      localStorage.setItem('telemachos.email.showTags', state._libShowTags ? '1' : '0');
       tagsToggle.classList.toggle('active', !!state._libShowTags);
       tagsToggle.setAttribute('aria-pressed', String(!!state._libShowTags));
       _renderGrid();
-      document.dispatchEvent(new CustomEvent('odysseus:email-tags-toggle', { detail: { show: state._libShowTags } }));
+      document.dispatchEvent(new CustomEvent('telemachos:email-tags-toggle', { detail: { show: state._libShowTags } }));
     });
   }
   document.getElementById('email-reminders-clear-btn')?.addEventListener('click', async () => {
@@ -2836,7 +2836,7 @@ export function openEmailLibrary(opts = {}) {
     });
     if (!ok) return;
     try {
-      const res = await fetch(`${API_BASE}/api/email/odysseus/reminders?permanent=1${_acct()}`, {
+      const res = await fetch(`${API_BASE}/api/email/telemachos/reminders?permanent=1${_acct()}`, {
         method: 'DELETE',
         credentials: 'same-origin',
       });
@@ -5733,7 +5733,7 @@ async function _toggleCardPreview(card, em) {
 // occasionally splits a single reply into two bogus "turns" by treating a
 // signature/disclaimer as its own message), the user can flip this off to
 // fall back to plain rendering. Survives reloads.
-const _BUBBLES_DISABLED_KEY = 'odysseus.email.bubblesDisabled';
+const _BUBBLES_DISABLED_KEY = 'telemachos.email.bubblesDisabled';
 // Threaded chat-bubble email view is DISABLED for now — too buggy to
 // ship. Force plain-text rendering everywhere by always returning true.
 // Re-enable by restoring the localStorage-backed body + the toggle
@@ -6515,7 +6515,7 @@ function _foldQuotedReplies(html) {
 // Global preference: AI summary panels stay collapsed across every email
 // once the user folds one, and stay expanded once they unfold. Stored in
 // localStorage so the choice survives reloads.
-const _SUMMARY_COLLAPSED_KEY = 'odysseus.email.summaryCollapsed';
+const _SUMMARY_COLLAPSED_KEY = 'telemachos.email.summaryCollapsed';
 function _summaryCollapsedPref() {
   try { return localStorage.getItem(_SUMMARY_COLLAPSED_KEY) === '1'; } catch { return false; }
 }

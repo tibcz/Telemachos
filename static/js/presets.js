@@ -62,7 +62,7 @@ export const PROMPT_TEMPLATES = [
     prompt: "You are Spark, a playful, quick-witted assistant with bright energy and practical instincts. Keep responses concise, vivid, and helpful. Be warm without being cloying, imaginative without losing the thread, and always center the user's actual goal.\n\nUse a light, lively voice with occasional clever turns of phrase. Do not become formal unless the task calls for it. When the user needs precision, prioritize clarity over performance."
   },
   {
-    id: 'odysseus',
+    id: 'telemachos',
     name: 'Telemachos',
     temperature: 1.0,
     isPreset: true,
@@ -246,9 +246,9 @@ function initNameDropdown() {
         }
         // Hide built-in preset
         if (isBuiltin) {
-          const hidden = loadStoredArray('odysseus-hidden-presets');
+          const hidden = loadStoredArray('telemachos-hidden-presets');
           if (!hidden.includes(charName)) hidden.push(charName);
-          localStorage.setItem('odysseus-hidden-presets', JSON.stringify(hidden));
+          localStorage.setItem('telemachos-hidden-presets', JSON.stringify(hidden));
         }
         // Deactivate if this was the active character
         if (presets.custom && presets.custom.character_name === charName) {
@@ -329,7 +329,7 @@ function _populateCharSelect() {
     select.appendChild(group);
   }
 
-  const hiddenPresets = loadStoredArray('odysseus-hidden-presets');
+  const hiddenPresets = loadStoredArray('telemachos-hidden-presets');
   const builtins = PROMPT_TEMPLATES.filter(t => !savedNames.has(t.name) && !hiddenPresets.includes(t.name));
   if (builtins.length) {
     const group = document.createElement('optgroup');
@@ -423,9 +423,9 @@ function initPersistentChat() {
       await fetch(`${API_BASE}/api/session/${sessionId}/important`, { method: 'POST', body: favFd });
 
       // Save session → character mapping so it restores on switch
-      const charSessions = loadStoredObject('odysseus-char-sessions');
+      const charSessions = loadStoredObject('telemachos-char-sessions');
       charSessions[sessionId] = charName;
-      localStorage.setItem('odysseus-char-sessions', JSON.stringify(charSessions));
+      localStorage.setItem('telemachos-char-sessions', JSON.stringify(charSessions));
 
       // Close modal, reload sessions, switch to the new chat
       const modal = document.getElementById('custom-preset-modal');
@@ -1069,7 +1069,7 @@ function _syncCharIndicator() {
 let _prevSessionId = null;
 
 export function onSessionSwitch(sessionId) {
-  const charSessions = loadStoredObject('odysseus-char-sessions');
+  const charSessions = loadStoredObject('telemachos-char-sessions');
 
   // Leaving a persistent chat — deactivate for this switch only
   if (window._persistentChatSession) {
@@ -1117,10 +1117,10 @@ export function isPersistentChat() {
  * Remove a session from persistent chat mappings (call when session is deleted).
  */
 export function removePersistentChat(sessionId) {
-  const charSessions = loadStoredObject('odysseus-char-sessions');
+  const charSessions = loadStoredObject('telemachos-char-sessions');
   if (charSessions[sessionId]) {
     delete charSessions[sessionId];
-    localStorage.setItem('odysseus-char-sessions', JSON.stringify(charSessions));
+    localStorage.setItem('telemachos-char-sessions', JSON.stringify(charSessions));
   }
   // If we were in that persistent chat, fully clear state
   if (window._persistentChatSession === sessionId) {

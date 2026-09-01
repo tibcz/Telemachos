@@ -1289,7 +1289,7 @@ function _showForm(existing, initTaskType, initTriggerType) {
         ['razor', 'Razor'],
         ['nietzsche', 'Nietzsche'],
         ['spark', 'Spark'],
-        ['odysseus', 'Telemachos'],
+        ['telemachos', 'Telemachos'],
       ];
       const _curPersona = (existing?.character_id || '').toLowerCase();
       const _personaOptsHtml = _personaOpts.map(([v, label]) =>

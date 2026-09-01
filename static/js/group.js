@@ -19,7 +19,7 @@ let _abortControllers = [];
 let _mode = 'round-robin';    // 'parallel' or 'round-robin'
 let _roundRobinIdx = 0;
 let _parentSessionId = null;
-const GROUP_STATE_KEY = 'odysseus-group-state';
+const GROUP_STATE_KEY = 'telemachos-group-state';
 
 export function init(apiBase) {
   API_BASE = apiBase;
@@ -609,9 +609,9 @@ export async function startGroup(models, parentSessionId) {
     _parentSessionId = pdata.id;
     // Register as group session for sidebar icon
     try {
-      const storedGroupSessions = Storage.getJSON('odysseus-group-sessions', []);
+      const storedGroupSessions = Storage.getJSON('telemachos-group-sessions', []);
       const gids = Array.isArray(storedGroupSessions) ? storedGroupSessions : [];
-      if (!gids.includes(_parentSessionId)) { gids.push(_parentSessionId); localStorage.setItem('odysseus-group-sessions', JSON.stringify(gids)); }
+      if (!gids.includes(_parentSessionId)) { gids.push(_parentSessionId); localStorage.setItem('telemachos-group-sessions', JSON.stringify(gids)); }
     } catch (e) {}
   } catch (e) {
     console.error('[group] Failed to create parent session:', e);

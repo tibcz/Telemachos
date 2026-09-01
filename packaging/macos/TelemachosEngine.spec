@@ -1,5 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
-"""PyInstaller spec for the Odysseus engine embedded in Telemachos.app.
+"""PyInstaller spec for the Telemachos engine embedded in Telemachos.app.
 
 Built as a **onedir** bundle, deliberately. A onefile build re-extracts the
 whole archive to a temp directory on every launch, and the engine launches

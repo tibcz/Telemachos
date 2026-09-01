@@ -40,7 +40,7 @@ function _makeLoaderInert(loader) {
   loader.style.opacity = '0';
   // index.html's inline bootstrap animates the wave on a 150ms interval.
   // Nothing of it is visible any more, so stop rendering into it.
-  try { window.__odysseusLoaderWaveStop?.(); } catch (_) {}
+  try { window.__telemachosLoaderWaveStop?.(); } catch (_) {}
 }
 
 /**

@@ -1,9 +1,9 @@
-"""Frozen entrypoint for the Odysseus engine inside the standalone Telemachos.app.
+"""Frozen entrypoint for the Telemachos engine inside the standalone Telemachos.app.
 
 This module is the PyInstaller entry script. It does three jobs, strictly in
 this order, because each one depends on the previous having finished:
 
-1. **Act as a Python interpreter when asked to.** Odysseus spawns helper
+1. **Act as a Python interpreter when asked to.** Telemachos spawns helper
    processes with ``sys.executable`` — the built-in MCP servers
    (src/builtin_mcp.py) and the agent's Python tool
    (src/agent_tools/subprocess_tools.py). In a source checkout that is a real
@@ -13,7 +13,7 @@ this order, because each one depends on the previous having finished:
    the app actually uses, which keeps those call sites working untouched.
 
 2. **Point every persistent path at Application Support.** src/constants.py
-   resolves all of its paths at import time from ``ODYSSEUS_DATA_DIR``, so the
+   resolves all of its paths at import time from ``TELEMACHOS_DATA_DIR``, so the
    environment has to be settled before anything imports the app.
 
 3. **Serve.** Bind uvicorn to loopback on the port the app shell chose.
@@ -52,7 +52,7 @@ if _APP_ROOT not in sys.path:
 # 1. Interpreter dispatch
 # ---------------------------------------------------------------------------
 
-# Interpreter flags that take no value. Odysseus passes -I (isolated mode) when
+# Interpreter flags that take no value. Telemachos passes -I (isolated mode) when
 # it runs the agent's Python tool; the rest are here so an added flag upstream
 # doesn't silently turn a child process into a second copy of the app.
 _VALUELESS_FLAGS = {"-I", "-s", "-S", "-E", "-u", "-B", "-O", "-OO", "-q", "-v"}
@@ -72,7 +72,7 @@ def _describes_interpreter_work(argv):
 
 
 def _run_as_interpreter(argv):
-    """Emulate `python ...` for the argument shapes Odysseus spawns.
+    """Emulate `python ...` for the argument shapes Telemachos spawns.
 
     Writes nothing to stdout of its own: the MCP servers speak JSON-RPC over
     stdout, and a single stray byte there corrupts the protocol stream.
@@ -155,9 +155,9 @@ def configure_environment(port):
     setdefault throughout, so an operator debugging the bundle can override any
     of it from the outside without editing the app.
     """
-    data_dir = os.environ.get("ODYSSEUS_DATA_DIR") or application_support_dir()
+    data_dir = os.environ.get("TELEMACHOS_DATA_DIR") or application_support_dir()
     os.makedirs(data_dir, exist_ok=True)
-    os.environ["ODYSSEUS_DATA_DIR"] = data_dir
+    os.environ["TELEMACHOS_DATA_DIR"] = data_dir
 
     # Vector store runs in-process. Without this the app would look for a
     # ChromaDB service on localhost:8100 and RAG/semantic memory would be dead
@@ -175,7 +175,7 @@ def configure_environment(port):
     # Loopback base for the app's own internal API calls (agent tools and
     # background jobs call the running server over HTTP). Without the port it
     # would default to 7000 and talk to nothing.
-    os.environ["ODYSSEUS_INTERNAL_BASE"] = "http://127.0.0.1:%d" % port
+    os.environ["TELEMACHOS_INTERNAL_BASE"] = "http://127.0.0.1:%d" % port
 
     # Model weights for local embeddings are downloaded once and cached; keep
     # them with the rest of the user's data rather than in a home-dir dotfile.

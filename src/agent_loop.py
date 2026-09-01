@@ -1,7 +1,7 @@
 """
 agent_loop.py
 
-Streaming agent loop for odysseus-ui.
+Streaming agent loop for telemachos-ui.
 Wraps stream_llm() with multi-round tool execution.
 The LLM decides when to use tools by writing fenced code blocks.
 """
@@ -1599,7 +1599,7 @@ def _minimal_saved_memory_message(messages: List[Dict]) -> Optional[Dict]:
             break
     if not facts:
         return None
-    logger.info("[agent-intent] odysseus doc minimal memory facts=%s", len(facts))
+    logger.info("[agent-intent] telemachos doc minimal memory facts=%s", len(facts))
     return untrusted_context_message(
         "saved memory: minimal context",
         (
@@ -1755,8 +1755,8 @@ def _compact_email_draft_context(raw: str, *, max_own_chars: int = 1200, max_his
     return header.rstrip() + "\n---\n" + body_out.strip()
 
 
-def _minimal_odysseus_doc_messages(messages: List[Dict], active_document, stream_create: bool = False) -> List[Dict]:
-    """Tiny prompt path for the Odysseus document LoRA.
+def _minimal_telemachos_doc_messages(messages: List[Dict], active_document, stream_create: bool = False) -> List[Dict]:
+    """Tiny prompt path for the Telemachos document LoRA.
 
     This model is trained on document tool behavior, so avoid the normal agent
     rule stack and send only the task plus the active document when editing.
@@ -1808,7 +1808,7 @@ def _minimal_odysseus_doc_messages(messages: List[Dict], active_document, stream
             "Do not use native function-call JSON or <tool_calls> markup. "
             "FIND text must be copied exactly from the active document with no labels like content:, title:, or markdown. "
             "Use only the fenced tool blocks above. Do not write anything before the fenced block. "
-            "After the tool succeeds, Odysseus will answer Done."
+            "After the tool succeeds, Telemachos will answer Done."
         )
     out = [{"role": "system", "content": system, "_agent_injected": "prompt"}]
     memory_message = _minimal_saved_memory_message(messages)
@@ -1862,10 +1862,10 @@ def _looks_like_notes_calendar_followup(text: str) -> bool:
     )
 
 
-def _minimal_odysseus_notes_messages(messages: List[Dict]) -> List[Dict]:
-    """Tiny prompt path for Odysseus notes/calendar/tasks LoRAs.
+def _minimal_telemachos_notes_messages(messages: List[Dict]) -> List[Dict]:
+    """Tiny prompt path for Telemachos notes/calendar/tasks LoRAs.
 
-    The finetune is trained to emit Odysseus notes/calendar/task tool calls
+    The finetune is trained to emit Telemachos notes/calendar/task tool calls
     without receiving the full tool schema or saved-context wrapper stack.
     """
     latest = _extract_last_user_message(messages)
@@ -1904,12 +1904,12 @@ def _looks_like_memory_identity_turn(text: str) -> bool:
     ))
 
 
-def _minimal_odysseus_general_messages(messages: List[Dict], include_memory: bool = False) -> List[Dict]:
-    """Minimal fallback for Odysseus finetunes outside domain-specific paths."""
+def _minimal_telemachos_general_messages(messages: List[Dict], include_memory: bool = False) -> List[Dict]:
+    """Minimal fallback for Telemachos finetunes outside domain-specific paths."""
     latest = _extract_last_user_message(messages)
     system = (
         "You are Odysseus. Answer directly and briefly.\n"
-        "Use Odysseus tool-call format only when the user explicitly asks you to take an action.\n"
+        "Use Telemachos tool-call format only when the user explicitly asks you to take an action.\n"
         "For explicit remember/forget/preference requests, use manage_memory.\n"
         "If the user asks for their email address, email account, or connected emails, call mcp__email__list_email_accounts.\n"
         "If the user asks to read/check/show their inbox or latest emails, call mcp__email__list_emails.\n"
@@ -1974,7 +1974,7 @@ _ODY_QWEN_TEXT_FIXES = (
 
 
 def _normalize_ody_qwen_text_artifacts(text: str) -> str:
-    """Repair common dropped-final-letter artifacts from small Odysseus LoRAs.
+    """Repair common dropped-final-letter artifacts from small Telemachos LoRAs.
 
     This is intentionally scoped to the odysseus-qwen3 runtime path. It is not
     a general grammar corrector; it only fixes high-confidence standalone
@@ -2203,7 +2203,7 @@ def _prepend_agent_directive(messages: List[Dict], directive: str) -> List[Dict]
     return messages
 
 
-def _is_odysseus_qwen_model(model: str) -> bool:
+def _is_telemachos_qwen_model(model: str) -> bool:
     return (model or "").lower().startswith("odysseus-qwen3")
 
 
@@ -3511,7 +3511,7 @@ async def stream_agent_loop(
     _t0 = time.time()
     _needs_admin = _detect_admin_intent(messages)
     _last_user = _extract_last_user_message(messages)
-    _ody_qwen_finetune_model = _is_odysseus_qwen_model(model)
+    _ody_qwen_finetune_model = _is_telemachos_qwen_model(model)
     # The caller's temperature survives for non-qwen routes; the qwen cap is
     # applied per candidate (here for the primary, in the candidate request
     # factories for fallbacks), so neither direction of a mixed qwen/non-qwen
@@ -3586,7 +3586,7 @@ async def stream_agent_loop(
     if _direct_low_signal:
         logger.info("[agent] direct low-signal reply path for latest=%r", _last_user[:80])
         direct_messages = (
-            _minimal_odysseus_general_messages(
+            _minimal_telemachos_general_messages(
                 messages,
                 include_memory=True,
             )
@@ -3607,9 +3607,9 @@ async def stream_agent_loop(
         direct_has_real_usage = False
 
         def _direct_candidate_request(_index, _url, candidate_model, _headers):
-            candidate_is_qwen = _is_odysseus_qwen_model(candidate_model)
+            candidate_is_qwen = _is_telemachos_qwen_model(candidate_model)
             candidate_messages = (
-                _minimal_odysseus_general_messages(messages, include_memory=True)
+                _minimal_telemachos_general_messages(messages, include_memory=True)
                 if candidate_is_qwen
                 else [{"role": "user", "content": _last_user}]
             )
@@ -4066,7 +4066,7 @@ async def stream_agent_loop(
     _runtime_skill_tools: Set[str] = set()
 
     def _route_finetune_modes(candidate_model: str):
-        is_ody = _is_odysseus_qwen_model(candidate_model)
+        is_ody = _is_telemachos_qwen_model(candidate_model)
         doc_mode = (
             is_ody
             and not _runtime_skill_tools
@@ -4143,19 +4143,19 @@ async def stream_agent_loop(
     ) = _route_finetune_modes(model)
     _relevant_tools = _route_relevant_tools(model)
     if _ody_doc_finetune_mode and _relevant_tools is not None:
-        logger.info("[agent-intent] odysseus doc finetune tool clamp=%s", sorted(_relevant_tools))
+        logger.info("[agent-intent] telemachos doc finetune tool clamp=%s", sorted(_relevant_tools))
     elif _ody_notes_finetune_mode and _relevant_tools is not None:
         disabled_tools.difference_update({
             "manage_notes", "manage_calendar", "manage_tasks",
         })
-        logger.info("[agent-intent] odysseus notes finetune tool clamp=%s", sorted(_relevant_tools))
+        logger.info("[agent-intent] telemachos notes finetune tool clamp=%s", sorted(_relevant_tools))
     elif _ody_general_no_tool_mode:
         try:
             from src.tool_policy import known_tool_names
             disabled_tools.update(known_tool_names())
         except Exception:
             pass
-        logger.info("[agent-intent] odysseus general no-tool clamp active")
+        logger.info("[agent-intent] telemachos general no-tool clamp active")
 
     if (
         _relevant_tools is not None
@@ -4310,14 +4310,14 @@ async def stream_agent_loop(
             workspace=workspace,
         )
         if doc_mode and not plan_mode and not approved_plan and not guide_only:
-            route_messages = _minimal_odysseus_doc_messages(
+            route_messages = _minimal_telemachos_doc_messages(
                 route_messages,
                 _prompt_active_document,
                 stream_create=stream_create_mode,
             )
             route_mcp_schemas = []
         elif notes_mode and not plan_mode and not approved_plan and not guide_only:
-            route_messages = _minimal_odysseus_notes_messages(route_messages)
+            route_messages = _minimal_telemachos_notes_messages(route_messages)
             route_mcp_schemas = []
         elif (
             is_ody
@@ -4326,7 +4326,7 @@ async def stream_agent_loop(
             and not approved_plan
             and not guide_only
         ):
-            route_messages = _minimal_odysseus_general_messages(route_messages, include_memory=True)
+            route_messages = _minimal_telemachos_general_messages(route_messages, include_memory=True)
             route_mcp_schemas = []
         if plan_mode and not guide_only:
             _prepend_agent_directive(route_messages, PLAN_MODE_DIRECTIVE)
@@ -4854,7 +4854,7 @@ async def stream_agent_loop(
                     "tool_choice_none": state["ody_doc_finetune_mode"],
                     "temperature": (
                         _ody_qwen_temperature_cap(_requested_temperature)
-                        if _is_odysseus_qwen_model(candidate_model)
+                        if _is_telemachos_qwen_model(candidate_model)
                         else _requested_temperature
                     ),
                 },
@@ -5250,7 +5250,7 @@ async def stream_agent_loop(
             )
             if create_idx is None:
                 logger.info(
-                    "[agent] odysseus doc stream-create discarded non-create tool call(s): %s",
+                    "[agent] telemachos doc stream-create discarded non-create tool call(s): %s",
                     [block.tool_type for block in tool_blocks],
                 )
                 tool_blocks = []
@@ -5258,7 +5258,7 @@ async def stream_agent_loop(
             else:
                 if len(tool_blocks) > 1 or create_idx != 0:
                     logger.info(
-                        "[agent] odysseus doc stream-create keeping first create_document and dropping extras: %s",
+                        "[agent] telemachos doc stream-create keeping first create_document and dropping extras: %s",
                         [block.tool_type for block in tool_blocks],
                     )
                 tool_blocks = [tool_blocks[create_idx]]
@@ -5303,7 +5303,7 @@ async def stream_agent_loop(
                     _dropped_memory_lookup = True
             if _dropped_memory_lookup:
                 logger.info(
-                    "[agent-intent] odysseus qwen dropped manage_memory lookup; answering from compact memory"
+                    "[agent-intent] telemachos qwen dropped manage_memory lookup; answering from compact memory"
                 )
                 tool_blocks = _filtered_tool_blocks
                 converted_calls = _filtered_converted_calls
@@ -6258,18 +6258,18 @@ async def stream_agent_loop(
             if not full_response.strip():
                 full_response = "Done."
                 yield 'data: ' + json.dumps({"delta": "Done."}) + '\n\n'
-            logger.info("[agent] odysseus doc stream-create completed after one create_document")
+            logger.info("[agent] telemachos doc stream-create completed after one create_document")
             break
 
         if _ody_doc_tool_completed:
             if not full_response.strip() or full_response.strip().startswith("```"):
                 full_response = "Done."
                 yield 'data: ' + json.dumps({"delta": "Done."}) + '\n\n'
-            logger.info("[agent] odysseus doc tool completed after one textual tool block")
+            logger.info("[agent] telemachos doc tool completed after one textual tool block")
             break
 
         if (_ody_notes_finetune_mode or _ody_qwen_finetune_model) and _ody_notes_tool_completed:
-            logger.info("[agent] odysseus completed from deterministic tool output")
+            logger.info("[agent] telemachos completed from deterministic tool output")
             break
 
         # Feed results back to LLM for next round

@@ -113,7 +113,7 @@ jobs:
           PORT=7799
           DATA="$(mktemp -d)"
 
-          ODYSSEUS_DATA_DIR="$DATA" "$ENGINE" --port "$PORT" > engine-smoke.log 2>&1 &
+          TELEMACHOS_DATA_DIR="$DATA" "$ENGINE" --port "$PORT" > engine-smoke.log 2>&1 &
           PID=$!
 
           ready=0

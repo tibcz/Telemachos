@@ -19,9 +19,13 @@ Telemachos.
 
 ---
 
-Odysseus stands on the shoulders of a lot of open-source work. This file
+## Everything else
+
+Telemachos stands on the shoulders of a lot of open-source work. This file
 credits the projects whose code, assets, or designs are included in or
-adapted by this repository, and notes their licenses.
+adapted by this repository, and notes their licenses. These credits are not
+courtesy: the permissive licences below require their notices to be preserved
+in anything that ships this code.
 
 If you believe something here is mis-attributed or missing, please open an
 issue — it will be corrected promptly.

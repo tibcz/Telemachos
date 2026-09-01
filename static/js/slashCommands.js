@@ -2,8 +2,8 @@
 // Slash command handlers and dispatcher, extracted from chat.js
 
 window.cancelActiveTour = function cancelActiveTour() {
-  document.querySelectorAll('.odysseus-highlight, .odysseus-highlight-click')
-    .forEach(e => e.classList.remove('odysseus-highlight', 'odysseus-highlight-click'));
+  document.querySelectorAll('.telemachos-highlight, .telemachos-highlight-click')
+    .forEach(e => e.classList.remove('telemachos-highlight', 'telemachos-highlight-click'));
   document.querySelectorAll('.tour-halo').forEach(e => e.remove());
   document.getElementById('tour-tooltip')?.remove();
   document.body?.classList.remove('tour-active');
@@ -165,7 +165,7 @@ function _normalizeSetupBaseUrl(raw) {
 }
 
 function _clearSetupGuideMessages() {
-  Storage.remove('odysseus-setup-guide-messages');
+  Storage.remove('telemachos-setup-guide-messages');
 }
 
 async function _showSetupRetryPrompt() {
@@ -2125,8 +2125,8 @@ async function _cmdDemo(args, ctx) {
   let _draftObserver = null;
   let _draftPoll = null;
   const _clearTour = () => {
-    document.querySelectorAll('.odysseus-highlight, .odysseus-highlight-click').forEach(e => {
-      e.classList.remove('odysseus-highlight', 'odysseus-highlight-click');
+    document.querySelectorAll('.telemachos-highlight, .telemachos-highlight-click').forEach(e => {
+      e.classList.remove('telemachos-highlight', 'telemachos-highlight-click');
     });
     document.querySelectorAll('.tour-halo').forEach(e => e.remove());
     document.getElementById('tour-tooltip')?.remove();
@@ -2312,7 +2312,7 @@ async function _cmdDemo(args, ctx) {
   function showStep(sel, text, mode = 'next', isFirst = false, stepOpts = {}) {
     return new Promise(resolve => {
       if (cancelled) return resolve('cancel');
-      document.querySelectorAll('.odysseus-highlight').forEach(e => e.classList.remove('odysseus-highlight'));
+      document.querySelectorAll('.telemachos-highlight').forEach(e => e.classList.remove('telemachos-highlight'));
       document.querySelectorAll('.tour-halo').forEach(e => e.remove());
 
       // Support multiple selectors (comma-separated)
@@ -2332,7 +2332,7 @@ async function _cmdDemo(args, ctx) {
       const advanceOnClick = !!stepOpts.advanceOnClick;
       const pulseNext = !!stepOpts.pulseNext;
 
-      targets.forEach(t => t.classList.add('odysseus-highlight'));
+      targets.forEach(t => t.classList.add('telemachos-highlight'));
       const halos = breathing ? targets.map(makeHalo) : [];
       // Reset tooltip into the "pre-fade" state so the new step phases in.
       tooltip.classList.remove('tour-fade-in');
@@ -2431,7 +2431,7 @@ async function _cmdDemo(args, ctx) {
           targets.forEach(t => t.removeEventListener(evt, onDocClickCapture, true));
         });
         if (messageInputListener) document.removeEventListener('keydown', messageInputListener, true);
-        if (modelListener) document.removeEventListener('odysseus:model-picked', modelListener);
+        if (modelListener) document.removeEventListener('telemachos:model-picked', modelListener);
         if (streamHandle) streamHandle.cancel();
         halos.forEach(h => h.destroy());
       };
@@ -2453,7 +2453,7 @@ async function _cmdDemo(args, ctx) {
       }
       if (sels.includes('#model-picker-btn')) {
         modelListener = onModelPicked;
-        document.addEventListener('odysseus:model-picked', modelListener, { once: true });
+        document.addEventListener('telemachos:model-picked', modelListener, { once: true });
       }
 
       tooltip.addEventListener('click', onClick);
@@ -2532,7 +2532,7 @@ async function _cmdDemo(args, ctx) {
     await delay(step.afterDelay || 750);
     // After the message input step, wait for any active stream to finish
     if (step.sel === '#message' && _isStreamingFn()) {
-      document.querySelectorAll('.odysseus-highlight').forEach(e => e.classList.remove('odysseus-highlight'));
+      document.querySelectorAll('.telemachos-highlight').forEach(e => e.classList.remove('telemachos-highlight'));
       tooltip.style.display = 'none';
       await new Promise(r => {
         const check = setInterval(() => { if (!_isStreamingFn()) { clearInterval(check); r(); } }, 300);
@@ -2633,7 +2633,7 @@ async function _cmdTourCompare(args, ctx) {
   }
 
   const _clear = () => {
-    document.querySelectorAll('.odysseus-highlight').forEach(e => e.classList.remove('odysseus-highlight'));
+    document.querySelectorAll('.telemachos-highlight').forEach(e => e.classList.remove('telemachos-highlight'));
     _clearHalos();
     tooltip.remove();
     document.body.classList.remove('tour-active');
@@ -2911,7 +2911,7 @@ async function _cmdTourCookbook(args, ctx) {
     document.querySelectorAll('.tour-halo').forEach(e => e.remove());
   }
   const _clear = () => {
-    document.querySelectorAll('.odysseus-highlight').forEach(e => e.classList.remove('odysseus-highlight'));
+    document.querySelectorAll('.telemachos-highlight').forEach(e => e.classList.remove('telemachos-highlight'));
     _clearHalos();
     tooltip.remove();
     document.body.classList.remove('tour-active');
@@ -3140,7 +3140,7 @@ async function _cmdTourTheme(args, ctx) {
     document.querySelectorAll('.tour-halo').forEach(e => e.remove());
   }
   const _clear = () => {
-    document.querySelectorAll('.odysseus-highlight').forEach(e => e.classList.remove('odysseus-highlight'));
+    document.querySelectorAll('.telemachos-highlight').forEach(e => e.classList.remove('telemachos-highlight'));
     _clearHalos();
     tooltip.remove();
     document.body.classList.remove('tour-active');
@@ -3541,7 +3541,7 @@ async function _cmdTourGallery(args, ctx) {
     _msgEl.value = '';
     _msgEl.dispatchEvent(new Event('input', { bubbles: true }));
   }
-  try { localStorage.setItem('odysseus-notes-first-open-hint-v1', '1'); } catch (_) {}
+  try { localStorage.setItem('telemachos-notes-first-open-hint-v1', '1'); } catch (_) {}
   document.getElementById('notes-first-open-hint')?.remove();
 
   if (!document.getElementById('tour-styles')) {
@@ -4475,7 +4475,7 @@ async function _cmdTourResearch(args, ctx) {
     document.querySelectorAll('.tour-halo').forEach(e => e.remove());
   }
   const _clear = () => {
-    document.querySelectorAll('.odysseus-highlight').forEach(e => e.classList.remove('odysseus-highlight'));
+    document.querySelectorAll('.telemachos-highlight').forEach(e => e.classList.remove('telemachos-highlight'));
     _clearHalos();
     tooltip.remove();
     document.body.classList.remove('tour-active');
@@ -4689,7 +4689,7 @@ async function _cmdTourLibrary(args, ctx) {
     document.querySelectorAll('.tour-halo').forEach(e => e.remove());
   }
   const _clear = () => {
-    document.querySelectorAll('.odysseus-highlight').forEach(e => e.classList.remove('odysseus-highlight'));
+    document.querySelectorAll('.telemachos-highlight').forEach(e => e.classList.remove('telemachos-highlight'));
     _clearHalos();
     tooltip.remove();
     document.body.classList.remove('tour-active');
@@ -4894,7 +4894,7 @@ async function _cmdPrompt(args, ctx) {
     for (const p of list) all.push(p.prompt);
   }
   if (!all.length) { slashReply('No prompts available'); return true; }
-  const firstUseKey = 'odysseus_prompt_command_used';
+  const firstUseKey = 'telemachos_prompt_command_used';
   const firstUse = localStorage.getItem(firstUseKey) !== '1';
   const prompt = firstUse
     ? 'i have no imagination help me'
@@ -5520,7 +5520,7 @@ async function _cmdWisdom(args, ctx) {
 
 async function _cmdUptime(args, ctx) {
   const now = Date.now();
-  const loaded = window._odysseusLoadTime || now;
+  const loaded = window._telemachosLoadTime || now;
   const diff = now - loaded;
   const h = Math.floor(diff / 3600000);
   const m = Math.floor((diff % 3600000) / 60000);

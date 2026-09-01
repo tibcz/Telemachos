@@ -5,7 +5,7 @@
 #   ./packaging/macos/build.sh
 #
 # Produces, under dist/:
-#   Telemachos.app   the application: native shell + embedded Odysseus engine
+#   Telemachos.app   the application: native shell + embedded Telemachos engine
 #   Telemachos.dmg   the downloadable disk image
 #   Telemachos.dmg.sha256
 #
@@ -46,7 +46,7 @@ if [ -z "$PYTHON" ]; then
     if command -v "$candidate" >/dev/null; then PYTHON="$(command -v "$candidate")"; break; fi
   done
 fi
-[ -n "$PYTHON" ] || die "No python3 found. Odysseus needs Python 3.11 or newer."
+[ -n "$PYTHON" ] || die "No python3 found. Telemachos needs Python 3.11 or newer."
 
 "$PYTHON" - <<'PY' || die "Python 3.11+ is required."
 import sys
@@ -94,7 +94,7 @@ PY
 fi
 
 # ── 3. Freeze the engine ───────────────────────────────────────────────────
-step "Freezing the Odysseus engine"
+step "Freezing the Telemachos engine"
 rm -rf "$BUILD/pyinstaller" "$BUILD/engine-dist"
 "$VENV/bin/pyinstaller" packaging/macos/TelemachosEngine.spec \
   --noconfirm \

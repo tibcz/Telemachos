@@ -1,6 +1,6 @@
 """Regression tests for issue #2927 — KV-cache invalidation on local backends.
 
-As diagnosed in the issue, three things in Odysseus's request pattern actively
+As diagnosed in the issue, three things in Telemachos's request pattern actively
 destroy llama.cpp / LM Studio's KV-cache continuity on every chat turn:
 
   1. Dynamic content (a per-minute timestamp) was folded directly into the

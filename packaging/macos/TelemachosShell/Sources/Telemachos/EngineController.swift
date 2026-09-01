@@ -123,7 +123,7 @@ final class EngineController: ObservableObject {
         // sides of the contract visible in one place and lets a developer
         // override the data directory when running a build by hand.
         environment["TELEMACHOS_PORT"] = String(port)
-        environment["ODYSSEUS_DATA_DIR"] = EnginePaths.dataDirectory.path
+        environment["TELEMACHOS_DATA_DIR"] = EnginePaths.dataDirectory.path
         environment["CHROMADB_MODE"] = "embedded"
         process.environment = environment
 

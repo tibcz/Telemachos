@@ -559,7 +559,7 @@ function moduleSource(relativePath) {
     fixture.sidebar.style.values['--settings-sidebar-width'] === '280px',
   );
 
-  const widthStorageKey = 'odysseus-settings-sidebar-width';
+  const widthStorageKey = 'telemachos-settings-sidebar-width';
 
   storage.clear();
   const firstRunSidebar = buildFixture(document);

@@ -3498,13 +3498,13 @@ export function isVisible() {
 
 let _sharedSyncInFlight = false;
 let _sharedSyncLast = 0;
-const SHARED_STATE_LEADER_KEY = 'odysseus-cookbook-shared-state-leader';
+const SHARED_STATE_LEADER_KEY = 'telemachos-cookbook-shared-state-leader';
 const SHARED_STATE_LEADER_ID = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 const SHARED_STATE_LEADER_TTL_MS = 12000;
 
 function _foregroundChatBusy() {
   try {
-    return !!window.__odysseusChatBusy || Date.now() < (window.__odysseusChatBusyUntil || 0);
+    return !!window.__telemachosChatBusy || Date.now() < (window.__telemachosChatBusyUntil || 0);
   } catch (_) {
     return false;
   }

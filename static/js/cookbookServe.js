@@ -282,7 +282,7 @@ function _formatServeCmdPreview(cmd) {
     const homeMatch = raw.match(/((?:\/Users|\/home)\/[^/\s'"]+)/);
     const shortName = modelMatch?.[2]?.split('/').pop();
     if (homeMatch && shortName) {
-      const shimPath = `${homeMatch[1]}/.cache/odysseus/mlx-shims/${shortName}`;
+      const shimPath = `${homeMatch[1]}/.cache/telemachos/mlx-shims/${shortName}`;
       raw = raw.replace(
         /--model\s+(['"]?)mlx-community\/[^'"\s]*deepseek-v4[^'"\s]*\1/i,
         `--model '${shimPath}'`

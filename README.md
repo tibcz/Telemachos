@@ -67,18 +67,18 @@ Telemachos is two pieces in one bundle:
   starts the engine, waits for it to report itself genuinely ready, and hosts
   the workspace in a `WKWebView`. It owns the window, the menus, downloads,
   microphone access and shutdown.
-- **The engine** — the Odysseus workspace, frozen with PyInstaller into
+- **The engine** — the Telemachos workspace, frozen with PyInstaller into
   `Contents/Resources/engine`. It binds `127.0.0.1` on a port the shell picks,
   and is not reachable from anywhere else on the network.
 
 Two things make it genuinely standalone rather than a wrapper around a local
 server you still have to run:
 
-- **The vector store runs in-process.** Upstream Odysseus talks to ChromaDB over
+- **The vector store runs in-process.** Upstream Telemachos talks to ChromaDB over
   HTTP as a separate service. `src/chroma_client.py` gained an embedded mode
   that uses an in-process persistent client instead, so RAG and semantic memory
   work with nothing else installed.
-- **The engine can act as its own interpreter.** Odysseus starts helper
+- **The engine can act as its own interpreter.** Telemachos starts helper
   processes — the built-in MCP servers, the agent's Python tool — with
   `sys.executable`. Inside a frozen bundle that path *is* the engine, so an
   unguarded spawn would relaunch the whole app. The entry script in
@@ -123,7 +123,7 @@ packaging/macos/
 ## Licence and attribution
 
 Telemachos is built on [Odysseus](https://github.com/odysseus-dev/odysseus) and
-is a modified version of it. Odysseus is licensed under the GNU Affero General
+is a modified version of it. Telemachos is licensed under the GNU Affero General
 Public License, version 3 or later, and Telemachos is distributed under the same
 licence — see [LICENSE](LICENSE) and [ACKNOWLEDGMENTS.md](ACKNOWLEDGMENTS.md).
 

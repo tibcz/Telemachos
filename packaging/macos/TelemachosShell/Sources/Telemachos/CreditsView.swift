@@ -3,7 +3,7 @@ import SwiftUI
 
 /// Attribution and licensing.
 ///
-/// Telemachos is a packaging of Odysseus, which is licensed under the AGPL.
+/// Telemachos is a packaging of Telemachos, which is licensed under the AGPL.
 /// That licence requires a distributed build to carry its notices and to offer
 /// the corresponding source, so this window is a condition of shipping the app
 /// at all, not decoration.
@@ -14,7 +14,7 @@ struct CreditsView: View {
                 Text("Telemachos")
                     .font(.title.weight(.semibold))
 
-                Text("A standalone macOS application built on Odysseus, a self-hosted AI workspace.")
+                Text("A standalone macOS application built on Telemachos, a self-hosted AI workspace.")
                     .foregroundStyle(.secondary)
 
                 Divider()
@@ -23,11 +23,11 @@ struct CreditsView: View {
                     .font(.headline)
 
                 Text("""
-                Telemachos bundles Odysseus, which is licensed under the GNU Affero \
+                Telemachos bundles Telemachos, which is licensed under the GNU Affero \
                 General Public License, version 3 or later. Telemachos is distributed \
                 under the same licence.
 
-                This build is a modified version of the upstream Odysseus project.
+                This build is a modified version of the upstream Telemachos project.
                 """)
                 .fixedSize(horizontal: false, vertical: true)
 
