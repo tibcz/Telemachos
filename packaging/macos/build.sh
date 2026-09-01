@@ -106,6 +106,52 @@ rm -rf "$BUILD/pyinstaller" "$BUILD/engine-dist"
   || die "The frozen engine was not produced."
 echo "  engine size: $(du -sh "$BUILD/engine-dist/TelemachosEngine" | cut -f1)"
 
+# ── 3b. Local model runtime (llama.cpp, Metal) ─────────────────────────────
+# Downloading a multi-gigabyte model is pointless if nothing can run it, so the
+# app ships llama.cpp's server. Built statically with the Metal shaders
+# embedded, so it is a single self-contained binary with no dylibs to relocate
+# and no .metal file to find at runtime.
+#
+# Deliberately non-fatal: if this fails, the app still builds and simply
+# reports local serving as unavailable. A release must never be blocked by an
+# optional runtime.
+step "Building the local model runtime (llama.cpp)"
+LLAMA_SRC="$BUILD/llama.cpp"
+LLAMA_BIN=""
+if [ "${TELEMACHOS_SKIP_LLAMA:-0}" = "1" ]; then
+  echo "  skipped (TELEMACHOS_SKIP_LLAMA=1)"
+elif ! command -v cmake >/dev/null; then
+  echo "  warning: cmake not found — local model serving will be unavailable"
+else
+  (
+    set -e
+    if [ ! -d "$LLAMA_SRC/.git" ]; then
+      rm -rf "$LLAMA_SRC"
+      git clone --depth 1 https://github.com/ggml-org/llama.cpp "$LLAMA_SRC"
+    fi
+    cmake -S "$LLAMA_SRC" -B "$LLAMA_SRC/build" \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_OSX_ARCHITECTURES=arm64 \
+      -DGGML_METAL=ON \
+      -DGGML_METAL_EMBED_LIBRARY=ON \
+      -DLLAMA_BUILD_SERVER=ON \
+      -DLLAMA_BUILD_TESTS=OFF \
+      -DLLAMA_BUILD_EXAMPLES=OFF \
+      -DLLAMA_CURL=OFF \
+      -DBUILD_SHARED_LIBS=OFF > "$BUILD/llama-configure.log" 2>&1
+    cmake --build "$LLAMA_SRC/build" --target llama-server --config Release \
+      -j "$(sysctl -n hw.ncpu)" > "$BUILD/llama-build.log" 2>&1
+  ) && LLAMA_BIN="$(find "$LLAMA_SRC/build" -name 'llama-server' -type f -perm -u+x | head -1)"
+
+  if [ -n "$LLAMA_BIN" ] && [ -x "$LLAMA_BIN" ]; then
+    echo "  built: $(du -h "$LLAMA_BIN" | cut -f1)"
+  else
+    LLAMA_BIN=""
+    echo "  warning: llama.cpp did not build — local model serving will be unavailable"
+    tail -5 "$BUILD/llama-build.log" 2>/dev/null | sed 's/^/    /'
+  fi
+fi
+
 # ── 4. Build the native shell ──────────────────────────────────────────────
 step "Building the native app shell"
 swift build --package-path "$SHELL_DIR" -c release --arch arm64
@@ -119,6 +165,13 @@ mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$SHELL_BIN" "$APP/Contents/MacOS/$APP_NAME"
 chmod +x "$APP/Contents/MacOS/$APP_NAME"
 cp -R "$BUILD/engine-dist/TelemachosEngine" "$APP/Contents/Resources/engine"
+
+if [ -n "${LLAMA_BIN:-}" ] && [ -x "$LLAMA_BIN" ]; then
+  mkdir -p "$APP/Contents/Resources/llama"
+  cp "$LLAMA_BIN" "$APP/Contents/Resources/llama/llama-server"
+  chmod +x "$APP/Contents/Resources/llama/llama-server"
+  echo "  local runtime bundled"
+fi
 
 # Icon: build an iconset at the sizes macOS asks for, then compile it.
 ICON_SRC="$REPO_ROOT/packaging/macos/icon.png"
@@ -175,7 +228,7 @@ PLIST
 step "Signing (ad-hoc)"
 while IFS= read -r -d '' macho; do
   codesign --force --sign - --timestamp=none "$macho" 2>/dev/null || true
-done < <(find "$APP/Contents/Resources/engine" -type f \
+done < <(find "$APP/Contents/Resources" -type f \
            \( -name '*.so' -o -name '*.dylib' -o -perm -u+x \) -print0)
 
 codesign --force --sign - --timestamp=none "$APP/Contents/Resources/engine/TelemachosEngine"

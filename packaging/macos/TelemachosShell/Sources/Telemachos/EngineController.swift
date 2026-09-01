@@ -125,6 +125,12 @@ final class EngineController: ObservableObject {
         environment["TELEMACHOS_PORT"] = String(port)
         environment["TELEMACHOS_DATA_DIR"] = EnginePaths.dataDirectory.path
         environment["CHROMADB_MODE"] = "embedded"
+        // Only set when this build actually shipped the runtime; the engine
+        // treats its absence as "local serving unavailable" rather than an
+        // error, so a build without it still runs normally.
+        if let llama = EnginePaths.llamaServer {
+            environment["TELEMACHOS_LLAMA_SERVER"] = llama.path
+        }
         process.environment = environment
 
         // stdout and stderr go to a file so a start-up crash leaves evidence.

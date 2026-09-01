@@ -26,6 +26,10 @@ struct WebView: NSViewRepresentable {
         // Identify as a desktop app rather than a stock Safari build, so the UI
         // can tell it is running inside Telemachos.
         webView.customUserAgent = "Telemachos/1.0 (macOS; WKWebView)"
+        // Paint the area behind the page in the system background colour, so
+        // the moment before the first frame matches the appearance the page is
+        // about to render in rather than flashing the opposite theme.
+        webView.underPageBackgroundColor = .windowBackgroundColor
 
         context.coordinator.webView = webView
         webView.load(URLRequest(url: url))

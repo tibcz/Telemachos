@@ -28,6 +28,7 @@ on:
     # available. Building on push to the development branches means the disk
     # image is downloadable from the run's artifacts straight away.
     branches:
+      - main
       - dev
       - "claude/**"
 
@@ -77,6 +78,12 @@ jobs:
           # venv fails later and much less legibly than a cache miss.
           key: telemachos-buildenv-${{ runner.os }}-py${{ steps.python.outputs.python-version }}-${{ hashFiles('packaging/macos/requirements-standalone.txt') }}
 
+      # Runs before the build so a stale model entry fails in seconds rather
+      # than after a full compile — and, more importantly, so a broken download
+      # link can never reach a release.
+      - name: Validate the model catalog against HuggingFace
+        run: python3 packaging/macos/validate_model_catalog.py
+
       - name: Build Telemachos.app
         env:
           PYTHON: python3
@@ -102,6 +109,15 @@ jobs:
               *) echo "::error::$binary is not arm64 ($info)"; exit 1 ;;
             esac
           done
+
+          echo "--- local model runtime ---"
+          RUNTIME="$APP/Contents/Resources/llama/llama-server"
+          if [ -x "$RUNTIME" ]; then
+            echo "bundled: $(lipo -archs "$RUNTIME") $(du -h "$RUNTIME" | cut -f1)"
+            "$RUNTIME" --version 2>&1 | head -2 || true
+          else
+            echo "::warning::llama.cpp did not build; local model serving will be unavailable in this build"
+          fi
 
           echo "--- payload ---"
           test -x "$APP/Contents/Resources/engine/TelemachosEngine" || { echo "::error::engine missing"; exit 1; }

@@ -18,6 +18,20 @@ enum EnginePaths {
         return FileManager.default.isExecutableFile(atPath: candidate.path) ? candidate : nil
     }
 
+    /// The bundled llama.cpp server, when this build has one.
+    ///
+    /// Passed to the engine explicitly rather than discovered by walking up
+    /// from the frozen payload: the engine's idea of its own root is
+    /// PyInstaller's extraction directory, which is a poor place to start
+    /// guessing bundle layout from.
+    static var llamaServer: URL? {
+        guard let resources = Bundle.main.resourceURL else { return nil }
+        let candidate = resources
+            .appendingPathComponent("llama", isDirectory: true)
+            .appendingPathComponent("llama-server")
+        return FileManager.default.isExecutableFile(atPath: candidate.path) ? candidate : nil
+    }
+
     /// ~/Library/Application Support/Telemachos
     static var dataDirectory: URL {
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
