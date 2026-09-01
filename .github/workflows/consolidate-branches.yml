@@ -1,0 +1,71 @@
+name: Consolidate to a single main branch
+
+# One-shot housekeeping, run by hand.
+#
+# Renames dev to main and removes the working branch, leaving the repository
+# with exactly one. Rename rather than create-and-delete on purpose: GitHub's
+# rename moves the default branch, retargets open pull requests and preserves
+# the branch's history in one operation, whereas creating `main` separately
+# would leave `dev` as the default and undeletable.
+#
+# Delete this file once it has run.
+
+on:
+  workflow_dispatch:
+    inputs:
+      working_branch:
+        description: "Working branch to delete once main exists"
+        type: string
+        default: "claude/telemachos-macos-standalone-nukn37"
+
+permissions:
+  contents: write
+  administration: write
+
+jobs:
+  consolidate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Rename dev to main and drop the working branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          WORKING: ${{ inputs.working_branch }}
+        run: |
+          set -uo pipefail
+
+          default="$(gh api "repos/$REPO" --jq .default_branch)"
+          echo "current default branch: $default"
+
+          if [ "$default" = "main" ]; then
+            echo "already on main"
+          else
+            echo "renaming $default -> main"
+            if gh api -X POST "repos/$REPO/branches/$default/rename" \
+                 -f new_name=main > /tmp/rename.json 2>/tmp/rename.err; then
+              echo "renamed; default branch is now $(gh api "repos/$REPO" --jq .default_branch)"
+            else
+              echo "::error::could not rename $default to main"
+              cat /tmp/rename.err
+              echo ""
+              echo "Renaming the default branch needs admin rights, which the"
+              echo "Actions token may not have. Rename it once by hand at:"
+              echo "  https://github.com/$REPO/branches"
+              exit 1
+            fi
+          fi
+
+          # Everything that is not main goes.
+          for branch in $(gh api "repos/$REPO/branches" --paginate --jq '.[].name'); do
+            [ "$branch" = "main" ] && continue
+            sha="$(gh api "repos/$REPO/git/ref/heads/$branch" --jq .object.sha 2>/dev/null || true)"
+            if gh api -X DELETE "repos/$REPO/git/refs/heads/$branch" >/dev/null 2>&1; then
+              echo "  deleted: $branch (was $sha)"
+            else
+              echo "  could not delete: $branch"
+            fi
+          done
+
+          echo ""
+          echo "branches now:"
+          gh api "repos/$REPO/branches" --jq '.[].name' | sed 's/^/  /'
