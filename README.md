@@ -43,6 +43,53 @@ key for whichever provider you use (Anthropic, OpenAI, and the other supported
 providers). If you already run **Ollama** or **LM Studio** locally, Telemachos
 finds them without any configuration.
 
+## Local models
+
+Telemachos can run a model on your Mac with nothing leaving the machine. Open
+**Local Models** in the sidebar: it reads how much memory this Mac has and
+recommends one of four, then downloads it and serves it locally.
+
+| Tier | Suits | Model | Size |
+|---|---|---|---|
+| Light | 8 GB Mac | Gemma 3 4B, Q4_K_M | ~2.6 GB |
+| Balanced | 16 GB Mac | Gemma 3 12B, Q4_K_M | ~7.3 GB |
+| Strong | 32 GB Mac | Gemma 3 27B, Q4_K_M | ~16 GB |
+| Maximum | 64 GB Mac | Gemma 3 27B, Q8_0 | ~29 GB |
+
+The app bundles llama.cpp's server, built with Metal, so a downloaded model
+runs without installing anything else. If you already use Ollama or LM Studio,
+those are detected separately and keep working.
+
+### Why these downloads are safe
+
+The real risk in downloading model weights is not a virus in the usual sense.
+PyTorch `.bin` and `.pt` checkpoints are Python **pickles**, and unpickling
+executes arbitrary code by design — a hostile checkpoint owns the machine the
+moment it loads. Telemachos removes that possibility rather than warning about
+it:
+
+- **GGUF only.** Every model here is GGUF, a plain data container with no code
+  path. The downloader refuses any other format, so a pickle cannot be fetched
+  even if one sits in the same repository.
+- **Allowlisted repositories.** Only the repositories listed on the page can be
+  downloaded from. There is no endpoint that accepts an arbitrary repo.
+- **Filenames come from HuggingFace, never from the caller,** so no
+  user-controlled string reaches a path.
+- **Checked against HuggingFace's own SHA-256,** and a mismatch is deleted
+  rather than kept.
+- **Written atomically,** so an interrupted download is never mistaken for a
+  usable model.
+
+CI re-checks every catalog entry against the live HuggingFace API on each
+build, so a renamed or withdrawn model fails the build instead of shipping as
+a button that dies when you press it.
+
+## Appearance
+
+Telemachos follows your Mac. Set macOS to Light and the app is light; set it to
+Dark and it follows. Choosing a theme yourself overrides that, and the picker
+carries a range of light and dark themes.
+
 ## Where your data lives
 
 Everything is in one folder:

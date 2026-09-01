@@ -31,7 +31,15 @@ export const THEMES = {
   cute:       { bg:'#fff0f5', fg:'#d4608a', panel:'#fff8fa', border:'#f0c0d0', red:'#ff6b9d' },
 };
 
-const DEFAULT_THEME = 'dark';
+// Follow the operating system unless the user has actually chosen a theme.
+// On macOS the app's WKWebView reports the Mac's appearance through this media
+// query, so a light Mac gets a light app without anyone hunting for a setting.
+const prefersLight = () =>
+  typeof window !== 'undefined' &&
+  typeof window.matchMedia === 'function' &&
+  window.matchMedia('(prefers-color-scheme: light)').matches;
+
+const DEFAULT_THEME = prefersLight() ? 'light' : 'dark';
 const LS_KEY = 'telemachos-theme';
 const CUSTOM_THEMES_KEY = 'telemachos-custom-themes';
 
@@ -2113,3 +2121,23 @@ if (document.readyState === 'loading') {
 } else {
   _initWithSync();
 }
+
+// ── Follow the system appearance while the app is open ─────────────────────
+// Only while the user has not chosen a theme of their own: an explicit choice
+// outranks the operating system, and silently overriding it would be worse
+// than not following the system at all.
+//
+// Appended at the end of the module so applyColors/getSaved are defined.
+(function watchSystemAppearance() {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return;
+  const query = window.matchMedia('(prefers-color-scheme: light)');
+  const follow = () => {
+    if (getSaved()) return;
+    applyColors(THEMES[query.matches ? 'light' : 'dark']);
+  };
+  if (typeof query.addEventListener === 'function') {
+    query.addEventListener('change', follow);
+  } else if (typeof query.addListener === 'function') {
+    query.addListener(follow);          // Safari < 14
+  }
+})();
