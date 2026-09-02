@@ -9,6 +9,7 @@ import fileHandlerModule from './js/fileHandler.js';
 import modelsModule from './js/models.js?v=20260715startupcalm2';
 import ragModule from './js/rag.js';
 import { initLocalModels } from './js/localModels.js';
+import { initProfile } from './js/profile.js';
 import presetsModule from './js/presets.js';
 import searchModule from './js/search.js';
 import chatModule from './js/chat.js?v=20260819approvalcontrol1';
@@ -4572,6 +4573,7 @@ function startTelemachosApp() {
   // The local-model picker. Guarded because a failure here must not take the
   // rest of the start-up down with it.
   try { initLocalModels(); } catch (e) { console.error('initLocalModels failed:', e); }
+  try { initProfile(); } catch (e) { console.error('initProfile failed:', e); }
 
   if (window.hljs) {
     console.log('Highlighting all code blocks on page load');
