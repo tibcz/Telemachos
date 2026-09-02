@@ -679,6 +679,9 @@ app.include_router(setup_emoji_routes())
 from routes.model_catalog_routes import setup_model_catalog_routes
 app.include_router(setup_model_catalog_routes())
 
+from routes.profile_routes import setup_profile_routes
+app.include_router(setup_profile_routes())
+
 # Sessions
 from routes.session_routes import setup_session_routes
 session_config = {"REQUEST_TIMEOUT": REQUEST_TIMEOUT, "OPENAI_API_KEY": OPENAI_API_KEY, "SESSIONS_FILE": SESSIONS_FILE}

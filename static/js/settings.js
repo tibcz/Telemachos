@@ -1953,20 +1953,13 @@ async function initShortcuts() {
    INIT & REFRESH
    ═══════════════════════════════════════════ */
 function initAccount() {
-  // Populate user info
-  fetch('/api/auth/status', { credentials: 'same-origin' })
-    .then(r => r.json())
-    .then(d => {
-      const nameEl = el('settings-account-username');
-      const roleEl = el('settings-account-role');
-      const avatarEl = el('settings-account-avatar');
-      if (nameEl) nameEl.textContent = d.username || 'Unknown';
-      if (roleEl) roleEl.textContent = d.is_admin ? 'Admin' : 'User';
-      if (avatarEl) {
-        const initial = (d.username || '?')[0].toUpperCase();
-        avatarEl.textContent = initial;
-      }
-    }).catch(() => {});
+  // The name, avatar and the line beneath them belong to js/profile.js, which
+  // reads /api/profile. This used to paint them from /api/auth/status, which
+  // has no username to report in a single-user app and so wrote "Unknown"
+  // over a perfectly good name.
+  try {
+    import('./profile.js').then(m => m.initProfile()).catch(() => {});
+  } catch (_) {}
 
   // Update password placeholder and policy from server
   fetch('/api/auth/policy', { credentials: 'same-origin' })

@@ -4,7 +4,7 @@ import os
 
 from src.runtime_paths import get_app_root, get_default_data_dir
 
-APP_VERSION = "1.0.5"
+APP_VERSION = "1.1.0"
 
 # Base paths
 BASE_DIR = os.path.join(get_app_root(), "")
@@ -57,6 +57,10 @@ MEMORY_VECTORS_DIR = os.path.join(DATA_DIR, "memory_vectors")
 # else, so the app bundle stays read-only and a reinstall never deletes a
 # multi-gigabyte download the user waited for.
 MODELS_DIR = os.path.join(DATA_DIR, "models")
+# The person using this copy of the app: display name and avatar. Single-user
+# by design, so this is an identity for display and ownership, not an account
+# to log into.
+PROFILE_FILE = os.path.join(DATA_DIR, "profile.json")
 
 # Paths with an intentional dedicated env override, defaulting under DATA_DIR.
 MAIL_ATTACHMENTS_DIR = os.getenv("TELEMACHOS_MAIL_ATTACHMENTS_DIR", os.path.join(DATA_DIR, "mail-attachments"))
