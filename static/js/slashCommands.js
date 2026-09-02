@@ -19,7 +19,6 @@ import themeModule from './theme.js';
 import documentModule from './document.js?v=20260815approvalsave1';
 import workspaceModule from './workspace.js';
 import settingsModule from './settings.js';
-import cookbookModule from './cookbook.js';
 import { EVAL_PROMPTS } from './compare/index.js';
 import { PROVIDER_DEVICE_FLOWS, formatDeviceFlowError, runProviderDeviceFlow } from './providerDeviceFlow.js';
 import { getSettings } from './appConfig.js';
@@ -1345,7 +1344,7 @@ async function _cmdToggleSidebar(args, ctx) {
 async function _cmdOpen(args, ctx) {
   const target = (args[0] || '').trim().toLowerCase();
   if (!target) {
-    slashReply('Open what? Try /open Cookbook, /open Settings, /open Gallery, /open Notes, /open Tasks, /open Library, /open Research, or /open Compare.');
+    slashReply('Open what? Try /open Models, /open Settings, /open Gallery, /open Notes, /open Tasks, /open Library, /open Research, or /open Compare.');
     return true;
   }
   const clickFirst = (...ids) => {
@@ -1356,9 +1355,8 @@ async function _cmdOpen(args, ctx) {
     return false;
   };
   try {
-    if (target === 'cookbook' || target === 'cook') {
-      if (cookbookModule && typeof cookbookModule.open === 'function') await cookbookModule.open({ tab: 'Download' });
-      else clickFirst('tool-cookbook-btn', 'rail-cookbook');
+    if (target === 'models' || target === 'model') {
+      document.getElementById('tool-models-btn')?.click();
       return true;
     }
     if (target === 'settings' || target === 'setting' || target === 'config') {
@@ -1393,34 +1391,10 @@ async function _cmdOpen(args, ctx) {
 async function _cmdToolPanel(tool, args, ctx) {
   const target = String(tool || '').toLowerCase();
   const rest = (args || []).join(' ').trim();
-  if (target === 'cookbook') {
-    const sub = (args[0] || '').toLowerCase();
-    if (sub === 'serve') {
-      const query = args.slice(1).join(' ').trim();
-      try {
-        if (cookbookModule && typeof cookbookModule.open === 'function') {
-          await cookbookModule.open({ tab: 'Serve', serveSearch: query });
-          if (query) {
-            try {
-              const mod = await import('./cookbookServe.js');
-              if (mod && typeof mod.openServePanelForRepo === 'function') {
-                setTimeout(() => { mod.openServePanelForRepo(query).catch(() => {}); }, 80);
-              }
-            } catch (_) {}
-          }
-        } else {
-          document.getElementById('tool-cookbook-btn')?.click();
-        }
-      } catch (e) {
-        slashReply(`Could not open Cookbook Serve${e?.message ? `: ${ctx.esc(e.message)}` : ''}`);
-      }
-      return true;
-    }
-    if (sub === 'download' || sub === 'scan') {
-      await cookbookModule?.open?.({ tab: 'Download', usecase: args.slice(1).join(' ').trim() || undefined });
-      return true;
-    }
-    await cookbookModule?.open?.({ tab: 'Download', usecase: rest || undefined });
+  if (target === 'cookbook' || target === 'models') {
+    // The Cookbook and the model picker were two screens doing one job.
+    // Both names now open the single Models panel.
+    document.getElementById('tool-models-btn')?.click();
     return true;
   }
   if (target === 'email') {

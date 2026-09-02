@@ -500,7 +500,7 @@ async def test_admin_agent_tools_require_admin(monkeypatch):
 
     monkeypatch.setattr(auth_mod, "AuthManager", lambda: FakeAuth())
 
-    for tool_name in ("manage_tokens", "app_api", "serve_preset"):
+    for tool_name in ("manage_tokens", "app_api"):
         desc, result = await _execute_without_run_context(
             execute_tool_block,
             SimpleNamespace(tool_type=tool_name, content='{"action":"create","name":"bad"}'),
@@ -1162,7 +1162,6 @@ def test_public_agent_policy_hides_sensitive_tools(monkeypatch):
     assert "send_email" in blocked
     assert "read_file" in blocked
     assert "app_api" in blocked
-    assert "serve_preset" in blocked
     assert "manage_tasks" in blocked
 
 

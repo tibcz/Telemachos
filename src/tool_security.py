@@ -69,12 +69,6 @@ NON_ADMIN_BLOCKED_TOOLS = BUILTIN_EMAIL_TOOLS | {
     "vault_search",
     "vault_get",
     "vault_unlock",
-    "download_model",
-    "serve_model",
-    "serve_preset",
-    "stop_served_model",
-    "cancel_download",
-    "adopt_served_model",
 }
 
 
@@ -114,12 +108,6 @@ PLAN_MODE_READONLY_TOOLS = {
     # tests/test_email_registry_sync.py.
     "search_emails",
     "scan_email_unsubscribes",
-    "list_served_models",
-    "list_downloads",
-    "list_cached_models",
-    "search_hf_models",
-    "list_serve_presets",
-    "list_cookbook_servers",
     "resolve_contact",
     "chat_with_model",
     "ask_teacher",
@@ -154,9 +142,7 @@ _PLAN_MODE_KNOWN_MUTATORS = {
     # static entries plan-mode safety for their bare fence tags would depend
     # entirely on the MCP read-only inventory being present and current.
     "draft_email", "draft_email_reply", "ai_draft_email_reply",
-    "download_attachment",
-    "download_model", "serve_model",
-    "stop_served_model", "cancel_download", "adopt_served_model", "serve_preset",
+    "download_attachment", "serve_model", "cancel_download", "adopt_served_model", "serve_preset",
     "generate_image", "edit_image", "trigger_research", "manage_research",
     # Shell is never read-only-safe; block it explicitly so it stays out of plan
     # mode even if the schema list fails to load.

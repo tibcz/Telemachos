@@ -194,11 +194,9 @@ export function handleUIControl(uiData) {
           var fn = mod.openLibrary || (mod.default && mod.default.openLibrary);
           if (fn) fn();
         }).catch(function(){});
-      } else if (panel === 'cookbook') {
-        import('./cookbook.js').then(function(mod) {
-          var fn = mod.open || (mod.default && mod.default.open);
-          if (fn) fn();
-        }).catch(function(){});
+      } else if (panel === 'models' || panel === 'cookbook') {
+        // The Cookbook was folded into the Models panel; both names land here.
+        document.getElementById('tool-models-btn')?.click();
       } else if (panel === 'notes') {
         import('./notes.js').then(function(mod) {
           var fn = mod.openPanel || mod.openNotes || (mod.default && (mod.default.openPanel || mod.default.openNotes));

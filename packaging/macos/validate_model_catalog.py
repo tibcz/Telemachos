@@ -18,7 +18,7 @@ import urllib.error
 import urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-CATALOG = os.path.join(ROOT, "services", "hwfit", "data", "telemachos_models.json")
+CATALOG = os.path.join(ROOT, "services", "models", "catalog.json")
 API = "https://huggingface.co/api"
 
 

@@ -3727,51 +3727,12 @@ export async function exportToGallery() {
 // Open Cookbook on its Dependencies tab and highlight a specific
 // package row. Used for "rembg not installed" → install path.
 function _openCookbookForDependency(pkgName) {
-  // Use cookbookModule.open({ tab: 'Dependencies' }) so the intent is
-  // honored after Cookbook's async render. The old path clicked the
-  // sidebar button + polled for the modal, but Cookbook's _renderRecipes
-  // runs AFTER an awaited _syncFromServer, so depsTab.click() often
-  // raced and the user landed on Download.
-  const cookbook = window.cookbookModule;
-  if (!cookbook || typeof cookbook.open !== 'function') {
-    // Fall back to the old click-then-poll path if the module isn't
-    // on window for some reason.
-    const btn = document.getElementById('tool-cookbook-btn');
-    if (btn) btn.click();
-    else if (uiModule) uiModule.showToast(`Open Cookbook to install ${pkgName}`, 6000);
-    return;
+  // The Cookbook used to offer a Dependencies tab that could install this.
+  // A self-contained application ships its own dependencies, so there is
+  // nothing to send the user to; say what is missing instead.
+  if (uiModule) {
+    uiModule.showToast(`${pkgName} is not available in this build`, 6000);
   }
-  cookbook.open({ tab: 'Dependencies' });
-  // Now wait for the Dependencies group to render, switch the server
-  // selector to Local, and highlight the package row.
-  const cb = document.getElementById('cookbook-modal');
-  if (cb) cb.style.zIndex = 260;
-  const tryServer = (attempt = 0) => {
-    const serverSel = document.getElementById('hwfit-deps-server');
-    if (!serverSel) {
-      if (attempt < 25) return setTimeout(() => tryServer(attempt + 1), 80);
-      return;
-    }
-    if (serverSel.value !== 'local') {
-      serverSel.value = 'local';
-      serverSel.dispatchEvent(new Event('change', { bubbles: true }));
-    }
-  };
-  tryServer();
-  const tryHighlight = (a2 = 0) => {
-    const rows = document.querySelectorAll('[data-pkg-name]');
-    if (!rows.length) {
-      if (a2 < 40) return setTimeout(() => tryHighlight(a2 + 1), 100);
-      return;
-    }
-    const row = Array.from(rows).find(r => (r.dataset.pkgName || '').toLowerCase() === pkgName.toLowerCase());
-    if (row) {
-      row.scrollIntoView({ block: 'center' });
-      row.classList.add('cookbook-pkg-flash');
-      setTimeout(() => row.classList.remove('cookbook-pkg-flash'), 2000);
-    }
-  };
-  tryHighlight();
 }
 
 // Async check whether `rembg` is installed on the Telemachos server.

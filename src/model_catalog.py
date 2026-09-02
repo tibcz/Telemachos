@@ -2,7 +2,7 @@
 
 Four models, one per hardware tier, chosen so that a given Mac gets a
 confident recommendation rather than a catalogue to wade through. The list
-lives in services/hwfit/data/telemachos_models.json.
+lives in services/models/catalog.json.
 
 Safety is the whole point of this module, so it is worth being explicit about
 what "safe" means here. The genuine risk when downloading model weights is not
@@ -44,7 +44,7 @@ HF_API = "https://huggingface.co/api"
 HF_RESOLVE = "https://huggingface.co"
 
 _CATALOG_PATH = os.path.join(
-    get_app_root(), "services", "hwfit", "data", "telemachos_models.json"
+    get_app_root(), "services", "models", "catalog.json"
 )
 
 # A HuggingFace repo id: owner/name, both restricted to the characters the Hub
@@ -96,26 +96,34 @@ def detected_memory_gb():
     """Total system memory in GB, or 0.0 when it cannot be determined.
 
     On Apple Silicon this is unified memory, which is what actually bounds
-    model size - there is no separate VRAM to reason about.
+    model size: there is no separate VRAM to reason about, so one number
+    decides which tier fits.
+
+    Deliberately a handful of lines rather than a call into a hardware
+    detection service. The service this replaced also probed NVIDIA and AMD
+    cards, Windows hosts and machines over SSH, none of which a Mac
+    application will ever meet.
     """
+    # macOS, and any BSD: hw.memsize is the whole of physical memory.
     try:
-        from services.hwfit.hardware import detect_system
+        import subprocess
 
-        info = detect_system() or {}
+        out = subprocess.run(["sysctl", "-n", "hw.memsize"],
+                             capture_output=True, text=True, timeout=5)
+        if out.returncode == 0 and out.stdout.strip():
+            return int(out.stdout.strip()) / (1024 ** 3)
     except Exception:
-        logger.debug("hardware detection failed", exc_info=True)
-        return 0.0
+        logger.debug("sysctl hw.memsize unavailable", exc_info=True)
 
-    for key in ("ram_gb", "total_ram_gb", "memory_gb"):
-        value = info.get(key)
-        if isinstance(value, (int, float)) and value > 0:
-            return float(value)
+    # Linux, so the picker still works when the engine runs from a checkout.
+    try:
+        with open("/proc/meminfo", encoding="utf-8") as fh:
+            for line in fh:
+                if line.startswith("MemTotal:"):
+                    return int(line.split()[1]) / (1024 ** 2)
+    except Exception:
+        logger.debug("/proc/meminfo unavailable", exc_info=True)
 
-    gpu = info.get("gpu") or {}
-    if isinstance(gpu, dict):
-        vram = gpu.get("vram_gb")
-        if isinstance(vram, (int, float)) and vram > 0:
-            return float(vram)
     return 0.0
 
 

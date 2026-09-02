@@ -231,20 +231,11 @@ function _initModelPickerDropdown() {
   function _openPickerShortcut(kind) {
     _close();
     try {
-      if (kind === 'cookbook') {
-        if (window.cookbookModule && typeof window.cookbookModule.open === 'function') {
-          window.cookbookModule.open();
-        } else {
-          const btn = document.getElementById('tool-cookbook-btn') || document.getElementById('rail-cookbook');
-          if (btn) btn.click();
-          else location.hash = '#cookbook';
-        }
-      } else if (kind === 'settings') {
-        if (settingsModule && typeof settingsModule.open === 'function') settingsModule.open();
-      } else if (window.adminModule && typeof window.adminModule.open === 'function') {
-        window.adminModule.open('services');
-      } else if (settingsModule && typeof settingsModule.open === 'function') {
-        settingsModule.open('services');
+      if (kind === 'cookbook' || kind === 'models') {
+        // The Cookbook and the model picker were two screens for one job.
+        // Everything now lives in the Models panel.
+        document.getElementById('tool-models-btn')?.click();
+        return;
       }
     } catch (_) {}
   }

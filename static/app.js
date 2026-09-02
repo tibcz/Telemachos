@@ -41,12 +41,6 @@ import './js/modalManager.js?v=20260723compareicon2';
 // Desktop window tiling - drag a modal near an edge/corner to snap.
 import './js/tileManager.js';
 import themeModule from './js/theme.js';
-// IMPORTANT: import cookbook.js with NO ?v= query - the same plain specifier
-// every other importer (cookbook-hwfit.js / cookbook-diagnosis.js) uses. A query
-// mismatch makes the browser load cookbook.js twice as separate modules (two
-// _envState objects), which broke server selection. Keep all cookbook imports
-// unversioned so this can't recur.
-import cookbookModule from './js/cookbook.js';
 import groupModule from './js/group.js';
 import * as researchPanelModule from './js/research/panel.js?v=20260630researchthumb';
 import ttsModule from './js/tts-ai.js';
@@ -61,7 +55,6 @@ window.themeModule = themeModule;
 window.sessionModule = sessionModule;
 window.uiModule = uiModule;
 window.adminModule = adminModule;
-window.cookbookModule = cookbookModule;
 
 function _isMobileChatInput() {
   return window.innerWidth <= 768;
@@ -173,7 +166,6 @@ function initRailHoverLabels() {
     'rail-documents': 'Docs',
     'rail-calendar': 'Calendar',
     'rail-compare': 'Compare',
-    'rail-cookbook': 'Cookbook',
     'rail-research': 'Research',
     'rail-email': 'Email',
     'rail-gallery': 'Gallery',
@@ -726,7 +718,6 @@ function initializeEventListeners() {
       // Close one modal at a time (last in DOM = topmost)
       // Map modal id → sidebar list-item id to clear active state
       const modalItemMap = {
-        'cookbook-modal': null,
         'rename-session-modal': null,
         'rename-ai-modal': null,
         'custom-preset-modal': null,
@@ -1014,20 +1005,6 @@ function initializeEventListeners() {
     });
   }
 
-  // ── Cookbook modal toggle ──
-  const toolCookbookBtn = el('tool-cookbook-btn');
-  if (toolCookbookBtn) {
-    toolCookbookBtn.addEventListener('click', async () => {
-      if (!cookbookModule) return;
-      // Try minimized→restore or open→minimize via the manager first
-      const Modals = await import('./js/modalManager.js');
-      if (!Modals.toggle('cookbook-modal')) {
-        // Not registered yet → fresh open
-        cookbookModule.open();
-      }
-    });
-  }
-
   // Document library tool button
   const toolDoclibBtn = el('tool-doclib-btn');
   if (toolDoclibBtn) {
@@ -1187,7 +1164,6 @@ function initializeEventListeners() {
       }
     },
     '/calendar': () => calendarModule && calendarModule.openCalendar(),
-    '/cookbook': () => document.getElementById('tool-cookbook-btn')?.click(),
     '/email':    () => {
       // Collapse the wide sidebar → icon rail (48px) so the user keeps
       // navigation visible alongside the fullscreen email view.
@@ -3741,7 +3717,6 @@ function startTelemachosApp() {
   const _railToolMap = {
     'rail-compare':   'tool-compare-btn',
     'rail-research':  'tool-research-btn',
-    'rail-cookbook':   'tool-cookbook-btn',
     'rail-archive':   'tool-library-btn',
     'rail-gallery':   'tool-gallery-btn',
     'rail-tasks':     'tool-tasks-btn',

@@ -83,7 +83,7 @@ datas += [
     (os.path.join(REPO_ROOT, "scripts"), "scripts"),
     (os.path.join(REPO_ROOT, "mcp_servers"), "mcp_servers"),
     (os.path.join(REPO_ROOT, "config"), "config"),
-    (os.path.join(REPO_ROOT, "services", "hwfit", "data"), os.path.join("services", "hwfit", "data")),
+    (os.path.join(REPO_ROOT, "services", "models"), os.path.join("services", "models")),
     (os.path.join(REPO_ROOT, "LICENSE"), "."),
     (os.path.join(REPO_ROOT, "ACKNOWLEDGMENTS.md"), "."),
     (os.path.join(REPO_ROOT, "licenses"), "licenses"),

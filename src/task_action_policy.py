@@ -6,7 +6,6 @@ ADMIN_ONLY_TASK_ACTIONS = frozenset({
     "run_local",
     "run_script",
     "ssh_command",
-    "cookbook_serve",
 })
 
 

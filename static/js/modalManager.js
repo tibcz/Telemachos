@@ -127,7 +127,6 @@ function _setBadge(btnIds, on) {
 // ── Bottom dock - visible chip per minimized modal ──
 
 const _LABELS = {
-  'cookbook-modal':    { label: 'Cookbook',  icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>' },
   'calendar-modal':    { label: 'Calendar',  icon: 'M3 4h18v18H3zM16 2v4M8 2v4M3 10h18' },
   'gallery-modal':     { label: 'Gallery',   icon: 'M3 3h18v18H3zM8.5 8.5l3 3M21 15l-5-5L5 21' },
   'tasks-modal':       { label: 'Tasks',     icon: 'M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11' },
@@ -1403,7 +1402,6 @@ export function injectMinimizeButton(modal, modalId) {
 // clicking the same button restores it. Tools that need rebuild-on-restore
 // can still register explicitly with custom restoreFn/closeFn.
 const _AUTO_WIRE = {
-  'cookbook-modal':       { rail: 'rail-cookbook',  sidebar: 'tool-cookbook-btn' },
   'calendar-modal':       { rail: 'rail-calendar',  sidebar: 'tool-calendar-btn' },
   'gallery-modal':        { rail: 'rail-gallery',   sidebar: 'tool-gallery-btn' },
   'tasks-modal':          { rail: 'rail-tasks',     sidebar: 'tool-tasks-btn' },
@@ -1472,7 +1470,6 @@ if (document.readyState !== 'loading') {
 // Tools that survive a swipe-down as a dock chip. Anything else falls
 // through to the legacy close handler and goes away entirely.
 const _SWIPE_DOWN_MINIMIZES = new Set([
-  'cookbook-modal',
   'calendar-modal',
   'email-lib-modal',
 ]);
@@ -1506,11 +1503,6 @@ function _clearEmailSplitAfterMinimize() {
 // stay floating in the middle of the page with no anchor.
 window.addEventListener('modal-dismissed', (e) => {
   const id = e.detail?.id;
-  if (id === 'cookbook-modal') {
-    document.querySelectorAll(
-      '.cookbook-task-dropdown, .cookbook-gpu-split-menu, .hwfit-cached-dropdown, .cookbook-saved-menu, .cookbook-dep-menu'
-    ).forEach(dismissOrRemove);
-  }
 });
 
 window.addEventListener('modal-dismissed', (e) => {

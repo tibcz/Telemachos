@@ -223,7 +223,7 @@ class _FakeExecutor:
 def test_dry_run_prints_command_and_does_not_execute(capsys):
     executor = _FakeExecutor()
     code = run(
-        ["--dry-run", "--area", "services", "--sub-area", "cookbook"],
+        ["--dry-run", "--area", "services", "--sub-area", "memory"],
         executor=executor,
     )
     out = capsys.readouterr().out
@@ -231,7 +231,7 @@ def test_dry_run_prints_command_and_does_not_execute(capsys):
     assert executor.calls == []
     assert out == (
         f"{sys.executable} -m pytest "
-        "-m 'area_services and sub_cookbook'\n"
+        "-m 'area_services and sub_memory'\n"
     )
 
 
@@ -266,7 +266,7 @@ def test_run_last_failed_only():
     ]]
 
 
-@pytest.mark.parametrize("value", ["cookbook", "sub_cookbook"])
+@pytest.mark.parametrize("value", ["memory", "sub_memory"])
 def test_run_accepts_both_sub_area_forms(value):
     executor = _FakeExecutor()
     run(["--sub-area", value], executor=executor)
@@ -275,7 +275,7 @@ def test_run_accepts_both_sub_area_forms(value):
         "-m",
         "pytest",
         "-m",
-        "sub_cookbook",
+        "sub_memory",
     ]]
 
 

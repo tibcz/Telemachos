@@ -75,12 +75,7 @@ _register(
 )
 _register(
     {
-        "list_cached_models",
-        "list_cookbook_servers",
-        "list_downloads",
         "list_models",
-        "list_serve_presets",
-        "list_served_models",
     },
     ToolEffect.READ_PRIVATE,
     # These readers return provider-controlled model identifiers or durable
@@ -119,7 +114,6 @@ _register(
         "search_chats",
         "search_emails",
         "list_sessions",
-        "tail_serve_output",
         "vault_get",
         "vault_search",
     },
@@ -231,12 +225,6 @@ _register(
 )
 _register(
     {
-        "adopt_served_model",
-        "cancel_download",
-        "download_model",
-        "serve_model",
-        "serve_preset",
-        "stop_served_model",
         "vault_unlock",
     },
     ToolEffect.ADMIN_CHANGE,
