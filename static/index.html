@@ -24,8 +24,8 @@
       // theme.js boots, which reads as a bug on a light Mac.
       if ((!t || !t.colors) && window.matchMedia &&
           window.matchMedia('(prefers-color-scheme: light)').matches) {
-        t = { name: 'light', colors: { bg:'#f0ebe3', fg:'#5a5248', panel:'#faf6f0',
-                                       border:'#d4cdc2', red:'#c47d5a' } };
+        t = { name: 'light', colors: { bg:'#f2f2f7', fg:'#1d1d1f', panel:'#ffffff',
+                                       border:'#d8d8de', red:'#007aff' } };
       }
       if (t && t.colors) {
         var s = document.documentElement.style;
@@ -2065,19 +2065,25 @@
         <div data-settings-panel="account" class="hidden">
           <div class="admin-card">
             <h2><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px;opacity:0.6"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Account</h2>
-            <div style="display:flex;align-items:center;gap:10px;margin:12px 0 12px;">
-              <div class="user-bar-avatar" id="settings-account-avatar" style="width:32px;height:32px;font-size:14px;"></div>
-              <div style="flex:1;">
-                <div id="settings-account-username" style="font-size:13px;font-weight:600;"></div>
-                <div id="settings-account-role" style="font-size:11px;opacity:0.5;"></div>
+            <div style="display:flex;align-items:center;gap:12px;margin:12px 0 10px;">
+              <div class="user-bar-avatar" id="settings-account-avatar" style="width:40px;height:40px;font-size:16px;"></div>
+              <div style="flex:1;min-width:0;">
+                <label for="settings-profile-name" style="display:block;font-size:11px;opacity:0.55;margin-bottom:4px;">Your name</label>
+                <input id="settings-profile-name" type="text" maxlength="60" autocomplete="name"
+                       style="width:100%;padding:6px 9px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--fg);font-family:inherit;font-size:13px;">
+                <div id="settings-account-role" style="font-size:11px;opacity:0.5;margin-top:4px;"></div>
               </div>
+              <button class="admin-btn-add" id="settings-profile-save">Save</button>
+            </div>
+            <div id="settings-profile-msg" style="font-size:11px;opacity:0.6;min-height:14px;margin-bottom:4px;"></div>
+            <div id="settings-account-auth-actions" style="display:flex;justify-content:flex-end;">
               <button id="settings-logout-btn" style="background:color-mix(in srgb, var(--color-error) 10%, transparent);border:1px solid var(--color-error);border-radius:6px;padding:6px 12px;color:var(--color-error);font-family:inherit;font-size:12px;font-weight:500;cursor:pointer;transition:opacity 0.15s,background 0.15s;display:inline-flex;align-items:center;gap:6px;">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                 Logout
               </button>
             </div>
           </div>
-          <div class="admin-card">
+          <div class="admin-card" id="settings-password-card">
             <h2><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px;opacity:0.6"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Change Password</h2>
             <div class="settings-col">
               <input id="settings-pw-current" type="password" placeholder="Current password" autocomplete="current-password" style="padding:6px 8px;background:var(--bg);border:1px solid var(--border);border-radius:4px;color:var(--fg);font-family:inherit;font-size:12px;">

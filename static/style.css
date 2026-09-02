@@ -41481,3 +41481,93 @@ body.settings-sidebar-resize-active {
   #local-models-modal .lm-card { grid-template-columns: 1fr; }
   #local-models-modal .lm-action { min-width: 0; }
 }
+
+/* ── macOS appearance ──────────────────────────────────────────────────────
+   The interface used to be set in Fira Code throughout, which read as a
+   terminal rather than a Mac application. The body font is now the system
+   stack; everything below restores monospace where it genuinely belongs and
+   brings the chrome closer to the platform. */
+
+/* Code stays monospace regardless of the interface font. Without this, moving
+   the body to the system stack silently rendered every code block in sans. */
+code, pre, kbd, samp, .hljs,
+.code-block, .code-block *,
+.doc-editor-code, .mono {
+  font-family: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* Interface text: macOS sets UI type slightly tighter than the browser default. */
+body {
+  -webkit-font-smoothing: antialiased;
+  font-size: 13.5px;
+  letter-spacing: normal;
+}
+
+/* Sidebar as a macOS source list: a quieter ground than the content area,
+   compact rounded rows, and a selection that reads as a selection. */
+.sidebar {
+  background: color-mix(in srgb, var(--bg) 92%, var(--fg) 3%);
+  border-right: 1px solid var(--border);
+}
+.sidebar .list-item {
+  border-radius: 6px;
+  margin: 1px 8px;
+  padding: 5px 8px;
+  font-size: 13px;
+  transition: background .12s ease;
+}
+.sidebar .list-item:hover {
+  background: color-mix(in srgb, var(--fg) 7%, transparent);
+}
+.sidebar .list-item.active,
+.sidebar .list-item[aria-current="true"] {
+  background: color-mix(in srgb, var(--red) 16%, transparent);
+}
+.sidebar .section-title {
+  font-size: 11px;
+  font-weight: 600;
+  opacity: .5;
+  letter-spacing: .01em;
+}
+.sidebar-brand-title {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Controls: macOS uses small radii and restrained borders. */
+button, .btn, input[type="text"], input[type="search"],
+input[type="password"], input[type="email"], select, textarea {
+  border-radius: 6px;
+}
+input, select, textarea {
+  font-family: inherit;
+  font-size: 13px;
+}
+
+/* Modals: macOS panels have a larger corner radius and a soft shadow rather
+   than a hard border. */
+.modal-content {
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .28), 0 0 0 1px var(--border);
+}
+.modal-header h4 {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+/* The window drags by its top strip, and the traffic lights are inset over
+   it by the native shell, so keep that area clear of controls. */
+.macos-titlebar-pad {
+  height: 28px;
+  flex: none;
+  -webkit-app-region: drag;
+}
+
+/* The product name in the sidebar is a label, not a call to action. macOS
+   reserves the accent colour for selection and controls, so tint it back. */
+.sidebar-brand-title { color: var(--fg); }
+
+/* The header strip sat on a different ground from the rest of the sidebar,
+   which showed as a seam across the top. */
+.sidebar-header { background: transparent; border-bottom: none; }
